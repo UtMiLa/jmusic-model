@@ -1,5 +1,15 @@
 import { TimeSpan, Time } from './../rationals/time';
 import { Pitch } from './../pitches/pitch';
+
+
+export enum NoteType {
+    NBreve, NSemibreve, NHalf, NQuarter
+}
+
+export enum NoteDirection {
+    Up, Down, Undefined
+}
+
 export class Note {
     constructor(private _pitch: Pitch, private _duration: TimeSpan) {
         //console.log('new note', _pitch, _duration);
@@ -22,5 +32,13 @@ export class Note {
 
     get duration(): TimeSpan {
         return this._duration;
+    }
+
+    get type(): NoteType {
+        switch (this._duration.denominator) {
+            case 1: return NoteType.NSemibreve;
+            case 2: return NoteType.NHalf;
+            default: return NoteType.NQuarter;
+        }
     }
 }

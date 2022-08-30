@@ -7,7 +7,7 @@ export interface SequenceDef {
 
 export class Sequence {
     constructor(public def: SequenceDef) {
-        this.elements = def.elements.split(' ').map(str => Note.parseLily(str));
+        this.elements = def.elements ? def.elements.split(' ').map(str => Note.parseLily(str)) : [];
     }
 
     elements: Note[] = [];

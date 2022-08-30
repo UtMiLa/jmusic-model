@@ -4,14 +4,13 @@ const accidentalNamesEn = [' dbl flat', ' flat', '', ' sharp', ' dbl sharp'];
 const accidentalNamesSymbol = ['𝄫', '♭', '♮', '♯', '𝄪'];
 
 export class Pitch {
-
     /**
      * Internal values to define a pitch. Should not be used outside this class, since implementation may change.
      * @param _pitchClass c = 0, d = 1 ... b = 7
      * @param _octave middle c in octave 4 etc
      * @param _accidental 0: natural; 1: sharp; -1: flat; 2/-2 double
      */
-    constructor(private _pitchClass: number, private _octave: number, private _accidental: number) {}
+    constructor(private _pitchClass: number, private _octave: number, private _accidental: number = 0) {}
 
     static fromScientific(note: string, octave: number): Pitch {
         return new Pitch(pitchNames.indexOf(note), octave, 0);
@@ -47,6 +46,13 @@ export class Pitch {
 
     get pitchClass(): string {
         return pitchNames[this._pitchClass];
+    }
+
+    /**
+     * diatonic scale degree; C4 = 0; octave = 7
+     */
+    get diatonicNumber(): number {
+        return this._pitchClass + 7 * (this.octave - 4);
     }
 
     static compare(p1: Pitch, p2: Pitch): number {
