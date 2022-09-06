@@ -18,7 +18,12 @@ export interface ClefViewModel {
     clefType: ClefType;
     line: number;
 }
-
+export function isClefVM(element: any): ClefViewModel | undefined {
+    if (typeof element.clefType === 'number') {
+        return element as unknown as ClefViewModel;
+    }
+    return undefined;
+}
 
 export interface StaffViewModel {
     objects: (NoteViewModel | ClefViewModel)[];

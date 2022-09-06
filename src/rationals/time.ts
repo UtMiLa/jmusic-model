@@ -1,4 +1,4 @@
-import { Rational, RationalDef } from '~/rationals/rational';
+import { Rational, RationalDef } from './rational';
 export interface TimeSpan extends RationalDef {
     type: 'span'
 }

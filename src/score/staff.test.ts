@@ -14,7 +14,7 @@ describe('Staff', () => {
         };
     });
 
-    it('should convert a staff to view model', () => {
+    it('should convert an empty staff to view model', () => {
         const vm = Staff.defToViewModel(staffClef);
 
         expect(vm).to.deep.equal({
@@ -42,7 +42,7 @@ describe('Staff', () => {
                 },
                 {
                     positions: [-6],
-                    noteType: NoteType.NSemibreve,
+                    noteType: NoteType.NWhole,
                     direction: NoteDirection.Up
                 },
                 {

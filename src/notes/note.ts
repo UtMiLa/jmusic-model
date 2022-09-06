@@ -1,9 +1,10 @@
+import { Rational } from './../rationals/rational';
 import { TimeSpan, Time } from './../rationals/time';
 import { Pitch } from './../pitches/pitch';
 
 
 export enum NoteType {
-    NBreve, NSemibreve, NHalf, NQuarter
+    NBreve, NWhole, NHalf, NQuarter
 }
 
 export enum NoteDirection {
@@ -35,8 +36,10 @@ export class Note {
     }
 
     get type(): NoteType {
-        switch (this._duration.denominator) {
-            case 1: return NoteType.NSemibreve;
+        if (Rational.value(this.duration) >= 2) 
+            return NoteType.NBreve;
+        switch (this.duration.denominator) {
+            case 1: return NoteType.NWhole;
             case 2: return NoteType.NHalf;
             default: return NoteType.NQuarter;
         }
