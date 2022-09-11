@@ -1,21 +1,32 @@
 import { NoteViewModel, ClefViewModel, isClefVM } from './../score/staff';
 import { Note, NoteType } from './../notes/note';
-import { ClefDef } from './../states/clef';
+import { ClefDef, ClefType } from './../states/clef';
 import { Metrics } from './metrics';
-import { VertVarSizeGlyphs, FixedSizeGlyphs, GlyphCode } from './glyphs';
+import { VertVarSizeGlyphs, FixedSizeGlyphs, GlyphCode, HorizVarSizeGlyphs } from './glyphs';
 import { ScoreViewModel } from './../score/score';
 import { StaffViewModel } from './../score/staff';
-import { PhysicalModel, PhysicalElementBase, PhysicalFixedSizeElement } from './physical-elements';
+import { PhysicalModel, PhysicalElementBase, PhysicalFixedSizeElement, PhysicalVertVarSizeElement, PhysicalHorizVarSizeElement } from './physical-elements';
+
+/**
+ * Physical Model
+ * 
+ * x origin is at beginning of staff; positive to the right.
+ * y origin is at the bottom line of the staff; positive upwards.
+ * 
+ */
 
 interface VMCondition<T> {
     if: (obj: unknown) => T | undefined;
     then: (obj: T) => void;
 }
 
+export function staffLineToY(staffLine: number, settings: Metrics): number {
+    return settings.staffLineWidth - (-1 - staffLine) * settings.staffLineWidth;
+}
 
 export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics): PhysicalModel {
     if (viewModel.staves.length) {
-        const resultElements: PhysicalElementBase[] = [0, 1, 2, 3, 4].map(n => ({
+        let resultElements: PhysicalElementBase[] = [0, 1, 2, 3, 4].map(n => ({
             element: VertVarSizeGlyphs.Line,
             position: { x: 0, y: settings.staffLineWidth * (4 - n) },
             length: settings.staffLengthOffset
@@ -27,13 +38,13 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
             [
                 { 
                     if: isClefVM, 
-                    then: ((clef: ClefViewModel) => resultElements.push(convertClef(clef)))
+                    then: ((clef: ClefViewModel) => resultElements.push(convertClef(clef, settings)))
                 } as VMCondition<ClefViewModel>,
 
                 { 
                     if: (obj: unknown) => obj as NoteViewModel, 
                     then: ((note: NoteViewModel) => { 
-                        resultElements.push(convertNote(note, x));
+                        resultElements = resultElements.concat(convertNote(note, x, settings));
                         x += 20;
                     })
                 } as VMCondition<NoteViewModel>
@@ -56,25 +67,58 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
     return { elements: [] };
 }
 
-function convertClef(clef: ClefViewModel): PhysicalElementBase {
-    return {
-        position: { x: 10, y: 10 },
-        glyph: 'clefs.G'
-    } as PhysicalFixedSizeElement;
-}
-
-function convertNote(note: NoteViewModel, xPos: number): PhysicalElementBase {
+function convertClef(clef: ClefViewModel, settings: Metrics): PhysicalElementBase {
     let glyph: GlyphCode;
 
-    switch(note.noteType) {
-        case NoteType.NBreve: glyph = 'noteheads.sM1'; break;
-        case NoteType.NWhole: glyph = 'noteheads.s0'; break;
-        case NoteType.NHalf: glyph = 'noteheads.s1'; break;
-        case NoteType.NQuarter: glyph = 'noteheads.s2'; break;      
+    switch(clef.clefType) {
+        case ClefType.C: glyph = 'clefs.C'; break;
+        case ClefType.F: glyph = 'clefs.F'; break;
+        case ClefType.G: glyph = 'clefs.G'; break;
+        case ClefType.G8: glyph = 'clefs.G'; break;
     }
 
     return {
-        position: { x: xPos, y: note.positions[0] * 5 + 20 },
+        position: { x: 10, y: staffLineToY(clef.line/2, settings) },
         glyph
     } as PhysicalFixedSizeElement;
+}
+
+function convertNote(note: NoteViewModel, xPos: number, settings: Metrics): PhysicalElementBase[] {
+    let glyph: GlyphCode;
+
+    const result: PhysicalElementBase[] = [];
+
+    const yPos = staffLineToY(note.positions[0] / 2, settings);// (note.positions[0] + 4) * settings.staffLineWidth / 2;
+
+    switch(note.noteType) {
+        case NoteType.NBreve: 
+            glyph = 'noteheads.sM1'; 
+            break;
+        case NoteType.NWhole: 
+            glyph = 'noteheads.s0'; 
+            break;
+        case NoteType.NHalf: 
+            glyph = 'noteheads.s1';
+            result.push({
+                element: HorizVarSizeGlyphs.Stem,
+                length: settings.quarterStemDefaultLength,
+                position: { x: xPos + settings.halfNoteHeadLeftXOffset, y: yPos }
+            } as PhysicalHorizVarSizeElement);
+            break;
+        case NoteType.NQuarter: 
+            glyph = 'noteheads.s2'; 
+            result.push({
+                element: HorizVarSizeGlyphs.Stem,
+                length: settings.quarterStemDefaultLength,
+                position: { x: xPos + settings.blackNoteHeadLeftXOffset, y: yPos }
+            } as PhysicalHorizVarSizeElement);
+            break;      
+    }
+
+    result.push({
+        position: { x: xPos, y: yPos },
+        glyph
+    } as PhysicalFixedSizeElement);
+
+    return result;
 }

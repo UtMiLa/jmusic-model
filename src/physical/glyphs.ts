@@ -158,12 +158,12 @@ export enum FixedSizeGlyphs {
 
 
 export enum HorizVarSizeGlyphs {
-    Stem
+    Stem = 101
 }
 
 export enum VertVarSizeGlyphs {
-    Line,
-    Ottava,
+    Line = 1,
+    Ottava = 2,
     
 }
 
