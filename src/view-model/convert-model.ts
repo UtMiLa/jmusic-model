@@ -36,7 +36,7 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
         ] as (NoteViewModel | ClefViewModel)[]).concat(
             seq.elements.map(elem => {
                 return {
-                    positions: [clef.map(elem.pitch)],
+                    positions: elem.pitches.map(p => clef.map(p)),
                     noteType: elem.type,
                     direction: NoteDirection.Up
                 };

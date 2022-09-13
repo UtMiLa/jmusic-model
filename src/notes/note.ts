@@ -12,23 +12,35 @@ export enum NoteDirection {
 }
 
 export class Note {
-    constructor(private _pitch: Pitch, private _duration: TimeSpan) {
+    constructor(private _pitches: Pitch[], private _duration: TimeSpan) {
         //console.log('new note', _pitch, _duration);
         
     }
     static parseLily(input: string): Note {
         const matcher = /([a-g](es|is)*[',]*)(\d+\.*)/i;
-        const match = matcher.exec(input);
-        if (!match || match.length < 4) throw 'Illegal note: ' + input;
-        const pitchLily = match[1];
-        const durationLily = match[3];
+        const matcherChord = /<([a-z,' ]+)>(\d+\.*)/i;
+        const matchChord = matcherChord.exec(input);
+
+        let pitches = [] as string[];
+        let durationString = '';
+
+        if (matchChord) {
+            console.log(matchChord);
+            pitches = matchChord[1].split(' ');
+            durationString = matchChord[2];
+        } else {
+            const match = matcher.exec(input);
+            if (!match || match.length < 4) throw 'Illegal note: ' + input;
+            pitches = [match[1]];
+            durationString = match[3];    
+        }
         //console.log(match);
         
-        return new Note(Pitch.parseLilypond(pitchLily), Time.fromLilypond(durationLily));
+        return new Note(pitches.map(pitch => Pitch.parseLilypond(pitch)), Time.fromLilypond(durationString));
     }
 
-    get pitch(): Pitch {
-        return this._pitch;
+    get pitches(): Pitch[] {
+        return this._pitches;
     }
 
     get duration(): TimeSpan {
