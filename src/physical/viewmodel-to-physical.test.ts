@@ -4,11 +4,10 @@ import { NoteType, NoteDirection } from './../notes/note';
 import { ClefType } from '~/states/clef';
 import { PhysicalElementBase } from './physical-elements';
 import { Metrics, StandardMetrics } from './metrics';
-import { ScoreViewModel } from '../score/score';
 import { VertVarSizeGlyphs, FixedSizeGlyphs } from './glyphs';
-import { StaffViewModel } from '../score/staff';
 import { expect } from 'chai';
 import { staffLineToY, viewModelToPhysical } from './viewmodel-to-physical';
+import { ScoreViewModel } from '../view-model/convert-model';
 
 describe('Physical model', () => {
     let defaultMetrics: Metrics;

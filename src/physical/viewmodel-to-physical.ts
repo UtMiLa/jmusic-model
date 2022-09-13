@@ -1,11 +1,12 @@
-import { NoteViewModel, ClefViewModel, isClefVM } from './../score/staff';
+import { isClefVM } from './../score/staff';
 import { Note, NoteType } from './../notes/note';
 import { ClefDef, ClefType } from './../states/clef';
 import { Metrics } from './metrics';
 import { VertVarSizeGlyphs, FixedSizeGlyphs, GlyphCode, HorizVarSizeGlyphs } from './glyphs';
-import { ScoreViewModel } from './../score/score';
-import { StaffViewModel } from './../score/staff';
+
 import { PhysicalModel, PhysicalElementBase, PhysicalFixedSizeElement, PhysicalVertVarSizeElement, PhysicalHorizVarSizeElement } from './physical-elements';
+import { convertNote, testNote } from './physical-note';
+import { ClefViewModel, NoteViewModel, ScoreViewModel } from '~/view-model/convert-model';
 
 /**
  * Physical Model
@@ -42,7 +43,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
                 } as VMCondition<ClefViewModel>,
 
                 { 
-                    if: (obj: unknown) => obj as NoteViewModel, 
+                    if: testNote, 
                     then: ((note: NoteViewModel) => { 
                         resultElements = resultElements.concat(convertNote(note, x, settings));
                         x += 20;
@@ -81,44 +82,4 @@ function convertClef(clef: ClefViewModel, settings: Metrics): PhysicalElementBas
         position: { x: 10, y: staffLineToY(clef.line/2, settings) },
         glyph
     } as PhysicalFixedSizeElement;
-}
-
-function convertNote(note: NoteViewModel, xPos: number, settings: Metrics): PhysicalElementBase[] {
-    let glyph: GlyphCode;
-
-    const result: PhysicalElementBase[] = [];
-
-    const yPos = staffLineToY(note.positions[0] / 2, settings);// (note.positions[0] + 4) * settings.staffLineWidth / 2;
-
-    switch(note.noteType) {
-        case NoteType.NBreve: 
-            glyph = 'noteheads.sM1'; 
-            break;
-        case NoteType.NWhole: 
-            glyph = 'noteheads.s0'; 
-            break;
-        case NoteType.NHalf: 
-            glyph = 'noteheads.s1';
-            result.push({
-                element: HorizVarSizeGlyphs.Stem,
-                length: settings.quarterStemDefaultLength,
-                position: { x: xPos + settings.halfNoteHeadLeftXOffset, y: yPos }
-            } as PhysicalHorizVarSizeElement);
-            break;
-        case NoteType.NQuarter: 
-            glyph = 'noteheads.s2'; 
-            result.push({
-                element: HorizVarSizeGlyphs.Stem,
-                length: settings.quarterStemDefaultLength,
-                position: { x: xPos + settings.blackNoteHeadLeftXOffset, y: yPos }
-            } as PhysicalHorizVarSizeElement);
-            break;      
-    }
-
-    result.push({
-        position: { x: xPos, y: yPos },
-        glyph
-    } as PhysicalFixedSizeElement);
-
-    return result;
 }

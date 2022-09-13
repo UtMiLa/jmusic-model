@@ -4,11 +4,11 @@ import { Pitch } from './../pitches/pitch';
 
 
 export enum NoteType {
-    NBreve, NWhole, NHalf, NQuarter
+    NBreve = 1, NWhole, NHalf, NQuarter
 }
 
 export enum NoteDirection {
-    Up, Down, Undefined
+    Up = 1, Down, Undefined
 }
 
 export class Note {

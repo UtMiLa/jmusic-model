@@ -2,6 +2,7 @@ import { NoteType, NoteDirection } from './../notes/note';
 import { Staff, StaffDef } from './staff';
 import { expect } from 'chai';
 import { ClefType } from '~/states/clef';
+import { modelToViewModel } from '~/view-model/convert-model';
 describe('Staff', () => {
     let staffClef: StaffDef;
 
@@ -15,7 +16,7 @@ describe('Staff', () => {
     });
 
     it('should convert an empty staff to view model', () => {
-        const vm = Staff.defToViewModel(staffClef);
+        const vm = modelToViewModel(staffClef);
 
         expect(vm).to.deep.equal({
             objects: [                
@@ -31,7 +32,7 @@ describe('Staff', () => {
     it('should convert a staff with notes to view model', () => {
         staffClef.seq.elements = 'c\'1 d\'4 e\'2';
 
-        const vm = Staff.defToViewModel(staffClef);
+        const vm = modelToViewModel(staffClef);
 
         expect(vm).to.deep.equal({
             objects: [                
