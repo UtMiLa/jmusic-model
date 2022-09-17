@@ -1,8 +1,8 @@
 import { NoteType, NoteDirection } from './../notes/note';
 import { Staff, StaffDef } from './staff';
 import { expect } from 'chai';
-import { ClefType } from '~/states/clef';
-import { modelToViewModel } from '~/view-model/convert-model';
+import { ClefType } from '../states/clef';
+import { modelToViewModel } from '../view-model/convert-model';
 describe('Staff', () => {
     let staffClef: StaffDef;
 

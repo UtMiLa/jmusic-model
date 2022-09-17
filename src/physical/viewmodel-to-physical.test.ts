@@ -6,8 +6,9 @@ import { PhysicalElementBase } from './physical-elements';
 import { Metrics, StandardMetrics } from './metrics';
 import { VertVarSizeGlyphs, FixedSizeGlyphs } from './glyphs';
 import { expect } from 'chai';
-import { staffLineToY, viewModelToPhysical } from './viewmodel-to-physical';
+import { viewModelToPhysical } from './viewmodel-to-physical';
 import { ScoreViewModel } from '../view-model/convert-model';
+import { staffLineToY } from './functions';
 
 describe('Physical model', () => {
     let defaultMetrics: Metrics;

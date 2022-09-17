@@ -7,13 +7,25 @@ export interface SequenceDef {
 
 export class Sequence {
     constructor(public def: SequenceDef) {
-        this.elements = def.elements ? def.elements.split(' ').map(str => Note.parseLily(str)) : [];
+        this.elements = def.elements ? Sequence.splitByNotes(def.elements).map(str => Note.parseLily(str)) : [];
     }
 
     elements: Note[] = [];
 
     static createFromString(def: string): Sequence {
         return new Sequence({ elements: def });
+    }
+
+    static splitByNotes(def: string): string[] {
+        return def.split(' ').reduce((prev: string[], curr: string) => {
+            if (prev.length) {
+                if (prev[prev.length - 1].match(/^<[^>]*$/)) {
+                    prev[prev.length - 1] += ` ${curr}`;
+                    return prev;
+                }
+            }
+            return prev.concat([curr]);
+        }, []);
     }
 
     get count(): number {

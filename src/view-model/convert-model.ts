@@ -1,13 +1,9 @@
-import { ClefType } from '~/states/clef';
+import { NoteViewModel } from './note-view-model';
+import { ClefType } from '../states/clef';
 import { NoteDirection, NoteType } from './../notes/note';
 import { Clef } from './../states/clef';
 import { Sequence } from './../score/sequence';
 import { StaffDef } from './../score/staff';
-export interface NoteViewModel {
-    positions: number[];
-    noteType: NoteType;
-    direction: NoteDirection;
-}
 
 export interface ClefViewModel {
     position: number;

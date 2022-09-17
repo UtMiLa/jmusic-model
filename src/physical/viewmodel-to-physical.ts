@@ -1,3 +1,4 @@
+import { NoteViewModel } from './../view-model/note-view-model';
 import { isClefVM } from './../score/staff';
 import { Note, NoteType } from './../notes/note';
 import { ClefDef, ClefType } from './../states/clef';
@@ -6,7 +7,8 @@ import { VertVarSizeGlyphs, FixedSizeGlyphs, GlyphCode, HorizVarSizeGlyphs } fro
 
 import { PhysicalModel, PhysicalElementBase, PhysicalFixedSizeElement, PhysicalVertVarSizeElement, PhysicalHorizVarSizeElement } from './physical-elements';
 import { convertNote, testNote } from './physical-note';
-import { ClefViewModel, NoteViewModel, ScoreViewModel } from '~/view-model/convert-model';
+import { ClefViewModel, ScoreViewModel } from '../view-model/convert-model';
+import { staffLineToY } from './functions';
 
 /**
  * Physical Model
@@ -21,9 +23,6 @@ interface VMCondition<T> {
     then: (obj: T) => void;
 }
 
-export function staffLineToY(staffLine: number, settings: Metrics): number {
-    return settings.staffLineWidth - (-1 - staffLine) * settings.staffLineWidth;
-}
 
 export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics): PhysicalModel {
     if (viewModel.staves.length) {

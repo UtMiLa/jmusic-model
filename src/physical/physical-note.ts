@@ -1,9 +1,10 @@
-import { NoteViewModel } from '~/view-model/convert-model';
-import { NoteType } from '../notes/note';
+import { NoteViewModel } from '../view-model/note-view-model';
+import { NoteDirection, NoteType } from '../notes/note';
 import { GlyphCode, HorizVarSizeGlyphs } from './glyphs';
 import { Metrics } from './metrics';
 import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement } from './physical-elements';
-import { staffLineToY } from './viewmodel-to-physical';
+import { staffLineToY } from './functions';
+
 
 export function testNote(viewModel: any): NoteViewModel | undefined {
     return viewModel.noteType ? viewModel as NoteViewModel : undefined;
@@ -15,7 +16,12 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
 
     const result: PhysicalElementBase[] = [];
 
-    const yPos = staffLineToY(note.positions[0] / 2, settings);
+    const yPositions = note.positions.map(pos => staffLineToY(pos / 2, settings));
+
+    const chordLength = yPositions[yPositions.length - 1] - yPositions[0];
+    const stemBaseY = note.direction === NoteDirection.Up ? yPositions[0] : yPositions[yPositions.length - 1];
+    const stemBaseX = note.direction === NoteDirection.Up ? xPos + settings.blackNoteHeadLeftXOffset : xPos;
+    const stemSign = note.direction === NoteDirection.Up ? 1 : -1;
 
     switch(note.noteType) {
         case NoteType.NBreve: 
@@ -26,26 +32,29 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
             break;
         case NoteType.NHalf: 
             glyph = 'noteheads.s1';
+
             result.push({
                 element: HorizVarSizeGlyphs.Stem,
-                length: settings.quarterStemDefaultLength,
-                position: { x: xPos + settings.halfNoteHeadLeftXOffset, y: yPos }
+                length: stemSign * (settings.quarterStemDefaultLength + chordLength),
+                position: { x: stemBaseX, y: stemBaseY }
             } as PhysicalHorizVarSizeElement);
             break;
         case NoteType.NQuarter: 
             glyph = 'noteheads.s2'; 
             result.push({
                 element: HorizVarSizeGlyphs.Stem,
-                length: settings.quarterStemDefaultLength,
-                position: { x: xPos + settings.blackNoteHeadLeftXOffset, y: yPos }
+                length: stemSign * (settings.quarterStemDefaultLength + chordLength),
+                position: { x: stemBaseX, y: stemBaseY }
             } as PhysicalHorizVarSizeElement);
             break;      
     }
 
-    result.push({
-        position: { x: xPos, y: yPos },
-        glyph
-    } as PhysicalFixedSizeElement);
+    yPositions.forEach(yPos => {
+        result.push({
+            position: { x: xPos, y: yPos },
+            glyph
+        } as PhysicalFixedSizeElement);    
+    });
 
     return result;
 }
