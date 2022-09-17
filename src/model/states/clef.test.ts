@@ -1,4 +1,4 @@
-import { Pitch } from './../pitches/pitch';
+import { Pitch } from '../pitches/pitch';
 import { Clef, ClefType } from './clef';
 import { expect } from 'chai';
 

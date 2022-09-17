@@ -1,4 +1,4 @@
-import { Time } from './../rationals/time';
+import { Time } from '../rationals/time';
 import { Sequence } from './sequence';
 import { expect } from 'chai';
 describe('Sequence', () => {

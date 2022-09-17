@@ -1,7 +1,7 @@
-import { Time, TimeSpan } from './../rationals/time';
+import { Time, TimeSpan } from '../rationals/time';
 import { Note } from './note';
 import { expect } from 'chai';
-import { Pitch } from '~/pitches/pitch';
+import { Pitch } from '../pitches/pitch';
 
 describe('Note', () => {
     let note1: Note, note2: Note, note3: Note;

@@ -1,5 +1,5 @@
-import { NoteViewModel } from '../view-model/note-view-model';
-import { NoteDirection, NoteType } from '../notes/note';
+import { NoteViewModel } from '../../view-model/note-view-model';
+import { NoteDirection, NoteType } from '../../model/notes/note';
 import { GlyphCode, HorizVarSizeGlyphs } from './glyphs';
 import { Metrics } from './metrics';
 import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement } from './physical-elements';

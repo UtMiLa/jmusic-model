@@ -1,6 +1,6 @@
-import { Rational } from './../rationals/rational';
-import { TimeSpan, Time } from './../rationals/time';
-import { Pitch } from './../pitches/pitch';
+import { Rational } from '../rationals/rational';
+import { TimeSpan, Time } from '../rationals/time';
+import { Pitch } from '../pitches/pitch';
 
 
 export enum NoteType {
@@ -25,7 +25,7 @@ export class Note {
         let durationString = '';
 
         if (matchChord) {
-            console.log(matchChord);
+            //console.log(matchChord);
             pitches = matchChord[1].split(' ');
             durationString = matchChord[2];
         } else {

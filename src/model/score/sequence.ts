@@ -1,5 +1,5 @@
-import { Note } from './../notes/note';
-import { Time, TimeSpan } from './../rationals/time';
+import { Note } from '../notes/note';
+import { Time, TimeSpan } from '../rationals/time';
 
 export interface SequenceDef {
     elements: string;

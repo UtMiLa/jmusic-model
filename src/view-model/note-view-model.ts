@@ -1,4 +1,4 @@
-import { NoteType, NoteDirection } from './../notes/note';
+import { NoteType, NoteDirection } from '../model/notes/note';
 export interface NoteViewModel {
     positions: number[];
     noteType: NoteType;

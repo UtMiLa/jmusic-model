@@ -1,4 +1,4 @@
-import { Rational } from '~/rationals/rational';
+import { Rational } from '../rationals/rational';
 import { Time, TimeSpan } from '../rationals/time';
 export interface Meter {
     measureLength: TimeSpan;

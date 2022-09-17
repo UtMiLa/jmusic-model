@@ -1,13 +1,13 @@
 import { HorizVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */
-import { NoteType, NoteDirection } from './../notes/note';
-import { ClefType } from '~/states/clef';
+import { NoteType, NoteDirection } from '../../model/notes/note';
+import { ClefType } from '~/model/states/clef';
 import { PhysicalElementBase } from './physical-elements';
 import { Metrics, StandardMetrics } from './metrics';
 import { VertVarSizeGlyphs, FixedSizeGlyphs } from './glyphs';
 import { expect } from 'chai';
 import { viewModelToPhysical } from './viewmodel-to-physical';
-import { ScoreViewModel } from '../view-model/convert-model';
+import { ScoreViewModel } from '../../view-model/convert-model';
 import { staffLineToY } from './functions';
 import { convertNote } from './physical-note';
 

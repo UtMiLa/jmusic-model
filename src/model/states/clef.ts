@@ -1,4 +1,4 @@
-import { Pitch } from './../pitches/pitch';
+import { Pitch } from '../pitches/pitch';
 export enum ClefType {
     G = 4,
     C = 0,

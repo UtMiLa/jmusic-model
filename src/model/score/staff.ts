@@ -1,7 +1,7 @@
-import { NoteType, NoteDirection } from './../notes/note';
+import { NoteType, NoteDirection } from '../notes/note';
 import { Sequence, SequenceDef } from './sequence';
-import { Clef, ClefDef, ClefType } from './../states/clef';
-import { ClefViewModel } from '../view-model/convert-model';
+import { Clef, ClefDef, ClefType } from '../states/clef';
+import { ClefViewModel } from '../../view-model/convert-model';
 export interface StaffDef {
     initialClef: ClefDef;
     seq: SequenceDef;

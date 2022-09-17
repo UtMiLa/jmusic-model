@@ -1,4 +1,4 @@
-import { GlyphCode } from './../physical/glyphs';
+import { GlyphCode } from '../physical-view/physical/glyphs';
 
 export const emmentalerCodes: { [ind in GlyphCode]: string } = {
     'rests.0': '\ue100',
