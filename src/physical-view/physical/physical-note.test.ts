@@ -24,7 +24,32 @@ describe('Physical model', () => {
     });
 
 
-    it('should attach stem on note on up/down direction', () => {
+    it('should attach stem on note on up direction', () => {
+        //
+        const note =                         {
+            positions: [3],
+            noteType: NoteType.NQuarter,
+            direction: NoteDirection.Up
+        };
+
+        const physical = convertNote(note, 20, defaultMetrics);
+
+        expect(physical.length).to.eq(2);
+
+        expect(physical[0]).to.deep.eq({
+            element: HorizVarSizeGlyphs.Stem,
+            position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset, y: 3.5*defaultMetrics.staffLineWidth },
+            length: 25
+        });
+
+        expect(physical[1]).to.deep.eq({
+            glyph: 'noteheads.s2',
+            position: { x: 20 + defaultMetrics.blackNoteHeadRighttXOffset, y: 3.5*defaultMetrics.staffLineWidth }
+        });
+
+    });
+
+    it('should attach stem on note on down direction', () => {
         //
         const note =                         {
             positions: [3],
@@ -48,5 +73,5 @@ describe('Physical model', () => {
         });
 
     });
-   
+
 });
