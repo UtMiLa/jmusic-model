@@ -1,4 +1,4 @@
-import { NoteViewModel } from '../../view-model/note-view-model';
+import { NoteViewModel } from '../../logical-view/view-model/note-view-model';
 import { isClefVM } from '../../model/score/staff';
 import { Note, NoteType } from '../../model/notes/note';
 import { ClefDef, ClefType } from '../../model/states/clef';
@@ -7,7 +7,7 @@ import { VertVarSizeGlyphs, FixedSizeGlyphs, GlyphCode, HorizVarSizeGlyphs } fro
 
 import { PhysicalModel, PhysicalElementBase, PhysicalFixedSizeElement, PhysicalVertVarSizeElement, PhysicalHorizVarSizeElement } from './physical-elements';
 import { convertNote, testNote } from './physical-note';
-import { ClefViewModel, ScoreViewModel } from '../../view-model/convert-model';
+import { ClefViewModel, ScoreViewModel } from '../../logical-view/view-model/convert-model';
 import { staffLineToY } from './functions';
 
 /**

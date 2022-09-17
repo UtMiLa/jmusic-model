@@ -1,7 +1,7 @@
-import { NoteType, NoteDirection } from '../model/notes/note';
-import { Staff, StaffDef } from '../model/score/staff';
+import { NoteType, NoteDirection } from '../../model/notes/note';
+import { Staff, StaffDef } from '../../model/score/staff';
 import { expect } from 'chai';
-import { ClefType } from '../model/states/clef';
+import { ClefType } from '../../model/states/clef';
 import { modelToViewModel } from './convert-model';
 describe('Staff', () => {
     let staffClef: StaffDef;

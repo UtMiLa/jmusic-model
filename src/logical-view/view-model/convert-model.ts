@@ -1,9 +1,9 @@
 import { NoteViewModel } from './note-view-model';
-import { ClefType } from '../model/states/clef';
-import { NoteDirection, NoteType } from '../model/notes/note';
-import { Clef } from '../model/states/clef';
-import { Sequence } from '../model/score/sequence';
-import { StaffDef } from '../model/score/staff';
+import { ClefType } from '../../model/states/clef';
+import { NoteDirection, NoteType } from '../../model/notes/note';
+import { Clef } from '../../model/states/clef';
+import { Sequence } from '../../model/score/sequence';
+import { StaffDef } from '../../model/score/staff';
 
 export interface ClefViewModel {
     position: number;

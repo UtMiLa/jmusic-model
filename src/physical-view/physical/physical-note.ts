@@ -1,4 +1,4 @@
-import { NoteViewModel } from '../../view-model/note-view-model';
+import { NoteViewModel } from '../../logical-view/view-model/note-view-model';
 import { NoteDirection, NoteType } from '../../model/notes/note';
 import { GlyphCode, HorizVarSizeGlyphs } from './glyphs';
 import { Metrics } from './metrics';
