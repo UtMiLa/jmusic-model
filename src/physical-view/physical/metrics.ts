@@ -21,10 +21,10 @@ export class StandardMetrics implements Metrics {
     staffLineWidth: number = 10; 
     staffLengthOffset: number = 10;
 
-    blackNoteHeadLeftXOffset = 7;
+    blackNoteHeadLeftXOffset = 6.5;
     blackNoteHeadRighttXOffset = 0;
     halfNoteHeadLeftXOffset = 7;
-    halfNoteHeadRighttXOffset = 0;
+    halfNoteHeadRighttXOffset = 0.5;
 
     quarterStemDefaultLength = 25;
 

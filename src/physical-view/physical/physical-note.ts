@@ -21,6 +21,7 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
     const chordLength = yPositions[yPositions.length - 1] - yPositions[0];
     const stemBaseY = note.direction === NoteDirection.Up ? yPositions[0] : yPositions[yPositions.length - 1];
     const stemBaseX = note.direction === NoteDirection.Up ? xPos + settings.blackNoteHeadLeftXOffset : xPos + settings.blackNoteHeadRighttXOffset;
+    const stemBaseXhalf = note.direction === NoteDirection.Up ? xPos + settings.halfNoteHeadLeftXOffset : xPos + settings.halfNoteHeadRighttXOffset;
     const stemSign = note.direction === NoteDirection.Up ? 1 : -1;
 
     switch(note.noteType) {
@@ -36,7 +37,7 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
             result.push({
                 element: HorizVarSizeGlyphs.Stem,
                 length: stemSign * (settings.quarterStemDefaultLength + chordLength),
-                position: { x: stemBaseX, y: stemBaseY }
+                position: { x: stemBaseXhalf, y: stemBaseY }
             } as PhysicalHorizVarSizeElement);
             break;
         case NoteType.NQuarter: 
