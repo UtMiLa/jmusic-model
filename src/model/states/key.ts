@@ -1,4 +1,4 @@
-import { Alternation, Pitch, PitchClass } from './../pitches/pitch';
+import { Alternation, PitchClass } from './../pitches/pitch';
 
 export interface KeyDef {
     accidental: Alternation;

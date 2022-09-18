@@ -15,13 +15,13 @@ describe('Note', () => {
         const note = Note.parseLily('c\'4');
         expect(note.pitches.length).to.eq(1);
         expect(note.pitches[0].octave).to.eq(4);
-        expect(note.pitches[0].pitchClass).to.eq('c');
+        expect(note.pitches[0].pitchClassName).to.eq('c');
         expect(note.duration).to.deep.eq(Time.newSpan(1, 4));
 
         const note2 = Note.parseLily('f,2.');
         expect(note2.pitches.length).to.eq(1);
         expect(note2.pitches[0].octave).to.eq(2);
-        expect(note2.pitches[0].pitchClass).to.eq('f');        
+        expect(note2.pitches[0].pitchClassName).to.eq('f');        
         expect(note2.duration).to.deep.eq(Time.newSpan(3, 4));
     });
 
@@ -33,9 +33,9 @@ describe('Note', () => {
         ], Time.newSpan(1, 4));
         expect(note.pitches.length).to.eq(2);
         expect(note.pitches[0].octave).to.eq(4);
-        expect(note.pitches[0].pitchClass).to.eq('c');
+        expect(note.pitches[0].pitchClassName).to.eq('c');
         expect(note.pitches[1].octave).to.eq(2);
-        expect(note.pitches[1].pitchClass).to.eq('f');
+        expect(note.pitches[1].pitchClassName).to.eq('f');
         expect(note.duration).to.deep.eq(Time.newSpan(1, 4));
 
     });
@@ -45,11 +45,11 @@ describe('Note', () => {
         const note = Note.parseLily('<c\' e\' g\'>4');
         expect(note.pitches.length).to.eq(3);
         expect(note.pitches[0].octave).to.eq(4);
-        expect(note.pitches[0].pitchClass).to.eq('c');
+        expect(note.pitches[0].pitchClassName).to.eq('c');
         expect(note.pitches[1].octave).to.eq(4);
-        expect(note.pitches[1].pitchClass).to.eq('e');
+        expect(note.pitches[1].pitchClassName).to.eq('e');
         expect(note.pitches[2].octave).to.eq(4);
-        expect(note.pitches[2].pitchClass).to.eq('g');
+        expect(note.pitches[2].pitchClassName).to.eq('g');
         expect(note.duration).to.deep.eq(Time.newSpan(1, 4));
 
     });

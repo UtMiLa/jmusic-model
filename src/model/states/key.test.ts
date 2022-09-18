@@ -26,20 +26,20 @@ describe('Key', () => {
         const pitches = Array.from<PitchClass>(keyEs.enumerate());
         expect(pitches.length).to.equal(3);
         expect(pitches[0].alternation).to.equal(-1);
-        expect(pitches[0].pitchClass).to.equal('b');
-        expect(pitches[1].pitchClass).to.equal('e');
-        expect(pitches[2].pitchClass).to.equal('a');
+        expect(pitches[0].pitchClassName).to.equal('b');
+        expect(pitches[1].pitchClassName).to.equal('e');
+        expect(pitches[2].pitchClassName).to.equal('a');
     });
 
     it('should enumerate sharps', () => {
         const pitches = Array.from<PitchClass>(keyH.enumerate());
         expect(pitches.length).to.equal(5);
         expect(pitches[0].alternation).to.equal(1);
-        expect(pitches[0].pitchClass).to.equal('f');
-        expect(pitches[1].pitchClass).to.equal('c');
-        expect(pitches[2].pitchClass).to.equal('g');
-        expect(pitches[3].pitchClass).to.equal('d');
-        expect(pitches[4].pitchClass).to.equal('a');
+        expect(pitches[0].pitchClassName).to.equal('f');
+        expect(pitches[1].pitchClassName).to.equal('c');
+        expect(pitches[2].pitchClassName).to.equal('g');
+        expect(pitches[3].pitchClassName).to.equal('d');
+        expect(pitches[4].pitchClassName).to.equal('a');
     });
 
 

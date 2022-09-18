@@ -42,13 +42,13 @@ export class Pitch {
     }
 
     get scientific(): string {
-        return this.pitchClass.toUpperCase() + this._octave;
+        return this.pitchClassName.toUpperCase() + this._octave;
     }
     get octave(): number {
         return this._octave;
     }
 
-    get pitchClass(): string {
+    get pitchClassName(): string {
         return pitchNames[this._pitchClass];
     }
 
@@ -69,7 +69,13 @@ export class PitchClass {
     constructor(private _pitchClass: number, private _accidental: Alternation = 0) {}
 
     
-    get pitchClass(): string {
+    get pitchClass(): number {
+        return this._pitchClass;
+    }
+    get circleOf5Number(): number {
+        return this._pitchClass % 7 + 7 * this._accidental;
+    }
+    get pitchClassName(): string {
         return pitchNames[this._pitchClass];
     }
     get alternation(): Alternation {

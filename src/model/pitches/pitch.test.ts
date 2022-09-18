@@ -18,9 +18,9 @@ describe('Pitch', () => {
         expect(pb.octave).to.equal(1);
     });
     it('should get correct pitch class from a pitch', () => {
-        expect(pc.pitchClass).to.equal('c');
-        expect(pd.pitchClass).to.equal('d');
-        expect(pb.pitchClass).to.equal('b');
+        expect(pc.pitchClassName).to.equal('c');
+        expect(pd.pitchClassName).to.equal('d');
+        expect(pb.pitchClassName).to.equal('b');
     });
     it('should compare pitches correctly', () => {
         expect(Pitch.compare(pc, pd)).to.be.lt(0);
