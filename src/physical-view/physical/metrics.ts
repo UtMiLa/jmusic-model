@@ -11,6 +11,8 @@ export interface Metrics {
     quarterStemDefaultLength: number;
 
     defaultSpacing: number;
+
+    keySigSpacing: number;
 }
 
 export class StandardMetrics implements Metrics {
@@ -31,4 +33,6 @@ export class StandardMetrics implements Metrics {
     quarterStemDefaultLength = 25;
 
     defaultSpacing = 20;
+
+    keySigSpacing = 5;
 }

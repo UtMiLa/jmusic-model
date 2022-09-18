@@ -2,14 +2,8 @@ import { FlagType } from './../../logical-view/view-model/note-view-model';
 import { HorizVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */
 import { NoteType, NoteDirection } from '../../model/notes/note';
-import { ClefType } from '~/model/states/clef';
-import { PhysicalElementBase } from './physical-elements';
 import { Metrics, StandardMetrics } from './metrics';
-import { VertVarSizeGlyphs, FixedSizeGlyphs } from './glyphs';
 import { expect } from 'chai';
-import { viewModelToPhysical } from './viewmodel-to-physical';
-import { ScoreViewModel } from '../../logical-view/view-model/convert-model';
-import { staffLineToY } from './functions';
 import { convertNote } from './physical-note';
 
 describe('Physical model', () => {
