@@ -56,4 +56,6 @@ export class Note {
             default: return NoteType.NQuarter;
         }
     }
+
+    direction = NoteDirection.Undefined;
 }

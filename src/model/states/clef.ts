@@ -17,6 +17,14 @@ export class Clef {
     map(pitch: Pitch): number {
         return -this.def.clefType + this.def.line + pitch.diatonicNumber;
     }
+
+
+    static clefTreble = new Clef({ clefType: ClefType.G, line: -2 });
+    static clefAlto = new Clef({ clefType: ClefType.C, line: 0 });
+    static clefBass = new Clef({ clefType: ClefType.F, line: 2 });
+    static clefTenor = new Clef({ clefType: ClefType.G8, line: -2 });
+    static clefTenorC = new Clef({ clefType: ClefType.C, line: 2 });
+
 }
 /*
 export function ifClef<T>(element: Record<string, unknown>, cb: (clef: ClefDef) => T): T | undefined {

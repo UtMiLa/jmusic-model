@@ -1,4 +1,4 @@
-import { NoteViewModel } from './note-view-model';
+import { noteToView, NoteViewModel } from './note-view-model';
 import { ClefType } from '../../model/states/clef';
 import { NoteDirection, NoteType } from '../../model/notes/note';
 import { Clef } from '../../model/states/clef';
@@ -30,13 +30,14 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
                 line: def.initialClef.line
             }
         ] as (NoteViewModel | ClefViewModel)[]).concat(
-            seq.elements.map(elem => {
+            seq.elements.map(elem =>noteToView(elem, clef)
+                /* {
                 return {
-                    positions: elem.pitches.map(p => clef.map(p)),
+                    positions: elem.pitches.map(p => clef.map(p)).sort(),
                     noteType: elem.type,
                     direction: NoteDirection.Up
                 };
-            })
+            }*/)
         )
     };
 }

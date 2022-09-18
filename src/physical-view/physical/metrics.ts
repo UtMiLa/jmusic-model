@@ -6,7 +6,7 @@ export interface Metrics {
     blackNoteHeadLeftXOffset: number;
     blackNoteHeadRighttXOffset: number;
     halfNoteHeadLeftXOffset: number;
-    halfNoteHeadRighttXOffset: number;
+    halfNoteHeadRightXOffset: number;
 
     quarterStemDefaultLength: number;
 }
@@ -24,7 +24,7 @@ export class StandardMetrics implements Metrics {
     blackNoteHeadLeftXOffset = 6.5;
     blackNoteHeadRighttXOffset = 0;
     halfNoteHeadLeftXOffset = 7;
-    halfNoteHeadRighttXOffset = 0.5;
+    halfNoteHeadRightXOffset = 0.5;
 
     quarterStemDefaultLength = 25;
 

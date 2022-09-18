@@ -1,7 +1,7 @@
 import { GlyphCode } from '../physical/glyphs';
 import { PhysicalFixedSizeElement } from '../physical/physical-elements';
 import { emmentalerCodes } from './../../font/emmentaler-codes';
-import { VertVarSizeGlyphs } from '../../physical-view';
+import { VertVarSizeGlyphs } from '../../physical-view/physical/glyphs';
 import { PhysicalHorizVarSizeElement, PhysicalModel } from '../physical/physical-elements';
 import { HorizVarSizeGlyphs } from './glyphs';
 
