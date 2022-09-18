@@ -47,4 +47,8 @@ export class Rational {
             denominator: rational.denominator
         });
     }
+
+    static toString(rational: RationalDef): string {
+        return `${rational.numerator}/${rational.denominator}`;
+    }
 }

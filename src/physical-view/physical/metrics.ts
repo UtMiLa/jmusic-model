@@ -4,7 +4,7 @@ export interface Metrics {
     staffLengthOffset: number;
 
     blackNoteHeadLeftXOffset: number;
-    blackNoteHeadRighttXOffset: number;
+    blackNoteHeadRightXOffset: number;
     halfNoteHeadLeftXOffset: number;
     halfNoteHeadRightXOffset: number;
 
@@ -22,7 +22,7 @@ export class StandardMetrics implements Metrics {
     staffLengthOffset: number = 10;
 
     blackNoteHeadLeftXOffset = 6.5;
-    blackNoteHeadRighttXOffset = 0;
+    blackNoteHeadRightXOffset = 0;
     halfNoteHeadLeftXOffset = 7;
     halfNoteHeadRightXOffset = 0.5;
 

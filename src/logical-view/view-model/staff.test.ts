@@ -1,3 +1,4 @@
+import { FlagType } from './note-view-model';
 import { NoteType, NoteDirection } from '../../model/notes/note';
 import { Staff, StaffDef } from '../../model/score/staff';
 import { expect } from 'chai';
@@ -44,17 +45,20 @@ describe('Staff', () => {
                 {
                     positions: [-6],
                     noteType: NoteType.NWhole,
-                    direction: NoteDirection.Up
+                    direction: NoteDirection.Up,
+                    flagType: FlagType.None
                 },
                 {
                     positions: [-5],
                     noteType: NoteType.NQuarter,
-                    direction: NoteDirection.Up
+                    direction: NoteDirection.Up,
+                    flagType: FlagType.None
                 },
                 {
                     positions: [-4],
                     noteType: NoteType.NHalf,
-                    direction: NoteDirection.Up
+                    direction: NoteDirection.Up,
+                    flagType: FlagType.None
                 }
             ]
         });

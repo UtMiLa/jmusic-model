@@ -1,6 +1,6 @@
-import { NoteViewModel } from '../../logical-view/view-model/note-view-model';
+import { FlagType, NoteViewModel } from '../../logical-view/view-model/note-view-model';
 import { NoteDirection, NoteType } from '../../model/notes/note';
-import { GlyphCode, HorizVarSizeGlyphs } from './glyphs';
+import { GlyphCode, HorizVarSizeGlyphs, FixedSizeGlyphs } from './glyphs';
 import { Metrics } from './metrics';
 import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement } from './physical-elements';
 import { staffLineToY } from './functions';
@@ -15,14 +15,15 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
     let glyph: GlyphCode;
 
     const result: PhysicalElementBase[] = [];
+    const directionUp = note.direction === NoteDirection.Up;
 
     const yPositions = note.positions.map(pos => staffLineToY(pos / 2, settings));
 
     const chordLength = yPositions[yPositions.length - 1] - yPositions[0];
-    const stemBaseY = note.direction === NoteDirection.Up ? yPositions[0] : yPositions[yPositions.length - 1];
-    const stemBaseX = note.direction === NoteDirection.Up ? xPos + settings.blackNoteHeadLeftXOffset : xPos + settings.blackNoteHeadRighttXOffset;
-    const stemBaseXhalf = note.direction === NoteDirection.Up ? xPos + settings.halfNoteHeadLeftXOffset : xPos + settings.halfNoteHeadRightXOffset;
-    const stemSign = note.direction === NoteDirection.Up ? 1 : -1;
+    const stemBaseY = directionUp ? yPositions[0] : yPositions[yPositions.length - 1];
+    const stemBaseX = directionUp ? xPos + settings.blackNoteHeadLeftXOffset : xPos + settings.blackNoteHeadRightXOffset;
+    const stemBaseXhalf = directionUp ? xPos + settings.halfNoteHeadLeftXOffset : xPos + settings.halfNoteHeadRightXOffset;
+    const stemSign = directionUp ? 1 : -1;
 
     switch(note.noteType) {
         case NoteType.NBreve: 
@@ -47,6 +48,31 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
                 length: stemSign * (settings.quarterStemDefaultLength + chordLength),
                 position: { x: stemBaseX, y: stemBaseY }
             } as PhysicalHorizVarSizeElement);
+            if (note.flagType) {
+                let glyph: GlyphCode;
+                switch (note.flagType) {
+                    case FlagType.F1: 
+                        glyph = directionUp ? 'flags.u3' : 'flags.d3';
+                        break;
+                    case FlagType.F2: 
+                        glyph = directionUp ? 'flags.u4' : 'flags.d4';
+                        break;
+                    case FlagType.F3: 
+                        glyph = directionUp ? 'flags.u5' : 'flags.d5';
+                        break;
+                    case FlagType.F4: 
+                        glyph = directionUp ? 'flags.u6' : 'flags.d6';
+                        break;
+                    case FlagType.F5: 
+                        glyph = directionUp ? 'flags.u7' : 'flags.d7';
+                        break;
+                }
+                result.push({
+                    position: { x: stemBaseX, y: stemBaseY + stemSign * (settings.quarterStemDefaultLength + chordLength) },
+                    glyph
+                } as PhysicalFixedSizeElement);    
+            }
+
             break;      
     }
 
@@ -56,6 +82,7 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
             glyph
         } as PhysicalFixedSizeElement);    
     });
+
 
     return result;
 }
