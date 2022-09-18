@@ -9,6 +9,8 @@ export interface Metrics {
     halfNoteHeadRightXOffset: number;
 
     quarterStemDefaultLength: number;
+
+    defaultSpacing: number;
 }
 
 export class StandardMetrics implements Metrics {
@@ -28,4 +30,5 @@ export class StandardMetrics implements Metrics {
 
     quarterStemDefaultLength = 25;
 
+    defaultSpacing = 20;
 }

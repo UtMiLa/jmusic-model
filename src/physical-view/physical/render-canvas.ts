@@ -1,3 +1,4 @@
+import { PhysicalVertVarSizeElement } from './physical-elements';
 import { GlyphCode } from '../physical/glyphs';
 import { PhysicalFixedSizeElement } from '../physical/physical-elements';
 import { emmentalerCodes } from './../../font/emmentaler-codes';
@@ -31,7 +32,7 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
             ctx.strokeStyle = '#888888';
             ctx.beginPath();
             ctx.moveTo(convertX(elem.position.x), convertY(elem.position.y));
-            ctx.lineTo(convertX(elem.position.x + 100), convertY(elem.position.y));
+            ctx.lineTo(convertX(elem.position.x + (elem as PhysicalHorizVarSizeElement).length), convertY(elem.position.y));
             ctx.stroke();
         } else if ((elem as any).element === HorizVarSizeGlyphs.Stem) {
             ctx.strokeStyle = '#222222';

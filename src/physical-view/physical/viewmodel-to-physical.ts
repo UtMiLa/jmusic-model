@@ -29,10 +29,10 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
         let resultElements: PhysicalElementBase[] = [0, 1, 2, 3, 4].map(n => ({
             element: VertVarSizeGlyphs.Line,
             position: { x: 0, y: settings.staffLineWidth * (4 - n) },
-            length: settings.staffLengthOffset
+            length: settings.staffLengthOffset + settings.defaultSpacing * viewModel.staves[0].objects.length
         }));
 
-        let x = 30;
+        let x = 10 + settings.defaultSpacing;
 
         viewModel.staves[0].objects.forEach(obj => {
             [
@@ -45,7 +45,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
                     if: testNote, 
                     then: ((note: NoteViewModel) => { 
                         resultElements = resultElements.concat(convertNote(note, x, settings));
-                        x += 20;
+                        x += settings.defaultSpacing;
                     })
                 } as VMCondition<NoteViewModel>
 
