@@ -1,9 +1,12 @@
+import { keyToView, KeyViewModel } from './convert-key';
 import { noteToView, NoteViewModel } from './note-view-model';
 import { ClefType } from '../../model/states/clef';
 import { NoteDirection, NoteType } from '../../model/notes/note';
 import { Clef } from '../../model/states/clef';
 import { Sequence } from '../../model/score/sequence';
 import { StaffDef } from '../../model/score/staff';
+import { convertKey } from '../../physical-view/physical/physical-key';
+import { Key } from '../../model/states/key';
 
 export interface ClefViewModel {
     position: number;
@@ -12,7 +15,7 @@ export interface ClefViewModel {
 }
 
 export interface StaffViewModel {
-    objects: (NoteViewModel | ClefViewModel)[];
+    objects: (NoteViewModel | ClefViewModel | KeyViewModel)[];
 }
 
 export interface ScoreViewModel {
@@ -28,8 +31,9 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
                 position: 1,
                 clefType: def.initialClef.clefType,
                 line: def.initialClef.line
-            }
-        ] as (NoteViewModel | ClefViewModel)[]).concat(
+            },
+            keyToView(new Key(def.initialKey), new Clef(def.initialClef))
+        ] as (NoteViewModel | ClefViewModel | KeyViewModel)[]).concat(
             seq.elements.map(elem =>noteToView(elem, clef)
                 /* {
                 return {

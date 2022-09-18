@@ -3,6 +3,10 @@ import { Metrics } from './metrics';
 import { KeyViewModel } from './../../logical-view/view-model/convert-key';
 import { staffLineToY } from './functions';
 
+export function testKey(viewModel: any): KeyViewModel | undefined {
+    return viewModel.keyPositions ? viewModel as KeyViewModel : undefined;
+}
+
 export function convertKey(key: KeyViewModel, xPos: number, settings: Metrics): PhysicalElementBase[] {
     return key.keyPositions.map((pos, i) => {
         return {

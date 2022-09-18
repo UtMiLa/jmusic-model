@@ -461,17 +461,34 @@ describe('Physical model', () => {
                 }
             ]
         };
+    });
 
+    it('should identify and convert a key signature', () => {
+        const viewModel: ScoreViewModel = { 
+            staves: [
+                {
+                    objects: [                
+                        { 
+                            keyPositions: [{ alternation: -1, position: 3}]
+                        },
+                        {
+                            positions: [0],
+                            noteType: NoteType.NBreve,
+                            direction: NoteDirection.Up
+                        }
+                    ]
+                }
+            ]
+        };
+    
         const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
 
-        expect(physicalModel.elements.length).to.eq(5 + 1 + 4 + 2);
-
-        checkStaffLines(physicalModel.elements, 0, defaultMetrics.staffLineWidth, 110);
+        expect(physicalModel.elements.length).to.eq(5 + 1 + 1);
 
         
         expect(physicalModel.elements[5]).to.deep.eq({
-            glyph: 'clefs.F',
-            position: { x: 10, y: 3 * defaultMetrics.staffLineWidth }
+            glyph: 'accidentals.M2',
+            position: { x: 30, y: 3.5 * defaultMetrics.staffLineWidth }
         });
     });
    

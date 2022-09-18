@@ -1,5 +1,5 @@
 import { Alternation } from './../../model/pitches/pitch';
-import { Pitch } from '~/model';
+import { Pitch } from '../../model';
 import { Clef } from './../../model/states/clef';
 import { Key } from './../../model/states/key';
 

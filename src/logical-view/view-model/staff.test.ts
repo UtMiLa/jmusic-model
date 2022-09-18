@@ -10,6 +10,7 @@ describe('Staff', () => {
     beforeEach(() => { 
         staffClef = {
             initialClef: { clefType: ClefType.G, line: -2 },
+            initialKey: { accidental: -1, count: 4 },
             seq: {
                 elements: ''
             }
@@ -25,6 +26,24 @@ describe('Staff', () => {
                     position: 1,
                     clefType: ClefType.G,
                     line: -2
+                },
+                { 
+                    keyPositions: [ {
+                        'alternation': -1,
+                        'position': 0
+                    },
+                    {
+                        'alternation': -1,
+                        'position': 3
+                    },
+                    {
+                        'alternation': -1,
+                        'position': -1
+                    },
+                    {
+                        'alternation': -1,
+                        'position': 2
+                    }]
                 }
             ]
         });
@@ -41,6 +60,24 @@ describe('Staff', () => {
                     position: 1,
                     clefType: ClefType.G,
                     line: -2
+                },
+                { 
+                    keyPositions: [ {
+                        'alternation': -1,
+                        'position': 0
+                    },
+                    {
+                        'alternation': -1,
+                        'position': 3
+                    },
+                    {
+                        'alternation': -1,
+                        'position': -1
+                    },
+                    {
+                        'alternation': -1,
+                        'position': 2
+                    }]
                 },
                 {
                     positions: [-6],

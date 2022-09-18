@@ -34,5 +34,5 @@ export class StandardMetrics implements Metrics {
 
     defaultSpacing = 20;
 
-    keySigSpacing = 5;
+    keySigSpacing = 6;
 }

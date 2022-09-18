@@ -1,3 +1,5 @@
+import { convertKey } from '../../physical-view/physical/physical-key';
+import { KeyViewModel } from './../../logical-view/view-model/convert-key';
 import { NoteViewModel } from '../../logical-view/view-model/note-view-model';
 import { isClefVM } from '../../model/score/staff';
 import { Note, NoteType } from '../../model/notes/note';
@@ -9,6 +11,7 @@ import { PhysicalModel, PhysicalElementBase, PhysicalFixedSizeElement, PhysicalV
 import { convertNote, testNote } from './physical-note';
 import { ClefViewModel, ScoreViewModel } from '../../logical-view/view-model/convert-model';
 import { staffLineToY } from './functions';
+import { testKey } from './physical-key';
 
 /**
  * Physical Model
@@ -41,6 +44,14 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
                     then: ((clef: ClefViewModel) => resultElements.push(convertClef(clef, settings)))
                 } as VMCondition<ClefViewModel>,
 
+                {
+                    if: testKey,
+                    then: ((key: KeyViewModel) => {
+                        resultElements = resultElements.concat(convertKey(key, x, settings));
+                        x += settings.defaultSpacing + key.keyPositions.length * settings.keySigSpacing;
+                    })
+                } as VMCondition<KeyViewModel>,
+                
                 { 
                     if: testNote, 
                     then: ((note: NoteViewModel) => { 
