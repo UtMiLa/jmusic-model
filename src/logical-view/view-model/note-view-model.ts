@@ -20,7 +20,7 @@ export interface NoteViewModel {
 export function noteToView(note: Note, clef: Clef): NoteViewModel {
     const positions = note.pitches.map(p => clef.map(p)).sort();
     let direction = note.direction;
-    if (direction === NoteDirection.Undefined) {
+    if (!direction) {
         const middlePos2 = positions[0] + positions[positions.length - 1];
         direction = middlePos2 <= 0 ? NoteDirection.Up : NoteDirection.Down;
     }

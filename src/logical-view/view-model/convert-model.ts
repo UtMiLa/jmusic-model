@@ -1,7 +1,9 @@
+import { VoiceDef } from './../../model/score/voice';
+import { SequenceDef } from './../../model/score/sequence';
 import { keyToView, KeyViewModel } from './convert-key';
 import { noteToView, NoteViewModel } from './note-view-model';
 import { ClefType } from '../../model/states/clef';
-import { NoteDirection, NoteType } from '../../model/notes/note';
+import { Note, NoteDirection, NoteType } from '../../model/notes/note';
 import { Clef } from '../../model/states/clef';
 import { Sequence } from '../../model/score/sequence';
 import { StaffDef } from '../../model/score/staff';
@@ -23,8 +25,18 @@ export interface ScoreViewModel {
 }
 
 export function modelToViewModel(def: StaffDef): StaffViewModel {
-    const seq = new Sequence(def.seq);        
+
+    if (!def.voices) { 
+        if (!def.seq) throw 'seq and voices undefined';
+
+        def.voices = [{ content: def.seq }];
+    }
+
+    //const seq = def.voices.map(voice => new Sequence(voice.content));
+    console.log('vc', def.voices);
+
     const clef = new Clef(def.initialClef);
+
     return {
         objects: ([
             { 
@@ -34,14 +46,19 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
             },
             keyToView(new Key(def.initialKey), new Clef(def.initialClef))
         ] as (NoteViewModel | ClefViewModel | KeyViewModel)[]).concat(
-            seq.elements.map(elem =>noteToView(elem, clef)
-                /* {
-                return {
-                    positions: elem.pitches.map(p => clef.map(p)).sort(),
-                    noteType: elem.type,
-                    direction: NoteDirection.Up
-                };
-            }*/)
+            def.voices
+                .map(voiceNotesToView(clef))
+                .reduce((prev, curr) => prev.concat(curr), [] as NoteViewModel[])
         )
     };
+}
+
+function voiceNotesToView(clef: Clef): (value: VoiceDef, index: number, array: VoiceDef[]) => NoteViewModel[] {
+    return voice => (new Sequence(voice.content))
+        .elements
+        .map(elem => { 
+            const noteClone = Note.clone(elem, { direction: elem.direction ? elem.direction : voice.noteDirection });
+            const noteView = noteToView(noteClone, clef);
+            return noteView;
+        });
 }

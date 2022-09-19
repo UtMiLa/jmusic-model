@@ -8,10 +8,19 @@ export enum NoteType {
 }
 
 export enum NoteDirection {
-    Up = 1, Down, Undefined
+    Undefined = 0, Up = 1, Down = 2
 }
 
 export class Note {
+    
+    static clone(note: Note, arg1: { [key: string]: any } = {}): Note {        
+        const res = new Note(note._pitches, note._duration);
+
+        Object.keys(arg1).forEach(key => (res as any)[key] = arg1[key]);
+
+        return res;
+    }
+
     constructor(private _pitches: Pitch[], private _duration: TimeSpan) {
         //console.log('new note', _pitch, _duration);
         
@@ -57,5 +66,5 @@ export class Note {
         }
     }
 
-    direction = NoteDirection.Undefined;
+    direction: NoteDirection = NoteDirection.Undefined;
 }
