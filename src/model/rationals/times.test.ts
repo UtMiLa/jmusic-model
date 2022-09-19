@@ -151,6 +151,16 @@ describe('Times', ()=> {
 
         });
 
+        it('should compare equality of two absolute times', () => {
+            const t1 = Time.newAbsolute(3, 4);
+            const t2 = Time.newAbsolute(9, 12);
+            const t3 = Time.newAbsolute(0, 4);
+            const t4 = Time.newAbsolute(0, 1);
+
+            expect(Time.equals(t1, t2)).to.be.true;
+            expect(Time.equals(t1, t3)).to.be.false;
+            expect(Time.equals(t4, t3)).to.be.true;
+        });    
     });
 
 

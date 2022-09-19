@@ -1,3 +1,4 @@
+import { Time } from './../../model/rationals/time';
 import { FlagType } from './note-view-model';
 import { NoteType, NoteDirection } from '../../model/notes/note';
 import { Staff, StaffDef } from '../../model/score/staff';
@@ -21,29 +22,34 @@ describe('Staff', () => {
         const vm = modelToViewModel(staffClef);
 
         expect(vm).to.deep.equal({
-            objects: [                
+            timeSlots: [
                 { 
-                    position: 1,
-                    clefType: ClefType.G,
-                    line: -2
-                },
-                { 
-                    keyPositions: [ {
-                        'alternation': -1,
-                        'position': 0
-                    },
-                    {
-                        'alternation': -1,
-                        'position': 3
-                    },
-                    {
-                        'alternation': -1,
-                        'position': -1
-                    },
-                    {
-                        'alternation': -1,
-                        'position': 2
-                    }]
+                    absTime: Time.newAbsolute(0, 1), 
+                    objects: [                
+                        { 
+                            position: 1,
+                            clefType: ClefType.G,
+                            line: -2
+                        },
+                        { 
+                            keyPositions: [ {
+                                'alternation': -1,
+                                'position': 0
+                            },
+                            {
+                                'alternation': -1,
+                                'position': 3
+                            },
+                            {
+                                'alternation': -1,
+                                'position': -1
+                            },
+                            {
+                                'alternation': -1,
+                                'position': 2
+                            }]
+                        }
+                    ]
                 }
             ]
         });
@@ -55,47 +61,65 @@ describe('Staff', () => {
         const vm = modelToViewModel(staffClef);
 
         expect(vm).to.deep.equal({
-            objects: [                
+            timeSlots: [
                 { 
-                    position: 1,
-                    clefType: ClefType.G,
-                    line: -2
-                },
-                { 
-                    keyPositions: [ {
-                        'alternation': -1,
-                        'position': 0
-                    },
-                    {
-                        'alternation': -1,
-                        'position': 3
-                    },
-                    {
-                        'alternation': -1,
-                        'position': -1
-                    },
-                    {
-                        'alternation': -1,
-                        'position': 2
-                    }]
+                    absTime: Time.newAbsolute(0, 1), 
+
+                    objects: [                
+                        { 
+                            position: 1,
+                            clefType: ClefType.G,
+                            line: -2
+                        },
+                        { 
+                            keyPositions: [ {
+                                'alternation': -1,
+                                'position': 0
+                            },
+                            {
+                                'alternation': -1,
+                                'position': 3
+                            },
+                            {
+                                'alternation': -1,
+                                'position': -1
+                            },
+                            {
+                                'alternation': -1,
+                                'position': 2
+                            }]
+                        },
+                        {
+                            positions: [-6],
+                            noteType: NoteType.NWhole,
+                            direction: NoteDirection.Up,
+                            flagType: FlagType.None
+                        }
+                    ]
                 },
                 {
-                    positions: [-6],
-                    noteType: NoteType.NWhole,
-                    direction: NoteDirection.Up,
-                    flagType: FlagType.None
+                    absTime: Time.newAbsolute(1, 1), 
+                    objects: [
+
+                        {
+                            positions: [-5],
+                            noteType: NoteType.NQuarter,
+                            direction: NoteDirection.Up,
+                            flagType: FlagType.None
+                        }
+                    ]
                 },
                 {
-                    positions: [-5],
-                    noteType: NoteType.NQuarter,
-                    direction: NoteDirection.Up,
-                    flagType: FlagType.None
-                },
-                {
-                    positions: [-4],
-                    noteType: NoteType.NHalf,
-                    direction: NoteDirection.Up,
-                    flagType: FlagType.None
+                    absTime: Time.newAbsolute(5, 4), 
+                    objects: [
+
+                        {
+                            positions: [-4],
+                            noteType: NoteType.NHalf,
+                            direction: NoteDirection.Up,
+                            flagType: FlagType.None
+                        }
+                    ]
                 }
             ]
         });
@@ -109,32 +133,47 @@ describe('Staff', () => {
         const vm = modelToViewModel(staffClef);
 
         expect(vm).to.deep.equal({
-            objects: [                
+            timeSlots: [
                 { 
-                    position: 1,
-                    clefType: ClefType.G,
-                    line: -2
-                },
-                { 
-                    keyPositions: []
+                    absTime: Time.newAbsolute(0, 1), 
+                    objects: [                
+                        { 
+                            position: 1,
+                            clefType: ClefType.G,
+                            line: -2
+                        },
+                        { 
+                            keyPositions: []
+                        },
+                        {
+                            positions: [-6],
+                            noteType: NoteType.NWhole,
+                            direction: NoteDirection.Up,
+                            flagType: FlagType.None
+                        }
+                    ]
                 },
                 {
-                    positions: [-6],
-                    noteType: NoteType.NWhole,
-                    direction: NoteDirection.Up,
-                    flagType: FlagType.None
+                    absTime: Time.newAbsolute(1, 1), 
+                    objects: [
+                        {
+                            positions: [-5],
+                            noteType: NoteType.NQuarter,
+                            direction: NoteDirection.Up,
+                            flagType: FlagType.None
+                        }
+                    ]
                 },
                 {
-                    positions: [-5],
-                    noteType: NoteType.NQuarter,
-                    direction: NoteDirection.Up,
-                    flagType: FlagType.None
-                },
-                {
-                    positions: [-4],
-                    noteType: NoteType.NHalf,
-                    direction: NoteDirection.Up,
-                    flagType: FlagType.None
+                    absTime: Time.newAbsolute(5, 4), 
+                    objects: [
+                        {
+                            positions: [-4],
+                            noteType: NoteType.NHalf,
+                            direction: NoteDirection.Up,
+                            flagType: FlagType.None
+                        }
+                    ]
                 }
             ]
         });
@@ -152,32 +191,43 @@ describe('Staff', () => {
         const vm = modelToViewModel(staffClef);
 
         expect(vm).to.deep.equal({
-            objects: [                
+            timeSlots: [
                 { 
-                    position: 1,
-                    clefType: ClefType.G,
-                    line: -2
+                    absTime: Time.newAbsolute(0, 1), 
+                    objects: [                
+                        { 
+                            position: 1,
+                            clefType: ClefType.G,
+                            line: -2
+                        },
+                        { 
+                            keyPositions: []
+                        },
+                        {
+                            positions: [-6],
+                            noteType: NoteType.NWhole,
+                            direction: NoteDirection.Down,
+                            flagType: FlagType.None
+                        },
+                        {
+                            positions: [-4],
+                            noteType: NoteType.NHalf,
+                            direction: NoteDirection.Up,
+                            flagType: FlagType.None
+                        }    
+                    ]
                 },
                 { 
-                    keyPositions: []
-                },
-                {
-                    positions: [-6],
-                    noteType: NoteType.NWhole,
-                    direction: NoteDirection.Down,
-                    flagType: FlagType.None
-                },
-                {
-                    positions: [-4],
-                    noteType: NoteType.NHalf,
-                    direction: NoteDirection.Up,
-                    flagType: FlagType.None
-                },
-                {
-                    positions: [-3],
-                    noteType: NoteType.NHalf,
-                    direction: NoteDirection.Up,
-                    flagType: FlagType.None
+                    absTime: Time.newAbsolute(1, 2), 
+                    objects: [
+                        {
+                            positions: [-3],
+                            noteType: NoteType.NHalf,
+                            direction: NoteDirection.Up,
+                            flagType: FlagType.None
+                        }
+        
+                    ]
                 }
             ]
         });

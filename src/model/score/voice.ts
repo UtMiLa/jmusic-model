@@ -1,6 +1,10 @@
 import { NoteDirection } from './../notes/note';
-import { SequenceDef } from './sequence';
+import { Sequence, SequenceDef } from './sequence';
+import { AbsoluteTime } from './../rationals/time';
+  
+
 export interface VoiceDef {
     content: SequenceDef;
     noteDirection?: NoteDirection;
 }
+

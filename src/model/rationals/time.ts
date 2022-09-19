@@ -8,6 +8,9 @@ export interface AbsoluteTime extends RationalDef {
 }
 
 export class Time {
+    static sortComparison(time1: AbsoluteTime, time2: AbsoluteTime): number {
+        return time1.numerator * time2.denominator - time2.numerator * time1.denominator;
+    }
 
     static newSpan(numerator: number, denominator: number): TimeSpan {
         return {numerator, denominator, type: 'span'};
@@ -63,5 +66,9 @@ export class Time {
     static scale(t: TimeSpan, s: number): TimeSpan {
         this.assertSpan(t);
         return { ...Rational.scale(t, s), type: 'span' };
+    }
+
+    static equals(t1: AbsoluteTime, t2: AbsoluteTime): boolean {
+        return t1.denominator * t2.numerator === t2.denominator * t1.numerator;
     }
 }

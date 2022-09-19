@@ -1,3 +1,4 @@
+import { Time } from './../../model/rationals/time';
 import { HorizVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */
 import { NoteType, NoteDirection } from '../../model/notes/note';
@@ -51,7 +52,13 @@ describe('Physical model', () => {
     it('should convert a view model with an empty staff', () => {
         const viewModel: ScoreViewModel = { 
             staves: [
-                { objects: [] } 
+                { 
+                    timeSlots: [
+                        { 
+                            absTime: Time.newAbsolute(0, 1), 
+                            objects: [] } 
+                    ]
+                }
             ]
         };
 
@@ -118,7 +125,14 @@ describe('Physical model', () => {
     it('should size staff lines from settings', () => {
         const viewModel: ScoreViewModel = { 
             staves: [
-                { objects: [] } 
+                { 
+                    timeSlots: [
+                        { 
+                            absTime: Time.newAbsolute(0, 1), 
+                            objects: [] 
+                        } 
+                    ]
+                }
             ]
         };
 
@@ -168,11 +182,17 @@ describe('Physical model', () => {
         const viewModel: ScoreViewModel = { 
             staves: [
                 {
-                    objects: [                
+                    timeSlots: [
                         { 
-                            position: 1,
-                            clefType: ClefType.G,
-                            line: -2
+                            absTime: Time.newAbsolute(0, 1), 
+        
+                            objects: [                
+                                { 
+                                    position: 1,
+                                    clefType: ClefType.G,
+                                    line: -2
+                                }
+                            ]
                         }
                     ]
                 }
@@ -195,16 +215,22 @@ describe('Physical model', () => {
         const viewModel: ScoreViewModel = { 
             staves: [
                 {
-                    objects: [                
+                    timeSlots: [
                         { 
-                            position: 1,
-                            clefType: ClefType.G,
-                            line: -2
-                        },                        
-                        {
-                            positions: [-6],
-                            noteType: NoteType.NWhole,
-                            direction: NoteDirection.Up
+                            absTime: Time.newAbsolute(0, 1), 
+        
+                            objects: [                
+                                { 
+                                    position: 1,
+                                    clefType: ClefType.G,
+                                    line: -2
+                                },                        
+                                {
+                                    positions: [-6],
+                                    noteType: NoteType.NWhole,
+                                    direction: NoteDirection.Up
+                                }
+                            ]
                         }
                     ]
                 }
@@ -232,31 +258,37 @@ describe('Physical model', () => {
         const viewModel: ScoreViewModel = { 
             staves: [
                 {
-                    objects: [                
+                    timeSlots: [
                         { 
-                            position: 1,
-                            clefType: ClefType.G,
-                            line: -2
-                        },
-                        {
-                            positions: [-6],
-                            noteType: NoteType.NBreve,
-                            direction: NoteDirection.Up
-                        },
-                        {
-                            positions: [-6],
-                            noteType: NoteType.NWhole,
-                            direction: NoteDirection.Up
-                        },
-                        {
-                            positions: [-6],
-                            noteType: NoteType.NHalf,
-                            direction: NoteDirection.Up
-                        },
-                        {
-                            positions: [-6],
-                            noteType: NoteType.NQuarter,
-                            direction: NoteDirection.Up
+                            absTime: Time.newAbsolute(0, 1), 
+        
+                            objects: [                
+                                { 
+                                    position: 1,
+                                    clefType: ClefType.G,
+                                    line: -2
+                                },
+                                {
+                                    positions: [-6],
+                                    noteType: NoteType.NBreve,
+                                    direction: NoteDirection.Up
+                                },
+                                {
+                                    positions: [-6],
+                                    noteType: NoteType.NWhole,
+                                    direction: NoteDirection.Up
+                                },
+                                {
+                                    positions: [-6],
+                                    noteType: NoteType.NHalf,
+                                    direction: NoteDirection.Up
+                                },
+                                {
+                                    positions: [-6],
+                                    noteType: NoteType.NQuarter,
+                                    direction: NoteDirection.Up
+                                }
+                            ]
                         }
                     ]
                 }
@@ -307,31 +339,37 @@ describe('Physical model', () => {
         const viewModel: ScoreViewModel = { 
             staves: [
                 {
-                    objects: [                
+                    timeSlots: [
                         { 
-                            position: 1,
-                            clefType: ClefType.G,
-                            line: -2
-                        },
-                        {
-                            positions: [0],
-                            noteType: NoteType.NBreve,
-                            direction: NoteDirection.Up
-                        },
-                        {
-                            positions: [-1],
-                            noteType: NoteType.NWhole,
-                            direction: NoteDirection.Up
-                        },
-                        {
-                            positions: [-2],
-                            noteType: NoteType.NHalf,
-                            direction: NoteDirection.Up
-                        },
-                        {
-                            positions: [-3],
-                            noteType: NoteType.NQuarter,
-                            direction: NoteDirection.Up
+                            absTime: Time.newAbsolute(0, 1), 
+        
+                            objects: [                
+                                { 
+                                    position: 1,
+                                    clefType: ClefType.G,
+                                    line: -2
+                                },
+                                {
+                                    positions: [0],
+                                    noteType: NoteType.NBreve,
+                                    direction: NoteDirection.Up
+                                },
+                                {
+                                    positions: [-1],
+                                    noteType: NoteType.NWhole,
+                                    direction: NoteDirection.Up
+                                },
+                                {
+                                    positions: [-2],
+                                    noteType: NoteType.NHalf,
+                                    direction: NoteDirection.Up
+                                },
+                                {
+                                    positions: [-3],
+                                    noteType: NoteType.NQuarter,
+                                    direction: NoteDirection.Up
+                                }
+                            ]
                         }
                     ]
                 }
@@ -367,31 +405,37 @@ describe('Physical model', () => {
         const viewModel: ScoreViewModel = { 
             staves: [
                 {
-                    objects: [                
+                    timeSlots: [
                         { 
-                            position: 1,
-                            clefType: ClefType.G,
-                            line: -2
-                        },
-                        {
-                            positions: [0],
-                            noteType: NoteType.NBreve,
-                            direction: NoteDirection.Up
-                        },
-                        {
-                            positions: [-1],
-                            noteType: NoteType.NWhole,
-                            direction: NoteDirection.Up
-                        },
-                        {
-                            positions: [-2],
-                            noteType: NoteType.NHalf,
-                            direction: NoteDirection.Up
-                        },
-                        {
-                            positions: [-3],
-                            noteType: NoteType.NQuarter,
-                            direction: NoteDirection.Up
+                            absTime: Time.newAbsolute(0, 1), 
+        
+                            objects: [                
+                                { 
+                                    position: 1,
+                                    clefType: ClefType.G,
+                                    line: -2
+                                },
+                                {
+                                    positions: [0],
+                                    noteType: NoteType.NBreve,
+                                    direction: NoteDirection.Up
+                                },
+                                {
+                                    positions: [-1],
+                                    noteType: NoteType.NWhole,
+                                    direction: NoteDirection.Up
+                                },
+                                {
+                                    positions: [-2],
+                                    noteType: NoteType.NHalf,
+                                    direction: NoteDirection.Up
+                                },
+                                {
+                                    positions: [-3],
+                                    noteType: NoteType.NQuarter,
+                                    direction: NoteDirection.Up
+                                }
+                            ]
                         }
                     ]
                 }
@@ -431,31 +475,37 @@ describe('Physical model', () => {
         const viewModel: ScoreViewModel = { 
             staves: [
                 {
-                    objects: [                
+                    timeSlots: [
                         { 
-                            position: 1,
-                            clefType: ClefType.F,
-                            line: 2
-                        },
-                        {
-                            positions: [0],
-                            noteType: NoteType.NBreve,
-                            direction: NoteDirection.Up
-                        },
-                        {
-                            positions: [-1],
-                            noteType: NoteType.NWhole,
-                            direction: NoteDirection.Up
-                        },
-                        {
-                            positions: [-2],
-                            noteType: NoteType.NHalf,
-                            direction: NoteDirection.Up
-                        },
-                        {
-                            positions: [-3],
-                            noteType: NoteType.NQuarter,
-                            direction: NoteDirection.Up
+                            absTime: Time.newAbsolute(0, 1), 
+        
+                            objects: [                
+                                { 
+                                    position: 1,
+                                    clefType: ClefType.F,
+                                    line: 2
+                                },
+                                {
+                                    positions: [0],
+                                    noteType: NoteType.NBreve,
+                                    direction: NoteDirection.Up
+                                },
+                                {
+                                    positions: [-1],
+                                    noteType: NoteType.NWhole,
+                                    direction: NoteDirection.Up
+                                },
+                                {
+                                    positions: [-2],
+                                    noteType: NoteType.NHalf,
+                                    direction: NoteDirection.Up
+                                },
+                                {
+                                    positions: [-3],
+                                    noteType: NoteType.NQuarter,
+                                    direction: NoteDirection.Up
+                                }
+                            ]
                         }
                     ]
                 }
@@ -467,14 +517,20 @@ describe('Physical model', () => {
         const viewModel: ScoreViewModel = { 
             staves: [
                 {
-                    objects: [                
+                    timeSlots: [
                         { 
-                            keyPositions: [{ alternation: -1, position: 3}]
-                        },
-                        {
-                            positions: [0],
-                            noteType: NoteType.NBreve,
-                            direction: NoteDirection.Up
+                            absTime: Time.newAbsolute(0, 1), 
+        
+                            objects: [                
+                                { 
+                                    keyPositions: [{ alternation: -1, position: 3}]
+                                },
+                                {
+                                    positions: [0],
+                                    noteType: NoteType.NBreve,
+                                    direction: NoteDirection.Up
+                                }
+                            ]
                         }
                     ]
                 }

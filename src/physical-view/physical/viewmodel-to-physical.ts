@@ -32,12 +32,12 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
         let resultElements: PhysicalElementBase[] = [0, 1, 2, 3, 4].map(n => ({
             element: VertVarSizeGlyphs.Line,
             position: { x: 0, y: settings.staffLineWidth * (4 - n) },
-            length: settings.staffLengthOffset + settings.defaultSpacing * viewModel.staves[0].objects.length
+            length: settings.staffLengthOffset + settings.defaultSpacing * viewModel.staves[0].timeSlots.map(slot => slot.objects.length).reduce((prev, curr) => prev + curr, 0)
         }));
 
         let x = 10 + settings.defaultSpacing;
 
-        viewModel.staves[0].objects.forEach(obj => {
+        viewModel.staves[0].timeSlots.forEach(ts => ts.objects.forEach(obj => {
             [
                 { 
                     if: isClefVM, 
@@ -69,7 +69,9 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
             });
           
 
-        });
+        })
+        );
+     
 
         return { 
             elements: resultElements            
