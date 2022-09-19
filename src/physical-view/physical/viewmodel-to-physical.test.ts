@@ -273,16 +273,34 @@ describe('Physical model', () => {
                                     noteType: NoteType.NBreve,
                                     direction: NoteDirection.Up
                                 },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(2, 1), 
+                            objects: [
+        
                                 {
                                     positions: [-6],
                                     noteType: NoteType.NWhole,
                                     direction: NoteDirection.Up
                                 },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(3, 1), 
+                            objects: [
+        
                                 {
                                     positions: [-6],
                                     noteType: NoteType.NHalf,
                                     direction: NoteDirection.Up
                                 },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(7, 2), 
+                            objects: [
+        
                                 {
                                     positions: [-6],
                                     noteType: NoteType.NQuarter,
@@ -354,16 +372,34 @@ describe('Physical model', () => {
                                     noteType: NoteType.NBreve,
                                     direction: NoteDirection.Up
                                 },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(2, 1), 
+                            objects: [
+        
                                 {
                                     positions: [-1],
                                     noteType: NoteType.NWhole,
                                     direction: NoteDirection.Up
                                 },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(3, 1), 
+                            objects: [
+        
                                 {
                                     positions: [-2],
                                     noteType: NoteType.NHalf,
                                     direction: NoteDirection.Up
                                 },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(7, 2), 
+                            objects: [
+        
                                 {
                                     positions: [-3],
                                     noteType: NoteType.NQuarter,
@@ -420,16 +456,34 @@ describe('Physical model', () => {
                                     noteType: NoteType.NBreve,
                                     direction: NoteDirection.Up
                                 },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(2, 1), 
+                            objects: [
+        
                                 {
                                     positions: [-1],
                                     noteType: NoteType.NWhole,
                                     direction: NoteDirection.Up
                                 },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(3, 1), 
+                            objects: [
+        
                                 {
                                     positions: [-2],
                                     noteType: NoteType.NHalf,
                                     direction: NoteDirection.Up
                                 },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(7, 2), 
+                            objects: [
+        
                                 {
                                     positions: [-3],
                                     noteType: NoteType.NQuarter,

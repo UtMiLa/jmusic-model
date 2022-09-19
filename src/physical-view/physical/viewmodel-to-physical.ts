@@ -37,8 +37,10 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
 
         let x = 10 + settings.defaultSpacing;
 
-        viewModel.staves[0].timeSlots.forEach(ts => ts.objects.forEach(obj => {
-            [
+        viewModel.staves[0].timeSlots.forEach(ts =>  {
+            let deltaX = 0;
+            ts.objects.forEach(obj => {
+                [
                 { 
                     if: isClefVM, 
                     then: ((clef: ClefViewModel) => resultElements.push(convertClef(clef, settings)))
@@ -48,28 +50,31 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
                     if: testKey,
                     then: ((key: KeyViewModel) => {
                         resultElements = resultElements.concat(convertKey(key, x, settings));
-                        x += settings.defaultSpacing + key.keyPositions.length * settings.keySigSpacing;
+                        deltaX += settings.defaultSpacing + key.keyPositions.length * settings.keySigSpacing;
                     })
                 } as VMCondition<KeyViewModel>,
                 
                 { 
                     if: testNote, 
                     then: ((note: NoteViewModel) => { 
-                        resultElements = resultElements.concat(convertNote(note, x, settings));
-                        x += settings.defaultSpacing;
+                        resultElements = resultElements.concat(convertNote(note, x + deltaX, settings));
+                        
                     })
                 } as VMCondition<NoteViewModel>
 
-            ].find((condition: VMCondition<any>) => {
-                const tmp = condition.if(obj);
-                if (tmp !== undefined) {
-                    condition.then(tmp);
-                }
-                return tmp;
-            });
+                ].find((condition: VMCondition<any>) => {
+                    const tmp = condition.if(obj);
+                    if (tmp !== undefined) {
+                        condition.then(tmp);
+                    }
+                    return tmp;
+                });
           
 
-        })
+            }); 
+            x += deltaX + settings.defaultSpacing;
+
+        }
         );
      
 
