@@ -1,3 +1,4 @@
+import { TimeSlotViewModel } from './../../logical-view/view-model/convert-model';
 import { convertKey } from '../../physical-view/physical/physical-key';
 import { KeyViewModel } from './../../logical-view/view-model/convert-key';
 import { NoteViewModel } from '../../logical-view/view-model/note-view-model';
@@ -26,51 +27,37 @@ interface VMCondition<T> {
     then: (obj: T) => void;
 }
 
+function calcSlotLength(timeSlot: TimeSlotViewModel, settings: Metrics): number {
+    return settings.defaultSpacing * timeSlot.notes.length + 
+        (timeSlot.clef ? settings.defaultSpacing : 0);
+}
+
+function calcLength(timeSlots: TimeSlotViewModel[], settings: Metrics): number {
+    return settings.staffLengthOffset + timeSlots.map(slot => calcSlotLength(slot, settings)).reduce((prev, curr) => prev + curr, 0);
+}
 
 export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics): PhysicalModel {
     if (viewModel.staves.length) {
         let resultElements: PhysicalElementBase[] = [0, 1, 2, 3, 4].map(n => ({
             element: VertVarSizeGlyphs.Line,
             position: { x: 0, y: settings.staffLineWidth * (4 - n) },
-            length: settings.staffLengthOffset + settings.defaultSpacing * viewModel.staves[0].timeSlots.map(slot => slot.objects.length).reduce((prev, curr) => prev + curr, 0)
+            length: calcLength(viewModel.staves[0].timeSlots, settings)
         }));
 
         let x = 10 + settings.defaultSpacing;
 
         viewModel.staves[0].timeSlots.forEach(ts =>  {
             let deltaX = 0;
-            ts.objects.forEach(obj => {
-                [
-                { 
-                    if: isClefVM, 
-                    then: ((clef: ClefViewModel) => resultElements.push(convertClef(clef, settings)))
-                } as VMCondition<ClefViewModel>,
-
-                {
-                    if: testKey,
-                    then: ((key: KeyViewModel) => {
-                        resultElements = resultElements.concat(convertKey(key, x, settings));
-                        deltaX += settings.defaultSpacing + key.keyPositions.length * settings.keySigSpacing;
-                    })
-                } as VMCondition<KeyViewModel>,
-                
-                { 
-                    if: testNote, 
-                    then: ((note: NoteViewModel) => { 
-                        resultElements = resultElements.concat(convertNote(note, x + deltaX, settings));
-                        
-                    })
-                } as VMCondition<NoteViewModel>
-
-                ].find((condition: VMCondition<any>) => {
-                    const tmp = condition.if(obj);
-                    if (tmp !== undefined) {
-                        condition.then(tmp);
-                    }
-                    return tmp;
-                });
-          
-
+            if (ts.clef) {
+                resultElements.push(convertClef(ts.clef, settings));
+            }
+            if (ts.key) {
+                resultElements = resultElements.concat(convertKey(ts.key, x, settings));
+                deltaX += settings.defaultSpacing + ts.key.keyPositions.length * settings.keySigSpacing;
+            }
+            ts.notes.forEach((note: NoteViewModel) => { 
+                resultElements = resultElements.concat(convertNote(note, x + deltaX, settings));
+            
             }); 
             x += deltaX + settings.defaultSpacing;
 

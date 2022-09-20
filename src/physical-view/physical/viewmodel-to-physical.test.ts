@@ -56,7 +56,7 @@ describe('Physical model', () => {
                     timeSlots: [
                         { 
                             absTime: Time.newAbsolute(0, 1), 
-                            objects: [] } 
+                            notes: [] } 
                     ]
                 }
             ]
@@ -129,7 +129,7 @@ describe('Physical model', () => {
                     timeSlots: [
                         { 
                             absTime: Time.newAbsolute(0, 1), 
-                            objects: [] 
+                            notes: [] 
                         } 
                     ]
                 }
@@ -185,13 +185,13 @@ describe('Physical model', () => {
                     timeSlots: [
                         { 
                             absTime: Time.newAbsolute(0, 1), 
-        
-                            objects: [                
-                                { 
-                                    position: 1,
-                                    clefType: ClefType.G,
-                                    line: -2
-                                }
+                            clef:    { 
+                                position: 1,
+                                clefType: ClefType.G,
+                                line: -2
+                            },      
+                            notes: [                
+
                             ]
                         }
                     ]
@@ -218,13 +218,13 @@ describe('Physical model', () => {
                     timeSlots: [
                         { 
                             absTime: Time.newAbsolute(0, 1), 
-        
-                            objects: [                
-                                { 
-                                    position: 1,
-                                    clefType: ClefType.G,
-                                    line: -2
-                                },                        
+                            clef:    { 
+                                position: 1,
+                                clefType: ClefType.G,
+                                line: -2
+                            },             
+                            notes: [                
+                   
                                 {
                                     positions: [-6],
                                     noteType: NoteType.NWhole,
@@ -261,13 +261,13 @@ describe('Physical model', () => {
                     timeSlots: [
                         { 
                             absTime: Time.newAbsolute(0, 1), 
-        
-                            objects: [                
-                                { 
-                                    position: 1,
-                                    clefType: ClefType.G,
-                                    line: -2
-                                },
+                            clef: { 
+                                position: 1,
+                                clefType: ClefType.G,
+                                line: -2
+                            },       
+                            notes: [                
+
                                 {
                                     positions: [-6],
                                     noteType: NoteType.NBreve,
@@ -277,7 +277,7 @@ describe('Physical model', () => {
                         },
                         { 
                             absTime: Time.newAbsolute(2, 1), 
-                            objects: [
+                            notes: [
         
                                 {
                                     positions: [-6],
@@ -288,7 +288,7 @@ describe('Physical model', () => {
                         },
                         { 
                             absTime: Time.newAbsolute(3, 1), 
-                            objects: [
+                            notes: [
         
                                 {
                                     positions: [-6],
@@ -299,7 +299,7 @@ describe('Physical model', () => {
                         },
                         { 
                             absTime: Time.newAbsolute(7, 2), 
-                            objects: [
+                            notes: [
         
                                 {
                                     positions: [-6],
@@ -360,13 +360,13 @@ describe('Physical model', () => {
                     timeSlots: [
                         { 
                             absTime: Time.newAbsolute(0, 1), 
-        
-                            objects: [                
-                                { 
-                                    position: 1,
-                                    clefType: ClefType.G,
-                                    line: -2
-                                },
+                            clef:          { 
+                                position: 1,
+                                clefType: ClefType.G,
+                                line: -2
+                            },  
+                            notes: [                
+
                                 {
                                     positions: [0],
                                     noteType: NoteType.NBreve,
@@ -376,7 +376,7 @@ describe('Physical model', () => {
                         },
                         { 
                             absTime: Time.newAbsolute(2, 1), 
-                            objects: [
+                            notes: [
         
                                 {
                                     positions: [-1],
@@ -387,7 +387,7 @@ describe('Physical model', () => {
                         },
                         { 
                             absTime: Time.newAbsolute(3, 1), 
-                            objects: [
+                            notes: [
         
                                 {
                                     positions: [-2],
@@ -398,7 +398,7 @@ describe('Physical model', () => {
                         },
                         { 
                             absTime: Time.newAbsolute(7, 2), 
-                            objects: [
+                            notes: [
         
                                 {
                                     positions: [-3],
@@ -444,13 +444,13 @@ describe('Physical model', () => {
                     timeSlots: [
                         { 
                             absTime: Time.newAbsolute(0, 1), 
-        
-                            objects: [                
-                                { 
-                                    position: 1,
-                                    clefType: ClefType.G,
-                                    line: -2
-                                },
+                            clef:    { 
+                                position: 1,
+                                clefType: ClefType.G,
+                                line: -2
+                            },        
+                            notes: [                
+
                                 {
                                     positions: [0],
                                     noteType: NoteType.NBreve,
@@ -460,7 +460,7 @@ describe('Physical model', () => {
                         },
                         { 
                             absTime: Time.newAbsolute(2, 1), 
-                            objects: [
+                            notes: [
         
                                 {
                                     positions: [-1],
@@ -471,7 +471,7 @@ describe('Physical model', () => {
                         },
                         { 
                             absTime: Time.newAbsolute(3, 1), 
-                            objects: [
+                            notes: [
         
                                 {
                                     positions: [-2],
@@ -482,7 +482,7 @@ describe('Physical model', () => {
                         },
                         { 
                             absTime: Time.newAbsolute(7, 2), 
-                            objects: [
+                            notes: [
         
                                 {
                                     positions: [-3],
@@ -532,13 +532,13 @@ describe('Physical model', () => {
                     timeSlots: [
                         { 
                             absTime: Time.newAbsolute(0, 1), 
-        
-                            objects: [                
-                                { 
-                                    position: 1,
-                                    clefType: ClefType.F,
-                                    line: 2
-                                },
+                            clef:    { 
+                                position: 1,
+                                clefType: ClefType.F,
+                                line: 2
+                            },        
+                            notes: [                
+
                                 {
                                     positions: [0],
                                     noteType: NoteType.NBreve,
@@ -574,11 +574,11 @@ describe('Physical model', () => {
                     timeSlots: [
                         { 
                             absTime: Time.newAbsolute(0, 1), 
-        
-                            objects: [                
-                                { 
-                                    keyPositions: [{ alternation: -1, position: 3}]
-                                },
+                            key:    { 
+                                keyPositions: [{ alternation: -1, position: 3}]
+                            },        
+                            notes: [                
+
                                 {
                                     positions: [0],
                                     noteType: NoteType.NBreve,

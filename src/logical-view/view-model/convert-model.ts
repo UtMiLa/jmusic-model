@@ -19,7 +19,9 @@ export interface ClefViewModel {
 
 export interface TimeSlotViewModel {
     absTime: AbsoluteTime, 
-    objects: (NoteViewModel | ClefViewModel | KeyViewModel)[];
+    clef?: ClefViewModel,
+    key?: KeyViewModel,
+    notes: NoteViewModel[];
 }
 export interface StaffViewModel {
     timeSlots: TimeSlotViewModel[]
@@ -45,14 +47,13 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
     const timeSlots: TimeSlotViewModel[] = [
         {
             absTime: Time.newAbsolute(0,1),
-            objects:    [
-                { 
-                    position: 1,
-                    clefType: def.initialClef.clefType,
-                    line: def.initialClef.line
-                },
-                keyToView(new Key(def.initialKey), new Clef(def.initialClef))
-            ]
+            notes: [],
+            clef: { 
+                position: 1,
+                clefType: def.initialClef.clefType,
+                line: def.initialClef.line
+            },
+            key: keyToView(new Key(def.initialKey), new Clef(def.initialClef))           
         
         }
     ];
@@ -71,9 +72,9 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
             });
 
             if (!slot) {
-                timeSlots.push({ absTime: voiceTimeSlot.time, objects: elements });
+                timeSlots.push({ absTime: voiceTimeSlot.time, notes: elements });
             } else {
-                slot.objects = slot.objects.concat(elements);
+                slot.notes = slot.notes.concat(elements);
             }
         });
         

@@ -25,30 +25,31 @@ describe('Staff', () => {
             timeSlots: [
                 { 
                     absTime: Time.newAbsolute(0, 1), 
-                    objects: [                
-                        { 
-                            position: 1,
-                            clefType: ClefType.G,
-                            line: -2
+                    clef:{ 
+                        position: 1,
+                        clefType: ClefType.G,
+                        line: -2
+                    },
+                    key: { 
+                        keyPositions: [ {
+                            'alternation': -1,
+                            'position': 0
                         },
-                        { 
-                            keyPositions: [ {
-                                'alternation': -1,
-                                'position': 0
-                            },
-                            {
-                                'alternation': -1,
-                                'position': 3
-                            },
-                            {
-                                'alternation': -1,
-                                'position': -1
-                            },
-                            {
-                                'alternation': -1,
-                                'position': 2
-                            }]
-                        }
+                        {
+                            'alternation': -1,
+                            'position': 3
+                        },
+                        {
+                            'alternation': -1,
+                            'position': -1
+                        },
+                        {
+                            'alternation': -1,
+                            'position': 2
+                        }]
+                    },
+
+                    notes: [                
                     ]
                 }
             ]
@@ -64,31 +65,29 @@ describe('Staff', () => {
             timeSlots: [
                 { 
                     absTime: Time.newAbsolute(0, 1), 
-
-                    objects: [                
-                        { 
-                            position: 1,
-                            clefType: ClefType.G,
-                            line: -2
-                        },
-                        { 
-                            keyPositions: [ {
-                                'alternation': -1,
-                                'position': 0
-                            },
-                            {
-                                'alternation': -1,
-                                'position': 3
-                            },
-                            {
-                                'alternation': -1,
-                                'position': -1
-                            },
-                            {
-                                'alternation': -1,
-                                'position': 2
-                            }]
-                        },
+                    clef:    { 
+                        position: 1,
+                        clefType: ClefType.G,
+                        line: -2
+                    },
+                    key: { keyPositions: [ {
+                        'alternation': -1,
+                        'position': 0
+                    },
+                    {
+                        'alternation': -1,
+                        'position': 3
+                    },
+                    {
+                        'alternation': -1,
+                        'position': -1
+                    },
+                    {
+                        'alternation': -1,
+                        'position': 2
+                    }]
+                    },
+                    notes: [
                         {
                             positions: [-6],
                             noteType: NoteType.NWhole,
@@ -99,7 +98,7 @@ describe('Staff', () => {
                 },
                 {
                     absTime: Time.newAbsolute(1, 1), 
-                    objects: [
+                    notes: [
 
                         {
                             positions: [-5],
@@ -111,7 +110,7 @@ describe('Staff', () => {
                 },
                 {
                     absTime: Time.newAbsolute(5, 4), 
-                    objects: [
+                    notes: [
 
                         {
                             positions: [-4],
@@ -136,15 +135,16 @@ describe('Staff', () => {
             timeSlots: [
                 { 
                     absTime: Time.newAbsolute(0, 1), 
-                    objects: [                
-                        { 
-                            position: 1,
-                            clefType: ClefType.G,
-                            line: -2
-                        },
-                        { 
-                            keyPositions: []
-                        },
+                    clef:    { 
+                        position: 1,
+                        clefType: ClefType.G,
+                        line: -2
+                    },
+                    key:    { 
+                        keyPositions: []
+                    },                    
+                    notes: [                
+
                         {
                             positions: [-6],
                             noteType: NoteType.NWhole,
@@ -155,7 +155,7 @@ describe('Staff', () => {
                 },
                 {
                     absTime: Time.newAbsolute(1, 1), 
-                    objects: [
+                    notes: [
                         {
                             positions: [-5],
                             noteType: NoteType.NQuarter,
@@ -166,7 +166,7 @@ describe('Staff', () => {
                 },
                 {
                     absTime: Time.newAbsolute(5, 4), 
-                    objects: [
+                    notes: [
                         {
                             positions: [-4],
                             noteType: NoteType.NHalf,
@@ -194,15 +194,16 @@ describe('Staff', () => {
             timeSlots: [
                 { 
                     absTime: Time.newAbsolute(0, 1), 
-                    objects: [                
-                        { 
-                            position: 1,
-                            clefType: ClefType.G,
-                            line: -2
-                        },
-                        { 
-                            keyPositions: []
-                        },
+                    clef:    { 
+                        position: 1,
+                        clefType: ClefType.G,
+                        line: -2
+                    },
+                    key:    { 
+                        keyPositions: []
+                    },
+                    notes: [
+
                         {
                             positions: [-6],
                             noteType: NoteType.NWhole,
@@ -219,7 +220,7 @@ describe('Staff', () => {
                 },
                 { 
                     absTime: Time.newAbsolute(1, 2), 
-                    objects: [
+                    notes: [
                         {
                             positions: [-3],
                             noteType: NoteType.NHalf,
