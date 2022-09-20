@@ -35,13 +35,19 @@ export function convertMeter(meter: MeterViewModel, xPos: number, settings: Metr
     numerator.forEach((glyph, i) => {
         res.push({
             glyph,
-            position: {x: xPos + i * 5, y: 2 * settings.staffLineWidth }
+            position: {
+                x: xPos + i * settings.meterNumberSpacing, 
+                y: 2 * settings.staffLineWidth + settings.meterAdjustY
+            }
         });
     });
     denominator.forEach((glyph, i) => {
         res.push({
             glyph,
-            position: {x: xPos + i * 5, y: 0 }
+            position: {
+                x: xPos + i * settings.meterNumberSpacing, 
+                y: settings.meterAdjustY
+            }
         });
     });
     return res;

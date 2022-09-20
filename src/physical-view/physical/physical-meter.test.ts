@@ -48,7 +48,7 @@ describe('Physical model', () => {
             },
             {
                 glyph: 'two',
-                position: { x: 50 + 5, y: 2 * defaultMetrics.staffLineWidth }
+                position: { x: 50 + defaultMetrics.meterNumberSpacing, y: 2 * defaultMetrics.staffLineWidth + defaultMetrics.meterAdjustY }
             },
             {
                 glyph: 'one',
@@ -56,7 +56,7 @@ describe('Physical model', () => {
             },
             {
                 glyph: 'six',
-                position: { x: 50 + 5, y: 0 }
+                position: { x: 50 + defaultMetrics.meterNumberSpacing, y: defaultMetrics.meterAdjustY }
             }
         ]);
     });

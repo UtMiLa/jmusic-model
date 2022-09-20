@@ -13,6 +13,9 @@ export interface Metrics {
     defaultSpacing: number;
 
     keySigSpacing: number;
+
+    meterNumberSpacing: number;
+    meterAdjustY: number;
 }
 
 export class StandardMetrics implements Metrics {
@@ -35,4 +38,7 @@ export class StandardMetrics implements Metrics {
     defaultSpacing = 20;
 
     keySigSpacing = 6;
+
+    meterNumberSpacing = 7;
+    meterAdjustY = 1;
 }
