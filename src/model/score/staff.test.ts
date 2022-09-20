@@ -24,4 +24,14 @@ describe('Staff', () => {
             voices: [voice1, voice2]
         };
     });
+    it('should accept a meter', () => {
+        const seq1: SequenceDef = { elements: seq1Text };
+        const voice1: VoiceDef = { content: seq1 };
+        const staff: StaffDef = { 
+            initialClef: { clefType: ClefType.G, line: 4 },
+            initialKey: { accidental: -1, count: 1 },
+            initialMeter: { count: 12, value: 16 },
+            voices: [voice1]
+        };
+    });
 });

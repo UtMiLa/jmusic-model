@@ -3,6 +3,7 @@ import { Time, TimeSpan } from '../rationals/time';
 export interface Meter {
     measureLength: TimeSpan;
     countingTime: TimeSpan;
+    text: string[];
 }
 
 export interface RegularMeterDef {
@@ -17,13 +18,12 @@ export interface CompositeMeterDef {
 }
 
 export class MeterFactory {
-    createRegularMeter(def: RegularMeterDef): Meter {
+    static createRegularMeter(def: RegularMeterDef): Meter {
         return new RegularMeter(def);
     }
-    createCompositeMeter(def: CompositeMeterDef): Meter {
+    static createCompositeMeter(def: CompositeMeterDef): Meter {
         return new CompositeMeter(def);
     }
-
 }
 
 class RegularMeter {
@@ -37,6 +37,9 @@ class RegularMeter {
     get measureLength(): TimeSpan {
         //return { ...Rational.shorten({}), type: 'span'};
         return Time.scale(this.countingTime, this.def.count);
+    }
+    get text(): string[] {
+        return ['' + this.def.count, '' + this.def.value];
     }
 }
 
@@ -52,5 +55,8 @@ class CompositeMeter {
     get measureLength(): TimeSpan {
         //return { ...Rational.shorten({}), type: 'span'};
         return { numerator: 1, denominator: 1, type: 'span' };
+    }
+    get text(): string[] {
+        return ['4', '4'];
     }
 }

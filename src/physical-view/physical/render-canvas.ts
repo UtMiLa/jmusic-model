@@ -41,7 +41,8 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
             ctx.lineTo(convertX(elem.position.x), convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).length));
             ctx.stroke();
         } else if ((elem as any).glyph) {
-            ctx.font = (20 * position.scaleY) + 'px Emmentaler';
+            const scale = (elem as any).scale ? (elem as any).scale : 1;
+            ctx.font = (20 * position.scaleY * scale) + 'px Emmentaler';
             const glyph = emmentalerCodes[(elem as PhysicalFixedSizeElement).glyph as GlyphCode] as string;
             ctx.fillText(glyph, convertX(elem.position.x), convertY(elem.position.y));
         }

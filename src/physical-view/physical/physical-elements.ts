@@ -12,6 +12,7 @@ export interface PhysicalElementBase {
 
 export interface PhysicalFixedSizeElement extends PhysicalElementBase {
     glyph: GlyphCode;
+    scale?: number;
 }
 
 export interface PhysicalVertVarSizeElement extends PhysicalElementBase {

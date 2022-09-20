@@ -1,3 +1,4 @@
+import { Accidental } from './../../model/pitches/pitch';
 import { Time } from './../../model/rationals/time';
 import { HorizVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */
@@ -603,5 +604,88 @@ describe('Physical model', () => {
     });
    
 
-   
+    it('should convert a view model with a staff with a clef and a meter', () => {
+        const viewModel: ScoreViewModel = { 
+            staves: [
+                {
+                    timeSlots: [
+                        { 
+                            absTime: Time.newAbsolute(0, 1), 
+                            clef:    { 
+                                position: 1,
+                                clefType: ClefType.G,
+                                line: -2
+                            },
+                            meter: {
+                                meterText: ['5', '4']
+                            },
+                            notes: [                
+
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
+
+        expect(physicalModel.elements.length).to.eq(5 + 1 + 2);
+
+        checkStaffLines(physicalModel.elements, 0, defaultMetrics.staffLineWidth, 30);
+
+        expect(physicalModel.elements[6]).to.deep.eq({
+            glyph: 'five',
+            position: { x: 30, y: 2 * defaultMetrics.staffLineWidth }
+        });
+
+        expect(physicalModel.elements[7]).to.deep.eq({
+            glyph: 'four',
+            position: { x: 30, y: 0 }
+        });
+    });
+    
+    it('should convert a view model with a staff with a clef, a key and a meter', () => {
+        const viewModel: ScoreViewModel = { 
+            staves: [
+                {
+                    timeSlots: [
+                        { 
+                            absTime: Time.newAbsolute(0, 1), 
+                            clef:    { 
+                                position: 1,
+                                clefType: ClefType.G,
+                                line: -2
+                            },
+                            key: {
+                                keyPositions: [{ alternation: -1, position: 3}, { alternation: -1, position: 6}]
+                            },
+                            meter: {
+                                meterText: ['5', '4']
+                            },
+                            notes: [                
+
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
+
+        expect(physicalModel.elements.length).to.eq(5 + 1 + 2 + 2);
+
+        expect(physicalModel.elements[8]).to.deep.eq({
+            glyph: 'five',
+            position: { x: 30 + 2 * defaultMetrics.keySigSpacing + defaultMetrics.defaultSpacing, y: 2 * defaultMetrics.staffLineWidth }
+        });
+
+        expect(physicalModel.elements[9]).to.deep.eq({
+            glyph: 'four',
+            position: { x: 30 + 2 * defaultMetrics.keySigSpacing + defaultMetrics.defaultSpacing, y: 0 }
+        });
+    });
+    
+
 });

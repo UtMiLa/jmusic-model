@@ -1,3 +1,5 @@
+import { MeterFactory } from './../../model/states/meter';
+import { meterToView, MeterViewModel } from './convert-meter';
 import { AbsoluteTime, Time } from './../../model/rationals/time';
 import { VoiceDef } from './../../model/score/voice';
 import { SequenceDef, TimeSlot } from './../../model/score/sequence';
@@ -10,6 +12,7 @@ import { Sequence } from '../../model/score/sequence';
 import { StaffDef } from '../../model/score/staff';
 import { convertKey } from '../../physical-view/physical/physical-key';
 import { Key } from '../../model/states/key';
+import { convertMeter } from '../../physical-view/physical/physical-meter';
 
 export interface ClefViewModel {
     position: number;
@@ -21,6 +24,7 @@ export interface TimeSlotViewModel {
     absTime: AbsoluteTime, 
     clef?: ClefViewModel,
     key?: KeyViewModel,
+    meter?: MeterViewModel,
     notes: NoteViewModel[];
 }
 export interface StaffViewModel {
@@ -44,6 +48,8 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
 
     const clef = new Clef(def.initialClef);
 
+    const meter = def.initialMeter ? meterToView(MeterFactory.createRegularMeter(def.initialMeter)) : undefined;
+
     const timeSlots: TimeSlotViewModel[] = [
         {
             absTime: Time.newAbsolute(0,1),
@@ -53,11 +59,15 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
                 clefType: def.initialClef.clefType,
                 line: def.initialClef.line
             },
+            
             key: keyToView(new Key(def.initialKey), new Clef(def.initialClef))           
         
         }
     ];
 
+    if(meter) {
+        timeSlots[0].meter = meter;
+    }
 
     def.voices.forEach(voice => {
         const voiceTimeSlots = new Sequence(voice.content).groupByTimeSlots();

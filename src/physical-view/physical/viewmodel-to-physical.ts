@@ -1,3 +1,4 @@
+import { convertMeter } from '../../physical-view/physical/physical-meter';
 import { TimeSlotViewModel } from './../../logical-view/view-model/convert-model';
 import { convertKey } from '../../physical-view/physical/physical-key';
 import { KeyViewModel } from './../../logical-view/view-model/convert-key';
@@ -29,6 +30,7 @@ interface VMCondition<T> {
 
 function calcSlotLength(timeSlot: TimeSlotViewModel, settings: Metrics): number {
     return settings.defaultSpacing * timeSlot.notes.length + 
+        (timeSlot.key ? settings.keySigSpacing * timeSlot.key.keyPositions.length : 0) +
         (timeSlot.clef ? settings.defaultSpacing : 0);
 }
 
@@ -54,6 +56,10 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
             if (ts.key) {
                 resultElements = resultElements.concat(convertKey(ts.key, x, settings));
                 deltaX += settings.defaultSpacing + ts.key.keyPositions.length * settings.keySigSpacing;
+            }
+            if (ts.meter) {
+                resultElements = resultElements.concat(convertMeter(ts.meter, x + deltaX, settings));
+                deltaX += settings.defaultSpacing;
             }
             ts.notes.forEach((note: NoteViewModel) => { 
                 resultElements = resultElements.concat(convertNote(note, x + deltaX, settings));

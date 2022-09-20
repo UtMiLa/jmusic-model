@@ -233,4 +233,19 @@ describe('Staff', () => {
             ]
         });
     });
+
+    it('should convert a staff with a meter to view model', () => {
+        staffClef.seq = { elements: 'c\'1 d\'4 e\'2' };
+        staffClef.initialMeter = { count: 12, value: 8 };
+
+        const vm = modelToViewModel(staffClef);
+
+        expect(vm.timeSlots[0].meter).to.deep.equal({
+                    
+            meterText: ['12', '8']
+            
+        });
+    });
+
+
 });

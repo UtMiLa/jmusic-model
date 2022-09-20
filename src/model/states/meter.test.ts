@@ -20,22 +20,21 @@ describe('Meter', () => {
                 value: 8,
                 upBeat: undefined
             };            
-            meterFactory = new MeterFactory();
         });
 
         it('should create a regular meter', () => {
-            const meter = meterFactory.createRegularMeter(meter1);
+            const meter = MeterFactory.createRegularMeter(meter1);
         });
 
         it('should have a counting time', () => {
-            const meter = meterFactory.createRegularMeter(meter1);
+            const meter = MeterFactory.createRegularMeter(meter1);
             expect(meter.countingTime).to.be.deep.eq({ numerator: 1, denominator: 4, type: 'span' });
         });
         it('should have a correct bar length', () => {
-            let meter = meterFactory.createRegularMeter(meter1);
+            let meter = MeterFactory.createRegularMeter(meter1);
             expect(meter.measureLength).to.be.deep.eq({ numerator: 3, denominator: 4, type: 'span' });
 
-            meter = meterFactory.createRegularMeter(meter3);
+            meter = MeterFactory.createRegularMeter(meter3);
             expect(meter.measureLength).to.be.deep.eq({ numerator: 3, denominator: 4, type: 'span' });
         });
     });
@@ -59,13 +58,12 @@ describe('Meter', () => {
                 count: 1,
                 value: 8,
                 upBeat: undefined
-            };            
-            meterFactory = new MeterFactory();
+            };
         });
 
 
         it('should create a composite meter', () => {
-            const meter = meterFactory.createCompositeMeter({ meters: [meter1, meter3] });
+            const meter = MeterFactory.createCompositeMeter({ meters: [meter1, meter3] });
             expect(meter.countingTime).to.be.deep.eq({ numerator: 1, denominator: 4, type: 'span' });
         });
     });

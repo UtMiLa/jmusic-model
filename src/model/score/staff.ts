@@ -1,3 +1,4 @@
+import { RegularMeterDef } from './../states/meter';
 import { VoiceDef } from './voice';
 import { KeyDef } from './../states/key';
 import { SequenceDef } from './sequence';
@@ -6,6 +7,7 @@ import { ClefViewModel } from '../../logical-view/view-model/convert-model';
 export interface StaffDef {
     initialClef: ClefDef;
     initialKey: KeyDef;
+    initialMeter?: RegularMeterDef;
     seq?: SequenceDef;
     voices?: VoiceDef[];
 }
