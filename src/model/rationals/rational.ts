@@ -41,10 +41,10 @@ export class Rational {
         };
     }
 
-    static scale(rational: RationalDef, scalar: number): RationalDef {
+    static scale(rational: RationalDef, scalar: number, divideBy = 1): RationalDef {
         return this.shorten({
             numerator: rational.numerator * scalar, 
-            denominator: rational.denominator
+            denominator: rational.denominator * divideBy
         });
     }
 

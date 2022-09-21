@@ -596,7 +596,6 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements.length).to.eq(5 + 1 + 1);
 
-        
         expect(physicalModel.elements[5]).to.deep.eq({
             glyph: 'accidentals.M2',
             position: { x: 30, y: 3.5 * defaultMetrics.staffLineWidth }
@@ -636,12 +635,12 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'five',
-            position: { x: 30, y: 2 * defaultMetrics.staffLineWidth }
+            position: { x: 30, y: 2 * defaultMetrics.staffLineWidth + defaultMetrics.meterAdjustY }
         });
 
         expect(physicalModel.elements[7]).to.deep.eq({
             glyph: 'four',
-            position: { x: 30, y: 0 }
+            position: { x: 30, y: defaultMetrics.meterAdjustY }
         });
     });
     
@@ -678,12 +677,12 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[8]).to.deep.eq({
             glyph: 'five',
-            position: { x: 30 + 2 * defaultMetrics.keySigSpacing + defaultMetrics.defaultSpacing, y: 2 * defaultMetrics.staffLineWidth }
+            position: { x: 30 + 2 * defaultMetrics.keySigSpacing + defaultMetrics.defaultSpacing, y: 2 * defaultMetrics.staffLineWidth + defaultMetrics.meterAdjustY }
         });
 
         expect(physicalModel.elements[9]).to.deep.eq({
             glyph: 'four',
-            position: { x: 30 + 2 * defaultMetrics.keySigSpacing + defaultMetrics.defaultSpacing, y: 0 }
+            position: { x: 30 + 2 * defaultMetrics.keySigSpacing + defaultMetrics.defaultSpacing, y: defaultMetrics.meterAdjustY }
         });
     });
     

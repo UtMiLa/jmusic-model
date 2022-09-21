@@ -7,7 +7,7 @@ import { Metrics, StandardMetrics } from './metrics';
 import { convertKey } from './physical-key';
 import { convertMeter } from './physical-meter';
 
-describe('Physical model', () => {
+describe('Physical model, meter', () => {
     let defaultMetrics: Metrics;
     let alternativeMetrics: Metrics;
 
@@ -28,10 +28,10 @@ describe('Physical model', () => {
         expect(res).to.deep.equal([
             {
                 glyph: 'six',
-                position: { x: 40, y: 2 * defaultMetrics.staffLineWidth }
+                position: { x: 40, y: 2 * defaultMetrics.staffLineWidth + defaultMetrics.meterAdjustY}
             },{
                 glyph: 'eight',
-                position: { x: 40, y: 0 }
+                position: { x: 40, y: defaultMetrics.meterAdjustY }
             }
         ]);
     });
@@ -44,7 +44,7 @@ describe('Physical model', () => {
         expect(res).to.deep.equal([
             {
                 glyph: 'one',
-                position: { x: 50, y: 2 * defaultMetrics.staffLineWidth }
+                position: { x: 50, y: 2 * defaultMetrics.staffLineWidth + defaultMetrics.meterAdjustY}
             },
             {
                 glyph: 'two',
@@ -52,11 +52,11 @@ describe('Physical model', () => {
             },
             {
                 glyph: 'one',
-                position: { x: 50, y: 0 }
+                position: { x: 50, y: defaultMetrics.meterAdjustY }
             },
             {
                 glyph: 'six',
-                position: { x: 50 + defaultMetrics.meterNumberSpacing, y: defaultMetrics.meterAdjustY }
+                position: { x: 50 + defaultMetrics.meterNumberSpacing, y: defaultMetrics.meterAdjustY  }
             }
         ]);
     });

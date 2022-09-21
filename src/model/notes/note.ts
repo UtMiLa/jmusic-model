@@ -4,7 +4,8 @@ import { Pitch } from '../pitches/pitch';
 
 
 export enum NoteType {
-    NBreve = 1, NWhole, NHalf, NQuarter
+    NBreve = 1, NWhole, NHalf, NQuarter,
+    RBreve, RWhole, RHalf, RQuarter, R8, R16, R32, R64, R128
 }
 
 export enum NoteDirection {
@@ -26,7 +27,7 @@ export class Note {
         
     }
     static parseLily(input: string): Note {
-        const matcher = /([a-g](es|is)*[',]*)(\d+\.*)/i;
+        const matcher = /([a-gr](es|is)*[',]*)(\d+\.*)/i;
         const matcherChord = /<([a-z,' ]+)>(\d+\.*)/i;
         const matchChord = matcherChord.exec(input);
 
@@ -40,7 +41,7 @@ export class Note {
         } else {
             const match = matcher.exec(input);
             if (!match || match.length < 4) throw 'Illegal note: ' + input;
-            pitches = [match[1]];
+            pitches = (match[1] === 'r') ? [] : [match[1]];
             durationString = match[3];    
         }
         //console.log(match);
@@ -56,10 +57,44 @@ export class Note {
         return this._duration;
     }
 
+    get dotNo(): number {
+        /*let numerator = this.duration.numerator + 1;
+        let res = -1;
+        console.log('dotNo', this.duration);
+        
+        while (numerator > 1) {
+            numerator >>= 1;
+            res++;
+            console.log('dotNo adding', numerator, res);
+        }*/
+        return Time.getDotNo(this.duration.numerator);
+    }
+
+    get undottedDuration(): TimeSpan {        
+        return Time.scale(
+            Time.addSpans(this.duration, Time.newSpan(1, this.duration.denominator)),
+            1, 2
+        );
+    }
+
     get type(): NoteType {
+        if (!this.pitches.length) {
+            switch (this.undottedDuration.denominator) {
+                case 1: return NoteType.RWhole;
+                case 2: return NoteType.RHalf;
+                case 4: return NoteType.RQuarter;
+                case 8: return NoteType.R8;
+                case 16: return NoteType.R16;
+                case 32: return NoteType.R32;
+                case 64: return NoteType.R64;
+                case 128: return NoteType.R128;
+                default: throw 'Illegal denominator: ' + this.undottedDuration.denominator;
+            }
+    
+        }
         if (Rational.value(this.duration) >= 2) 
             return NoteType.NBreve;
-        switch (this.duration.denominator) {
+        switch (this.undottedDuration.denominator) {
             case 1: return NoteType.NWhole;
             case 2: return NoteType.NHalf;
             default: return NoteType.NQuarter;

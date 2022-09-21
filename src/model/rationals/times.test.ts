@@ -20,6 +20,15 @@ describe('Times', ()=> {
             expect(Rational.add(r3, r4)).to.deep.eq({ numerator: 41, denominator: 28 });
         });
 
+
+        it('should correctly scale a rational', () => {
+            const r3 = { numerator: 5, denominator: 7 };
+            const r4 = { numerator: 35, denominator: 12 };
+            expect(Rational.scale(r3, 2)).to.deep.eq({ numerator: 10, denominator: 7 });
+            expect(Rational.scale(r3, 2, 3)).to.deep.eq({ numerator: 10, denominator: 21 });
+            expect(Rational.scale(r4, 2, 5)).to.deep.eq({ numerator: 7, denominator: 6 });
+        });
+
         it('should calculate lcd for two ints', () => {            
             expect(Rational.lcd(24, 64)).to.eq(8);
             expect(Rational.lcd(24, 65)).to.eq(1);
@@ -160,7 +169,15 @@ describe('Times', ()=> {
             expect(Time.equals(t1, t2)).to.be.true;
             expect(Time.equals(t1, t3)).to.be.false;
             expect(Time.equals(t4, t3)).to.be.true;
-        });    
+        });
+        
+        it('should calculate number of dots from numerator', () => {
+            expect(Time.getDotNo(1)).to.eq(0);
+            expect(Time.getDotNo(3)).to.eq(1);
+            expect(Time.getDotNo(7)).to.eq(2);
+            expect(Time.getDotNo(15)).to.eq(3);
+        });
+
     });
 
 

@@ -15,6 +15,7 @@ export interface NoteViewModel {
     noteType: NoteType;
     direction: NoteDirection;
     flagType?: FlagType;
+    dotNo?: number;
 }
 
 export function noteToView(note: Note, clef: Clef): NoteViewModel {
@@ -25,7 +26,10 @@ export function noteToView(note: Note, clef: Clef): NoteViewModel {
         direction = middlePos2 <= 0 ? NoteDirection.Up : NoteDirection.Down;
     }
     let flagType = FlagType.None;
-    if (note.duration.denominator >= 8) {
+
+    const duration = note.undottedDuration;
+
+    if (duration.denominator >= 8) {
         switch (note.duration.denominator) {
             case 8: flagType = FlagType.F1; break;
             case 16: flagType = FlagType.F2; break;
@@ -35,10 +39,14 @@ export function noteToView(note: Note, clef: Clef): NoteViewModel {
             default: flagType = FlagType.None; throw 'Illegal duration: ' + Rational.toString(note.duration); break;
         }
     }
-    return {
+    const res: NoteViewModel = {
         positions,
         noteType: note.type,
         direction,
         flagType
     };
+
+    if (note.dotNo) res.dotNo = note.dotNo;
+
+    return res;
 }

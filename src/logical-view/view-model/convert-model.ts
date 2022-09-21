@@ -44,7 +44,7 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
     }
 
     //const seq = def.voices.map(voice => new Sequence(voice.content));
-    console.log('vc', def.voices);
+    //console.log('vc', def.voices);
 
     const clef = new Clef(def.initialClef);
 

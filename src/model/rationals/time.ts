@@ -29,7 +29,7 @@ export class Time {
 
         parsed[2].split('').forEach(char => {
             if (char === '.') {
-                numerator += denominator;
+                numerator = numerator * 2 + 1;
                 denominator *= 2;
             }
         });
@@ -63,12 +63,26 @@ export class Time {
         return { ...Rational.add(t2, t1), type: 'abs' };
     }
     
-    static scale(t: TimeSpan, s: number): TimeSpan {
+    static scale(t: TimeSpan, scaleBy: number, divideBy= 1): TimeSpan {
         this.assertSpan(t);
-        return { ...Rational.scale(t, s), type: 'span' };
+        return { ...Rational.scale(t, scaleBy, divideBy), type: 'span' };
     }
 
     static equals(t1: AbsoluteTime, t2: AbsoluteTime): boolean {
         return t1.denominator * t2.numerator === t2.denominator * t1.numerator;
     }
+
+    static getDotNo(numerator: number): number {
+        numerator++;
+        let res = -1;
+        //console.log('dotNo', numerator);
+        
+        while (numerator > 1) {
+            numerator >>= 1;
+            res++;
+            //console.log('dotNo adding', numerator, res);
+        }
+        return res;
+    }
+
 }

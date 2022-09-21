@@ -16,6 +16,9 @@ export interface Metrics {
 
     meterNumberSpacing: number;
     meterAdjustY: number;
+
+    dotToNoteDist: number;
+    dotToDotDist: number;
 }
 
 export class StandardMetrics implements Metrics {
@@ -41,4 +44,7 @@ export class StandardMetrics implements Metrics {
 
     meterNumberSpacing = 7;
     meterAdjustY = 1;
+
+    dotToNoteDist = 12;
+    dotToDotDist = 4;
 }
