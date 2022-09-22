@@ -40,6 +40,12 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
             ctx.moveTo(convertX(elem.position.x), convertY(elem.position.y));
             ctx.lineTo(convertX(elem.position.x), convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).length));
             ctx.stroke();
+        } else if ((elem as any).element === HorizVarSizeGlyphs.Bar) {
+            ctx.strokeStyle = '#555555';
+            ctx.beginPath();
+            ctx.moveTo(convertX(elem.position.x), convertY(elem.position.y));
+            ctx.lineTo(convertX(elem.position.x), convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).length));
+            ctx.stroke();
         } else if ((elem as any).glyph) {
             const scale = (elem as any).scale ? (elem as any).scale : 1;
             ctx.font = (20 * position.scaleY * scale) + 'px Emmentaler';

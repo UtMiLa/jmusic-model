@@ -685,6 +685,43 @@ describe('Physical model', () => {
             position: { x: 30 + 2 * defaultMetrics.keySigSpacing + defaultMetrics.defaultSpacing, y: defaultMetrics.meterAdjustY }
         });
     });
+   
     
+   
 
+    it('should render a bar view model', () => {
+        const viewModel: ScoreViewModel = { 
+            staves: [
+                { 
+                    timeSlots: [
+                        { 
+                            absTime: Time.newAbsolute(0, 1), 
+                            notes: [] 
+                        },
+                        { 
+                            absTime: Time.newAbsolute(1, 1), 
+                            bar: true,
+                            notes: [] 
+                        } 
+                    ]
+                }
+            ]
+        };
+
+        const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
+
+        const lineWidth = 10;
+
+        expect(physicalModel.elements.length).to.eq(6);
+
+        expect(physicalModel.elements[5]).to.deep.equal(
+            { 
+                element: HorizVarSizeGlyphs.Bar,
+                position: { x: 50, y: 0 },
+                length: 4 * lineWidth
+            }
+        );
+
+    });
+    
 });

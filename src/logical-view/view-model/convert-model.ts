@@ -25,6 +25,7 @@ export interface TimeSlotViewModel {
     clef?: ClefViewModel,
     key?: KeyViewModel,
     meter?: MeterViewModel,
+    bar?: boolean,
     notes: NoteViewModel[];
 }
 export interface StaffViewModel {
@@ -33,6 +34,17 @@ export interface StaffViewModel {
 
 export interface ScoreViewModel {
     staves: StaffViewModel[];
+}
+
+function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSlotViewModel {
+    const slot = timeSlots.find(item => Time.equals(item.absTime, time));
+    if (slot) return slot;
+    const res = {
+        absTime: time,
+        notes: []
+    } as TimeSlotViewModel;
+    timeSlots.push(res);
+    return res;
 }
 
 export function modelToViewModel(def: StaffDef): StaffViewModel {
@@ -48,7 +60,8 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
 
     const clef = new Clef(def.initialClef);
 
-    const meter = def.initialMeter ? meterToView(MeterFactory.createRegularMeter(def.initialMeter)) : undefined;
+    const meterModel = def.initialMeter ? MeterFactory.createRegularMeter(def.initialMeter) : undefined;
+    const meter = meterModel ? meterToView(meterModel) : undefined;
 
     const timeSlots: TimeSlotViewModel[] = [
         {
@@ -69,11 +82,20 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
         timeSlots[0].meter = meter;
     }
 
+    let staffEndTime = Time.newAbsolute(0, 1);
+
     def.voices.forEach(voice => {
-        const voiceTimeSlots = new Sequence(voice.content).groupByTimeSlots();
+        const voiceSequence = new Sequence(voice.content);
+        const voiceTimeSlots = voiceSequence.groupByTimeSlots();
+        const voiceEndTime = Time.fromStart(voiceSequence.duration);
+
+        if (Time.sortComparison(voiceEndTime, staffEndTime) > 0) {
+            staffEndTime = voiceEndTime;
+        }
 
         voiceTimeSlots.forEach(voiceTimeSlot => {
-            const slot = timeSlots.find(item => Time.equals(item.absTime, voiceTimeSlot.time));
+            const slot = getTimeSlot(timeSlots, voiceTimeSlot.time);
+            //timeSlots.find(item => Time.equals(item.absTime, voiceTimeSlot.time));
 
             const elements = voiceTimeSlot.elements.map(note => {
                 const noteClone = Note.clone(note, { direction: note.direction ? note.direction : voice.noteDirection });
@@ -81,15 +103,23 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
                 return noteView;
             });
 
-            if (!slot) {
-                timeSlots.push({ absTime: voiceTimeSlot.time, notes: elements });
-            } else {
-                slot.notes = slot.notes.concat(elements);
-            }
+            slot.notes = slot.notes.concat(elements);            
         });
         
     });
 
+    if (meterModel) {
+        const measureTime = meterModel.measureLength;
+        let barTime = Time.fromStart(measureTime);
+        console.log('bar', measureTime, barTime, staffEndTime, meterModel);
+        
+        while (Time.sortComparison(barTime, staffEndTime) <= 0) {
+            const slot = getTimeSlot(timeSlots, barTime);
+            slot.bar = true;
+            barTime = Time.addTime(barTime, measureTime);
+            console.log('bar adding', slot, barTime);
+        }
+    }
     return { 
         timeSlots: timeSlots.sort((ts1, ts2) => Time.sortComparison(ts1.absTime, ts2.absTime))
     };
@@ -97,7 +127,7 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
 
 }
 
-function voiceNotesToView(clef: Clef): (value: VoiceDef, index: number, array: VoiceDef[]) => NoteViewModel[] {
+/*function voiceNotesToView(clef: Clef): (value: VoiceDef, index: number, array: VoiceDef[]) => NoteViewModel[] {
     return voice => (new Sequence(voice.content))
         .elements
         .map(elem => { 
@@ -106,3 +136,4 @@ function voiceNotesToView(clef: Clef): (value: VoiceDef, index: number, array: V
             return noteView;
         });
 }
+*/

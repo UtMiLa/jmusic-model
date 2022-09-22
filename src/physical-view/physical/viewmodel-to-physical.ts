@@ -53,6 +53,14 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
             if (ts.clef) {
                 resultElements.push(convertClef(ts.clef, settings));
             }
+            if (ts.bar) {
+                resultElements.push({
+                    element: HorizVarSizeGlyphs.Bar,
+                    position: { x: x, y: 0 },
+                    length: 4 * settings.staffLineWidth
+                } as PhysicalHorizVarSizeElement);
+                deltaX += settings.afterBarSpacing;
+            }
             if (ts.key) {
                 resultElements = resultElements.concat(convertKey(ts.key, x, settings));
                 deltaX += settings.defaultSpacing + ts.key.keyPositions.length * settings.keySigSpacing;

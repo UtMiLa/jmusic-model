@@ -20,6 +20,10 @@ export class Time {
         return {numerator, denominator, type: 'abs'};
     }
 
+    static fromStart(span: TimeSpan): AbsoluteTime {
+        return this.newAbsolute(span.numerator, span.denominator);
+    }
+
     static fromLilypond(input: string) {
         const matcher = /(\d+)(\.*)/;
         const parsed = matcher.exec(input);

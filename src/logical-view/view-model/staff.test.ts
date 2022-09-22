@@ -248,4 +248,43 @@ describe('Staff', () => {
     });
 
 
+    it('should add bar lines', () => {
+        staffClef.voices = [ {content: { elements: 'c\'4 d\'4 e\'4 c\'2. d\'4' }}];
+        
+        staffClef.initialKey.count = 0;
+        staffClef.initialMeter = {count: 3, value: 4};
+
+        const vm = modelToViewModel(staffClef);
+        expect(vm.timeSlots.length).to.equal(5);
+
+        for (let i = 0; i < 5; i++) {
+            if (i === 3 || i === 4){
+                expect(vm.timeSlots[i].bar).to.equal(true);
+            } else {
+                expect(vm.timeSlots[i].bar).to.be.undefined;
+            }
+        }
+        
+    });
+
+    it('should add bar lines even when no other events at time', () => {
+        staffClef.voices = [ {content: { elements: 'c\'1' }}];
+        
+        staffClef.initialKey.count = 0;
+        staffClef.initialMeter = {count: 2, value: 4};
+
+        const vm = modelToViewModel(staffClef);
+        expect(vm.timeSlots.length).to.equal(3);
+
+        for (let i = 0; i < 3; i++) {
+            if (i === 0) {
+                expect(vm.timeSlots[i].bar).to.be.undefined;
+            } else
+                expect(vm.timeSlots[i].bar).to.equal(true);
+        }
+        
+    });
+
+
+
 });
