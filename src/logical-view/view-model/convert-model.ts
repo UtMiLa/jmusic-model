@@ -110,8 +110,8 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
 
     if (meterModel) {
         const measureTime = meterModel.measureLength;
-        let barTime = Time.fromStart(measureTime);
-        console.log('bar', measureTime, barTime, staffEndTime, meterModel);
+        let barTime = meterModel.firstBarTime;
+        //console.log('bar', measureTime, barTime, staffEndTime, meterModel);
         
         while (Time.sortComparison(barTime, staffEndTime) <= 0) {
             const slot = getTimeSlot(timeSlots, barTime);

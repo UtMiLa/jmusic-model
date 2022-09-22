@@ -28,11 +28,11 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
     }
 
     physicalModel.elements.forEach(elem => {
-        if ((elem as any).element === VertVarSizeGlyphs.Line) {
-            ctx.strokeStyle = '#888888';
+        if ((elem as any).element === VertVarSizeGlyphs.Line || (elem as any).element === VertVarSizeGlyphs.LedgerLine) {
+            ctx.strokeStyle = /*(elem as any).element === VertVarSizeGlyphs.LedgerLine ?  '#111111' :*/ '#888888';
             ctx.beginPath();
             ctx.moveTo(convertX(elem.position.x), convertY(elem.position.y));
-            ctx.lineTo(convertX(elem.position.x + (elem as PhysicalHorizVarSizeElement).length), convertY(elem.position.y));
+            ctx.lineTo(convertX(elem.position.x + (elem as PhysicalVertVarSizeElement).length), convertY(elem.position.y));
             ctx.stroke();
         } else if ((elem as any).element === HorizVarSizeGlyphs.Stem) {
             ctx.strokeStyle = '#222222';

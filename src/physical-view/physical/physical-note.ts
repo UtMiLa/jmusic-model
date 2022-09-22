@@ -1,8 +1,8 @@
 import { FlagType, NoteViewModel } from '../../logical-view/view-model/note-view-model';
 import { NoteDirection, NoteType } from '../../model/notes/note';
-import { GlyphCode, HorizVarSizeGlyphs, FixedSizeGlyphs } from './glyphs';
+import { GlyphCode, HorizVarSizeGlyphs, FixedSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
 import { Metrics } from './metrics';
-import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement } from './physical-elements';
+import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement, PhysicalVertVarSizeElement } from './physical-elements';
 import { staffLineToY } from './functions';
 
 
@@ -16,7 +16,6 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
 
     const result: PhysicalElementBase[] = [];
     const directionUp = note.direction === NoteDirection.Up;
-
 
     if (!note.positions.length) {
         // rest
@@ -37,19 +36,42 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
         note.direction === NoteDirection.Down ? 1 :
             note.direction === NoteDirection.Up ? 3 :
                 2;
-        return [{
+
+        const res = [{
             glyph,
             position: { x: xPos, y: staffLine * settings.staffLineWidth }
         } as PhysicalFixedSizeElement];
+
+        return res;
     }
 
     const yPositions = note.positions.map(pos => staffLineToY(pos / 2, settings));
 
+    
     const chordLength = yPositions[yPositions.length - 1] - yPositions[0];
     const stemBaseY = directionUp ? yPositions[0] : yPositions[yPositions.length - 1];
     const stemBaseX = directionUp ? xPos + settings.blackNoteHeadLeftXOffset : xPos + settings.blackNoteHeadRightXOffset;
     const stemBaseXhalf = directionUp ? xPos + settings.halfNoteHeadLeftXOffset : xPos + settings.halfNoteHeadRightXOffset;
     const stemSign = directionUp ? 1 : -1;
+
+    
+    for (let i = -6; i >= note.positions[0]; i -= 2) {
+        result.push({
+            element: VertVarSizeGlyphs.LedgerLine,
+            position: { x: xPos - settings.ledgerLineExtra, y: (i/2 + 2) * settings.staffLineWidth },
+            length: settings.ledgerLineLength
+        } as PhysicalVertVarSizeElement);
+    }
+
+    for (let i = 6; i <= note.positions[note.positions.length - 1]; i += 2) {
+        result.push({
+            element: VertVarSizeGlyphs.LedgerLine,
+            position: { x: xPos - settings.ledgerLineExtra, y: (i/2 + 2) * settings.staffLineWidth },
+            length: settings.ledgerLineLength
+        } as PhysicalVertVarSizeElement);
+    }
+
+
 
     switch(note.noteType) {
         case NoteType.NBreve: 
@@ -122,7 +144,6 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
         }    
     
     });
-
 
     return result;
 }

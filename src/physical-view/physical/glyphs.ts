@@ -165,6 +165,7 @@ export enum HorizVarSizeGlyphs {
 export enum VertVarSizeGlyphs {
     Line = 1,
     Ottava = 2,
+    LedgerLine = 3,
     
 }
 

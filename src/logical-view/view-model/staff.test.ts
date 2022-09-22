@@ -286,5 +286,24 @@ describe('Staff', () => {
     });
 
 
+    it('should add bar lines when an upbeat is defined', () => {
+        staffClef.voices = [ {content: { elements: 'c\'4 d\'4 e\'4 c\'4 d\'4 e\'4 e\'4' }}];
+        
+        staffClef.initialKey.count = 0;
+        staffClef.initialMeter = {count: 3, value: 4, upBeat: Time.newSpan(1, 4)};
+
+        const vm = modelToViewModel(staffClef);
+        expect(vm.timeSlots.length).to.equal(8);
+
+        for (let i = 0; i < 8; i++) {
+            if (i === 1 || i === 4 || i === 7){
+                expect(vm.timeSlots[i].bar).to.equal(true);
+            } else {
+                expect(vm.timeSlots[i].bar).to.be.undefined;
+            }
+        }
+        
+    });
+
 
 });

@@ -227,7 +227,7 @@ describe('Physical model', () => {
                             notes: [                
                    
                                 {
-                                    positions: [-6],
+                                    positions: [-5],
                                     noteType: NoteType.NWhole,
                                     direction: NoteDirection.Up
                                 }
@@ -251,7 +251,7 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'noteheads.s0',
-            position: { x: 30, y: -defaultMetrics.staffLineWidth }
+            position: { x: 30, y: -0.5 * defaultMetrics.staffLineWidth }
         });
     });
    
@@ -270,7 +270,7 @@ describe('Physical model', () => {
                             notes: [                
 
                                 {
-                                    positions: [-6],
+                                    positions: [-5],
                                     noteType: NoteType.NBreve,
                                     direction: NoteDirection.Up
                                 },
@@ -281,7 +281,7 @@ describe('Physical model', () => {
                             notes: [
         
                                 {
-                                    positions: [-6],
+                                    positions: [-5],
                                     noteType: NoteType.NWhole,
                                     direction: NoteDirection.Up
                                 },
@@ -292,7 +292,7 @@ describe('Physical model', () => {
                             notes: [
         
                                 {
-                                    positions: [-6],
+                                    positions: [-5],
                                     noteType: NoteType.NHalf,
                                     direction: NoteDirection.Up
                                 },
@@ -303,7 +303,7 @@ describe('Physical model', () => {
                             notes: [
         
                                 {
-                                    positions: [-6],
+                                    positions: [-5],
                                     noteType: NoteType.NQuarter,
                                     direction: NoteDirection.Up
                                 }
@@ -322,20 +322,20 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'noteheads.sM1',
-            position: { x: 30, y: -defaultMetrics.staffLineWidth }
+            position: { x: 30, y: -0.5 * defaultMetrics.staffLineWidth }
         });
 
         expect(physicalModel.elements[7]).to.deep.eq({
             glyph: 'noteheads.s0',
-            position: { x: 50, y: -defaultMetrics.staffLineWidth }
+            position: { x: 50, y: -0.5 * defaultMetrics.staffLineWidth }
         });
         expect(physicalModel.elements[9]).to.deep.eq({
             glyph: 'noteheads.s1',
-            position: { x: 70, y: -defaultMetrics.staffLineWidth }
+            position: { x: 70, y: -0.5 * defaultMetrics.staffLineWidth }
         });
         expect(physicalModel.elements[11]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 90, y: -defaultMetrics.staffLineWidth }
+            position: { x: 90, y: -0.5 * defaultMetrics.staffLineWidth }
         });
 
 
@@ -343,12 +343,12 @@ describe('Physical model', () => {
         expect(physicalModel.elements[8]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
             length: defaultMetrics.quarterStemDefaultLength,
-            position: { x: 70 + defaultMetrics.halfNoteHeadLeftXOffset, y: -defaultMetrics.staffLineWidth }
+            position: { x: 70 + defaultMetrics.halfNoteHeadLeftXOffset, y: -0.5 * defaultMetrics.staffLineWidth }
         });
         expect(physicalModel.elements[10]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
             length: defaultMetrics.quarterStemDefaultLength,
-            position: { x: 90 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.staffLineWidth }
+            position: { x: 90 + defaultMetrics.blackNoteHeadLeftXOffset, y: -0.5 * defaultMetrics.staffLineWidth }
         });
 
     });

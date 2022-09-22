@@ -20,6 +20,9 @@ export interface Metrics {
 
     dotToNoteDist: number;
     dotToDotDist: number;
+
+    ledgerLineExtra: number;
+    ledgerLineLength: number;
 }
 
 export class StandardMetrics implements Metrics {
@@ -49,4 +52,7 @@ export class StandardMetrics implements Metrics {
 
     dotToNoteDist = 12;
     dotToDotDist = 4;
+
+    ledgerLineExtra = 4;
+    ledgerLineLength = 15;
 }

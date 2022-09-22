@@ -17,7 +17,7 @@ export interface PhysicalFixedSizeElement extends PhysicalElementBase {
 
 export interface PhysicalVertVarSizeElement extends PhysicalElementBase {
     element: VertVarSizeGlyphs;    
-    height: number
+    length: number
 }
 
 export interface PhysicalHorizVarSizeElement extends PhysicalElementBase {

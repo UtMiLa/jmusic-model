@@ -1,9 +1,11 @@
+import { AbsoluteTime } from './../rationals/time';
 import { Rational } from '../rationals/rational';
 import { Time, TimeSpan } from '../rationals/time';
 export interface Meter {
     measureLength: TimeSpan;
     countingTime: TimeSpan;
     text: string[];
+    firstBarTime: AbsoluteTime;
 }
 
 export interface RegularMeterDef {
@@ -41,6 +43,12 @@ class RegularMeter {
     get text(): string[] {
         return ['' + this.def.count, '' + this.def.value];
     }
+
+    get firstBarTime(): AbsoluteTime {        
+        if (this.def.upBeat)
+            return Time.fromStart(this.def.upBeat);
+        return Time.fromStart(this.measureLength);
+    }
 }
 
 class CompositeMeter {
@@ -58,5 +66,8 @@ class CompositeMeter {
     }
     get text(): string[] {
         return ['4', '4'];
+    }
+    get firstBarTime(): AbsoluteTime {
+        return Time.fromStart(this.measureLength);
     }
 }

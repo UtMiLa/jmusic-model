@@ -20,8 +20,11 @@ export class Time {
         return {numerator, denominator, type: 'abs'};
     }
 
-    static fromStart(span: TimeSpan): AbsoluteTime {
-        return this.newAbsolute(span.numerator, span.denominator);
+    static fromStart(span: TimeSpan): AbsoluteTime;
+    static fromStart(span: AbsoluteTime): TimeSpan;
+    static fromStart(span: TimeSpan | AbsoluteTime): TimeSpan | AbsoluteTime {
+        if (span.type === 'span') return this.newAbsolute(span.numerator, span.denominator);
+        return this.newSpan(span.numerator, span.denominator);        
     }
 
     static fromLilypond(input: string) {

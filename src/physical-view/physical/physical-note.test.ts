@@ -1,5 +1,6 @@
+import { PhysicalHorizVarSizeElement, PhysicalVertVarSizeElement } from './physical-elements';
 import { FlagType } from './../../logical-view/view-model/note-view-model';
-import { HorizVarSizeGlyphs } from './glyphs';
+import { HorizVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */
 import { NoteType, NoteDirection } from '../../model/notes/note';
 import { Metrics, StandardMetrics } from './metrics';
@@ -221,8 +222,108 @@ describe('Physical model, notes', () => {
             position: { x: 20 + defaultMetrics.dotToNoteDist, y: 4.5*defaultMetrics.staffLineWidth }
         });
 
+    });
+
+
+
+    it('should render ledger lines for low and high notes', () => {
+        //
+        const note =                         {
+            positions: [-6],
+            noteType: NoteType.NWhole,
+            direction: NoteDirection.Up
+        };
+
+        const physical = convertNote(note, 20, defaultMetrics);
+
+        expect(physical.length).to.eq(2);
+
+        expect(physical[0]).to.deep.eq({
+            //glyph: 'dots.dot',
+            element: VertVarSizeGlyphs.LedgerLine,
+            position: { x: 20 - defaultMetrics.ledgerLineExtra, y: -1*defaultMetrics.staffLineWidth },
+            length: 15
+        } as PhysicalVertVarSizeElement);
+
 
     });
+
+
+    it('should render ledger lines for low and high notes', () => {
+        //
+        const note =                         {
+            positions: [-10],
+            noteType: NoteType.NWhole,
+            direction: NoteDirection.Up
+        };
+
+        const physical = convertNote(note, 30, defaultMetrics);
+
+        expect(physical.length).to.eq(4);
+
+        expect(physical[0]).to.deep.eq({
+            //glyph: 'dots.dot',
+            element: VertVarSizeGlyphs.LedgerLine,
+            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: -1*defaultMetrics.staffLineWidth },
+            length: 15
+        } as PhysicalVertVarSizeElement);
+
+        expect(physical[1]).to.deep.eq({
+            //glyph: 'dots.dot',
+            element: VertVarSizeGlyphs.LedgerLine,
+            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: -2*defaultMetrics.staffLineWidth },
+            length: 15
+        } as PhysicalVertVarSizeElement);
+
+        expect(physical[2]).to.deep.eq({
+            //glyph: 'dots.dot',
+            element: VertVarSizeGlyphs.LedgerLine,
+            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: -3*defaultMetrics.staffLineWidth },
+            length: 15
+        } as PhysicalVertVarSizeElement);
+
+
+    });
+
+
+    it('should render ledger lines for high notes', () => {
+        //
+        const note =                         {
+            positions: [0, 10],
+            noteType: NoteType.NWhole,
+            direction: NoteDirection.Up
+        };
+
+        const physical = convertNote(note, 30, defaultMetrics);
+
+        expect(physical.length).to.eq(5);
+
+        expect(physical[0]).to.deep.eq({
+            //glyph: 'dots.dot',
+            element: VertVarSizeGlyphs.LedgerLine,
+            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: 5*defaultMetrics.staffLineWidth },
+            length: 15
+        } as PhysicalVertVarSizeElement);
+
+        expect(physical[1]).to.deep.eq({
+            //glyph: 'dots.dot',
+            element: VertVarSizeGlyphs.LedgerLine,
+            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: 6*defaultMetrics.staffLineWidth },
+            length: 15
+        } as PhysicalVertVarSizeElement);
+
+        expect(physical[2]).to.deep.eq({
+            //glyph: 'dots.dot',
+            element: VertVarSizeGlyphs.LedgerLine,
+            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: 7*defaultMetrics.staffLineWidth },
+            length: 15
+        } as PhysicalVertVarSizeElement);
+
+
+    });
+
+
+
 
 
 });
