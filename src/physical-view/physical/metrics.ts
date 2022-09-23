@@ -40,7 +40,7 @@ export class StandardMetrics implements Metrics {
     halfNoteHeadLeftXOffset = 7;
     halfNoteHeadRightXOffset = 0.5;
 
-    quarterStemDefaultLength = 25;
+    quarterStemDefaultLength = 18;
 
     defaultSpacing = 20;
     afterBarSpacing = 8;
