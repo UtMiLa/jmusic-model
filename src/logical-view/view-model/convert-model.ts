@@ -117,7 +117,7 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
             const slot = getTimeSlot(timeSlots, barTime);
             slot.bar = true;
             barTime = Time.addTime(barTime, measureTime);
-            console.log('bar adding', slot, barTime);
+            //console.log('bar adding', slot, barTime);
         }
     }
     return { 

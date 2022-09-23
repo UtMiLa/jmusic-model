@@ -16,6 +16,10 @@ export interface RenderPosition {
 export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition) {
     const ctx = canvas.getContext('2d');
     if (!ctx) throw 'Canvas context is null';
+
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     ctx.fillStyle = '#330000';
     ctx.strokeStyle = '#223344';//'solid black 1px';
 

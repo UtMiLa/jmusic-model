@@ -112,6 +112,28 @@ describe('View model, note', () => {
     });
 
 
+
+    it('should set flagType correctly on dotted notes', () => {
+        const note1: Note = Note.parseLily('a\'4.');
+        const note2: Note = Note.parseLily('b\'8.');
+        const note3: Note = Note.parseLily('c\'\'16..');
+        const note4: Note = Note.parseLily('r32.');
+        const note5: Note = Note.parseLily('c\'\'64.');
+
+        const viewModel1 = noteToView(note1, clef);
+        const viewModel2 = noteToView(note2, clef);
+        const viewModel3 = noteToView(note3, clef);
+        const viewModel4 = noteToView(note4, clef);
+        const viewModel5 = noteToView(note5, clef);
+
+        expect(viewModel1.flagType).to.equal(FlagType.None);
+        expect(viewModel2.flagType).to.equal(FlagType.F1);
+        expect(viewModel3.flagType).to.equal(FlagType.F2);
+        expect(viewModel4.flagType).to.equal(FlagType.F3);
+        expect(viewModel5.flagType).to.equal(FlagType.F4);
+    });
+
+
     it('should convert a dotted note to view model', () => {
         const note: Note = Note.parseLily('c\'2..');
 

@@ -42,6 +42,8 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
             position: { x: xPos, y: staffLine * settings.staffLineWidth }
         } as PhysicalFixedSizeElement];
 
+        addDots(note, staffLine * settings.staffLineWidth, settings, res, xPos);          
+
         return res;
     }
 
@@ -130,20 +132,24 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
             glyph
         } as PhysicalFixedSizeElement);    
 
-        if (note.dotNo) {
-            for (let i = 0; i < note.dotNo; i++) {
-                const yAdjustedPos = yPos + ((yPos + settings.staffLineWidth/2) % settings.staffLineWidth);
-                //console.log('yAdjustedPos', yAdjustedPos, yPos, (yPos % settings.staffLineWidth));
-                
-                result.push({
-                    position: { x: xPos + settings.dotToNoteDist + settings.dotToDotDist * i, y: yAdjustedPos },
-                    glyph: 'dots.dot'
-                } as PhysicalFixedSizeElement);    
         
-            }
-        }    
+        addDots(note, yPos, settings, result, xPos);          
     
     });
 
     return result;
 }
+function addDots(note: NoteViewModel, yPos: number, settings: Metrics, result: PhysicalElementBase[], xPos: number) {
+    if (note.dotNo) {
+        for (let i = 0; i < note.dotNo; i++) {
+            const yAdjustedPos = yPos + ((yPos + settings.staffLineWidth / 2) % settings.staffLineWidth);
+            //console.log('yAdjustedPos', yAdjustedPos, yPos, (yPos % settings.staffLineWidth));
+            result.push({
+                position: { x: xPos + settings.dotToNoteDist + settings.dotToDotDist * i, y: yAdjustedPos },
+                glyph: 'dots.dot'
+            } as PhysicalFixedSizeElement);
+
+        }
+    }
+}
+

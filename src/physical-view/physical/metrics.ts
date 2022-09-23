@@ -50,7 +50,7 @@ export class StandardMetrics implements Metrics {
     meterNumberSpacing = 7;
     meterAdjustY = 1;
 
-    dotToNoteDist = 12;
+    dotToNoteDist = 10;
     dotToDotDist = 4;
 
     ledgerLineExtra = 4;

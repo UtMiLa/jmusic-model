@@ -30,7 +30,7 @@ export function noteToView(note: Note, clef: Clef): NoteViewModel {
     const duration = note.undottedDuration;
 
     if (duration.denominator >= 8) {
-        switch (note.duration.denominator) {
+        switch (duration.denominator) {
             case 8: flagType = FlagType.F1; break;
             case 16: flagType = FlagType.F2; break;
             case 32: flagType = FlagType.F3; break;

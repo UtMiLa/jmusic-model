@@ -170,6 +170,28 @@ describe('Physical model, notes', () => {
             });
 
         });
+   
+        it('should render dots after rests', () => {
+            //
+            const note =                         {
+                positions: [],
+                noteType: NoteType.RQuarter,
+                direction: NoteDirection.Up,
+                dotNo: 1
+            };
+    
+            const physical = convertNote(note, 20, defaultMetrics);
+    
+            expect(physical.length).to.eq(2);
+    
+            expect(physical[1]).to.deep.eq({
+                glyph: 'dots.dot',
+                position: { x: 20 + defaultMetrics.dotToNoteDist, y: 3.5*defaultMetrics.staffLineWidth }
+            });
+    
+        });
+    
+    
     
     
     });

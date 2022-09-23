@@ -7,7 +7,7 @@ export interface MeterViewModel {
 
 
 export function meterToView(meter: Meter): MeterViewModel {
-    console.log(meter);
+    //console.log(meter);
     const meterText = meter.text;
     
     return {
