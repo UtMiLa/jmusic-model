@@ -1,3 +1,4 @@
+import { NoteDirection } from './../../model/notes/note';
 import { Point } from './../physical/physical-elements';
 import { PhysicalVertVarSizeElement } from '../physical/physical-elements';
 import { GlyphCode } from '../physical/glyphs';
@@ -17,6 +18,7 @@ export interface RenderPosition {
 export enum DrawOperationType {
     MoveTo,
     LineTo,
+    CurveTo,
     Stroke,
     Fill
 }
@@ -36,6 +38,13 @@ function draw(ctx: CanvasRenderingContext2D, operations: DrawOperation[]): void 
             case DrawOperationType.LineTo:
                 ctx.lineTo(operation.points[0].x, operation.points[0].y);
                 break;
+            case DrawOperationType.CurveTo:
+                ctx.bezierCurveTo(
+                    operation.points[0].x, operation.points[0].y,
+                    operation.points[1].x, operation.points[1].y,
+                    operation.points[2].x, operation.points[2].y
+                );
+                break;
             case DrawOperationType.Stroke:
                 ctx.stroke();
                 break;
@@ -46,7 +55,7 @@ function draw(ctx: CanvasRenderingContext2D, operations: DrawOperation[]): void 
     });
 }
 
-export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition) {
+export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition): void {
     const ctx = canvas.getContext('2d');
     if (!ctx) throw 'Canvas context is null';
 
@@ -64,21 +73,58 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
         return (position.offsetY - y) * position.scaleY;
     }
 
+    function convertXY(p: Point): Point {
+        return {
+            x: convertX(p.x),
+            y: convertY(p.y)
+        };
+    }
+
+
     physicalModel.elements.forEach(elem => {
         if ((elem as any).element === VertVarSizeGlyphs.Line || (elem as any).element === VertVarSizeGlyphs.LedgerLine) {
-            ctx.strokeStyle = /*(elem as any).element === VertVarSizeGlyphs.LedgerLine ?  '#111111' :*/ '#888888';
+            ctx.strokeStyle = '#888888';
 
             draw(ctx, [
-                { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y)}]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x + (elem as PhysicalVertVarSizeElement).length), y: convertY(elem.position.y)}]},
+                { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
+                { type: DrawOperationType.LineTo, points: [convertXY({ x: elem.position.x + (elem as PhysicalVertVarSizeElement).length, y: elem.position.y })]},
                 { type: DrawOperationType.Stroke, points: []}
             ]);
+
+        } else if ((elem as any).element === VertVarSizeGlyphs.Tie) {
+            ctx.fillStyle = '#000000';
+
+            const tieDir = (elem as any).direction === NoteDirection.Up ? 1 : -1;
+            const tieStart = convertXY({ x: elem.position.x, y: elem.position.y });
+            const tieEnd = convertXY({ x: elem.position.x + (elem as PhysicalVertVarSizeElement).length, y: elem.position.y });
+
+            const dx = (tieEnd.x - tieStart.x)/3;
+            const dy1 = tieDir * 3;
+            const dy2 = tieDir * 4;//2.5;
+            const dy3 = tieDir * 0.5;
+            const path =[
+                { type: DrawOperationType.MoveTo, points: [tieStart] },
+                { type: DrawOperationType.CurveTo, points: [
+                    { x: tieStart.x + dx, y: tieStart.y + dy1 },
+                    { x: tieEnd.x - dx, y: tieStart.y + dy1 },
+                    { x: tieEnd.x, y: tieEnd.y }
+                ] },
+                { type: DrawOperationType.LineTo, points: [{ x: tieEnd.x, y: tieEnd.y + dy3}] },
+                { type: DrawOperationType.CurveTo, points: [
+                    { x: tieEnd.x - dx, y: tieStart.y + dy2 },
+                    { x: tieStart.x + dx, y: tieStart.y + dy2 },
+                    { x: tieStart.x, y: tieStart.y + dy3 }
+                ] },
+                { type: DrawOperationType.Fill, points: []}                
+            ];
+
+            draw(ctx, path);
 
         } else if ((elem as any).element === HorizVarSizeGlyphs.Stem) {
             ctx.strokeStyle = '#222222';
 
             draw(ctx, [
-                { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y)}]},
+                { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
                 { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalVertVarSizeElement).length)}]},
                 { type: DrawOperationType.Stroke, points: []}
             ]);
@@ -87,7 +133,7 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
             ctx.strokeStyle = '#555555';
 
             draw(ctx, [
-                { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y)}]},
+                { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
                 { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalVertVarSizeElement).length)}]},
                 { type: DrawOperationType.Stroke, points: []}
             ]);

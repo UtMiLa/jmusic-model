@@ -20,12 +20,18 @@ export interface ClefViewModel {
     line: number;
 }
 
+export interface TieViewModel { 
+    position: number; 
+    direction: NoteDirection 
+}
+
 export interface TimeSlotViewModel {
     absTime: AbsoluteTime, 
     clef?: ClefViewModel,
     key?: KeyViewModel,
     meter?: MeterViewModel,
     bar?: boolean,
+    ties?: TieViewModel[];
     notes: NoteViewModel[];
 }
 export interface StaffViewModel {
@@ -54,9 +60,6 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
 
         def.voices = [{ content: def.seq }];
     }
-
-    //const seq = def.voices.map(voice => new Sequence(voice.content));
-    //console.log('vc', def.voices);
 
     const clef = new Clef(def.initialClef);
 
@@ -103,7 +106,28 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
                 return noteView;
             });
 
-            slot.notes = slot.notes.concat(elements);            
+            slot.notes = slot.notes.concat(elements);
+
+            const ties = [] as TieViewModel[];
+            voiceTimeSlot.elements.forEach(note => {
+                if (note.tie) {
+                    //console.log('note tie', note);
+                    
+                    note.pitches.map(p => clef.map(p)).sort().forEach(pos => {
+                        //console.log('adding ties', pos);
+                    
+                        ties.push({ 
+                            position: pos,
+                            direction: note.direction === NoteDirection.Undefined ? voice.noteDirection : note.direction
+                        } as TieViewModel);
+                    });
+                }
+            });
+
+            if (ties.length) {
+                //console.log('setting ties', ties);
+                slot.ties = slot.ties ? slot.ties.concat(ties) : ties;
+            }
         });
         
     });

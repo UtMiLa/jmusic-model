@@ -724,4 +724,53 @@ describe('Physical model', () => {
 
     });
     
+    
+
+    it('should render a tie', () => {
+        const viewModel: ScoreViewModel = { 
+            staves: [
+                { 
+                    timeSlots: [
+                        { 
+                            absTime: Time.newAbsolute(0, 1), 
+                            ties: [
+                                { position: -6, direction: NoteDirection.Down },
+                                { position: -4, direction: NoteDirection.Up }
+                            ],
+                            notes: [                                {
+                                positions: [0],
+                                noteType: NoteType.NWhole,
+                                direction: NoteDirection.Up
+                            },] 
+                        } 
+                    ]
+                }
+            ]
+        };
+
+        const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
+
+        expect(physicalModel.elements.length).to.eq(8);
+
+        expect(physicalModel.elements[6]).to.deep.equal(
+            { 
+                element: VertVarSizeGlyphs.Tie,
+                position: { x: 30 + defaultMetrics.tieAfterNote, y: -10 },
+                direction: NoteDirection.Down,
+                length: 12
+            }
+        );
+
+        expect(physicalModel.elements[7]).to.deep.equal(
+
+            { 
+                element: VertVarSizeGlyphs.Tie,
+                position: { x: 30 + defaultMetrics.tieAfterNote, y: 0 },
+                direction: NoteDirection.Up,
+                length: 12
+            }
+        );
+
+    });
+    
 });

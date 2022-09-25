@@ -27,26 +27,34 @@ export class Note {
         
     }
     static parseLily(input: string): Note {
-        const matcher = /([a-gr](es|is)*[',]*)(\d+\.*)/i;
-        const matcherChord = /<([a-z,' ]+)>(\d+\.*)/i;
+        const matcher = /([a-gr](es|is)*[',]*)(\d+\.*)(~?)/i;
+        const matcherChord = /<([a-z,' ]+)>(\d+\.*)(~?)/i;
         const matchChord = matcherChord.exec(input);
 
         let pitches = [] as string[];
         let durationString = '';
+        let tie = false;
 
         if (matchChord) {
             //console.log(matchChord);
             pitches = matchChord[1].split(' ');
             durationString = matchChord[2];
+            if (matchChord[3] === '~') {
+                tie = true;
+            }
         } else {
             const match = matcher.exec(input);
             if (!match || match.length < 4) throw 'Illegal note: ' + input;
             pitches = (match[1] === 'r') ? [] : [match[1]];
             durationString = match[3];    
+            if (match[4] === '~') {
+                tie = true;
+            }
         }
         //console.log(match);
-        
-        return new Note(pitches.map(pitch => Pitch.parseLilypond(pitch)), Time.fromLilypond(durationString));
+        const res = new Note(pitches.map(pitch => Pitch.parseLilypond(pitch)), Time.fromLilypond(durationString));
+        if (tie) res.tie = tie;
+        return res;
     }
 
     get pitches(): Pitch[] {
@@ -102,4 +110,5 @@ export class Note {
     }
 
     direction: NoteDirection = NoteDirection.Undefined;
+    tie?: boolean;
 }

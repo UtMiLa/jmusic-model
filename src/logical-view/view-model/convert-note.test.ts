@@ -148,7 +148,7 @@ describe('View model, note', () => {
 
         expect(viewModel2.noteType).to.equal(NoteType.NHalf);
         expect(viewModel2.dotNo).to.be.undefined;
-
-
     });
+    
+
 });

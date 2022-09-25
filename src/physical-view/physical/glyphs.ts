@@ -166,7 +166,7 @@ export enum VertVarSizeGlyphs {
     Line = 1,
     Ottava = 2,
     LedgerLine = 3,
-    
+    Tie = 4,    
 }
 
 

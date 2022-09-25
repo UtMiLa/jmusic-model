@@ -1,5 +1,5 @@
 import { convertMeter } from '../../physical-view/physical/physical-meter';
-import { TimeSlotViewModel } from './../../logical-view/view-model/convert-model';
+import { TimeSlotViewModel, TieViewModel } from './../../logical-view/view-model/convert-model';
 import { convertKey } from '../../physical-view/physical/physical-key';
 import { KeyViewModel } from './../../logical-view/view-model/convert-key';
 import { NoteViewModel } from '../../logical-view/view-model/note-view-model';
@@ -73,6 +73,20 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
                 resultElements = resultElements.concat(convertNote(note, x + deltaX, settings));
             
             }); 
+            if (ts.ties) {
+                ts.ties.forEach((tie: TieViewModel) => { 
+                    resultElements.push(
+                        {
+                            element: VertVarSizeGlyphs.Tie, 
+                            length: 12, 
+                            direction: tie.direction,
+                            position: { x: x + deltaX + settings.tieAfterNote, y: staffLineToY(tie.position/2, settings) }
+                        } as PhysicalVertVarSizeElement
+                    );
+                
+                }); 
+    
+            }
             x += deltaX + settings.defaultSpacing;
 
         }

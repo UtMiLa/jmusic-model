@@ -89,4 +89,15 @@ describe('Note', () => {
         expect(notes[2].undottedDuration).to.deep.eq(Time.newSpan(1, 2));
     });
 
+    
+    it('should create a tied note', () => {
+        const note = Note.parseLily('c\'4~');
+        expect(note.tie).to.be.true;
+        const note1 = Note.parseLily('c\'4');
+        expect(note1.tie).to.be.undefined;
+        const note2 = Note.parseLily('<c\' e\' g\'>4~');
+        expect(note2.tie).to.be.true;
+    });
+
+
 });

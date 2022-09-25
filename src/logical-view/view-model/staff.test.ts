@@ -305,5 +305,36 @@ describe('Staff', () => {
         
     });
 
+    it('should convert a tied note to view model', () => {
+        staffClef.voices = [ {content: { elements: 'c\'2~ c\'8' }}];
+        staffClef.voices[0].noteDirection = NoteDirection.Up;
+        
+        const vm = modelToViewModel(staffClef);
+        expect(vm.timeSlots.length).to.equal(2);
+
+        expect(vm.timeSlots[0].ties).to.deep.equal([
+            { position: -6, direction: NoteDirection.Up }
+        ]);
+
+    });
+
+    
+    it('should make two-chord ties to view model', () => {
+        staffClef.voices = [ 
+            {content: { elements: 'e\'2~ e\'8' }},
+            {content: { elements: 'c\'2~ c\'8' }}
+        ];
+        staffClef.voices[0].noteDirection = NoteDirection.Up;
+        staffClef.voices[1].noteDirection = NoteDirection.Down;
+        
+        const vm = modelToViewModel(staffClef);
+        expect(vm.timeSlots.length).to.equal(2);
+
+        expect(vm.timeSlots[0].ties).to.deep.equal([
+            { position: -4, direction: NoteDirection.Up },
+            { position: -6, direction: NoteDirection.Down }
+        ]);
+
+    });
 
 });
