@@ -3,7 +3,7 @@ import { NoteDirection, NoteType } from '../../model/notes/note';
 import { GlyphCode, HorizVarSizeGlyphs, FixedSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
 import { Metrics } from './metrics';
 import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement, PhysicalVertVarSizeElement } from './physical-elements';
-import { staffLineToY } from './functions';
+import { calcDisplacements, staffLineToY } from './functions';
 
 
 export function testNote(viewModel: any): NoteViewModel | undefined {
@@ -47,8 +47,9 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
         return res;
     }
 
+    note.positions.sort((a, b) => a - b);
     const yPositions = note.positions.map(pos => staffLineToY(pos / 2, settings));
-
+    if (note.positions.length > 1) console.log('note.positions', note.positions, yPositions);
     
     const chordLength = yPositions[yPositions.length - 1] - yPositions[0];
     const stemBaseY = directionUp ? yPositions[0] : yPositions[yPositions.length - 1];
@@ -126,9 +127,15 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
             break;      
     }
 
-    yPositions.forEach(yPos => {
+    const displacements = calcDisplacements(note);
+
+    if (displacements.length > 1) console.log('displacements', displacements, yPositions, note);
+    
+
+    yPositions.forEach((yPos, idx) => {
+        const displacement = displacements[idx] * settings.blackNoteHeadLeftXOffset;
         result.push({
-            position: { x: xPos, y: yPos },
+            position: { x: xPos + displacement, y: yPos },
             glyph
         } as PhysicalFixedSizeElement);    
 

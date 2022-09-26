@@ -347,5 +347,44 @@ describe('Physical model, notes', () => {
 
 
 
+    it('should displace notes in dense chords', () => {
+        //
+        const note =                         {
+            positions: [3, 4, 5],
+            noteType: NoteType.NQuarter,
+            direction: NoteDirection.Up
+        };
+
+        const physical = convertNote(note, 30, defaultMetrics);
+
+        expect(physical.length).to.eq(4);
+
+        expect(physical[1].position.x).to.eq(30);
+        expect(physical[2].position.x).to.eq(30 + defaultMetrics.blackNoteHeadLeftXOffset);
+        expect(physical[3].position.x).to.eq(30);
+
+
+    });
+
+
+    it('should displace notes in semi-dense chords', () => {
+        //
+        const note =                         {
+            positions: [-4, -2, -1, 0],
+            noteType: NoteType.NQuarter,
+            direction: NoteDirection.Up
+        };
+
+        const physical = convertNote(note, 30, defaultMetrics);
+
+        expect(physical.length).to.eq(5);
+
+        expect(physical[1].position.x).to.eq(30);
+        expect(physical[2].position.x).to.eq(30);
+        expect(physical[3].position.x).to.eq(30 + defaultMetrics.blackNoteHeadLeftXOffset);
+        expect(physical[4].position.x).to.eq(30);
+
+
+    });
 
 });
