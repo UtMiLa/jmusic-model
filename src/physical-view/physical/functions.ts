@@ -7,34 +7,31 @@ export function staffLineToY(staffLine: number, settings: Metrics): number {
 }
 
 export function calcDisplacements(note: NoteViewModel): number[] {
-    const res = [];
+    let prev: number;
+    let delta: number;
+    let positions: number[];
+
     if (note.direction === NoteDirection.Up) {
-        let prev = -Infinity;
-        let displacement = 0;
-        for (let i = 0; i < note.positions.length; i++) {
-            if (note.positions[i] - 1 === prev) {
-                displacement = 1 - displacement;
-            } else {
-                displacement = 0;
-            }
-            res.push(displacement);
-            prev = note.positions[i];
-        }
-        return res;
+        prev = -Infinity;
+        delta = -1;
+        positions = note.positions;
     } else {
-        let prev = Infinity;
-        let displacement = 0;
-        for (let i = note.positions.length - 1; i >= 0; i--) {
-            if (note.positions[i] + 1 === prev) {
-                displacement = -1 - displacement;
-            } else {
-                displacement = 0;
-            }
-            res.push(displacement);
-            prev = note.positions[i];
-        }
-        return res.reverse();
-       
+        prev = Infinity;
+        delta = 1;
+        positions = note.positions.reverse();
     }
-    return[0, 1, 0, 1, 0, 1, 0, 1];
+
+    let displacement = 0;
+
+    const res = positions.map(pos => {    
+        if (pos + delta === prev) {
+            displacement = -delta - displacement;
+        } else {
+            displacement = 0;
+        }
+        prev = pos;
+        return displacement;
+    });
+
+    return delta === 1 ? res.reverse() : res;
 }
