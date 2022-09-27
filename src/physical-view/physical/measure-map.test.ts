@@ -4,17 +4,15 @@ import { ClefType } from './../../model/states/clef';
 import { StaffDef } from './../../model/score/staff';
 import { staffModelToViewModel, StaffViewModel } from './../../logical-view/view-model/convert-model';
 import { Metrics, StandardMetrics } from './metrics';
-import { generateMeasureMap, lookupInMap } from './measure-map';
+import { generateMeasureMap, lookupInMap, MeasureMapItem, mergeMeasureMaps, MeasureMapXValueItem } from './measure-map';
 
 describe('Physical model, measure map', () => {
     let defaultMetrics: Metrics;
+    let staffViewModel: StaffViewModel;
 
     beforeEach(() => { 
         defaultMetrics = new StandardMetrics();
-    });
 
-
-    it('should generate a memory map for one voice', () => {
         const staff = {
             initialClef: { clefType: ClefType.G, line: -2 },
             initialMeter: { count: 4, value: 4 },
@@ -24,7 +22,11 @@ describe('Physical model, measure map', () => {
             }]
         } as StaffDef;
 
-        const staffViewModel = staffModelToViewModel(staff);
+        staffViewModel = staffModelToViewModel(staff);
+    });
+
+
+    it('should generate a memory map for one voice', () => {
         const res = generateMeasureMap(staffViewModel, defaultMetrics);
 
         expect(res.length).to.eq(5); // 4 notes and an extra bar line
@@ -80,16 +82,7 @@ describe('Physical model, measure map', () => {
 
 
     it('should allow for lookup in a memory map', () => {
-        const staff = {
-            initialClef: { clefType: ClefType.G, line: -2 },
-            initialMeter: { count: 4, value: 4 },
-            initialKey: { accidental: -1, count: 0},
-            voices: [{
-                content: { elements: 'c4 d2 e4 f1'}
-            }]
-        } as StaffDef;
 
-        const staffViewModel = staffModelToViewModel(staff);
         const map = generateMeasureMap(staffViewModel, defaultMetrics);
 
         console.log('map', map);
@@ -104,38 +97,142 @@ describe('Physical model, measure map', () => {
 
         expect(lookupInMap(map, Time.newAbsolute(1, 4))).to.deep.equal({
             note: 80 + defaultMetrics.leftMargin
-        });
-        /*
+        });       
 
-        expect(res[1]).to.deep.include({
-            absTime: Time.newAbsolute(1, 4),
-            width: defaultMetrics.defaultSpacing,
-            startPos: 80 + defaultMetrics.leftMargin,
-            xValue: {
-                note: 0
+        expect(lookupInMap(map, Time.newAbsolute(2, 1))).to.deep.equal({
+            bar: 7 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin + defaultMetrics.afterBarSpacing
+        });       
+
+    });
+
+
+    it('should merge two measure maps', () => {
+        const measureMap1: MeasureMapItem[] = [
+            {
+                absTime: Time.newAbsolute(0, 1),
+                width: 25,
+                startPos: 10,
+                xValue: {
+                    clef: 0,
+                    key: 10,
+                    meter: 15,
+                    note: 20
+                } as MeasureMapXValueItem
+            },
+            {
+                absTime: Time.newAbsolute(1, 4),
+                width: 20,
+                startPos: 35,
+                xValue: {
+                    note: 0
+                } as MeasureMapXValueItem
+            },
+            {
+                absTime: Time.newAbsolute(3, 4),
+                width: 20,
+                startPos: 55,
+                xValue: {
+                    note: 0
+                } as MeasureMapXValueItem
+            },
+            {
+                absTime: Time.newAbsolute(1, 1),
+                width: 20,
+                startPos: 75,
+                xValue: {
+                    bar: 0,
+                    note: 10
+                } as MeasureMapXValueItem
             }
-        });
-
-        expect(res[2]).to.deep.include({
-            absTime: Time.newAbsolute(3, 4),
-            width: defaultMetrics.defaultSpacing
-        });
-
-        expect(res[3]).to.deep.include({
-            absTime: Time.newAbsolute(1, 1),
-            width: defaultMetrics.afterBarSpacing + defaultMetrics.defaultSpacing,
-            startPos: 6 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin,
-            xValue: {
-                bar: 0,
-                note: 8
+        ];
+        const measureMap2: MeasureMapItem[] = [
+            {
+                absTime: Time.newAbsolute(0, 1),
+                width: 25,
+                startPos: 10,
+                xValue: {
+                    clef: 0,
+                    key: 8,
+                    meter: 15,
+                    note: 20
+                } as MeasureMapXValueItem
+            },
+            {
+                absTime: Time.newAbsolute(1, 2),
+                width: 5,
+                startPos: 35,
+                xValue: {
+                    note: 0
+                } as MeasureMapXValueItem
+            },
+            {
+                absTime: Time.newAbsolute(3, 4),
+                width: 5,
+                startPos: 40,
+                xValue: {
+                    note: 0
+                } as MeasureMapXValueItem
+            },
+            {
+                absTime: Time.newAbsolute(1, 1),
+                width: 20,
+                startPos: 45,
+                xValue: {
+                    bar: 0,
+                    note: 10
+                } as MeasureMapXValueItem
             }
-        });
+        ];
 
-        expect(res[4]).to.deep.include({
-            absTime: Time.newAbsolute(2, 1),
-            width: defaultMetrics.afterBarSpacing
-        });*/
+        const res = mergeMeasureMaps(measureMap1, measureMap2);
 
+        expect(res).to.deep.equal([
+            {
+                absTime: Time.newAbsolute(0, 1),
+                width: 25,
+                startPos: 10,
+                xValue: {
+                    clef: 0,
+                    key: 10,
+                    meter: 15,
+                    note: 20
+                }
+            },
+            {
+                absTime: Time.newAbsolute(1, 4),
+                width: 20,
+                startPos: 35,
+                xValue: {
+                    note: 0
+                }
+            },
+            {
+                absTime: Time.newAbsolute(1, 2),
+                width: 5,
+                startPos: 55,
+                xValue: {
+                    note: 0
+                }
+            },
+            {
+                absTime: Time.newAbsolute(3, 4),
+                width: 20,
+                startPos: 60,
+                xValue: {
+                    note: 0
+                }
+            },
+            {
+                absTime: Time.newAbsolute(1, 1),
+                width: 20,
+                startPos: 80,
+                xValue: {
+                    bar: 0,
+                    note: 10
+                }
+            }
+
+        ]);
     });
 
 

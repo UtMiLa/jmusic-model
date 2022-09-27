@@ -14,7 +14,7 @@ import { convertNote, testNote } from './physical-note';
 import { ClefViewModel, ScoreViewModel } from '../../logical-view/view-model/convert-model';
 import { staffLineToY } from './functions';
 import { testKey } from './physical-key';
-import { getTimeSlotWidth } from './measure-map';
+import { generateMeasureMap, getTimeSlotWidth, mergeMeasureMaps, MeasureMapItem, lookupInMap } from './measure-map';
 
 /**
  * Physical Model
@@ -24,10 +24,6 @@ import { getTimeSlotWidth } from './measure-map';
  * 
  */
 
-interface VMCondition<T> {
-    if: (obj: unknown) => T | undefined;
-    then: (obj: T) => void;
-}
 
 function calcSlotLength(timeSlot: TimeSlotViewModel, settings: Metrics): number {
     return settings.defaultSpacing * timeSlot.notes.length + 
@@ -42,6 +38,17 @@ function calcLength(timeSlots: TimeSlotViewModel[], settings: Metrics): number {
 
 
 export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics): PhysicalModel {
+
+
+    let measureMap: MeasureMapItem[] = [];
+    viewModel.staves.forEach(staffModel => {
+        const measureMapX = generateMeasureMap(staffModel, settings);
+        measureMap = mergeMeasureMaps(measureMap, measureMapX);
+    });
+
+    console.log(measureMap);
+    
+
     const resultElements = viewModel.staves.map((staffModel: StaffViewModel, idx: number) => {
 
         const y0 = -70 * idx;
@@ -52,34 +59,29 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
             length: calcLength(staffModel.timeSlots, settings)
         }));
 
-        let xTimeslot = 10;
-
         staffModel.timeSlots.forEach(ts =>  {
-            let deltaX = 0;
-            let x = xTimeslot;
+            const mapItem = lookupInMap(measureMap, ts.absTime);
+            if (!mapItem) throw 'Internal error in measure map';
+           
             
             if (ts.clef) {
                 resultElements.push(convertClef(ts.clef, settings));
-                x += settings.defaultSpacing;
             }
             if (ts.bar) {
                 resultElements.push({
                     element: HorizVarSizeGlyphs.Bar,
-                    position: { x: x, y: 0 },
+                    position: { x: mapItem.bar as number, y: 0 },
                     length: 4 * settings.staffLineWidth
                 } as PhysicalHorizVarSizeElement);
-                deltaX += settings.afterBarSpacing;
             }
             if (ts.key) {
-                resultElements = resultElements.concat(convertKey(ts.key, x, settings));
-                deltaX += settings.defaultSpacing + ts.key.keyPositions.length * settings.keySigSpacing;
+                resultElements = resultElements.concat(convertKey(ts.key, mapItem.key as number, settings));
             }
             if (ts.meter) {
-                resultElements = resultElements.concat(convertMeter(ts.meter, x + deltaX, settings));
-                deltaX += settings.defaultSpacing;
+                resultElements = resultElements.concat(convertMeter(ts.meter, mapItem.meter as number, settings));
             }
             ts.notes.forEach((note: NoteViewModel) => { 
-                resultElements = resultElements.concat(convertNote(note, x + deltaX, settings));
+                resultElements = resultElements.concat(convertNote(note, mapItem.note as number, settings));
             
             }); 
             if (ts.ties) {
@@ -89,21 +91,13 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
                             element: VertVarSizeGlyphs.Tie, 
                             length: 12, 
                             direction: tie.direction,
-                            position: { x: x + deltaX + settings.tieAfterNote, y: staffLineToY(tie.position/2, settings) }
+                            position: { x: mapItem.note as number + settings.tieAfterNote, y: staffLineToY(tie.position/2, settings) }
                         } as PhysicalVertVarSizeElement
                     );
                 
                 }); 
     
             }
-            if (ts.notes.length) {
-                x += deltaX + settings.defaultSpacing;
-            }
-            xTimeslot += getTimeSlotWidth(ts, settings);
-            /*if (xOrig !== x) {
-                console.log('x', xOrig, x, ts);                
-            }
-            xOrig = x;*/
         }
         );
      

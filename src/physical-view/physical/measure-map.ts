@@ -3,13 +3,11 @@ import { AbsoluteTime, Time } from './../../model/rationals/time';
 import { Metrics } from './metrics';
 import { StaffViewModel, TimeSlotViewModel } from './../../logical-view/view-model/convert-model';
 
-export interface MeasureMapXValueItem {
-    key?: number;
-    clef?: number;
-    bar?: number;
-    meter?: number;
-    note?: number;
-}
+export type MeasureMapXValueItem = {
+    [index in XValueKey]: number;
+};
+
+export type XValueKey = 'bar' | 'clef' | 'key' | 'note' | 'meter';
 
 export interface MeasureMapItem {
     absTime: AbsoluteTime;
@@ -19,31 +17,13 @@ export interface MeasureMapItem {
 }
 
 export function getTimeSlotWidth(slot: TimeSlotViewModel, settings: Metrics): number {
-    /*let res = 0;
-
-    if (slot.bar) {
-        res += settings.afterBarSpacing;
-    }
-    if (slot.clef) {
-        res += settings.defaultSpacing;
-    }
-    if (slot.meter) {
-        res += settings.defaultSpacing;
-    }
-    if (slot.key) {
-        res += settings.defaultSpacing + slot.key.keyPositions.length * settings.keySigSpacing;
-    }
-    if (slot.notes.length) {
-        res += settings.defaultSpacing;
-    }*/
-
     return getTimeSlotSpacing(slot, settings).width;
     //res;
 }
 
 
 export function getTimeSlotSpacing(slot: TimeSlotViewModel, settings: Metrics): MeasureMapItem {
-    const res: MeasureMapItem = { absTime: slot.absTime, width: 0, xValue: {} };
+    const res: MeasureMapItem = { absTime: slot.absTime, width: 0, xValue: {} as MeasureMapXValueItem };
     /* Ordering of objects when absTime is identical:
     0	Accolade
     10	StartBar
@@ -93,8 +73,9 @@ export function generateMeasureMap(staff: StaffViewModel, settings: Metrics): Me
 }
 
 export function lookupInMap(map: MeasureMapItem[], time: AbsoluteTime): MeasureMapXValueItem | undefined {
-    const res = map.find(mp => Time.equals(mp.absTime, time));
+    let res = map.find(mp => Time.equals(mp.absTime, time));
     if (!res) return undefined;
+    res = deepCloneMeasureMapItem(res);
     if (!res.startPos) res.startPos = 0;
     if (res.xValue.bar !== undefined) res.xValue.bar += res.startPos;
     if (res.xValue.clef !== undefined) res.xValue.clef += res.startPos;
@@ -102,4 +83,48 @@ export function lookupInMap(map: MeasureMapItem[], time: AbsoluteTime): MeasureM
     if (res.xValue.meter !== undefined) res.xValue.meter += res.startPos;
     if (res.xValue.note !== undefined) res.xValue.note += res.startPos;
     return res.xValue;
+}
+
+function mergeXValues(item: MeasureMapItem, updateWith: MeasureMapItem, field: XValueKey): void {
+    const f1 = updateWith.xValue[field];
+    const f2 = item.xValue[field];
+    if (f1 === undefined) {
+        return;
+    }
+    if (f2 === undefined || f1 < f2) {
+        item.xValue[field] = updateWith.xValue[field];
+        return;
+    }
+}
+
+function deepCloneMeasureMapItem(objectToClone: MeasureMapItem): MeasureMapItem {
+    return {
+        absTime: objectToClone.absTime,
+        width: objectToClone.width,
+        startPos: objectToClone.startPos,
+        xValue: {...objectToClone.xValue }
+    };
+}
+
+
+export function mergeMeasureMaps(measureMap1: MeasureMapItem[], measureMap2: MeasureMapItem[]): MeasureMapItem[] {
+    const result = measureMap1.map(item => deepCloneMeasureMapItem(item));
+    measureMap2.forEach(mapItem => {
+        const existing = result.find((mi: MeasureMapItem) => Time.equals(mi.absTime, mapItem.absTime));
+        if (existing) {
+            mergeXValues(existing, mapItem, 'bar');
+        } else {
+            result.push(deepCloneMeasureMapItem(mapItem));
+        }
+    });
+    
+    result.sort((m1, m2) => Time.sortComparison(m1.absTime, m2.absTime));
+    if (result.length) {
+        if (result[0].startPos === undefined) result[0].startPos = 0;
+        for (let i = 1; i < result.length; i++) {
+            result[i].startPos = (result[i - 1].startPos as number) + result[i - 1].width;
+        }
+    }
+    
+    return result;
 }
