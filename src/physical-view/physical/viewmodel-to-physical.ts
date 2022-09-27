@@ -1,20 +1,16 @@
 import { convertMeter } from '../../physical-view/physical/physical-meter';
 import { TimeSlotViewModel, TieViewModel, StaffViewModel } from './../../logical-view/view-model/convert-model';
 import { convertKey } from '../../physical-view/physical/physical-key';
-import { KeyViewModel } from './../../logical-view/view-model/convert-key';
 import { NoteViewModel } from '../../logical-view/view-model/note-view-model';
-import { isClefVM } from '../../model/score/staff';
-import { Note, NoteType } from '../../model/notes/note';
-import { ClefDef, ClefType } from '../../model/states/clef';
+import { ClefType } from '../../model/states/clef';
 import { Metrics } from './metrics';
-import { VertVarSizeGlyphs, FixedSizeGlyphs, GlyphCode, HorizVarSizeGlyphs } from './glyphs';
+import { VertVarSizeGlyphs, GlyphCode, HorizVarSizeGlyphs } from './glyphs';
 
 import { PhysicalModel, PhysicalElementBase, PhysicalFixedSizeElement, PhysicalVertVarSizeElement, PhysicalHorizVarSizeElement } from './physical-elements';
-import { convertNote, testNote } from './physical-note';
+import { convertNote } from './physical-note';
 import { ClefViewModel, ScoreViewModel } from '../../logical-view/view-model/convert-model';
 import { staffLineToY } from './functions';
-import { testKey } from './physical-key';
-import { generateMeasureMap, getTimeSlotWidth, mergeMeasureMaps, MeasureMapItem, lookupInMap } from './measure-map';
+import { generateMeasureMap, mergeMeasureMaps, MeasureMapItem, lookupInMap } from './measure-map';
 
 /**
  * Physical Model
@@ -46,9 +42,6 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
         measureMap = mergeMeasureMaps(measureMap, measureMapX);
     });
 
-    console.log(measureMap);
-    
-
     const resultElements = viewModel.staves.map((staffModel: StaffViewModel, idx: number) => {
 
         const y0 = -70 * idx;
@@ -65,7 +58,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
            
             
             if (ts.clef) {
-                resultElements.push(convertClef(ts.clef, settings));
+                resultElements.push(convertClef(ts.clef,  mapItem.clef as number, settings));
             }
             if (ts.bar) {
                 resultElements.push({
@@ -86,10 +79,15 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
             }); 
             if (ts.ties) {
                 ts.ties.forEach((tie: TieViewModel) => { 
+                    let length = 12;
+                    if (tie.toTime) {
+                        const checkNextNote = lookupInMap(measureMap, tie.toTime);
+                        if (checkNextNote && checkNextNote.note) length = checkNextNote.note - mapItem.note - settings.tieAfterNote;
+                    }
                     resultElements.push(
                         {
                             element: VertVarSizeGlyphs.Tie, 
-                            length: 12, 
+                            length,
                             direction: tie.direction,
                             position: { x: mapItem.note as number + settings.tieAfterNote, y: staffLineToY(tie.position/2, settings) }
                         } as PhysicalVertVarSizeElement
@@ -114,7 +112,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
     return resultElements.reduce((prev, curr) => ({ elements: [...prev.elements, ...curr.elements] }), { elements: [] });
 }
 
-function convertClef(clef: ClefViewModel, settings: Metrics): PhysicalElementBase {
+function convertClef(clef: ClefViewModel, xPos: number, settings: Metrics): PhysicalElementBase {
     let glyph: GlyphCode;
 
     switch(clef.clefType) {
@@ -125,7 +123,7 @@ function convertClef(clef: ClefViewModel, settings: Metrics): PhysicalElementBas
     }
 
     return {
-        position: { x: 10, y: staffLineToY(clef.line/2, settings) },
+        position: { x: xPos, y: staffLineToY(clef.line/2, settings) },
         glyph
     } as PhysicalFixedSizeElement;
 }

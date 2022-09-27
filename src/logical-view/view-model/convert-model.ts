@@ -23,7 +23,8 @@ export interface ClefViewModel {
 
 export interface TieViewModel { 
     position: number; 
-    direction: NoteDirection 
+    direction: NoteDirection;
+    toTime?: AbsoluteTime;
 }
 
 export interface TimeSlotViewModel {
@@ -120,10 +121,10 @@ export function staffModelToViewModel(def: StaffDef): StaffViewModel {
                     
                     note.pitches.map(p => clef.map(p)).sort().forEach(pos => {
                         //console.log('adding ties', pos);
-                    
                         ties.push({ 
                             position: pos,
-                            direction: note.direction === NoteDirection.Undefined ? voice.noteDirection : note.direction
+                            direction: note.direction === NoteDirection.Undefined ? voice.noteDirection : note.direction,
+                            toTime: Time.addTime(voiceTimeSlot.time, note.duration)
                         } as TieViewModel);
                     });
                 }

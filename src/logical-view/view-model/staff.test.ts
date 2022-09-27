@@ -313,7 +313,7 @@ describe('Staff', () => {
         expect(vm.timeSlots.length).to.equal(2);
 
         expect(vm.timeSlots[0].ties).to.deep.equal([
-            { position: -6, direction: NoteDirection.Up }
+            { position: -6, direction: NoteDirection.Up, toTime: Time.newAbsolute(1, 2) }
         ]);
 
     });
@@ -331,8 +331,8 @@ describe('Staff', () => {
         expect(vm.timeSlots.length).to.equal(2);
 
         expect(vm.timeSlots[0].ties).to.deep.equal([
-            { position: -4, direction: NoteDirection.Up },
-            { position: -6, direction: NoteDirection.Down }
+            { position: -4, direction: NoteDirection.Up, toTime: Time.newAbsolute(1, 2) },
+            { position: -6, direction: NoteDirection.Down, toTime: Time.newAbsolute(1, 2) }
         ]);
 
     });
