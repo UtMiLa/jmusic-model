@@ -14,6 +14,7 @@ import { convertNote, testNote } from './physical-note';
 import { ClefViewModel, ScoreViewModel } from '../../logical-view/view-model/convert-model';
 import { staffLineToY } from './functions';
 import { testKey } from './physical-key';
+import { getTimeSlotWidth } from './measure-map';
 
 /**
  * Physical Model
@@ -38,6 +39,8 @@ function calcLength(timeSlots: TimeSlotViewModel[], settings: Metrics): number {
     return settings.staffLengthOffset + timeSlots.map(slot => calcSlotLength(slot, settings)).reduce((prev, curr) => prev + curr, 0);
 }
 
+
+
 export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics): PhysicalModel {
     const resultElements = viewModel.staves.map((staffModel: StaffViewModel, idx: number) => {
 
@@ -49,12 +52,15 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
             length: calcLength(staffModel.timeSlots, settings)
         }));
 
-        let x = 10 + settings.defaultSpacing;
+        let xTimeslot = 10;
 
         staffModel.timeSlots.forEach(ts =>  {
             let deltaX = 0;
+            let x = xTimeslot;
+            
             if (ts.clef) {
                 resultElements.push(convertClef(ts.clef, settings));
+                x += settings.defaultSpacing;
             }
             if (ts.bar) {
                 resultElements.push({
@@ -90,8 +96,14 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
                 }); 
     
             }
-            x += deltaX + settings.defaultSpacing;
-
+            if (ts.notes.length) {
+                x += deltaX + settings.defaultSpacing;
+            }
+            xTimeslot += getTimeSlotWidth(ts, settings);
+            /*if (xOrig !== x) {
+                console.log('x', xOrig, x, ts);                
+            }
+            xOrig = x;*/
         }
         );
      

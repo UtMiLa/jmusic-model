@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 export interface Metrics {
+    leftMargin: number;
     tieAfterNote: number;
     staffLineWidth: number; 
     staffLengthOffset: number;
@@ -32,6 +33,7 @@ export class StandardMetrics implements Metrics {
             (this as unknown as {[key: string]: number})[key] = seed[key];
         });
     }
+    leftMargin = 10;
     tieAfterNote: number = 9;
 
     staffLineWidth: number = 6; 

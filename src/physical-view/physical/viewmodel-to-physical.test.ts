@@ -1,3 +1,8 @@
+import { KeyViewModel } from './../../logical-view/view-model/convert-key';
+import { MeterViewModel } from './../../logical-view/view-model/convert-meter';
+import { Clef } from './../../model/states/clef';
+import { TimeSlotViewModel, ClefViewModel } from './../../logical-view/view-model/convert-model';
+import { TimeSlot } from './../../model/score/sequence';
 import { Accidental } from './../../model/pitches/pitch';
 import { Time } from './../../model/rationals/time';
 import { HorizVarSizeGlyphs } from './glyphs';
@@ -11,6 +16,7 @@ import { expect } from 'chai';
 import { viewModelToPhysical } from './viewmodel-to-physical';
 import { ScoreViewModel } from '../../logical-view/view-model/convert-model';
 import { staffLineToY } from './functions';
+import { getTimeSlotWidth } from './measure-map';
 
 describe('Physical model', () => {
     let defaultMetrics: Metrics;
@@ -598,7 +604,7 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[5]).to.deep.eq({
             glyph: 'accidentals.M2',
-            position: { x: 30, y: 3.5 * defaultMetrics.staffLineWidth }
+            position: { x: 10, y: 3.5 * defaultMetrics.staffLineWidth }
         });
     });
    
@@ -696,7 +702,13 @@ describe('Physical model', () => {
                     timeSlots: [
                         { 
                             absTime: Time.newAbsolute(0, 1), 
-                            notes: [] 
+                            notes: [
+                                {
+                                    positions: [0],
+                                    noteType: NoteType.NBreve,
+                                    direction: NoteDirection.Up
+                                }
+                            ] 
                         },
                         { 
                             absTime: Time.newAbsolute(1, 1), 
@@ -712,12 +724,12 @@ describe('Physical model', () => {
 
         const lineWidth = defaultMetrics.staffLineWidth;
 
-        expect(physicalModel.elements.length).to.eq(6);
+        expect(physicalModel.elements.length).to.eq(7);
 
-        expect(physicalModel.elements[5]).to.deep.equal(
+        expect(physicalModel.elements[6]).to.deep.equal(
             { 
                 element: HorizVarSizeGlyphs.Bar,
-                position: { x: 50, y: 0 },
+                position: { x: 30, y: 0 },
                 length: 4 * lineWidth
             }
         );
@@ -755,7 +767,7 @@ describe('Physical model', () => {
         expect(physicalModel.elements[6]).to.deep.equal(
             { 
                 element: VertVarSizeGlyphs.Tie,
-                position: { x: 30 + defaultMetrics.tieAfterNote, y: -defaultMetrics.staffLineWidth },
+                position: { x: 10 + defaultMetrics.tieAfterNote, y: -defaultMetrics.staffLineWidth },
                 direction: NoteDirection.Down,
                 length: 12
             }
@@ -765,7 +777,7 @@ describe('Physical model', () => {
 
             { 
                 element: VertVarSizeGlyphs.Tie,
-                position: { x: 30 + defaultMetrics.tieAfterNote, y: 0 },
+                position: { x: 10 + defaultMetrics.tieAfterNote, y: 0 },
                 direction: NoteDirection.Up,
                 length: 12
             }
@@ -773,4 +785,104 @@ describe('Physical model', () => {
 
     });
     
+    describe('Widths', () => {
+        it('should calculate the width of an empty timeslot', () => {
+            const timeSlot: TimeSlotViewModel = {
+                absTime: Time.newAbsolute(1,1),
+                notes: []
+            };
+            const res = getTimeSlotWidth(timeSlot, defaultMetrics);
+
+            expect(res).to.eq(0);
+        });
+
+        it('should calculate the width of a clef', () => {
+            const timeSlot: TimeSlotViewModel = {
+                absTime: Time.newAbsolute(1,1),
+                clef: { clefType: ClefType.G, line: 2 } as ClefViewModel,
+                notes: []
+            };
+            const res = getTimeSlotWidth(timeSlot, defaultMetrics);
+
+            expect(res).to.eq(defaultMetrics.defaultSpacing);
+        });        
+
+        it('should calculate the width of a meter', () => {
+            const timeSlot: TimeSlotViewModel = {
+                absTime: Time.newAbsolute(1,1),
+                meter: { meterText: ['3', '4'] } as MeterViewModel,
+                notes: []
+            };
+            const res = getTimeSlotWidth(timeSlot, defaultMetrics);
+
+            expect(res).to.eq(defaultMetrics.defaultSpacing);
+        });        
+
+        it('should calculate the width of a key', () => {
+            const timeSlot1: TimeSlotViewModel = {
+                absTime: Time.newAbsolute(1,1),
+                key: { keyPositions: [{ alternation: -1, position: 1 }] } as KeyViewModel,
+                notes: []
+            };
+            const res = getTimeSlotWidth(timeSlot1, defaultMetrics);
+
+            expect(res).to.eq(defaultMetrics.defaultSpacing + 1 * defaultMetrics.keySigSpacing);
+
+            const timeSlot2: TimeSlotViewModel = {
+                absTime: Time.newAbsolute(1,1),
+                key: { keyPositions: [
+                    { alternation: 1, position: 1 },
+                    { alternation: 1, position: 2 },
+                    { alternation: 1, position: 3 },
+                    { alternation: 1, position: 4 },
+                    { alternation: 1, position: 5 },
+                    { alternation: 1, position: 6 },
+                    { alternation: 1, position: 7 }
+                ] } as KeyViewModel,
+                notes: []
+            };
+            const res2 = getTimeSlotWidth(timeSlot2, defaultMetrics);
+
+            expect(res2).to.eq(defaultMetrics.defaultSpacing + 7 * defaultMetrics.keySigSpacing);
+
+        });
+
+        it('should calculate the width of a bar', () => {
+            const timeSlot: TimeSlotViewModel = {
+                absTime: Time.newAbsolute(1,1),
+                bar: true,
+                notes: []
+            };
+            const res = getTimeSlotWidth(timeSlot, defaultMetrics);
+
+            expect(res).to.eq(defaultMetrics.afterBarSpacing);
+        });        
+
+        it('should calculate the width of a note', () => {
+            const timeSlot: TimeSlotViewModel = {
+                absTime: Time.newAbsolute(1,1),
+                notes: [{noteType: NoteType.NWhole, positions: [1], direction: NoteDirection.Undefined }]
+            };
+            const res = getTimeSlotWidth(timeSlot, defaultMetrics);
+
+            expect(res).to.eq(defaultMetrics.defaultSpacing);
+        });        
+
+        
+        it('should calculate the width of the whole timeslot', () => {
+            const timeSlot: TimeSlotViewModel = {
+                absTime: Time.newAbsolute(1,1),
+                clef: { clefType: ClefType.G, line: 2 } as ClefViewModel,
+                bar: true,
+                key: { keyPositions: [{ alternation: -1, position: 1 }] } as KeyViewModel,
+                meter: { meterText: ['3', '4'] } as MeterViewModel,
+                notes: [{noteType: NoteType.NWhole, positions: [1], direction: NoteDirection.Undefined }]
+            };
+            const res = getTimeSlotWidth(timeSlot, defaultMetrics);
+
+            expect(res).to.eq(defaultMetrics.defaultSpacing + defaultMetrics.afterBarSpacing
+                + defaultMetrics.defaultSpacing + 1 * defaultMetrics.keySigSpacing
+                + defaultMetrics.defaultSpacing + defaultMetrics.defaultSpacing);
+        });       
+    });
 });
