@@ -7,3 +7,4 @@ export * from './states/meter';
 //export * from './score/score';
 export * from './score/sequence';
 export * from './score/staff';
+export * from './score/score';

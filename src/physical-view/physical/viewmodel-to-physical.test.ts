@@ -65,7 +65,7 @@ describe('Physical model', () => {
 
         const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
 
-        const lineWidth = 10;
+        const lineWidth = defaultMetrics.staffLineWidth;
 
         expect(physicalModel).to.deep.equal({ elements: [
             { 
@@ -95,7 +95,7 @@ describe('Physical model', () => {
             }
         ] });
 
-        checkStaffLines(physicalModel.elements, 0, 10, 10);
+        checkStaffLines(physicalModel.elements, 0, defaultMetrics.staffLineWidth, 10);
     });
     
    
@@ -710,7 +710,7 @@ describe('Physical model', () => {
 
         const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
 
-        const lineWidth = 10;
+        const lineWidth = defaultMetrics.staffLineWidth;
 
         expect(physicalModel.elements.length).to.eq(6);
 
@@ -755,7 +755,7 @@ describe('Physical model', () => {
         expect(physicalModel.elements[6]).to.deep.equal(
             { 
                 element: VertVarSizeGlyphs.Tie,
-                position: { x: 30 + defaultMetrics.tieAfterNote, y: -10 },
+                position: { x: 30 + defaultMetrics.tieAfterNote, y: -defaultMetrics.staffLineWidth },
                 direction: NoteDirection.Down,
                 length: 12
             }

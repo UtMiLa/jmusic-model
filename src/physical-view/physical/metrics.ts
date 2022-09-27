@@ -34,7 +34,7 @@ export class StandardMetrics implements Metrics {
     }
     tieAfterNote: number = 9;
 
-    staffLineWidth: number = 10; 
+    staffLineWidth: number = 6; 
     staffLengthOffset: number = 10;
 
     blackNoteHeadLeftXOffset = 6.5;

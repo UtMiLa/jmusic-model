@@ -5,7 +5,7 @@ import { Key } from './../../model/states/key';
 import { Metrics, StandardMetrics } from './metrics';
 import { convertKey } from './physical-key';
 
-describe('Physical model', () => {
+describe('Physical model, keys', () => {
     let defaultMetrics: Metrics;
     let alternativeMetrics: Metrics;
     let keyC: KeyViewModel;
@@ -39,10 +39,10 @@ describe('Physical model', () => {
         const resultAs = convertKey(keyAs, 30, defaultMetrics);
 
         expect(resultAs.length).to.eq(4);
-        expect(resultAs[0]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30, y: 20 }});
-        expect(resultAs[1]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30 + defaultMetrics.keySigSpacing, y: 35 }});
-        expect(resultAs[2]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30 + 2*defaultMetrics.keySigSpacing, y: 15 }});
-        expect(resultAs[3]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30 + 3*defaultMetrics.keySigSpacing, y: 30 }});
+        expect(resultAs[0]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30, y: 2*defaultMetrics.staffLineWidth }});
+        expect(resultAs[1]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30 + defaultMetrics.keySigSpacing, y: 3.5*defaultMetrics.staffLineWidth }});
+        expect(resultAs[2]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30 + 2*defaultMetrics.keySigSpacing, y: 1.5*defaultMetrics.staffLineWidth }});
+        expect(resultAs[3]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30 + 3*defaultMetrics.keySigSpacing, y: 3*defaultMetrics.staffLineWidth }});
 
     });
 
@@ -50,10 +50,10 @@ describe('Physical model', () => {
         const resultAs = convertKey(keyH, 30, defaultMetrics);
 
         expect(resultAs.length).to.eq(5);
-        expect(resultAs[0]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30, y: 40 }});
-        expect(resultAs[1]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + defaultMetrics.keySigSpacing, y: 25 }});
-        expect(resultAs[2]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + 2*defaultMetrics.keySigSpacing, y: 45 }});
-        expect(resultAs[3]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + 3*defaultMetrics.keySigSpacing, y: 30 }});
+        expect(resultAs[0]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30, y: 4*defaultMetrics.staffLineWidth }});
+        expect(resultAs[1]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + defaultMetrics.keySigSpacing, y: 2.5*defaultMetrics.staffLineWidth }});
+        expect(resultAs[2]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + 2*defaultMetrics.keySigSpacing, y: 4.5*defaultMetrics.staffLineWidth }});
+        expect(resultAs[3]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + 3*defaultMetrics.keySigSpacing, y: 3*defaultMetrics.staffLineWidth }});
 
     });
 

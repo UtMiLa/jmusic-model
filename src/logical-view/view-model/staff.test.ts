@@ -4,7 +4,7 @@ import { NoteType, NoteDirection } from '../../model/notes/note';
 import { Staff, StaffDef } from '../../model/score/staff';
 import { expect } from 'chai';
 import { ClefType } from '../../model/states/clef';
-import { modelToViewModel } from './convert-model';
+import { staffModelToViewModel } from './convert-model';
 describe('Staff', () => {
     let staffClef: StaffDef;
 
@@ -19,7 +19,7 @@ describe('Staff', () => {
     });
 
     it('should convert an empty staff to view model', () => {
-        const vm = modelToViewModel(staffClef);
+        const vm = staffModelToViewModel(staffClef);
 
         expect(vm).to.deep.equal({
             timeSlots: [
@@ -59,7 +59,7 @@ describe('Staff', () => {
     it('should convert a staff with notes to view model', () => {
         staffClef.seq = { elements: 'c\'1 d\'4 e\'2' };
 
-        const vm = modelToViewModel(staffClef);
+        const vm = staffModelToViewModel(staffClef);
 
         expect(vm).to.deep.equal({
             timeSlots: [
@@ -129,7 +129,7 @@ describe('Staff', () => {
         
         staffClef.initialKey.count = 0;
 
-        const vm = modelToViewModel(staffClef);
+        const vm = staffModelToViewModel(staffClef);
 
         expect(vm).to.deep.equal({
             timeSlots: [
@@ -188,7 +188,7 @@ describe('Staff', () => {
 
         staffClef.initialKey.count = 0;
         
-        const vm = modelToViewModel(staffClef);
+        const vm = staffModelToViewModel(staffClef);
 
         expect(vm).to.deep.equal({
             timeSlots: [
@@ -238,7 +238,7 @@ describe('Staff', () => {
         staffClef.seq = { elements: 'c\'1 d\'4 e\'2' };
         staffClef.initialMeter = { count: 12, value: 8 };
 
-        const vm = modelToViewModel(staffClef);
+        const vm = staffModelToViewModel(staffClef);
 
         expect(vm.timeSlots[0].meter).to.deep.equal({
                     
@@ -254,7 +254,7 @@ describe('Staff', () => {
         staffClef.initialKey.count = 0;
         staffClef.initialMeter = {count: 3, value: 4};
 
-        const vm = modelToViewModel(staffClef);
+        const vm = staffModelToViewModel(staffClef);
         expect(vm.timeSlots.length).to.equal(5);
 
         for (let i = 0; i < 5; i++) {
@@ -273,7 +273,7 @@ describe('Staff', () => {
         staffClef.initialKey.count = 0;
         staffClef.initialMeter = {count: 2, value: 4};
 
-        const vm = modelToViewModel(staffClef);
+        const vm = staffModelToViewModel(staffClef);
         expect(vm.timeSlots.length).to.equal(3);
 
         for (let i = 0; i < 3; i++) {
@@ -292,7 +292,7 @@ describe('Staff', () => {
         staffClef.initialKey.count = 0;
         staffClef.initialMeter = {count: 3, value: 4, upBeat: Time.newSpan(1, 4)};
 
-        const vm = modelToViewModel(staffClef);
+        const vm = staffModelToViewModel(staffClef);
         expect(vm.timeSlots.length).to.equal(8);
 
         for (let i = 0; i < 8; i++) {
@@ -309,7 +309,7 @@ describe('Staff', () => {
         staffClef.voices = [ {content: { elements: 'c\'2~ c\'8' }}];
         staffClef.voices[0].noteDirection = NoteDirection.Up;
         
-        const vm = modelToViewModel(staffClef);
+        const vm = staffModelToViewModel(staffClef);
         expect(vm.timeSlots.length).to.equal(2);
 
         expect(vm.timeSlots[0].ties).to.deep.equal([
@@ -327,7 +327,7 @@ describe('Staff', () => {
         staffClef.voices[0].noteDirection = NoteDirection.Up;
         staffClef.voices[1].noteDirection = NoteDirection.Down;
         
-        const vm = modelToViewModel(staffClef);
+        const vm = staffModelToViewModel(staffClef);
         expect(vm.timeSlots.length).to.equal(2);
 
         expect(vm.timeSlots[0].ties).to.deep.equal([

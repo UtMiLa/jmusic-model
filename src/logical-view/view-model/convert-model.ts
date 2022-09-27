@@ -1,3 +1,4 @@
+import { ScoreDef } from './../../model/score/score';
 import { MeterFactory } from './../../model/states/meter';
 import { meterToView, MeterViewModel } from './convert-meter';
 import { AbsoluteTime, Time } from './../../model/rationals/time';
@@ -53,7 +54,11 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
     return res;
 }
 
-export function modelToViewModel(def: StaffDef): StaffViewModel {
+export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
+    return { staves: def.staves.map(staff => staffModelToViewModel(staff)) };
+}
+
+export function staffModelToViewModel(def: StaffDef): StaffViewModel {
 
     if (!def.voices) { 
         if (!def.seq) throw 'seq and voices undefined';
@@ -150,14 +155,3 @@ export function modelToViewModel(def: StaffDef): StaffViewModel {
 
 
 }
-
-/*function voiceNotesToView(clef: Clef): (value: VoiceDef, index: number, array: VoiceDef[]) => NoteViewModel[] {
-    return voice => (new Sequence(voice.content))
-        .elements
-        .map(elem => { 
-            const noteClone = Note.clone(elem, { direction: elem.direction ? elem.direction : voice.noteDirection });
-            const noteView = noteToView(noteClone, clef);
-            return noteView;
-        });
-}
-*/

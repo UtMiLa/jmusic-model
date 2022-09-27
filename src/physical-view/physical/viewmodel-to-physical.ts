@@ -1,5 +1,5 @@
 import { convertMeter } from '../../physical-view/physical/physical-meter';
-import { TimeSlotViewModel, TieViewModel } from './../../logical-view/view-model/convert-model';
+import { TimeSlotViewModel, TieViewModel, StaffViewModel } from './../../logical-view/view-model/convert-model';
 import { convertKey } from '../../physical-view/physical/physical-key';
 import { KeyViewModel } from './../../logical-view/view-model/convert-key';
 import { NoteViewModel } from '../../logical-view/view-model/note-view-model';
@@ -39,16 +39,19 @@ function calcLength(timeSlots: TimeSlotViewModel[], settings: Metrics): number {
 }
 
 export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics): PhysicalModel {
-    if (viewModel.staves.length) {
+    const resultElements = viewModel.staves.map((staffModel: StaffViewModel, idx: number) => {
+
+        const y0 = -70 * idx;
+
         let resultElements: PhysicalElementBase[] = [0, 1, 2, 3, 4].map(n => ({
             element: VertVarSizeGlyphs.Line,
             position: { x: 0, y: settings.staffLineWidth * (4 - n) },
-            length: calcLength(viewModel.staves[0].timeSlots, settings)
+            length: calcLength(staffModel.timeSlots, settings)
         }));
 
         let x = 10 + settings.defaultSpacing;
 
-        viewModel.staves[0].timeSlots.forEach(ts =>  {
+        staffModel.timeSlots.forEach(ts =>  {
             let deltaX = 0;
             if (ts.clef) {
                 resultElements.push(convertClef(ts.clef, settings));
@@ -92,12 +95,17 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
         }
         );
      
+        resultElements.forEach(re => re.position.y += y0);
+
 
         return { 
             elements: resultElements            
         };
+    });
+    if (!resultElements.length) {
+        return { elements: [] };
     }
-    return { elements: [] };
+    return resultElements.reduce((prev, curr) => ({ elements: [...prev.elements, ...curr.elements] }), { elements: [] });
 }
 
 function convertClef(clef: ClefViewModel, settings: Metrics): PhysicalElementBase {
