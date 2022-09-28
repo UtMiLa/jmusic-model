@@ -1,5 +1,5 @@
 import { PitchClass } from './../pitches/pitch';
-import { Key } from './key';
+import { Key, AccidentalManager } from './key';
 import { Pitch } from '../pitches/pitch';
 import { Clef, ClefType } from './clef';
 import { expect } from 'chai';
@@ -42,5 +42,26 @@ describe('Key', () => {
         expect(pitches[4].pitchClassName).to.equal('a');
     });
 
+    describe('Accidental rule', () => {
+        it('should correctly set accidentals', () => {
+            const accMan = new AccidentalManager();
 
+            accMan.setKey(keyEs);
+            expect(accMan.getAccidental(new Pitch(0, 4, 0))).to.be.undefined; // c'
+            expect(accMan.getAccidental(new Pitch(0, 4, 1))).to.eq(1); // cis'
+            expect(accMan.getAccidental(new Pitch(0, 4, 1))).to.be.undefined; // cis'
+            expect(accMan.getAccidental(new Pitch(0, 4, 0))).to.eq(0); // c'
+            expect(accMan.getAccidental(new Pitch(2, 4, -1))).to.be.undefined; // es'
+            expect(accMan.getAccidental(new Pitch(2, 4, 0))).to.eq(0); // e'
+            expect(accMan.getAccidental(new Pitch(2, 4, 0))).to.be.undefined; // e'
+            accMan.newBar();
+            expect(accMan.getAccidental(new Pitch(2, 4, 0))).to.eq(0); // e'
+            expect(accMan.getAccidental(new Pitch(2, 5, 0))).to.eq(0); // e'
+            accMan.newBar();
+            expect(accMan.getAccidental(new Pitch(2, 4, 0))).to.eq(0); // e'
+            expect(accMan.getAccidental(new Pitch(2, 5, -1))).to.eq(-1); // e''
+            
+        });
+    
+    });
 });

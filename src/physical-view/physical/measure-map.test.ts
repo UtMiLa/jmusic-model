@@ -85,7 +85,7 @@ describe('Physical model, measure map', () => {
 
         const map = generateMeasureMap(staffViewModel, defaultMetrics);
 
-        console.log('map', map);
+        //console.log('map', map);
         
 
         expect(lookupInMap(map, Time.newAbsolute(0, 1))).to.deep.equal({

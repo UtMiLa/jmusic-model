@@ -1,4 +1,4 @@
-import { Alternation, PitchClass } from './../pitches/pitch';
+import { Alternation, Pitch, PitchClass, Accidental } from './../pitches/pitch';
 
 export interface KeyDef {
     accidental: Alternation;
@@ -17,6 +17,55 @@ export class Key {
             pc %= 7;
         }        
 
+    }
+
+}
+
+export class AccidentalManager {
+    private _key: Key | undefined;
+    private rememberPitches: { [key: number]: Accidental } = {};
+    private rememberPitchClasses: { [key: number]: Accidental } = {};
+
+    newBar(): void {
+        this.rememberPitches = {};
+        this.rememberPitchClasses = {};
+    }
+    getAccidental(pitch: Pitch): Accidental {
+        let res: Accidental = pitch.alternation;
+
+        const alreadyThere = this.rememberPitches[pitch.diatonicNumber];
+
+        if (alreadyThere !== undefined) {
+            if (alreadyThere === res) {
+                return undefined;
+            } else {
+                if (!res) res = 0;
+            }
+        } else {
+
+            const pitchClassAlreadyThere = this.rememberPitchClasses[pitch.pitchClass];
+            //console.log(pitchClassAlreadyThere, this.rememberPitchClasses, pitch.pitchClass);
+            
+            if (pitchClassAlreadyThere !== undefined) {
+                if (!res) res = 0;
+            } else if (this._key) { 
+                const fixed = Array.from<PitchClass>(this._key.enumerate());
+                //console.log(fixed, pitch.pitchClass);
+                
+                const keyAcc = fixed.find((fix: PitchClass) => fix.pitchClass === pitch.pitchClass);
+                if (keyAcc) {
+                    if (res === keyAcc.alternation) return undefined;
+                } else if (res === 0) res = undefined;
+            }
+            else if (res === 0) res = undefined;            
+        }
+
+        this.rememberPitches[pitch.diatonicNumber] = res;
+        this.rememberPitchClasses[pitch.pitchClass] = res;
+        return res;
+    }
+    setKey(key: Key): void {
+        this._key = key;
     }
 
 }

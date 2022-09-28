@@ -52,6 +52,13 @@ export class Pitch {
         return pitchNames[this._pitchClass];
     }
 
+    get pitchClass(): number {
+        return this._pitchClass;
+    }
+
+    get alternation(): Alternation {
+        return this._accidental;
+    }
     /**
      * diatonic scale degree; C4 = 0; octave = 7
      */
