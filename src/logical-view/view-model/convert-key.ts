@@ -1,7 +1,7 @@
-import { Alternation } from './../../model/pitches/pitch';
+import { Alternation } from './../../model';
 import { Pitch } from '../../model';
-import { Clef } from './../../model/states/clef';
-import { Key } from './../../model/states/key';
+import { Clef } from './../../model';
+import { Key } from './../../model';
 
 
 export interface KeyViewModelElement {

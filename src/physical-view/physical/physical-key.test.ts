@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { KeyViewModel } from './../../logical-view/view-model/convert-key';
-import { Key } from './../../model/states/key';
+import { KeyViewModel } from './../../logical-view';
 /* eslint-disable comma-dangle */
 import { Metrics, StandardMetrics } from './metrics';
 import { convertKey } from './physical-key';

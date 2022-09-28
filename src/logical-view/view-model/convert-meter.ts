@@ -1,4 +1,4 @@
-import { Meter } from './../../model/states/meter';
+import { Meter } from './../../model';
 
 
 export interface MeterViewModel {

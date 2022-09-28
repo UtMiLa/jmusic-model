@@ -1,5 +1,5 @@
 import { NoteDirection } from '../../model';
-import { NoteViewModel } from './../../logical-view/view-model/note-view-model';
+import { NoteViewModel } from './../../logical-view';
 import { Metrics } from './metrics';
 
 export function staffLineToY(staffLine: number, settings: Metrics): number {

@@ -3,6 +3,7 @@ export * from './pitches/pitch';
 export * from './rationals/rational';
 export * from './rationals/time';
 export * from './states/clef';
+export * from './states/key';
 export * from './states/meter';
 //export * from './score/score';
 export * from './score/sequence';

@@ -1,6 +1,6 @@
-import { Rational } from './../../model/rationals/rational';
-import { Clef } from './../../model/states/clef';
-import { NoteType, NoteDirection, Note } from '../../model/notes/note';
+import { Rational } from './../../model';
+import { Clef } from './../../model';
+import { NoteType, NoteDirection, Note } from '../../model';
 
 export enum FlagType {
     None,

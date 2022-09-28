@@ -1,6 +1,6 @@
-import { FlagType, NoteViewModel } from '../../logical-view/view-model/note-view-model';
-import { NoteDirection, NoteType } from '../../model/notes/note';
-import { GlyphCode, HorizVarSizeGlyphs, FixedSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
+import { FlagType, NoteViewModel } from '../../logical-view';
+import { NoteDirection, NoteType } from '../../model';
+import { GlyphCode, HorizVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
 import { Metrics } from './metrics';
 import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement, PhysicalVertVarSizeElement } from './physical-elements';
 import { calcDisplacements, staffLineToY } from './functions';

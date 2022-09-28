@@ -1,7 +1,7 @@
-import { AbsoluteTime, Time } from './../../model/rationals/time';
+import { AbsoluteTime, Time } from './../../model';
 
 import { Metrics } from './metrics';
-import { StaffViewModel, TimeSlotViewModel } from './../../logical-view/view-model/convert-model';
+import { StaffViewModel, TimeSlotViewModel } from './../../logical-view';
 
 export type MeasureMapXValueItem = {
     [index in XValueKey]: number;

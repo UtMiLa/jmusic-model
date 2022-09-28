@@ -1,6 +1,6 @@
 import { PhysicalElementBase } from './physical-elements';
 import { Metrics } from './metrics';
-import { KeyViewModel } from './../../logical-view/view-model/convert-key';
+import { KeyViewModel } from './../../logical-view';
 import { staffLineToY } from './functions';
 
 export function testKey(viewModel: any): KeyViewModel | undefined {

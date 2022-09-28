@@ -1,4 +1,3 @@
-import { Rational } from '../../model/rationals/rational';
 import { AbsoluteTime } from './../rationals/time';
 import { Note } from '../notes/note';
 import { Time, TimeSpan } from '../rationals/time';

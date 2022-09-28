@@ -1,9 +1,7 @@
 import { GlyphCode } from './glyphs';
-import { MeterViewModel } from './../../logical-view/view-model/convert-meter';
+import { MeterViewModel } from './../../logical-view';
 import { PhysicalElementBase, PhysicalFixedSizeElement } from './physical-elements';
 import { Metrics } from './metrics';
-import { KeyViewModel } from './../../logical-view/view-model/convert-key';
-import { staffLineToY } from './functions';
 /*
 export function testMeter(viewModel: any): MeterViewModel | undefined {
     return viewModel.keyPositions ? viewModel as KeyViewModel : undefined;

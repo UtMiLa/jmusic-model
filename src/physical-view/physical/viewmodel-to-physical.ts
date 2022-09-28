@@ -1,14 +1,14 @@
-import { convertMeter } from '../../physical-view/physical/physical-meter';
-import { TimeSlotViewModel, TieViewModel, StaffViewModel } from './../../logical-view/view-model/convert-model';
-import { convertKey } from '../../physical-view/physical/physical-key';
-import { NoteViewModel } from '../../logical-view/view-model/note-view-model';
-import { ClefType } from '../../model/states/clef';
+import { convertMeter } from './physical-meter';
+import { TimeSlotViewModel, TieViewModel, StaffViewModel } from './../../logical-view';
+import { convertKey } from './physical-key';
+import { NoteViewModel } from '../../logical-view';
+import { ClefType } from '../../model';
 import { Metrics } from './metrics';
 import { VertVarSizeGlyphs, GlyphCode, HorizVarSizeGlyphs } from './glyphs';
 
 import { PhysicalModel, PhysicalElementBase, PhysicalFixedSizeElement, PhysicalVertVarSizeElement, PhysicalHorizVarSizeElement } from './physical-elements';
 import { convertNote } from './physical-note';
-import { ClefViewModel, ScoreViewModel } from '../../logical-view/view-model/convert-model';
+import { ClefViewModel, ScoreViewModel } from '../../logical-view';
 import { staffLineToY } from './functions';
 import { generateMeasureMap, mergeMeasureMaps, MeasureMapItem, lookupInMap } from './measure-map';
 

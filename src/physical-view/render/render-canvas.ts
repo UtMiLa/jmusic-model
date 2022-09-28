@@ -1,4 +1,4 @@
-import { NoteDirection } from './../../model/notes/note';
+import { NoteDirection } from './../../model';
 import { Point } from './../physical/physical-elements';
 import { PhysicalVertVarSizeElement } from '../physical/physical-elements';
 import { GlyphCode } from '../physical/glyphs';

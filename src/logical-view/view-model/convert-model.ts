@@ -1,19 +1,15 @@
-import { ScoreDef } from './../../model/score/score';
-import { MeterFactory } from './../../model/states/meter';
+import { ScoreDef } from './../../model';
+import { MeterFactory } from './../../model';
 import { meterToView, MeterViewModel } from './convert-meter';
-import { AbsoluteTime, Time } from './../../model/rationals/time';
-import { VoiceDef } from './../../model/score/voice';
-import { SequenceDef, TimeSlot } from './../../model/score/sequence';
+import { AbsoluteTime, Time } from './../../model';
 import { keyToView, KeyViewModel } from './convert-key';
 import { noteToView, NoteViewModel } from './note-view-model';
-import { ClefType } from '../../model/states/clef';
-import { Note, NoteDirection, NoteType } from '../../model/notes/note';
-import { Clef } from '../../model/states/clef';
-import { Sequence } from '../../model/score/sequence';
-import { StaffDef } from '../../model/score/staff';
-import { convertKey } from '../../physical-view/physical/physical-key';
-import { Key } from '../../model/states/key';
-import { convertMeter } from '../../physical-view/physical/physical-meter';
+import { ClefType } from '../../model';
+import { Note, NoteDirection } from '../../model';
+import { Clef } from '../../model';
+import { Sequence } from '../../model';
+import { StaffDef } from '../../model';
+import { Key } from '../../model';
 
 export interface ClefViewModel {
     position: number;
