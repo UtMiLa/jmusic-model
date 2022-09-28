@@ -1,3 +1,5 @@
+import { AccidentalManager } from './../../model/states/key';
+import { Alternation } from './../../model/pitches/pitch';
 import { ScoreDef } from './../../model';
 import { MeterFactory } from './../../model';
 import { meterToView, MeterViewModel } from './convert-meter';
@@ -23,13 +25,19 @@ export interface TieViewModel {
     toTime?: AbsoluteTime;
 }
 
+export interface AccidentalViewModel {
+    position: number;
+    alternation: Alternation;
+    displacement: number;
+}
 export interface TimeSlotViewModel {
-    absTime: AbsoluteTime, 
-    clef?: ClefViewModel,
-    key?: KeyViewModel,
-    meter?: MeterViewModel,
-    bar?: boolean,
+    absTime: AbsoluteTime; 
+    clef?: ClefViewModel;
+    key?: KeyViewModel;
+    meter?: MeterViewModel;
+    bar?: boolean;
     ties?: TieViewModel[];
+    accidentals?: AccidentalViewModel[];
     notes: NoteViewModel[];
 }
 export interface StaffViewModel {
@@ -98,6 +106,9 @@ export function staffModelToViewModel(def: StaffDef): StaffViewModel {
             staffEndTime = voiceEndTime;
         }
 
+        const accidentalManager = new AccidentalManager();
+        if (def.initialKey) accidentalManager.setKey(new Key(def.initialKey));
+
         voiceTimeSlots.forEach(voiceTimeSlot => {
             const slot = getTimeSlot(timeSlots, voiceTimeSlot.time);
             //timeSlots.find(item => Time.equals(item.absTime, voiceTimeSlot.time));
@@ -107,6 +118,24 @@ export function staffModelToViewModel(def: StaffDef): StaffViewModel {
                 const noteView = noteToView(noteClone, clef);
                 return noteView;
             });
+
+            const accidentals: AccidentalViewModel[] = [];
+            
+            voiceTimeSlot.elements.forEach(note => 
+                note.pitches.forEach(pitch => {
+                    const alt = accidentalManager.getAccidental(pitch);
+                    if (alt !== undefined)
+                        accidentals.push({ alternation: alt, position: clef.map(pitch), displacement: 0 });
+                })
+            );
+
+            if (accidentals.length) {
+                if (slot.accidentals) { 
+                    slot.accidentals = slot.accidentals.concat(accidentals);
+                } else {
+                    slot.accidentals = accidentals;
+                }                
+            }
 
             slot.notes = slot.notes.concat(elements);
 

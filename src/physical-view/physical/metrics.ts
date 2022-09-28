@@ -25,6 +25,9 @@ export interface Metrics {
 
     ledgerLineExtra: number;
     ledgerLineLength: number;
+
+    accidentalSpacing: number;
+
 }
 
 export class StandardMetrics implements Metrics {
@@ -59,4 +62,6 @@ export class StandardMetrics implements Metrics {
 
     ledgerLineExtra = 4;
     ledgerLineLength = 15;
+
+    accidentalSpacing = 9;
 }

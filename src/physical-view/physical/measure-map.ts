@@ -7,13 +7,14 @@ export type MeasureMapXValueItem = {
     [index in XValueKey]: number;
 };
 
-export type XValueKey = 'bar' | 'clef' | 'key' | 'note' | 'meter';
+export type XValueKey = 'bar' | 'clef' | 'key' | 'note' | 'meter' | 'accidentals';
 
 export interface MeasureMapItem {
     absTime: AbsoluteTime;
     width: number;
     startPos?: number;
-    xValue: MeasureMapXValueItem;
+    //xValue: MeasureMapXValueItem;
+    widths: MeasureMapXValueItem;
 }
 
 
@@ -37,7 +38,15 @@ export class MeasureMap {
         measureMap2.measureMap.forEach(mapItem => {
             const existing = result.find((mi: MeasureMapItem) => Time.equals(mi.absTime, mapItem.absTime));
             if (existing) {
-                this.mergeXValues(existing, mapItem, 'bar');
+                this.mergeWidths(existing, mapItem, 'bar');
+                this.mergeWidths(existing, mapItem, 'clef');
+                this.mergeWidths(existing, mapItem, 'key');
+                this.mergeWidths(existing, mapItem, 'meter');
+                this.mergeWidths(existing, mapItem, 'accidentals');
+                this.mergeWidths(existing, mapItem, 'note');
+                if (existing.width < mapItem.width) {
+                    existing.width = mapItem.width;
+                }
             } else {
                 result.push(deepCloneMeasureMapItem(mapItem));
             }
@@ -57,19 +66,53 @@ export class MeasureMap {
 
     lookup(time: AbsoluteTime): MeasureMapXValueItem | undefined {
         const map = this.measureMap;
-        let res = map.find(mp => Time.equals(mp.absTime, time));
+        const res = map.find(mp => Time.equals(mp.absTime, time));
         if (!res) return undefined;
-        res = deepCloneMeasureMapItem(res);
+        /*res = deepCloneMeasureMapItem(res);*/
         if (!res.startPos) res.startPos = 0;
-        if (res.xValue.bar !== undefined) res.xValue.bar += res.startPos;
+        /*if (res.xValue.bar !== undefined) res.xValue.bar += res.startPos;
         if (res.xValue.clef !== undefined) res.xValue.clef += res.startPos;
         if (res.xValue.key !== undefined) res.xValue.key += res.startPos;
         if (res.xValue.meter !== undefined) res.xValue.meter += res.startPos;
+        if (res.xValue.accidentals !== undefined) res.xValue.accidentals += res.startPos;
         if (res.xValue.note !== undefined) res.xValue.note += res.startPos;
-        return res.xValue;
+        return res.xValue;*/
+
+        const result = {} as MeasureMapXValueItem; 
+        let pos = res.startPos;
+        if (res.widths.bar) {
+            result.bar = pos;
+            pos += res.widths.bar;
+        }
+
+        if (res.widths.clef) {
+            result.clef = pos;
+            pos += res.widths.clef;
+        }
+
+        if (res.widths.key) {
+            result.key = pos;
+            pos += res.widths.key;
+        }
+        if (res.widths.meter) {
+            result.meter = pos;
+            pos += res.widths.meter;
+        }
+
+        if (res.widths.accidentals) {
+            result.accidentals = pos;
+            pos += res.widths.accidentals;
+        }
+
+        if (res.widths.note) {
+            result.note = pos;
+            pos += res.widths.note;
+        }
+
+        return result;
     }
     
-    mergeXValues(item: MeasureMapItem, updateWith: MeasureMapItem, field: XValueKey): void {
+    /*mergeXValues(item: MeasureMapItem, updateWith: MeasureMapItem, field: XValueKey): void {
         const f1 = updateWith.xValue[field];
         const f2 = item.xValue[field];
         if (f1 === undefined) {
@@ -79,8 +122,21 @@ export class MeasureMap {
             item.xValue[field] = updateWith.xValue[field];
             return;
         }
+    } */   
+
+    mergeWidths(item: MeasureMapItem, updateWith: MeasureMapItem, field: XValueKey): void {
+        const f1 = updateWith.widths[field];
+        const f2 = item.widths[field];
+        if (f1 === undefined) {
+            return;
+        }
+        if (f2 === undefined || f1 > f2) {
+            item.widths[field] = updateWith.widths[field];
+            return;
+        }
     }    
     
+
 }
 
 
@@ -91,7 +147,7 @@ export function getTimeSlotWidth(slot: TimeSlotViewModel, settings: Metrics): nu
 
 
 export function getTimeSlotSpacing(slot: TimeSlotViewModel, settings: Metrics): MeasureMapItem {
-    const res: MeasureMapItem = { absTime: slot.absTime, width: 0, xValue: {} as MeasureMapXValueItem };
+    const res: MeasureMapItem = { absTime: slot.absTime, width: 0, /*xValue: {} as MeasureMapXValueItem,*/ widths: {} as MeasureMapXValueItem };
     /* Ordering of objects when absTime is identical:
     0	Accolade
     10	StartBar
@@ -107,23 +163,33 @@ export function getTimeSlotSpacing(slot: TimeSlotViewModel, settings: Metrics): 
     100	Note
     */
     if (slot.clef) {
-        res.xValue.clef = res.width;
+        //res.xValue.clef = res.width;
+        res.widths.clef = settings.defaultSpacing;
         res.width += settings.defaultSpacing;
     }
     if (slot.key) {
-        res.xValue.key = res.width;
+        //res.xValue.key = res.width;
+        res.widths.key = settings.defaultSpacing + slot.key.keyPositions.length * settings.keySigSpacing;
         res.width += settings.defaultSpacing + slot.key.keyPositions.length * settings.keySigSpacing;
     }
     if (slot.meter) {
-        res.xValue.meter = res.width;
+        //res.xValue.meter = res.width;
+        res.widths.meter = settings.defaultSpacing;
         res.width += settings.defaultSpacing;
     }
     if (slot.bar) {
-        res.xValue.bar = res.width;
+        //res.xValue.bar = res.width;
+        res.widths.bar = settings.afterBarSpacing;
         res.width += settings.afterBarSpacing;
     }
+    if (slot.accidentals) {
+        //res.xValue.accidentals = res.width;
+        res.widths.accidentals = settings.accidentalSpacing;
+        res.width += settings.accidentalSpacing;
+    }
     if (slot.notes.length) {
-        res.xValue.note = res.width;
+        //res.xValue.note = res.width;
+        res.widths.note = settings.defaultSpacing;
         res.width += settings.defaultSpacing;
     }
 
@@ -137,7 +203,8 @@ function deepCloneMeasureMapItem(objectToClone: MeasureMapItem): MeasureMapItem 
         absTime: objectToClone.absTime,
         width: objectToClone.width,
         startPos: objectToClone.startPos,
-        xValue: {...objectToClone.xValue }
+        //xValue: {...objectToClone.xValue },
+        widths: {...objectToClone.widths }
     };
 }
 

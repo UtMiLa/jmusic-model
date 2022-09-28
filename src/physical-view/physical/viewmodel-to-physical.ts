@@ -1,6 +1,7 @@
+import { AccidentalViewModel } from './../../logical-view/view-model/convert-model';
 import { convertMeter } from './physical-meter';
 import { TimeSlotViewModel, TieViewModel, StaffViewModel } from './../../logical-view';
-import { convertKey } from './physical-key';
+import { convertAccidentals, convertKey } from './physical-key';
 import { NoteViewModel } from '../../logical-view';
 import { ClefType } from '../../model';
 import { Metrics } from './metrics';
@@ -71,6 +72,10 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
             }
             if (ts.meter) {
                 resultElements = resultElements.concat(convertMeter(ts.meter, mapItem.meter as number, settings));
+            }
+            if (ts.accidentals) {
+                resultElements = resultElements.concat(convertAccidentals(ts.accidentals, mapItem.accidentals as number, settings));
+                
             }
             ts.notes.forEach((note: NoteViewModel) => { 
                 resultElements = resultElements.concat(convertNote(note, mapItem.note as number, settings));

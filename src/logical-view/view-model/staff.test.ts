@@ -57,7 +57,7 @@ describe('Staff', () => {
     });
 
     it('should convert a staff with notes to view model', () => {
-        staffClef.seq = { elements: 'c\'1 d\'4 e\'2' };
+        staffClef.seq = { elements: 'c\'1 des\'4 ees\'2' };
 
         const vm = staffModelToViewModel(staffClef);
 

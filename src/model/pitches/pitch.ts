@@ -29,16 +29,28 @@ export class Pitch {
     }
 
     static parseLilypond(input: string): Pitch {
-        const matcher = /([a-g])(es|is)*([',]*)/i;
+        const matcher = /([a-g])((es|is)*)([',]*)$/i;
         const parsed = matcher.exec(input);
+        
         if (!parsed || parsed.length < 3) throw 'Illegal pitch: '+ input;
         let octave = 3;
-        parsed[3].split('').forEach(char => {
+        let alternation: Alternation = 0;
+        
+        switch(parsed[2]) {
+            case '': alternation = 0; break;
+            case 'es': alternation = -1; break;
+            case 'eses': alternation = -2; break;
+            case 'is': alternation = 1; break;
+            case 'isis': alternation = 2; break;
+        }
+        parsed[4].split('').forEach(char => {
             if (char === ',') octave--;
             if (char === '\'') octave++;
         });
         
-        return Pitch.fromScientific(parsed[1], octave);
+        const res = Pitch.fromScientific(parsed[1], octave);
+        res._accidental = alternation;
+        return res;
     }
 
     get scientific(): string {

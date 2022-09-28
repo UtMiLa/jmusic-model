@@ -41,11 +41,11 @@ describe('Physical model, measure map', () => {
             absTime: Time.newAbsolute(0, 1),
             width: 4 * defaultMetrics.defaultSpacing,
             startPos: defaultMetrics.leftMargin,
-            xValue: {
-                clef: 0,
+            widths: {
+                clef: 20,
                 key: 20,
-                meter: 40,
-                note: 60
+                meter: 20,
+                note: 20
             }
         });
 
@@ -53,8 +53,8 @@ describe('Physical model, measure map', () => {
             absTime: Time.newAbsolute(1, 4),
             width: defaultMetrics.defaultSpacing,
             startPos: 80 + defaultMetrics.leftMargin,
-            xValue: {
-                note: 0
+            widths: {
+                note: 20
             }
         });
 
@@ -67,9 +67,9 @@ describe('Physical model, measure map', () => {
             absTime: Time.newAbsolute(1, 1),
             width: defaultMetrics.afterBarSpacing + defaultMetrics.defaultSpacing,
             startPos: 6 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin,
-            xValue: {
-                bar: 0,
-                note: 8
+            widths: {
+                bar: 8,
+                note: 20
             }
         });
 
@@ -114,35 +114,35 @@ describe('Physical model, measure map', () => {
                 absTime: Time.newAbsolute(0, 1),
                 width: 25,
                 startPos: 10,
-                xValue: {
-                    clef: 0,
-                    key: 10,
-                    meter: 15,
-                    note: 20
+                widths: {
+                    clef: 10,
+                    key: 5,
+                    meter: 5,
+                    note: 5
                 } as MeasureMapXValueItem
             },
             {
                 absTime: Time.newAbsolute(1, 4),
                 width: 20,
                 startPos: 35,
-                xValue: {
-                    note: 0
+                widths: {
+                    note: 10
                 } as MeasureMapXValueItem
             },
             {
                 absTime: Time.newAbsolute(3, 4),
                 width: 20,
                 startPos: 55,
-                xValue: {
-                    note: 0
+                widths: {
+                    note: 5
                 } as MeasureMapXValueItem
             },
             {
                 absTime: Time.newAbsolute(1, 1),
                 width: 20,
                 startPos: 75,
-                xValue: {
-                    bar: 0,
+                widths: {
+                    bar: 10,
                     note: 10
                 } as MeasureMapXValueItem
             }
@@ -152,8 +152,8 @@ describe('Physical model, measure map', () => {
                 absTime: Time.newAbsolute(0, 1),
                 width: 25,
                 startPos: 10,
-                xValue: {
-                    clef: 0,
+                widths: {
+                    clef: 8,
                     key: 8,
                     meter: 15,
                     note: 20
@@ -163,24 +163,24 @@ describe('Physical model, measure map', () => {
                 absTime: Time.newAbsolute(1, 2),
                 width: 5,
                 startPos: 35,
-                xValue: {
-                    note: 0
+                widths: {
+                    note: 10
                 } as MeasureMapXValueItem
             },
             {
                 absTime: Time.newAbsolute(3, 4),
                 width: 5,
                 startPos: 40,
-                xValue: {
-                    note: 0
+                widths: {
+                    note: 20
                 } as MeasureMapXValueItem
             },
             {
                 absTime: Time.newAbsolute(1, 1),
                 width: 20,
                 startPos: 45,
-                xValue: {
-                    bar: 0,
+                widths: {
+                    bar: 10,
                     note: 10
                 } as MeasureMapXValueItem
             }
@@ -195,9 +195,9 @@ describe('Physical model, measure map', () => {
                 absTime: Time.newAbsolute(0, 1),
                 width: 25,
                 startPos: 10,
-                xValue: {
-                    clef: 0,
-                    key: 10,
+                widths: {
+                    clef: 10,
+                    key: 8,
                     meter: 15,
                     note: 20
                 }
@@ -206,32 +206,32 @@ describe('Physical model, measure map', () => {
                 absTime: Time.newAbsolute(1, 4),
                 width: 20,
                 startPos: 35,
-                xValue: {
-                    note: 0
+                widths: {
+                    note: 10
                 }
             },
             {
                 absTime: Time.newAbsolute(1, 2),
                 width: 5,
                 startPos: 55,
-                xValue: {
-                    note: 0
+                widths: {
+                    note: 10
                 }
             },
             {
                 absTime: Time.newAbsolute(3, 4),
                 width: 20,
                 startPos: 60,
-                xValue: {
-                    note: 0
+                widths: {
+                    note: 20
                 }
             },
             {
                 absTime: Time.newAbsolute(1, 1),
                 width: 20,
                 startPos: 80,
-                xValue: {
-                    bar: 0,
+                widths: {
+                    bar: 10,
                     note: 10
                 }
             }

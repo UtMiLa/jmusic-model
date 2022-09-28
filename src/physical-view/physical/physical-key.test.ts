@@ -1,8 +1,9 @@
+import { AccidentalViewModel } from './../../logical-view/view-model/convert-model';
 import { expect } from 'chai';
 import { KeyViewModel } from './../../logical-view';
 /* eslint-disable comma-dangle */
 import { Metrics, StandardMetrics } from './metrics';
-import { convertKey } from './physical-key';
+import { convertAccidentals, convertKey } from './physical-key';
 
 describe('Physical model, keys', () => {
     let defaultMetrics: Metrics;
@@ -54,6 +55,36 @@ describe('Physical model, keys', () => {
         expect(resultAs[2]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + 2*defaultMetrics.keySigSpacing, y: 4.5*defaultMetrics.staffLineWidth }});
         expect(resultAs[3]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + 3*defaultMetrics.keySigSpacing, y: 3*defaultMetrics.staffLineWidth }});
 
+    });
+
+
+});
+
+
+describe('Physical model, accidentals', () => {
+    let defaultMetrics: Metrics;
+    let alternativeMetrics: Metrics;
+    let acc1: AccidentalViewModel;
+
+    beforeEach(() => { 
+        defaultMetrics = new StandardMetrics();
+        alternativeMetrics = new StandardMetrics({            
+            staffLineWidth: 6,
+            staffLengthOffset: 8,
+        });
+        acc1 = {
+            position: -3,
+            alternation: 1,
+            displacement: 0
+        };
+    
+    });
+
+
+    it('should draw accidentals', () => {
+        const res = convertAccidentals([acc1], 30, defaultMetrics);
+
+        expect(res).to.deep.eq([{ glyph: 'accidentals.2', position: { x: 30, y: 0.5*defaultMetrics.staffLineWidth }}]);
     });
 
 

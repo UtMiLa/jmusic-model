@@ -66,15 +66,6 @@ export class Note {
     }
 
     get dotNo(): number {
-        /*let numerator = this.duration.numerator + 1;
-        let res = -1;
-        console.log('dotNo', this.duration);
-        
-        while (numerator > 1) {
-            numerator >>= 1;
-            res++;
-            console.log('dotNo adding', numerator, res);
-        }*/
         return Time.getDotNo(this.duration.numerator);
     }
 

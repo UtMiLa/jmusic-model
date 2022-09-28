@@ -16,7 +16,7 @@ import { expect } from 'chai';
 import { viewModelToPhysical } from './viewmodel-to-physical';
 import { ScoreViewModel } from '../../logical-view/view-model/convert-model';
 import { staffLineToY } from './functions';
-import { getTimeSlotWidth } from './measure-map';
+import { getTimeSlotWidth, MeasureMap } from './measure-map';
 
 describe('Physical model', () => {
     let defaultMetrics: Metrics;
@@ -444,6 +444,60 @@ describe('Physical model', () => {
     });
    
 
+    it('should convert accidentals correctly', () => {
+        const viewModel: ScoreViewModel = { 
+            staves: [
+                {
+                    timeSlots: [
+                        { 
+                            absTime: Time.newAbsolute(0, 1), 
+                            clef:          { 
+                                position: 1,
+                                clefType: ClefType.G,
+                                line: -2
+                            },  
+                            notes: [                
+
+                                {
+                                    positions: [0],
+                                    noteType: NoteType.NBreve,
+                                    direction: NoteDirection.Up
+                                },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(2, 1), 
+                            accidentals: [{ 
+                                alternation: 1,
+                                position: -1,
+                                displacement: 0
+                            }],
+                            notes: [
+        
+                                {
+                                    positions: [-1],
+                                    noteType: NoteType.NWhole,
+                                    direction: NoteDirection.Up
+                                },
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
+
+        expect(physicalModel.elements.length).to.eq(5 + 1 + 1 + 2);
+
+        expect(physicalModel.elements[7]).to.deep.eq({
+            glyph: 'accidentals.2',
+            position: { x: 50, y: 1.5*defaultMetrics.staffLineWidth }
+        });
+
+    });
+   
+
     it('should convert note pitches correctly using alternative spacing', () => {
         const viewModel: ScoreViewModel = { 
             staves: [
@@ -868,6 +922,18 @@ describe('Physical model', () => {
             expect(res).to.eq(defaultMetrics.defaultSpacing);
         });        
 
+        it('should calculate the width of a note with accidental', () => {
+            const timeSlot: TimeSlotViewModel = {
+                absTime: Time.newAbsolute(1, 1),
+                accidentals: [{position: 1, alternation: -1, displacement: 0}],
+                notes: [{noteType: NoteType.NWhole, positions: [1], direction: NoteDirection.Undefined }]
+            };
+            const res = getTimeSlotWidth(timeSlot, defaultMetrics);
+
+            expect(res).to.eq(defaultMetrics.defaultSpacing + defaultMetrics.accidentalSpacing);
+        });        
+
+        
         
         it('should calculate the width of the whole timeslot', () => {
             const timeSlot: TimeSlotViewModel = {
@@ -884,5 +950,39 @@ describe('Physical model', () => {
                 + defaultMetrics.defaultSpacing + 1 * defaultMetrics.keySigSpacing
                 + defaultMetrics.defaultSpacing + defaultMetrics.defaultSpacing);
         });       
+
+
+        it('should calculate the width combining two staves', () => {
+            const timeSlot1: TimeSlotViewModel = {
+                absTime: Time.newAbsolute(1,1),
+                notes: [{noteType: NoteType.NWhole, positions: [1], direction: NoteDirection.Undefined }]
+            };
+            const w1 = getTimeSlotWidth(timeSlot1, defaultMetrics);
+
+            const timeSlot2: TimeSlotViewModel = {
+                absTime: Time.newAbsolute(1,1),
+                accidentals: [{ alternation: -1, position: 1, displacement: 0 }],
+                notes: [{noteType: NoteType.NWhole, positions: [1], direction: NoteDirection.Undefined }]
+            };
+            const w2 = getTimeSlotWidth(timeSlot2, defaultMetrics);
+
+            expect(w1).to.eq(defaultMetrics.defaultSpacing);
+            expect(w2).to.eq(defaultMetrics.defaultSpacing + defaultMetrics.accidentalSpacing);
+
+            const mm1 = MeasureMap.generate({timeSlots: [timeSlot1]}, defaultMetrics);
+            const mm2 = MeasureMap.generate({timeSlots: [timeSlot2]}, defaultMetrics);
+
+            expect(mm1.measureMap[0].width).to.eq(defaultMetrics.defaultSpacing);
+            expect(mm2.measureMap[0].width).to.eq(defaultMetrics.defaultSpacing + defaultMetrics.accidentalSpacing);
+
+            const mm = mm1.mergeWith(mm2);
+
+            //console.log(mm);
+
+            expect(mm.measureMap[0].width).to.eq(defaultMetrics.defaultSpacing + defaultMetrics.accidentalSpacing);
+            
+
+        });       
+
     });
 });
