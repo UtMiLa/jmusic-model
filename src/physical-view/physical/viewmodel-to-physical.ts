@@ -10,7 +10,7 @@ import { PhysicalModel, PhysicalElementBase, PhysicalFixedSizeElement, PhysicalV
 import { convertNote } from './physical-note';
 import { ClefViewModel, ScoreViewModel } from '../../logical-view';
 import { staffLineToY } from './functions';
-import { generateMeasureMap, mergeMeasureMaps, MeasureMapItem, lookupInMap } from './measure-map';
+import { MeasureMapItem, MeasureMap } from './measure-map';
 
 /**
  * Physical Model
@@ -35,11 +35,10 @@ function calcLength(timeSlots: TimeSlotViewModel[], settings: Metrics): number {
 
 export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics): PhysicalModel {
 
-
-    let measureMap: MeasureMapItem[] = [];
+    let measureMap = new MeasureMap();
     viewModel.staves.forEach(staffModel => {
-        const measureMapX = generateMeasureMap(staffModel, settings);
-        measureMap = mergeMeasureMaps(measureMap, measureMapX);
+        const measureMapX = MeasureMap.generate(staffModel, settings);
+        measureMap = measureMap.mergeWith(measureMapX);
     });
 
     const resultElements = viewModel.staves.map((staffModel: StaffViewModel, idx: number) => {
@@ -53,7 +52,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
         }));
 
         staffModel.timeSlots.forEach(ts =>  {
-            const mapItem = lookupInMap(measureMap, ts.absTime);
+            const mapItem = measureMap.lookup(ts.absTime);
             if (!mapItem) throw 'Internal error in measure map';
            
             
@@ -81,7 +80,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
                 ts.ties.forEach((tie: TieViewModel) => { 
                     let length = 12;
                     if (tie.toTime) {
-                        const checkNextNote = lookupInMap(measureMap, tie.toTime);
+                        const checkNextNote = measureMap.lookup(tie.toTime);
                         if (checkNextNote && checkNextNote.note) length = checkNextNote.note - mapItem.note - settings.tieAfterNote;
                     }
                     resultElements.push(

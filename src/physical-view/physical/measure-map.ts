@@ -16,6 +16,74 @@ export interface MeasureMapItem {
     xValue: MeasureMapXValueItem;
 }
 
+
+
+export class MeasureMap {
+    constructor(public measureMap: MeasureMapItem[] = []) {
+    }
+
+
+    static generate(staff: StaffViewModel, settings: Metrics): MeasureMap {
+        let pos = settings.leftMargin;
+        return new MeasureMap(staff.timeSlots.map(ts => {
+            const spacing = { ...getTimeSlotSpacing(ts, settings), startPos: pos };
+            pos += spacing.width;
+            return spacing;
+        }));
+    }
+
+    mergeWith(measureMap2: MeasureMap): MeasureMap {
+        const result = this.measureMap.map(item => deepCloneMeasureMapItem(item));
+        measureMap2.measureMap.forEach(mapItem => {
+            const existing = result.find((mi: MeasureMapItem) => Time.equals(mi.absTime, mapItem.absTime));
+            if (existing) {
+                this.mergeXValues(existing, mapItem, 'bar');
+            } else {
+                result.push(deepCloneMeasureMapItem(mapItem));
+            }
+        });
+        
+        result.sort((m1, m2) => Time.sortComparison(m1.absTime, m2.absTime));
+        if (result.length) {
+            if (result[0].startPos === undefined) result[0].startPos = 0;
+            for (let i = 1; i < result.length; i++) {
+                result[i].startPos = (result[i - 1].startPos as number) + result[i - 1].width;
+            }
+        }
+        
+        return new MeasureMap(result);
+    }
+
+
+    lookup(time: AbsoluteTime): MeasureMapXValueItem | undefined {
+        const map = this.measureMap;
+        let res = map.find(mp => Time.equals(mp.absTime, time));
+        if (!res) return undefined;
+        res = deepCloneMeasureMapItem(res);
+        if (!res.startPos) res.startPos = 0;
+        if (res.xValue.bar !== undefined) res.xValue.bar += res.startPos;
+        if (res.xValue.clef !== undefined) res.xValue.clef += res.startPos;
+        if (res.xValue.key !== undefined) res.xValue.key += res.startPos;
+        if (res.xValue.meter !== undefined) res.xValue.meter += res.startPos;
+        if (res.xValue.note !== undefined) res.xValue.note += res.startPos;
+        return res.xValue;
+    }
+    
+    mergeXValues(item: MeasureMapItem, updateWith: MeasureMapItem, field: XValueKey): void {
+        const f1 = updateWith.xValue[field];
+        const f2 = item.xValue[field];
+        if (f1 === undefined) {
+            return;
+        }
+        if (f2 === undefined || f1 < f2) {
+            item.xValue[field] = updateWith.xValue[field];
+            return;
+        }
+    }    
+    
+}
+
+
 export function getTimeSlotWidth(slot: TimeSlotViewModel, settings: Metrics): number {
     return getTimeSlotSpacing(slot, settings).width;
     //res;
@@ -63,39 +131,6 @@ export function getTimeSlotSpacing(slot: TimeSlotViewModel, settings: Metrics): 
 }
 
 
-export function generateMeasureMap(staff: StaffViewModel, settings: Metrics): MeasureMapItem[] {
-    let pos = settings.leftMargin;
-    return staff.timeSlots.map(ts => {
-        const spacing = { ...getTimeSlotSpacing(ts, settings), startPos: pos };
-        pos += spacing.width;
-        return spacing;
-    });
-}
-
-export function lookupInMap(map: MeasureMapItem[], time: AbsoluteTime): MeasureMapXValueItem | undefined {
-    let res = map.find(mp => Time.equals(mp.absTime, time));
-    if (!res) return undefined;
-    res = deepCloneMeasureMapItem(res);
-    if (!res.startPos) res.startPos = 0;
-    if (res.xValue.bar !== undefined) res.xValue.bar += res.startPos;
-    if (res.xValue.clef !== undefined) res.xValue.clef += res.startPos;
-    if (res.xValue.key !== undefined) res.xValue.key += res.startPos;
-    if (res.xValue.meter !== undefined) res.xValue.meter += res.startPos;
-    if (res.xValue.note !== undefined) res.xValue.note += res.startPos;
-    return res.xValue;
-}
-
-function mergeXValues(item: MeasureMapItem, updateWith: MeasureMapItem, field: XValueKey): void {
-    const f1 = updateWith.xValue[field];
-    const f2 = item.xValue[field];
-    if (f1 === undefined) {
-        return;
-    }
-    if (f2 === undefined || f1 < f2) {
-        item.xValue[field] = updateWith.xValue[field];
-        return;
-    }
-}
 
 function deepCloneMeasureMapItem(objectToClone: MeasureMapItem): MeasureMapItem {
     return {
@@ -107,24 +142,3 @@ function deepCloneMeasureMapItem(objectToClone: MeasureMapItem): MeasureMapItem 
 }
 
 
-export function mergeMeasureMaps(measureMap1: MeasureMapItem[], measureMap2: MeasureMapItem[]): MeasureMapItem[] {
-    const result = measureMap1.map(item => deepCloneMeasureMapItem(item));
-    measureMap2.forEach(mapItem => {
-        const existing = result.find((mi: MeasureMapItem) => Time.equals(mi.absTime, mapItem.absTime));
-        if (existing) {
-            mergeXValues(existing, mapItem, 'bar');
-        } else {
-            result.push(deepCloneMeasureMapItem(mapItem));
-        }
-    });
-    
-    result.sort((m1, m2) => Time.sortComparison(m1.absTime, m2.absTime));
-    if (result.length) {
-        if (result[0].startPos === undefined) result[0].startPos = 0;
-        for (let i = 1; i < result.length; i++) {
-            result[i].startPos = (result[i - 1].startPos as number) + result[i - 1].width;
-        }
-    }
-    
-    return result;
-}
