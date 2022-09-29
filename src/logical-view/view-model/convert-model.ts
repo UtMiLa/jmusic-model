@@ -1,6 +1,6 @@
 import { AccidentalManager } from './../../model/states/key';
 import { Alternation } from './../../model/pitches/pitch';
-import { ScoreDef } from './../../model';
+import { getAllBars, ScoreDef } from './../../model';
 import { MeterFactory } from './../../model';
 import { meterToView, MeterViewModel } from './convert-meter';
 import { AbsoluteTime, Time } from './../../model';
@@ -91,13 +91,18 @@ export function staffModelToViewModel(def: StaffDef): StaffViewModel {
         }
     ];
 
-    if(meter) {
+    let nextBarIterator: IterableIterator<AbsoluteTime>;
+    let nextBar = Time.newAbsolute(1, 0);
+
+    if(meterModel) {
         timeSlots[0].meter = meter;
+        nextBarIterator = getAllBars(meterModel);
+        nextBar = nextBarIterator.next().value;
     }
 
     let staffEndTime = Time.newAbsolute(0, 1);
 
-    def.voices.forEach(voice => {
+    def.voices.forEach(voice => {        
         const voiceSequence = new Sequence(voice.content);
         const voiceTimeSlots = voiceSequence.groupByTimeSlots();
         const voiceEndTime = Time.fromStart(voiceSequence.duration);
@@ -112,6 +117,11 @@ export function staffModelToViewModel(def: StaffDef): StaffViewModel {
         voiceTimeSlots.forEach(voiceTimeSlot => {
             const slot = getTimeSlot(timeSlots, voiceTimeSlot.time);
             //timeSlots.find(item => Time.equals(item.absTime, voiceTimeSlot.time));
+            
+            if (nextBarIterator && Time.sortComparison(slot.absTime, nextBar) >= 0) {
+                accidentalManager.newBar();
+                nextBar = nextBarIterator.next().value;
+            }
 
             const elements = voiceTimeSlot.elements.map(note => {
                 const noteClone = Note.clone(note, { direction: note.direction ? note.direction : voice.noteDirection });

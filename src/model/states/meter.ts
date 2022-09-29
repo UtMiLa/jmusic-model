@@ -6,6 +6,7 @@ export interface Meter {
     countingTime: TimeSpan;
     text: string[];
     firstBarTime: AbsoluteTime;
+    //barTimes(): IterableIterator<AbsoluteTime>;
 }
 
 export interface RegularMeterDef {
@@ -49,6 +50,7 @@ class RegularMeter {
             return Time.fromStart(this.def.upBeat);
         return Time.fromStart(this.measureLength);
     }
+
 }
 
 class CompositeMeter {
@@ -70,4 +72,18 @@ class CompositeMeter {
     get firstBarTime(): AbsoluteTime {
         return Time.fromStart(this.measureLength);
     }
+}
+
+
+export function* getAllBars(self: Meter): IterableIterator<AbsoluteTime> {
+    //console.log('barTimes start');
+    let time = self.firstBarTime;
+    while (true) {
+        //console.log('barTimes', time);
+       
+        yield time;
+        //console.log('barTimes yielded', time);
+        time = Time.addTime(time, self.measureLength);
+    }
+
 }

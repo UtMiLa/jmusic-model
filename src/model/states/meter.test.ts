@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { MeterFactory, RegularMeterDef } from './meter';
+import { getAllBars, MeterFactory, RegularMeterDef } from './meter';
 describe('Meter', () => {
     describe('Regular meter', () => {
         let meter1: RegularMeterDef, meter2: RegularMeterDef, meter3: RegularMeterDef;
@@ -44,6 +44,22 @@ describe('Meter', () => {
             const meterUp = MeterFactory.createRegularMeter(meter2);
             expect(meterUp.firstBarTime).to.be.deep.eq({ numerator: 1, denominator: 8, type: 'abs' });
         });
+
+        it('should report time for any bar', () => {
+            const meter = MeterFactory.createRegularMeter(meter1);
+
+            const iterator = getAllBars(meter);
+            expect(iterator.next().value).to.be.deep.eq({ numerator: 3, denominator: 4, type: 'abs' });
+            expect(iterator.next().value).to.be.deep.eq({ numerator: 3, denominator: 2, type: 'abs' });
+            
+            const meterUp = MeterFactory.createRegularMeter(meter2);
+            const iterator2 = getAllBars(meterUp);
+            expect(iterator2.next().value).to.be.deep.eq({ numerator: 1, denominator: 8, type: 'abs' });
+            expect(iterator2.next().value).to.be.deep.eq({ numerator: 7, denominator: 8, type: 'abs' });
+            expect(iterator2.next().value).to.be.deep.eq({ numerator: 13, denominator: 8, type: 'abs' });
+
+        });
+
 
     });
 

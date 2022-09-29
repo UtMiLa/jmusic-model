@@ -68,15 +68,7 @@ export class MeasureMap {
         const map = this.measureMap;
         const res = map.find(mp => Time.equals(mp.absTime, time));
         if (!res) return undefined;
-        /*res = deepCloneMeasureMapItem(res);*/
         if (!res.startPos) res.startPos = 0;
-        /*if (res.xValue.bar !== undefined) res.xValue.bar += res.startPos;
-        if (res.xValue.clef !== undefined) res.xValue.clef += res.startPos;
-        if (res.xValue.key !== undefined) res.xValue.key += res.startPos;
-        if (res.xValue.meter !== undefined) res.xValue.meter += res.startPos;
-        if (res.xValue.accidentals !== undefined) res.xValue.accidentals += res.startPos;
-        if (res.xValue.note !== undefined) res.xValue.note += res.startPos;
-        return res.xValue;*/
 
         const result = {} as MeasureMapXValueItem; 
         let pos = res.startPos;
@@ -111,18 +103,7 @@ export class MeasureMap {
 
         return result;
     }
-    
-    /*mergeXValues(item: MeasureMapItem, updateWith: MeasureMapItem, field: XValueKey): void {
-        const f1 = updateWith.xValue[field];
-        const f2 = item.xValue[field];
-        if (f1 === undefined) {
-            return;
-        }
-        if (f2 === undefined || f1 < f2) {
-            item.xValue[field] = updateWith.xValue[field];
-            return;
-        }
-    } */   
+
 
     mergeWidths(item: MeasureMapItem, updateWith: MeasureMapItem, field: XValueKey): void {
         const f1 = updateWith.widths[field];
@@ -142,12 +123,11 @@ export class MeasureMap {
 
 export function getTimeSlotWidth(slot: TimeSlotViewModel, settings: Metrics): number {
     return getTimeSlotSpacing(slot, settings).width;
-    //res;
 }
 
 
 export function getTimeSlotSpacing(slot: TimeSlotViewModel, settings: Metrics): MeasureMapItem {
-    const res: MeasureMapItem = { absTime: slot.absTime, width: 0, /*xValue: {} as MeasureMapXValueItem,*/ widths: {} as MeasureMapXValueItem };
+    const res: MeasureMapItem = { absTime: slot.absTime, width: 0, widths: {} as MeasureMapXValueItem };
     /* Ordering of objects when absTime is identical:
     0	Accolade
     10	StartBar
@@ -163,32 +143,26 @@ export function getTimeSlotSpacing(slot: TimeSlotViewModel, settings: Metrics): 
     100	Note
     */
     if (slot.clef) {
-        //res.xValue.clef = res.width;
         res.widths.clef = settings.defaultSpacing;
         res.width += settings.defaultSpacing;
     }
     if (slot.key) {
-        //res.xValue.key = res.width;
         res.widths.key = settings.defaultSpacing + slot.key.keyPositions.length * settings.keySigSpacing;
         res.width += settings.defaultSpacing + slot.key.keyPositions.length * settings.keySigSpacing;
     }
     if (slot.meter) {
-        //res.xValue.meter = res.width;
         res.widths.meter = settings.defaultSpacing;
         res.width += settings.defaultSpacing;
     }
     if (slot.bar) {
-        //res.xValue.bar = res.width;
         res.widths.bar = settings.afterBarSpacing;
         res.width += settings.afterBarSpacing;
     }
     if (slot.accidentals) {
-        //res.xValue.accidentals = res.width;
         res.widths.accidentals = settings.accidentalSpacing;
         res.width += settings.accidentalSpacing;
     }
     if (slot.notes.length) {
-        //res.xValue.note = res.width;
         res.widths.note = settings.defaultSpacing;
         res.width += settings.defaultSpacing;
     }
@@ -203,7 +177,6 @@ function deepCloneMeasureMapItem(objectToClone: MeasureMapItem): MeasureMapItem 
         absTime: objectToClone.absTime,
         width: objectToClone.width,
         startPos: objectToClone.startPos,
-        //xValue: {...objectToClone.xValue },
         widths: {...objectToClone.widths }
     };
 }

@@ -3,7 +3,7 @@ import { convertMeter } from './physical-meter';
 import { TimeSlotViewModel, TieViewModel, StaffViewModel } from './../../logical-view';
 import { convertAccidentals, convertKey } from './physical-key';
 import { NoteViewModel } from '../../logical-view';
-import { ClefType } from '../../model';
+import { ClefType, getAllBars } from '../../model';
 import { Metrics } from './metrics';
 import { VertVarSizeGlyphs, GlyphCode, HorizVarSizeGlyphs } from './glyphs';
 
