@@ -6,7 +6,7 @@ export interface Meter {
     countingTime: TimeSpan;
     text: string[];
     firstBarTime: AbsoluteTime;
-    //barTimes(): IterableIterator<AbsoluteTime>;
+    upbeat: TimeSpan;
 }
 
 export interface RegularMeterDef {
@@ -29,7 +29,7 @@ export class MeterFactory {
     }
 }
 
-class RegularMeter {
+class RegularMeter implements Meter {
     private def: RegularMeterDef;
     constructor(def: RegularMeterDef) {
         this.def = {...def};
@@ -51,9 +51,13 @@ class RegularMeter {
         return Time.fromStart(this.measureLength);
     }
 
+    get upbeat(): TimeSpan {
+        return this.def.upBeat ?? Time.newSpan(0, 1);
+    }
+
 }
 
-class CompositeMeter {
+class CompositeMeter implements Meter {
     private def: CompositeMeterDef;
     constructor(def: CompositeMeterDef) {
         if (!def.meters.length) throw 'Empty meter';
@@ -72,18 +76,29 @@ class CompositeMeter {
     get firstBarTime(): AbsoluteTime {
         return Time.fromStart(this.measureLength);
     }
-}
-
-
-export function* getAllBars(self: Meter): IterableIterator<AbsoluteTime> {
-    //console.log('barTimes start');
-    let time = self.firstBarTime;
-    while (true) {
-        //console.log('barTimes', time);
-       
-        yield time;
-        //console.log('barTimes yielded', time);
-        time = Time.addTime(time, self.measureLength);
+    get upbeat(): TimeSpan {
+        return Time.newSpan(0, 1);
     }
 
 }
+
+
+export function* getAllBars(meter: Meter): IterableIterator<AbsoluteTime> {
+    let time = meter.firstBarTime;
+    while (true) {
+        yield time;
+        time = Time.addTime(time, meter.measureLength);
+    }
+}
+
+export function* getAllBeats(meter: Meter): IterableIterator<AbsoluteTime> {
+    let time = Time.fromStart(meter.upbeat);
+    if (Time.equals(time, Time.newAbsolute(0, 1))) {
+        time = Time.fromStart(meter.countingTime);
+    }
+    while (true) {
+        yield time;
+        time = Time.addTime(time, meter.countingTime);
+    }
+}
+
