@@ -30,7 +30,7 @@ export function convertAccidentals(accidentals: AccidentalViewModel[], xPos: num
     return accidentals.map((pos) => {
         return {
             glyph: accidentalToGlyph(pos.alternation),
-            position: {x: xPos, y: staffLineToY(pos.position / 2, settings)}
+            position: {x: xPos + pos.displacement * settings.accidentalDisplacement, y: staffLineToY(pos.position / 2, settings)}
         };
     });
 }

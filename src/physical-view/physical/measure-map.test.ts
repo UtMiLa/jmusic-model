@@ -28,7 +28,7 @@ describe('Physical model, measure map', () => {
     });
 
 
-    it('should generate a memory map for one voice', () => {
+    it('should generate a measure map for one voice', () => {
         const res = MeasureMap.generate(staffViewModel, defaultMetrics);
 
         expect(res.measureMap.length).to.eq(5); // 4 notes and an extra bar line
@@ -83,7 +83,7 @@ describe('Physical model, measure map', () => {
 
 
 
-    it('should allow for lookup in a memory map', () => {
+    it('should allow for lookup in a measure map', () => {
 
         const measureMap = MeasureMap.generate(staffViewModel, defaultMetrics);
 
@@ -119,6 +119,12 @@ describe('Physical model, measure map', () => {
                     key: 5,
                     meter: 5,
                     note: 5
+                } as MeasureMapXValueItem,
+                offsets: {
+                    clef: 0,
+                    key: 0,
+                    meter: 0,
+                    note: 0
                 } as MeasureMapXValueItem
             },
             {
@@ -127,6 +133,9 @@ describe('Physical model, measure map', () => {
                 startPos: 35,
                 widths: {
                     note: 10
+                } as MeasureMapXValueItem,
+                offsets: {
+                    note: 0
                 } as MeasureMapXValueItem
             },
             {
@@ -135,6 +144,9 @@ describe('Physical model, measure map', () => {
                 startPos: 55,
                 widths: {
                     note: 5
+                } as MeasureMapXValueItem,
+                offsets: {
+                    note: 0
                 } as MeasureMapXValueItem
             },
             {
@@ -144,6 +156,10 @@ describe('Physical model, measure map', () => {
                 widths: {
                     bar: 10,
                     note: 10
+                } as MeasureMapXValueItem,
+                offsets: {
+                    bar: 0,
+                    note: 0
                 } as MeasureMapXValueItem
             }
         ];
@@ -157,6 +173,12 @@ describe('Physical model, measure map', () => {
                     key: 8,
                     meter: 15,
                     note: 20
+                } as MeasureMapXValueItem,
+                offsets: {
+                    clef: 0,
+                    key: 0,
+                    meter: 0,
+                    note: 0
                 } as MeasureMapXValueItem
             },
             {
@@ -165,6 +187,9 @@ describe('Physical model, measure map', () => {
                 startPos: 35,
                 widths: {
                     note: 10
+                } as MeasureMapXValueItem,
+                offsets: {
+                    note: 0
                 } as MeasureMapXValueItem
             },
             {
@@ -173,6 +198,9 @@ describe('Physical model, measure map', () => {
                 startPos: 40,
                 widths: {
                     note: 20
+                } as MeasureMapXValueItem,
+                offsets: {
+                    note: 10
                 } as MeasureMapXValueItem
             },
             {
@@ -182,6 +210,10 @@ describe('Physical model, measure map', () => {
                 widths: {
                     bar: 10,
                     note: 10
+                } as MeasureMapXValueItem,
+                offsets: {
+                    bar: 0,
+                    note: 0
                 } as MeasureMapXValueItem
             }
         ];
@@ -200,6 +232,12 @@ describe('Physical model, measure map', () => {
                     key: 8,
                     meter: 15,
                     note: 20
+                },
+                offsets: {
+                    clef: 0,
+                    key: 0,
+                    meter: 0,
+                    note: 0
                 }
             },
             {
@@ -208,6 +246,9 @@ describe('Physical model, measure map', () => {
                 startPos: 35,
                 widths: {
                     note: 10
+                },
+                offsets: {
+                    note: 0
                 }
             },
             {
@@ -216,6 +257,9 @@ describe('Physical model, measure map', () => {
                 startPos: 55,
                 widths: {
                     note: 10
+                },
+                offsets: {
+                    note: 0
                 }
             },
             {
@@ -224,6 +268,9 @@ describe('Physical model, measure map', () => {
                 startPos: 60,
                 widths: {
                     note: 20
+                },
+                offsets: {
+                    note: 10
                 }
             },
             {
@@ -233,11 +280,56 @@ describe('Physical model, measure map', () => {
                 widths: {
                     bar: 10,
                     note: 10
+                },
+                offsets: {
+                    bar: 0,
+                    note: 0
                 }
             }
 
         ]);
     });
+
+
+
+    it('should calculate accidental width and offset', () => {
+
+        const staff = {
+            initialClef: { clefType: ClefType.G, line: -2 },
+            initialMeter: { count: 4, value: 4 },
+            initialKey: { accidental: -1, count: 0},
+            voices: [{
+                content: { elements: 'c4 <fis, ais, cis dis>2'}
+            }]
+        } as StaffDef;
+
+        const staffViewModel1 = staffModelToViewModel(staff);
+
+        (staffViewModel1.timeSlots[1].accidentals as any)[1].displacement = -1;
+        (staffViewModel1.timeSlots[1].accidentals as any)[2].displacement = -2;
+
+        const res = MeasureMap.generate(staffViewModel1, defaultMetrics);
+
+        expect(res.measureMap.length).to.eq(2);
+
+        expect(res.measureMap[1]).to.deep.include({
+            absTime: Time.newAbsolute(1, 4),
+            width: defaultMetrics.defaultSpacing + defaultMetrics.accidentalSpacing + 2*defaultMetrics.accidentalDisplacement,
+            startPos: 80 + defaultMetrics.leftMargin,
+            widths: {
+                accidentals: defaultMetrics.accidentalSpacing + 2*defaultMetrics.accidentalDisplacement,
+                note: 20
+            }
+        });
+
+
+        const xpos1 = res.lookup(Time.newAbsolute(1, 4));
+
+        expect(xpos1).to.deep.include({
+            accidentals: 80 + defaultMetrics.leftMargin + 2*defaultMetrics.accidentalDisplacement
+        });
+    });
+
 
 
 });
