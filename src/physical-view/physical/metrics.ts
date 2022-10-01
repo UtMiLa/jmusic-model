@@ -27,6 +27,7 @@ export interface Metrics {
     ledgerLineLength: number;
 
     accidentalSpacing: number;
+    accidentalDisplacement: number;
 
 }
 
@@ -64,4 +65,5 @@ export class StandardMetrics implements Metrics {
     ledgerLineLength = 15;
 
     accidentalSpacing = 9;
+    accidentalDisplacement = 8
 }
