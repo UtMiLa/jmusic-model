@@ -305,8 +305,9 @@ describe('Physical model, measure map', () => {
 
         const staffViewModel1 = staffModelToViewModel(staff);
 
-        (staffViewModel1.timeSlots[1].accidentals as any)[1].displacement = -1;
-        (staffViewModel1.timeSlots[1].accidentals as any)[2].displacement = -2;
+        expect((staffViewModel1.timeSlots[1].accidentals as any)[0].displacement).to.eq(-3);
+        expect((staffViewModel1.timeSlots[1].accidentals as any)[1].displacement).to.eq(-2);
+        expect((staffViewModel1.timeSlots[1].accidentals as any)[2].displacement).to.eq(-1);
 
         const res = MeasureMap.generate(staffViewModel1, defaultMetrics);
 
@@ -314,10 +315,10 @@ describe('Physical model, measure map', () => {
 
         expect(res.measureMap[1]).to.deep.include({
             absTime: Time.newAbsolute(1, 4),
-            width: defaultMetrics.defaultSpacing + defaultMetrics.accidentalSpacing + 2*defaultMetrics.accidentalDisplacement,
+            width: defaultMetrics.defaultSpacing + defaultMetrics.accidentalSpacing + 3*defaultMetrics.accidentalDisplacement,
             startPos: 80 + defaultMetrics.leftMargin,
             widths: {
-                accidentals: defaultMetrics.accidentalSpacing + 2*defaultMetrics.accidentalDisplacement,
+                accidentals: defaultMetrics.accidentalSpacing + 3*defaultMetrics.accidentalDisplacement,
                 note: 20
             }
         });
@@ -326,7 +327,7 @@ describe('Physical model, measure map', () => {
         const xpos1 = res.lookup(Time.newAbsolute(1, 4));
 
         expect(xpos1).to.deep.include({
-            accidentals: 80 + defaultMetrics.leftMargin + 2*defaultMetrics.accidentalDisplacement
+            accidentals: 80 + defaultMetrics.leftMargin + 3*defaultMetrics.accidentalDisplacement
         });
     });
 

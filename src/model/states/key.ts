@@ -69,3 +69,28 @@ export class AccidentalManager {
     }
 
 }
+
+export function displaceAccidentals(positions: number[]): number[] {
+    const lastPositions: number[] = [];
+    const revRes: number[] = [];
+
+    positions.reverse().forEach(pos => {
+        let dis = -0;
+        while (lastPositions[dis] !== undefined && pos + 6 > lastPositions[dis]) {
+            dis++;
+        }
+        if (!lastPositions[dis]) {
+            lastPositions.push(pos);
+        } else {
+            lastPositions[dis] = pos;
+        }
+        
+        revRes.push(-dis);
+    });
+    const res = revRes.reverse();
+    if (res.length > 2 && res[0] === -2 && res[1] === -1)
+    {
+        return [res[1], res[0], ...res.slice(2)];
+    }
+    return res;
+}

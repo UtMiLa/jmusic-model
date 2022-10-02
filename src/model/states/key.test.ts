@@ -1,5 +1,5 @@
 import { PitchClass } from './../pitches/pitch';
-import { Key, AccidentalManager } from './key';
+import { Key, AccidentalManager, displaceAccidentals } from './key';
 import { Pitch } from '../pitches/pitch';
 import { Clef, ClefType } from './clef';
 import { expect } from 'chai';
@@ -62,6 +62,79 @@ describe('Key', () => {
             expect(accMan.getAccidental(new Pitch(2, 5, -1))).to.eq(-1); // e''
             
         });
-    
+
+        
+        it('should correctly set accidental displacements', () => {
+            // Alignment samples from Gardner Read: Music Notation, p.133-4
+            const accMan = new AccidentalManager();
+
+            const twoVoiceSamples = [
+                { in: 'f gis', out: [-1, 0] },
+                { in: 'fis a', out: [-1, 0] },
+                { in: 'f bes', out: [-1, 0] },
+                { in: 'fis, cis', out: [-1, 0] },
+                { in: 'f, d', out: [-1, 0] },
+                { in: 'fis, ees', out: [0, 0] },
+                { in: 'f, f', out: [0, 0] },
+                { in: 'fis, gis', out: [0, 0] },
+                { in: 'f, aes', out: [0, 0] }
+            ];
+
+            
+            const threeVoiceSamples = [
+                { in: 'fis, a, cis', out: [-1, -2, 0] },
+                { in: 'a, d fis', out: [-1, -2, 0] },
+                //{ in: 'ais, dis fis', out: [-1, -2, 0] },
+                { in: 'fis, a, ees', out: [0, -1, 0] },
+                { in: 'fis, cis fis', out: [0, -1, 0] },
+                /*{ in: 'f, ges, bes,', out: [-2, -1, 0] }, todo: let notehead displacements influence accidental displacements
+                { in: 'f, ges, f', out: [-2, -1, 0] },
+                { in: 'f, aes, bes,', out: [-2, -1, 0] },*/
+                { in: 'fis, ees fis', out: [0, -1, 0] } //1, -1, 0
+            ];
+            
+            // Note: Not all 4 voice samples are supposed to be identical to the
+            // suggested results; quote: "There can be no inflexible rules for accidental 
+            // placement in structures that require four or more accidental signs"
+            const fourVoiceSamples = [
+                { in: 'fis, ais, cis fis', out: [0, -2, -1, 0] },
+                //{ in: 'f, aes, des ges', out: [0, -2, -1, 0] },
+                { in: 'dis, gis, dis fis', out: [-1, 0, -1, 0] },
+                { in: 'aes,, ees, c aes', out: [-1, 0, -1, 0] },
+                //{ in: 'g, bes, c ees', out: [0, -2, -1, 0] }, // 0, -2, -1, 1
+                //{ in: 'g, bes, des ees', out: [0, -2, -1, 0] },
+                //{ in: 'e, g, b, d e', out: [0, -2, -3, -1, 0] },
+                { in: 'des, f, a, c e', out: [-1, 0, -2, -1, 0] },
+                { in: 'dis, fis, b, dis fis', out: [-1, 0, -2, -1, 0] },
+                { in: 'g, bes, des ees g', out: [0, -3, -2, -1, 0] }//,
+                //{ in: 'des, f, aes, des f aes', out: [-1, -2, 0, -1, -2, 0] }
+            ];
+
+
+            twoVoiceSamples.forEach((sample, i) => {
+                const pitches = sample.in.split(' ').map(pitchString => Pitch.parseLilypond(pitchString));
+                const accidentals = pitches.map(pitch => pitch.diatonicNumber);
+                const displacements = displaceAccidentals(accidentals);
+                expect(displacements, 'error in twoVoiceSamples[' + i + ']').to.deep.equal(sample.out);
+            });
+            
+
+            threeVoiceSamples.forEach((sample, i) => {
+                const pitches = sample.in.split(' ').map(pitchString => Pitch.parseLilypond(pitchString));
+                const accidentals = pitches.map(pitch => pitch.diatonicNumber);
+                const displacements = displaceAccidentals(accidentals);
+                expect(displacements, 'error in threeVoiceSamples[' + i + ']').to.deep.equal(sample.out);
+            });
+            
+            fourVoiceSamples.forEach((sample, i) => {
+                const pitches = sample.in.split(' ').map(pitchString => Pitch.parseLilypond(pitchString));
+                const accidentals = pitches.map(pitch => pitch.diatonicNumber);
+                const displacements = displaceAccidentals(accidentals);
+                expect(displacements, 'error in fourVoiceSamples[' + i + ']').to.deep.equal(sample.out);
+            });
+            
+        });
+
+
     });
 });

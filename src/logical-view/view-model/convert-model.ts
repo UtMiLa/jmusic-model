@@ -1,4 +1,4 @@
-import { AccidentalManager } from './../../model/states/key';
+import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
 import { Alternation } from './../../model/pitches/pitch';
 import { getAllBars, ScoreDef } from './../../model';
 import { MeterFactory } from './../../model';
@@ -140,6 +140,9 @@ export function staffModelToViewModel(def: StaffDef): StaffViewModel {
             );
 
             if (accidentals.length) {
+                const accidentalDisplacements = displaceAccidentals(accidentals.map(acc => acc.position));
+                accidentals.forEach((acc, idx) => { acc.displacement = accidentalDisplacements[idx]; });
+
                 if (slot.accidentals) { 
                     slot.accidentals = slot.accidentals.concat(accidentals);
                 } else {

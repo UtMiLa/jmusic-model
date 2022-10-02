@@ -42,6 +42,9 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
         measureMap = measureMap.mergeWith(measureMapX);
     });
 
+    let width = 0;
+    measureMap.measureMap.forEach(mm => width += mm.width);
+
     const resultElements = viewModel.staves.map((staffModel: StaffViewModel, idx: number) => {
 
         const y0 = -70 * idx;
@@ -49,7 +52,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
         let resultElements: PhysicalElementBase[] = [0, 1, 2, 3, 4].map(n => ({
             element: VertVarSizeGlyphs.Line,
             position: { x: 0, y: settings.staffLineWidth * (4 - n) },
-            length: calcLength(staffModel.timeSlots, settings)
+            length: width //calcLength(staffModel.timeSlots, settings)
         }));
 
         staffModel.timeSlots.forEach(ts =>  {
