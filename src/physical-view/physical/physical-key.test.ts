@@ -15,7 +15,7 @@ describe('Physical model, keys', () => {
     beforeEach(() => { 
         defaultMetrics = new StandardMetrics();
         alternativeMetrics = new StandardMetrics({            
-            staffLineWidth: 6,
+            scaleDegreeUnit: 3,
             staffLengthOffset: 8,
         });
         keyC = {
@@ -39,10 +39,10 @@ describe('Physical model, keys', () => {
         const resultAs = convertKey(keyAs, 30, defaultMetrics);
 
         expect(resultAs.length).to.eq(4);
-        expect(resultAs[0]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30, y: 2*defaultMetrics.staffLineWidth }});
-        expect(resultAs[1]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30 + defaultMetrics.keySigSpacing, y: 3.5*defaultMetrics.staffLineWidth }});
-        expect(resultAs[2]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30 + 2*defaultMetrics.keySigSpacing, y: 1.5*defaultMetrics.staffLineWidth }});
-        expect(resultAs[3]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30 + 3*defaultMetrics.keySigSpacing, y: 3*defaultMetrics.staffLineWidth }});
+        expect(resultAs[0]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30, y: 2*defaultMetrics.scaleDegreeUnit*2 }});
+        expect(resultAs[1]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30 + defaultMetrics.keySigSpacing, y: 3.5*defaultMetrics.scaleDegreeUnit*2 }});
+        expect(resultAs[2]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30 + 2*defaultMetrics.keySigSpacing, y: 1.5*defaultMetrics.scaleDegreeUnit*2 }});
+        expect(resultAs[3]).to.deep.eq({ glyph: 'accidentals.M2', position: { x: 30 + 3*defaultMetrics.keySigSpacing, y: 3*defaultMetrics.scaleDegreeUnit*2 }});
 
     });
 
@@ -50,10 +50,10 @@ describe('Physical model, keys', () => {
         const resultAs = convertKey(keyH, 30, defaultMetrics);
 
         expect(resultAs.length).to.eq(5);
-        expect(resultAs[0]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30, y: 4*defaultMetrics.staffLineWidth }});
-        expect(resultAs[1]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + defaultMetrics.keySigSpacing, y: 2.5*defaultMetrics.staffLineWidth }});
-        expect(resultAs[2]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + 2*defaultMetrics.keySigSpacing, y: 4.5*defaultMetrics.staffLineWidth }});
-        expect(resultAs[3]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + 3*defaultMetrics.keySigSpacing, y: 3*defaultMetrics.staffLineWidth }});
+        expect(resultAs[0]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30, y: 4*defaultMetrics.scaleDegreeUnit*2 }});
+        expect(resultAs[1]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + defaultMetrics.keySigSpacing, y: 2.5*defaultMetrics.scaleDegreeUnit*2 }});
+        expect(resultAs[2]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + 2*defaultMetrics.keySigSpacing, y: 4.5*defaultMetrics.scaleDegreeUnit*2 }});
+        expect(resultAs[3]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + 3*defaultMetrics.keySigSpacing, y: 3*defaultMetrics.scaleDegreeUnit*2 }});
 
     });
 
@@ -69,7 +69,7 @@ describe('Physical model, accidentals', () => {
     beforeEach(() => { 
         defaultMetrics = new StandardMetrics();
         alternativeMetrics = new StandardMetrics({            
-            staffLineWidth: 6,
+            scaleDegreeUnit: 3,
             staffLengthOffset: 8,
         });
         acc1 = {
@@ -84,7 +84,7 @@ describe('Physical model, accidentals', () => {
     it('should draw accidentals', () => {
         const res = convertAccidentals([acc1], 30, defaultMetrics);
 
-        expect(res).to.deep.eq([{ glyph: 'accidentals.2', position: { x: 30, y: 0.5*defaultMetrics.staffLineWidth }}]);
+        expect(res).to.deep.eq([{ glyph: 'accidentals.2', position: { x: 30, y: 0.5*defaultMetrics.scaleDegreeUnit*2 }}]);
     });
 
 

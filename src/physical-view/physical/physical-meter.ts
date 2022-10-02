@@ -35,7 +35,7 @@ export function convertMeter(meter: MeterViewModel, xPos: number, settings: Metr
             glyph,
             position: {
                 x: xPos + i * settings.meterNumberSpacing, 
-                y: 2 * settings.staffLineWidth + settings.meterAdjustY
+                y: 2 * settings.scaleDegreeUnit*2 + settings.meterAdjustY
             }
         });
     });

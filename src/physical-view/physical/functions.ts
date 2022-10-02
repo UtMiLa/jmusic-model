@@ -3,7 +3,7 @@ import { NoteViewModel } from './../../logical-view';
 import { Metrics } from './metrics';
 
 export function staffLineToY(staffLine: number, settings: Metrics): number {
-    return settings.staffLineWidth - (-1 - staffLine) * settings.staffLineWidth;
+    return settings.scaleDegreeUnit*2 - (-1 - staffLine) * settings.scaleDegreeUnit*2;
 }
 
 export function calcDisplacements(note: NoteViewModel): number[] {

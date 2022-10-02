@@ -51,7 +51,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
 
         let resultElements: PhysicalElementBase[] = [0, 1, 2, 3, 4].map(n => ({
             element: VertVarSizeGlyphs.Line,
-            position: { x: 0, y: settings.staffLineWidth * (4 - n) },
+            position: { x: 0, y: settings.scaleDegreeUnit*2 * (4 - n) },
             length: width //calcLength(staffModel.timeSlots, settings)
         }));
 
@@ -67,7 +67,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
                 resultElements.push({
                     element: HorizVarSizeGlyphs.Bar,
                     position: { x: mapItem.bar as number, y: 0 },
-                    length: 4 * settings.staffLineWidth
+                    length: 4 * settings.scaleDegreeUnit*2
                 } as PhysicalHorizVarSizeElement);
             }
             if (ts.key) {

@@ -2,7 +2,7 @@
 export interface Metrics {
     leftMargin: number;
     tieAfterNote: number;
-    staffLineWidth: number; 
+    scaleDegreeUnit: number; 
     staffLengthOffset: number;
 
     blackNoteHeadLeftXOffset: number;
@@ -40,7 +40,8 @@ export class StandardMetrics implements Metrics {
     leftMargin = 10;
     tieAfterNote: number = 9;
 
-    staffLineWidth: number = 6; 
+    scaleDegreeUnit = 3;
+    //scaleDegreeUnit*2: number = 6; 
     staffLengthOffset: number = 10;
 
     blackNoteHeadLeftXOffset = 6.5;

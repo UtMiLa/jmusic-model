@@ -34,7 +34,7 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
     for (let i = -6; i >= note.positions[0]; i -= 2) {
         result.push({
             element: VertVarSizeGlyphs.LedgerLine,
-            position: { x: xPos - settings.ledgerLineExtra, y: (i/2 + 2) * settings.staffLineWidth },
+            position: { x: xPos - settings.ledgerLineExtra, y: (i/2 + 2) * settings.scaleDegreeUnit*2 },
             length: settings.ledgerLineLength
         } as PhysicalVertVarSizeElement);
     }
@@ -42,7 +42,7 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
     for (let i = 6; i <= note.positions[note.positions.length - 1]; i += 2) {
         result.push({
             element: VertVarSizeGlyphs.LedgerLine,
-            position: { x: xPos - settings.ledgerLineExtra, y: (i/2 + 2) * settings.staffLineWidth },
+            position: { x: xPos - settings.ledgerLineExtra, y: (i/2 + 2) * settings.scaleDegreeUnit*2 },
             length: settings.ledgerLineLength
         } as PhysicalVertVarSizeElement);
     }
@@ -116,10 +116,10 @@ function convertRest(note: NoteViewModel, xPos: number, settings: Metrics) {
 
     const res = [{
         glyph,
-        position: { x: xPos, y: staffLine * settings.staffLineWidth }
+        position: { x: xPos, y: staffLine * settings.scaleDegreeUnit*2 }
     } as PhysicalFixedSizeElement];
 
-    addDots(note, staffLine * settings.staffLineWidth, settings, res, xPos);
+    addDots(note, staffLine * settings.scaleDegreeUnit*2, settings, res, xPos);
 
     return res;
 }
@@ -127,8 +127,8 @@ function convertRest(note: NoteViewModel, xPos: number, settings: Metrics) {
 function addDots(note: NoteViewModel, yPos: number, settings: Metrics, result: PhysicalElementBase[], xPos: number) {
     if (note.dotNo) {
         for (let i = 0; i < note.dotNo; i++) {
-            const yAdjustedPos = yPos + ((yPos + settings.staffLineWidth / 2) % settings.staffLineWidth);
-            //console.log('yAdjustedPos', yAdjustedPos, yPos, (yPos % settings.staffLineWidth));
+            const yAdjustedPos = yPos + ((yPos + settings.scaleDegreeUnit) % (settings.scaleDegreeUnit*2));
+            //console.log('yAdjustedPos', yAdjustedPos, yPos, (yPos % settings.scaleDegreeUnit*2));
             result.push({
                 position: { x: xPos + settings.dotToNoteDist + settings.dotToDotDist * i, y: yAdjustedPos },
                 glyph: 'dots.dot'

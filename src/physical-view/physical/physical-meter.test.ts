@@ -14,7 +14,7 @@ describe('Physical model, meter', () => {
     beforeEach(() => { 
         defaultMetrics = new StandardMetrics();
         alternativeMetrics = new StandardMetrics({            
-            staffLineWidth: 6,
+            scaleDegreeUnit: 3,
             staffLengthOffset: 8,
         });
     });
@@ -28,7 +28,7 @@ describe('Physical model, meter', () => {
         expect(res).to.deep.equal([
             {
                 glyph: 'six',
-                position: { x: 40, y: 2 * defaultMetrics.staffLineWidth + defaultMetrics.meterAdjustY}
+                position: { x: 40, y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY}
             },{
                 glyph: 'eight',
                 position: { x: 40, y: defaultMetrics.meterAdjustY }
@@ -44,11 +44,11 @@ describe('Physical model, meter', () => {
         expect(res).to.deep.equal([
             {
                 glyph: 'one',
-                position: { x: 50, y: 2 * defaultMetrics.staffLineWidth + defaultMetrics.meterAdjustY}
+                position: { x: 50, y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY}
             },
             {
                 glyph: 'two',
-                position: { x: 50 + defaultMetrics.meterNumberSpacing, y: 2 * defaultMetrics.staffLineWidth + defaultMetrics.meterAdjustY }
+                position: { x: 50 + defaultMetrics.meterNumberSpacing, y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY }
             },
             {
                 glyph: 'one',

@@ -25,7 +25,7 @@ describe('Physical model', () => {
     beforeEach(() => { 
         defaultMetrics = new StandardMetrics();
         alternativeMetrics = new StandardMetrics({            
-            staffLineWidth: 6,
+            scaleDegreeUnit: 3,
             staffLengthOffset: 8,
             defaultSpacing: 30
         });
@@ -66,7 +66,7 @@ describe('Physical model', () => {
 
         const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
 
-        const lineWidth = defaultMetrics.staffLineWidth;
+        const lineWidth = defaultMetrics.scaleDegreeUnit*2;
 
         expect(physicalModel).to.deep.include({ elements: [
             { 
@@ -96,7 +96,7 @@ describe('Physical model', () => {
             }
         ] });
 
-        checkStaffLines(physicalModel.elements, 0, defaultMetrics.staffLineWidth, 10);
+        checkStaffLines(physicalModel.elements, 0, defaultMetrics.scaleDegreeUnit*2, 10);
     });
     
    
@@ -109,17 +109,17 @@ describe('Physical model', () => {
 
         expect(defaultYs).to.deep.equal([
             0, 
-            defaultMetrics.staffLineWidth, 
-            defaultMetrics.staffLineWidth*2,
-            defaultMetrics.staffLineWidth*3,
-            defaultMetrics.staffLineWidth*4
+            defaultMetrics.scaleDegreeUnit*2, 
+            defaultMetrics.scaleDegreeUnit*2*2,
+            defaultMetrics.scaleDegreeUnit*2*3,
+            defaultMetrics.scaleDegreeUnit*2*4
         ]);  
         expect(alternateYs).to.deep.equal([
             0, 
-            alternativeMetrics.staffLineWidth, 
-            alternativeMetrics.staffLineWidth*2,
-            alternativeMetrics.staffLineWidth*3,
-            alternativeMetrics.staffLineWidth*4
+            alternativeMetrics.scaleDegreeUnit*2, 
+            alternativeMetrics.scaleDegreeUnit*2*2,
+            alternativeMetrics.scaleDegreeUnit*2*3,
+            alternativeMetrics.scaleDegreeUnit*2*4
         ]);        
     });
     
@@ -141,7 +141,7 @@ describe('Physical model', () => {
         };
 
         const settings = new StandardMetrics({
-            staffLineWidth: 50,
+            scaleDegreeUnit*2: 50,
             staffLengthOffset: 30
         });
 
@@ -207,11 +207,11 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements.length).to.eq(5 + 1);
 
-        checkStaffLines(physicalModel.elements, 0, defaultMetrics.staffLineWidth, 30);
+        checkStaffLines(physicalModel.elements, 0, defaultMetrics.scaleDegreeUnit*2, 30);
 
         expect(physicalModel.elements[5]).to.deep.eq({
             glyph: 'clefs.G',
-            position: { x: 10, y: defaultMetrics.staffLineWidth }
+            position: { x: 10, y: defaultMetrics.scaleDegreeUnit*2 }
         });
     });
     
@@ -245,16 +245,16 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements.length).to.eq(5 + 2);
 
-        checkStaffLines(physicalModel.elements, 0, defaultMetrics.staffLineWidth, 50);
+        checkStaffLines(physicalModel.elements, 0, defaultMetrics.scaleDegreeUnit*2, 50);
 
         expect(physicalModel.elements[5]).to.deep.eq({
             glyph: 'clefs.G',
-            position: { x: 10, y: defaultMetrics.staffLineWidth }
+            position: { x: 10, y: defaultMetrics.scaleDegreeUnit*2 }
         });
 
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'noteheads.s0',
-            position: { x: 30, y: -0.5 * defaultMetrics.staffLineWidth }
+            position: { x: 30, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
         });
     });
    
@@ -321,24 +321,24 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements.length).to.eq(5 + 1 + 4 + 2);
 
-        checkStaffLines(physicalModel.elements, 0, defaultMetrics.staffLineWidth, 110);
+        checkStaffLines(physicalModel.elements, 0, defaultMetrics.scaleDegreeUnit*2, 110);
 
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'noteheads.sM1',
-            position: { x: 30, y: -0.5 * defaultMetrics.staffLineWidth }
+            position: { x: 30, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
         });
 
         expect(physicalModel.elements[7]).to.deep.eq({
             glyph: 'noteheads.s0',
-            position: { x: 50, y: -0.5 * defaultMetrics.staffLineWidth }
+            position: { x: 50, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
         });
         expect(physicalModel.elements[9]).to.deep.eq({
             glyph: 'noteheads.s1',
-            position: { x: 70, y: -0.5 * defaultMetrics.staffLineWidth }
+            position: { x: 70, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
         });
         expect(physicalModel.elements[11]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 90, y: -0.5 * defaultMetrics.staffLineWidth }
+            position: { x: 90, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
         });
 
 
@@ -346,12 +346,12 @@ describe('Physical model', () => {
         expect(physicalModel.elements[8]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
             length: defaultMetrics.quarterStemDefaultLength,
-            position: { x: 70 + defaultMetrics.halfNoteHeadLeftXOffset, y: -0.5 * defaultMetrics.staffLineWidth }
+            position: { x: 70 + defaultMetrics.halfNoteHeadLeftXOffset, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
         });
         expect(physicalModel.elements[10]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
             length: defaultMetrics.quarterStemDefaultLength,
-            position: { x: 90 + defaultMetrics.blackNoteHeadLeftXOffset, y: -0.5 * defaultMetrics.staffLineWidth }
+            position: { x: 90 + defaultMetrics.blackNoteHeadLeftXOffset, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
         });
 
     });
@@ -420,23 +420,23 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements.length).to.eq(5 + 1 + 4 + 2);
 
-        checkStaffLines(physicalModel.elements, 0, defaultMetrics.staffLineWidth, 110);
+        checkStaffLines(physicalModel.elements, 0, defaultMetrics.scaleDegreeUnit*2, 110);
 
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'noteheads.sM1',
-            position: { x: 30, y: 2*defaultMetrics.staffLineWidth }
+            position: { x: 30, y: 2*defaultMetrics.scaleDegreeUnit*2 }
         });
         expect(physicalModel.elements[7]).to.deep.eq({
             glyph: 'noteheads.s0',
-            position: { x: 50, y: 1.5*defaultMetrics.staffLineWidth }
+            position: { x: 50, y: 1.5*defaultMetrics.scaleDegreeUnit*2 }
         });
         expect(physicalModel.elements[9]).to.deep.eq({
             glyph: 'noteheads.s1',
-            position: { x: 70, y: defaultMetrics.staffLineWidth }
+            position: { x: 70, y: defaultMetrics.scaleDegreeUnit*2 }
         });
         expect(physicalModel.elements[11]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 90, y: 0.5*defaultMetrics.staffLineWidth }
+            position: { x: 90, y: 0.5*defaultMetrics.scaleDegreeUnit*2 }
         });
     });
    
@@ -489,7 +489,7 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[7]).to.deep.eq({
             glyph: 'accidentals.2',
-            position: { x: 50, y: 1.5*defaultMetrics.staffLineWidth }
+            position: { x: 50, y: 1.5*defaultMetrics.scaleDegreeUnit*2 }
         });
 
     });
@@ -558,27 +558,27 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements.length).to.eq(5 + 1 + 4 + 2);
 
-        checkStaffLines(physicalModel.elements, 0, alternativeMetrics.staffLineWidth, 158);
+        checkStaffLines(physicalModel.elements, 0, alternativeMetrics.scaleDegreeUnit*2, 158);
 
         expect(physicalModel.elements[5]).to.deep.eq({
             glyph: 'clefs.G',
-            position: { x: 10, y: alternativeMetrics.staffLineWidth }
+            position: { x: 10, y: alternativeMetrics.scaleDegreeUnit*2 }
         });
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'noteheads.sM1',
-            position: { x: 10 + alternativeMetrics.defaultSpacing, y: 2*alternativeMetrics.staffLineWidth }
+            position: { x: 10 + alternativeMetrics.defaultSpacing, y: 2*alternativeMetrics.scaleDegreeUnit*2 }
         });
         expect(physicalModel.elements[7]).to.deep.eq({
             glyph: 'noteheads.s0',
-            position: { x: 10 + alternativeMetrics.defaultSpacing*2, y: 1.5*alternativeMetrics.staffLineWidth }
+            position: { x: 10 + alternativeMetrics.defaultSpacing*2, y: 1.5*alternativeMetrics.scaleDegreeUnit*2 }
         });
         expect(physicalModel.elements[9]).to.deep.eq({
             glyph: 'noteheads.s1',
-            position: { x: 10 + alternativeMetrics.defaultSpacing*3, y: alternativeMetrics.staffLineWidth }
+            position: { x: 10 + alternativeMetrics.defaultSpacing*3, y: alternativeMetrics.scaleDegreeUnit*2 }
         });
         expect(physicalModel.elements[11]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 10 + alternativeMetrics.defaultSpacing*4, y: 0.5*alternativeMetrics.staffLineWidth }
+            position: { x: 10 + alternativeMetrics.defaultSpacing*4, y: 0.5*alternativeMetrics.scaleDegreeUnit*2 }
         });
     });
 
@@ -655,7 +655,7 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[5]).to.deep.eq({
             glyph: 'accidentals.M2',
-            position: { x: 10, y: 3.5 * defaultMetrics.staffLineWidth }
+            position: { x: 10, y: 3.5 * defaultMetrics.scaleDegreeUnit*2 }
         });
     });
    
@@ -688,11 +688,11 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements.length).to.eq(5 + 1 + 2);
 
-        checkStaffLines(physicalModel.elements, 0, defaultMetrics.staffLineWidth, 30);
+        checkStaffLines(physicalModel.elements, 0, defaultMetrics.scaleDegreeUnit*2, 30);
 
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'five',
-            position: { x: 30, y: 2 * defaultMetrics.staffLineWidth + defaultMetrics.meterAdjustY }
+            position: { x: 30, y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY }
         });
 
         expect(physicalModel.elements[7]).to.deep.eq({
@@ -734,7 +734,7 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[8]).to.deep.eq({
             glyph: 'five',
-            position: { x: 30 + 2 * defaultMetrics.keySigSpacing + defaultMetrics.defaultSpacing, y: 2 * defaultMetrics.staffLineWidth + defaultMetrics.meterAdjustY }
+            position: { x: 30 + 2 * defaultMetrics.keySigSpacing + defaultMetrics.defaultSpacing, y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY }
         });
 
         expect(physicalModel.elements[9]).to.deep.eq({
@@ -773,7 +773,7 @@ describe('Physical model', () => {
 
         const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
 
-        const lineWidth = defaultMetrics.staffLineWidth;
+        const lineWidth = defaultMetrics.scaleDegreeUnit*2;
 
         expect(physicalModel.elements.length).to.eq(7);
 
@@ -818,7 +818,7 @@ describe('Physical model', () => {
         expect(physicalModel.elements[6]).to.deep.equal(
             { 
                 element: VertVarSizeGlyphs.Tie,
-                position: { x: 10 + defaultMetrics.tieAfterNote, y: -defaultMetrics.staffLineWidth },
+                position: { x: 10 + defaultMetrics.tieAfterNote, y: -defaultMetrics.scaleDegreeUnit*2 },
                 direction: NoteDirection.Down,
                 length: 12
             }

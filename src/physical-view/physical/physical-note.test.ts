@@ -14,7 +14,7 @@ describe('Physical model, notes', () => {
     beforeEach(() => { 
         defaultMetrics = new StandardMetrics();
         alternativeMetrics = new StandardMetrics({            
-            staffLineWidth: 6,
+            scaleDegreeUnit: 3,
             staffLengthOffset: 8,
         });
     });
@@ -34,13 +34,13 @@ describe('Physical model, notes', () => {
 
         expect(physical[0]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
-            position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset, y: 3.5*defaultMetrics.staffLineWidth },
+            position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset, y: 3.5*defaultMetrics.scaleDegreeUnit*2 },
             length: defaultMetrics.quarterStemDefaultLength
         });
 
         expect(physical[1]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 20 + defaultMetrics.blackNoteHeadRightXOffset, y: 3.5*defaultMetrics.staffLineWidth }
+            position: { x: 20 + defaultMetrics.blackNoteHeadRightXOffset, y: 3.5*defaultMetrics.scaleDegreeUnit*2 }
         });
 
     });
@@ -60,13 +60,13 @@ describe('Physical model, notes', () => {
 
         expect(physical[0]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
-            position: { x: 20, y: 3.5*defaultMetrics.staffLineWidth },
+            position: { x: 20, y: 3.5*defaultMetrics.scaleDegreeUnit*2 },
             length: -defaultMetrics.quarterStemDefaultLength
         });
 
         expect(physical[1]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 20, y: 3.5*defaultMetrics.staffLineWidth }
+            position: { x: 20, y: 3.5*defaultMetrics.scaleDegreeUnit*2 }
         });
 
     });
@@ -86,18 +86,18 @@ describe('Physical model, notes', () => {
 
         expect(physical[0]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
-            position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset, y: 3.5*defaultMetrics.staffLineWidth },
+            position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset, y: 3.5*defaultMetrics.scaleDegreeUnit*2 },
             length: defaultMetrics.quarterStemDefaultLength
         });
 
         expect(physical[1]).to.deep.eq({
             glyph: 'flags.u4',
-            position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset, y: 3.5*defaultMetrics.staffLineWidth + defaultMetrics.quarterStemDefaultLength }
+            position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset, y: 3.5*defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.quarterStemDefaultLength }
         });
 
         expect(physical[2]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 20, y: 3.5*defaultMetrics.staffLineWidth }
+            position: { x: 20, y: 3.5*defaultMetrics.scaleDegreeUnit*2 }
         });
 
     });
@@ -117,7 +117,7 @@ describe('Physical model, notes', () => {
     
             expect(physical[0]).to.deep.eq({
                 glyph: 'rests.2',
-                position: { x: 20, y: 2 * defaultMetrics.staffLineWidth }
+                position: { x: 20, y: 2 * defaultMetrics.scaleDegreeUnit*2 }
             });
 
             const note2 = {
@@ -132,7 +132,7 @@ describe('Physical model, notes', () => {
     
             expect(physical2[0]).to.deep.eq({
                 glyph: 'rests.6',
-                position: { x: 50, y: 2 * defaultMetrics.staffLineWidth }
+                position: { x: 50, y: 2 * defaultMetrics.scaleDegreeUnit*2 }
             });
 
         });
@@ -151,7 +151,7 @@ describe('Physical model, notes', () => {
     
             expect(physical[0]).to.deep.eq({
                 glyph: 'rests.2',
-                position: { x: 20, y: 3 * defaultMetrics.staffLineWidth }
+                position: { x: 20, y: 3 * defaultMetrics.scaleDegreeUnit*2 }
             });
 
             const note2 = {
@@ -166,7 +166,7 @@ describe('Physical model, notes', () => {
     
             expect(physical2[0]).to.deep.eq({
                 glyph: 'rests.6',
-                position: { x: 50, y: 1 * defaultMetrics.staffLineWidth }
+                position: { x: 50, y: 1 * defaultMetrics.scaleDegreeUnit*2 }
             });
 
         });
@@ -186,7 +186,7 @@ describe('Physical model, notes', () => {
     
             expect(physical[1]).to.deep.eq({
                 glyph: 'dots.dot',
-                position: { x: 20 + defaultMetrics.dotToNoteDist, y: 3.5*defaultMetrics.staffLineWidth }
+                position: { x: 20 + defaultMetrics.dotToNoteDist, y: 3.5*defaultMetrics.scaleDegreeUnit*2 }
             });
     
         });
@@ -213,12 +213,12 @@ describe('Physical model, notes', () => {
 
         expect(physical[3]).to.deep.eq({
             glyph: 'dots.dot',
-            position: { x: 20 + defaultMetrics.dotToNoteDist, y: 3.5*defaultMetrics.staffLineWidth }
+            position: { x: 20 + defaultMetrics.dotToNoteDist, y: 3.5*defaultMetrics.scaleDegreeUnit*2 }
         });
 
         expect(physical[4]).to.deep.eq({
             glyph: 'dots.dot',
-            position: { x: 20 + defaultMetrics.dotToNoteDist + defaultMetrics.dotToDotDist, y: 3.5*defaultMetrics.staffLineWidth }
+            position: { x: 20 + defaultMetrics.dotToNoteDist + defaultMetrics.dotToDotDist, y: 3.5*defaultMetrics.scaleDegreeUnit*2 }
         });
 
 
@@ -241,7 +241,7 @@ describe('Physical model, notes', () => {
 
         expect(physical[3]).to.deep.eq({
             glyph: 'dots.dot',
-            position: { x: 20 + defaultMetrics.dotToNoteDist, y: 4.5*defaultMetrics.staffLineWidth }
+            position: { x: 20 + defaultMetrics.dotToNoteDist, y: 4.5*defaultMetrics.scaleDegreeUnit*2 }
         });
 
     });
@@ -263,7 +263,7 @@ describe('Physical model, notes', () => {
         expect(physical[0]).to.deep.eq({
             //glyph: 'dots.dot',
             element: VertVarSizeGlyphs.LedgerLine,
-            position: { x: 20 - defaultMetrics.ledgerLineExtra, y: -1*defaultMetrics.staffLineWidth },
+            position: { x: 20 - defaultMetrics.ledgerLineExtra, y: -1*defaultMetrics.scaleDegreeUnit*2 },
             length: 15
         } as PhysicalVertVarSizeElement);
 
@@ -286,21 +286,21 @@ describe('Physical model, notes', () => {
         expect(physical[0]).to.deep.eq({
             //glyph: 'dots.dot',
             element: VertVarSizeGlyphs.LedgerLine,
-            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: -1*defaultMetrics.staffLineWidth },
+            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: -1*defaultMetrics.scaleDegreeUnit*2 },
             length: 15
         } as PhysicalVertVarSizeElement);
 
         expect(physical[1]).to.deep.eq({
             //glyph: 'dots.dot',
             element: VertVarSizeGlyphs.LedgerLine,
-            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: -2*defaultMetrics.staffLineWidth },
+            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: -2*defaultMetrics.scaleDegreeUnit*2 },
             length: 15
         } as PhysicalVertVarSizeElement);
 
         expect(physical[2]).to.deep.eq({
             //glyph: 'dots.dot',
             element: VertVarSizeGlyphs.LedgerLine,
-            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: -3*defaultMetrics.staffLineWidth },
+            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: -3*defaultMetrics.scaleDegreeUnit*2 },
             length: 15
         } as PhysicalVertVarSizeElement);
 
@@ -323,21 +323,21 @@ describe('Physical model, notes', () => {
         expect(physical[0]).to.deep.eq({
             //glyph: 'dots.dot',
             element: VertVarSizeGlyphs.LedgerLine,
-            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: 5*defaultMetrics.staffLineWidth },
+            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: 5*defaultMetrics.scaleDegreeUnit*2 },
             length: 15
         } as PhysicalVertVarSizeElement);
 
         expect(physical[1]).to.deep.eq({
             //glyph: 'dots.dot',
             element: VertVarSizeGlyphs.LedgerLine,
-            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: 6*defaultMetrics.staffLineWidth },
+            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: 6*defaultMetrics.scaleDegreeUnit*2 },
             length: 15
         } as PhysicalVertVarSizeElement);
 
         expect(physical[2]).to.deep.eq({
             //glyph: 'dots.dot',
             element: VertVarSizeGlyphs.LedgerLine,
-            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: 7*defaultMetrics.staffLineWidth },
+            position: { x: 30 - defaultMetrics.ledgerLineExtra, y: 7*defaultMetrics.scaleDegreeUnit*2 },
             length: 15
         } as PhysicalVertVarSizeElement);
 
