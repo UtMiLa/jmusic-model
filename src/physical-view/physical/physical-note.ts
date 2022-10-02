@@ -174,7 +174,7 @@ function getStemAndFlag(noteType: NoteType, flagType: FlagType | undefined, sett
 
             return [{
                 element: HorizVarSizeGlyphs.Stem,
-                length: stemSign * (settings.quarterStemDefaultLength + chordLength),
+                height: stemSign * (settings.quarterStemDefaultLength + chordLength),
                 position: { x: stemBaseXhalf, y: stemBaseY }
             } as PhysicalHorizVarSizeElement];
             
@@ -183,7 +183,7 @@ function getStemAndFlag(noteType: NoteType, flagType: FlagType | undefined, sett
         {
             const result: PhysicalElementBase[] = [{
                 element: HorizVarSizeGlyphs.Stem,
-                length: stemSign * (settings.quarterStemDefaultLength + chordLength),
+                height: stemSign * (settings.quarterStemDefaultLength + chordLength),
                 position: { x: stemBaseX, y: stemBaseY }
             } as PhysicalHorizVarSizeElement];
 

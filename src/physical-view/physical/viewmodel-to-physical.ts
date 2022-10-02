@@ -67,7 +67,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
                 resultElements.push({
                     element: HorizVarSizeGlyphs.Bar,
                     position: { x: mapItem.bar as number, y: 0 },
-                    length: 4 * settings.scaleDegreeUnit*2
+                    height: 4 * settings.scaleDegreeUnit*2
                 } as PhysicalHorizVarSizeElement);
             }
             if (ts.key) {

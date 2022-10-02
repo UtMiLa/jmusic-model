@@ -1,6 +1,5 @@
 import { NoteDirection } from './../../model';
-import { Point } from './../physical/physical-elements';
-import { PhysicalVertVarSizeElement } from '../physical/physical-elements';
+import { Point, PhysicalBeamElement, PhysicalVertVarSizeElement } from '../physical/physical-elements';
 import { GlyphCode } from '../physical/glyphs';
 import { PhysicalFixedSizeElement } from '../physical/physical-elements';
 import { emmentalerCodes } from '../../font/emmentaler-codes';
@@ -84,11 +83,24 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
     physicalModel.elements.forEach(elem => {
         if ((elem as any).element === VertVarSizeGlyphs.Line || (elem as any).element === VertVarSizeGlyphs.LedgerLine) {
             ctx.strokeStyle = '#888888';
+            ctx.lineWidth = 1.3;
 
             draw(ctx, [
                 { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elem.position.x + (elem as PhysicalVertVarSizeElement).length, y: elem.position.y })]},
                 { type: DrawOperationType.Stroke, points: []}
+            ]);
+
+        } else if ((elem as any).element === VertVarSizeGlyphs.Beam) {
+            ctx.strokeStyle = '#888888';
+            const elmBeam = elem as PhysicalBeamElement;
+
+            draw(ctx, [
+                { type: DrawOperationType.MoveTo, points: [convertXY(elmBeam.position)]},
+                { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height })]},
+                { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height - 3})]},
+                { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x, y: elmBeam.position.y - 3 })]},
+                { type: DrawOperationType.Fill, points: []}
             ]);
 
         } else if ((elem as any).element === VertVarSizeGlyphs.Tie) {
@@ -125,7 +137,7 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
 
             draw(ctx, [
                 { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalVertVarSizeElement).length)}]},
+                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
                 { type: DrawOperationType.Stroke, points: []}
             ]);
 
@@ -134,7 +146,7 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
 
             draw(ctx, [
                 { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalVertVarSizeElement).length)}]},
+                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
                 { type: DrawOperationType.Stroke, points: []}
             ]);
         } else if ((elem as any).glyph) {

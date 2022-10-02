@@ -35,7 +35,7 @@ describe('Physical model, notes', () => {
         expect(physical[0]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
             position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset, y: 3.5*defaultMetrics.scaleDegreeUnit*2 },
-            length: defaultMetrics.quarterStemDefaultLength
+            height: defaultMetrics.quarterStemDefaultLength
         });
 
         expect(physical[1]).to.deep.eq({
@@ -61,7 +61,7 @@ describe('Physical model, notes', () => {
         expect(physical[0]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
             position: { x: 20, y: 3.5*defaultMetrics.scaleDegreeUnit*2 },
-            length: -defaultMetrics.quarterStemDefaultLength
+            height: -defaultMetrics.quarterStemDefaultLength
         });
 
         expect(physical[1]).to.deep.eq({
@@ -87,7 +87,7 @@ describe('Physical model, notes', () => {
         expect(physical[0]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
             position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset, y: 3.5*defaultMetrics.scaleDegreeUnit*2 },
-            length: defaultMetrics.quarterStemDefaultLength
+            height: defaultMetrics.quarterStemDefaultLength
         });
 
         expect(physical[1]).to.deep.eq({

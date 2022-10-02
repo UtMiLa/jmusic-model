@@ -1,5 +1,5 @@
 import { GlyphCode } from '../physical/glyphs';
-import { FixedSizeGlyphs, VertVarSizeGlyphs, HorizVarSizeGlyphs } from './glyphs';
+import { VertVarSizeGlyphs, HorizVarSizeGlyphs } from './glyphs';
 
 export interface Point {
     x: number;
@@ -7,7 +7,10 @@ export interface Point {
 }
 
 export interface PhysicalElementBase {
-    position: Point;    
+    element?: VertVarSizeGlyphs | HorizVarSizeGlyphs;
+    position: Point;
+    length?: number;
+    height?: number;
 }
 
 export interface PhysicalFixedSizeElement extends PhysicalElementBase {
@@ -22,7 +25,15 @@ export interface PhysicalVertVarSizeElement extends PhysicalElementBase {
 
 export interface PhysicalHorizVarSizeElement extends PhysicalElementBase {
     element: HorizVarSizeGlyphs;    
+    height: number;
+}
+
+
+
+export interface PhysicalBeamElement extends PhysicalElementBase {
+    element: HorizVarSizeGlyphs;    
     length: number;
+    height: number;
 }
 
 export interface PhysicalModel {

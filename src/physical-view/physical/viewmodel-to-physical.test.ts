@@ -345,12 +345,12 @@ describe('Physical model', () => {
         // stems
         expect(physicalModel.elements[8]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
-            length: defaultMetrics.quarterStemDefaultLength,
+            height: defaultMetrics.quarterStemDefaultLength,
             position: { x: 70 + defaultMetrics.halfNoteHeadLeftXOffset, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
         });
         expect(physicalModel.elements[10]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
-            length: defaultMetrics.quarterStemDefaultLength,
+            height: defaultMetrics.quarterStemDefaultLength,
             position: { x: 90 + defaultMetrics.blackNoteHeadLeftXOffset, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
         });
 
@@ -781,7 +781,7 @@ describe('Physical model', () => {
             { 
                 element: HorizVarSizeGlyphs.Bar,
                 position: { x: 30, y: 0 },
-                length: 4 * lineWidth
+                height: 4 * lineWidth
             }
         );
 
