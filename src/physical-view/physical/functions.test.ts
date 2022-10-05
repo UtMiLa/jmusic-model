@@ -5,7 +5,7 @@ import { calcDisplacements } from './functions';
 describe('Physical help functions', () => {
 
     it('should correctly displace note heads in dense chords', () => {
-        const noteView: NoteViewModel = { positions: [1, 2, 3, 4, 6, 7, 9, 10], direction: NoteDirection.Up, noteType: NoteType.NQuarter };
+        const noteView: NoteViewModel = { positions: [1, 2, 3, 4, 6, 7, 9, 10], direction: NoteDirection.Up, noteType: NoteType.NQuarter, uniq: '1' };
 
         const res1 = calcDisplacements(noteView);
 
@@ -17,7 +17,7 @@ describe('Physical help functions', () => {
 
         expect(res2).to.deep.equal([-1, 0, -1, 0, -1, 0, -1, 0]);
 
-        const noteView2: NoteViewModel = { positions: [1, 2, 3, 4, 6, 8, 10], direction: NoteDirection.Up, noteType: NoteType.NQuarter };
+        const noteView2: NoteViewModel = { positions: [1, 2, 3, 4, 6, 8, 10], direction: NoteDirection.Up, noteType: NoteType.NQuarter, uniq: '2' };
 
         const res3 = calcDisplacements(noteView2);
 

@@ -13,7 +13,7 @@ export enum NoteDirection {
 }
 
 export class Note {
-    
+   
     static clone(note: Note, arg1: { [key: string]: any } = {}): Note {        
         const res = new Note(note._pitches, note._duration);
 
@@ -102,4 +102,5 @@ export class Note {
 
     direction: NoteDirection = NoteDirection.Undefined;
     tie?: boolean;
+    uniq?: string;
 }

@@ -17,6 +17,7 @@ import { viewModelToPhysical } from './viewmodel-to-physical';
 import { ScoreViewModel } from '../../logical-view/view-model/convert-model';
 import { staffLineToY } from './functions';
 import { getTimeSlotWidth, MeasureMap } from './measure-map';
+import { FlagType } from '~/logical-view';
 
 describe('Physical model', () => {
     let defaultMetrics: Metrics;
@@ -352,6 +353,89 @@ describe('Physical model', () => {
             element: HorizVarSizeGlyphs.Stem,
             height: defaultMetrics.quarterStemDefaultLength,
             position: { x: 90 + defaultMetrics.blackNoteHeadLeftXOffset, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
+        });
+
+    });
+   
+    it('should convert note values with a beam', () => {
+        const viewModel: ScoreViewModel = { 
+            staves: [
+                {
+                    timeSlots: [
+                        { 
+                            absTime: Time.newAbsolute(0, 1), 
+                            clef: { 
+                                position: 1,
+                                clefType: ClefType.G,
+                                line: -2
+                            },
+                            beaming: {
+                                beams: [{ fromIdx: 0, toIndex: 1 }],
+                                noteRefs: [
+                                    {absTime: Time.newAbsolute(0, 1), uniq: '0-0-0'},
+                                    {absTime: Time.newAbsolute(1, 8), uniq: '0-0-1'}
+                                ]
+                            },
+                            notes: [
+                                {
+                                    positions: [-5],
+                                    noteType: NoteType.NQuarter,
+                                    direction: NoteDirection.Up,
+                                    flagType: FlagType.Beam,
+                                    uniq: '0-0-0'
+                                },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(1, 8), 
+                            notes: [
+        
+                                {
+                                    positions: [-4],
+                                    noteType: NoteType.NQuarter,
+                                    direction: NoteDirection.Up,
+                                    flagType: FlagType.Beam,
+                                    uniq: '0-0-1'
+                                },
+                            ]
+                        }                       
+                    ]
+                }
+            ]
+        };
+
+        const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
+
+        expect(physicalModel.elements.length).to.eq(5 + 1 + 5);
+
+        checkStaffLines(physicalModel.elements, 0, defaultMetrics.scaleDegreeUnit*2, 110);
+
+        expect(physicalModel.elements[7]).to.deep.eq({
+            glyph: 'noteheads.s2',
+            position: { x: 30, y: -defaultMetrics.scaleDegreeUnit }
+        });
+
+        expect(physicalModel.elements[9]).to.deep.eq({
+            glyph: 'noteheads.s2',
+            position: { x: 50, y: 0 }
+        });
+        expect(physicalModel.elements[10]).to.deep.eq({
+            element: VertVarSizeGlyphs.Beam,
+            height: defaultMetrics.scaleDegreeUnit,
+            length: 20,
+            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.scaleDegreeUnit + defaultMetrics.quarterStemDefaultLength }
+        });
+
+        // stems
+        expect(physicalModel.elements[6]).to.deep.eq({
+            element: HorizVarSizeGlyphs.Stem,
+            height: defaultMetrics.quarterStemDefaultLength,
+            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.scaleDegreeUnit }
+        });
+        expect(physicalModel.elements[8]).to.deep.eq({
+            element: HorizVarSizeGlyphs.Stem,
+            height: defaultMetrics.quarterStemDefaultLength,
+            position: { x: 50 + defaultMetrics.blackNoteHeadLeftXOffset, y: 0 }
         });
 
     });

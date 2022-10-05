@@ -92,7 +92,8 @@ describe('Staff', () => {
                             positions: [-6],
                             noteType: NoteType.NWhole,
                             direction: NoteDirection.Up,
-                            flagType: FlagType.None
+                            flagType: FlagType.None,
+                            uniq: '0-0-0'
                         }
                     ]
                 },
@@ -104,7 +105,8 @@ describe('Staff', () => {
                             positions: [-5],
                             noteType: NoteType.NQuarter,
                             direction: NoteDirection.Up,
-                            flagType: FlagType.None
+                            flagType: FlagType.None,
+                            uniq: '0-0-1'
                         }
                     ]
                 },
@@ -116,7 +118,8 @@ describe('Staff', () => {
                             positions: [-4],
                             noteType: NoteType.NHalf,
                             direction: NoteDirection.Up,
-                            flagType: FlagType.None
+                            flagType: FlagType.None,
+                            uniq: '0-0-2'
                         }
                     ]
                 }
@@ -149,7 +152,8 @@ describe('Staff', () => {
                             positions: [-6],
                             noteType: NoteType.NWhole,
                             direction: NoteDirection.Up,
-                            flagType: FlagType.None
+                            flagType: FlagType.None,
+                            uniq: '0-0-0'
                         }
                     ]
                 },
@@ -160,7 +164,8 @@ describe('Staff', () => {
                             positions: [-5],
                             noteType: NoteType.NQuarter,
                             direction: NoteDirection.Up,
-                            flagType: FlagType.None
+                            flagType: FlagType.None,
+                            uniq: '0-0-1'
                         }
                     ]
                 },
@@ -171,7 +176,8 @@ describe('Staff', () => {
                             positions: [-4],
                             noteType: NoteType.NHalf,
                             direction: NoteDirection.Up,
-                            flagType: FlagType.None
+                            flagType: FlagType.None,
+                            uniq: '0-0-2'
                         }
                     ]
                 }
@@ -208,13 +214,15 @@ describe('Staff', () => {
                             positions: [-6],
                             noteType: NoteType.NWhole,
                             direction: NoteDirection.Down,
-                            flagType: FlagType.None
+                            flagType: FlagType.None,
+                            uniq: '0-0-0'
                         },
                         {
                             positions: [-4],
                             noteType: NoteType.NHalf,
                             direction: NoteDirection.Up,
-                            flagType: FlagType.None
+                            flagType: FlagType.None,
+                            uniq: '0-1-0'
                         }    
                     ]
                 },
@@ -225,7 +233,8 @@ describe('Staff', () => {
                             positions: [-3],
                             noteType: NoteType.NHalf,
                             direction: NoteDirection.Up,
-                            flagType: FlagType.None
+                            flagType: FlagType.None,
+                            uniq: '0-1-1'
                         }
         
                     ]

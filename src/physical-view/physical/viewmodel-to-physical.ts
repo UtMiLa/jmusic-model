@@ -1,6 +1,8 @@
+import { PhysicalBeamGroup } from './physical-beaming';
+import { BeamingViewModel } from './../../logical-view/view-model/beaming-view-model';
 import { AccidentalViewModel } from './../../logical-view/view-model/convert-model';
 import { convertMeter } from './physical-meter';
-import { TimeSlotViewModel, TieViewModel, StaffViewModel } from './../../logical-view';
+import { TimeSlotViewModel, TieViewModel, StaffViewModel, FlagType } from './../../logical-view';
 import { convertAccidentals, convertKey } from './physical-key';
 import { NoteViewModel } from '../../logical-view';
 import { ClefType, getAllBars } from '../../model';
@@ -55,10 +57,15 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
             length: width //calcLength(staffModel.timeSlots, settings)
         }));
 
+        let beaming: PhysicalBeamGroup;
+
         staffModel.timeSlots.forEach(ts =>  {
             const mapItem = measureMap.lookup(ts.absTime);
             if (!mapItem) throw 'Internal error in measure map';
            
+            if (ts.beaming) {
+                beaming = new PhysicalBeamGroup(ts.beaming, settings);
+            }
             
             if (ts.clef) {
                 resultElements.push(convertClef(ts.clef,  mapItem.clef as number, settings));
@@ -81,8 +88,14 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
                 
             }
             ts.notes.forEach((note: NoteViewModel) => { 
-                resultElements = resultElements.concat(convertNote(note, mapItem.note as number, settings));
-            
+                const addItems = convertNote(note, mapItem.note as number, settings);
+                resultElements = resultElements.concat(addItems);
+                const notestem = addItems.find(elm => elm.element === HorizVarSizeGlyphs.Stem) as PhysicalHorizVarSizeElement;
+                if (note.flagType === FlagType.Beam && notestem) {
+                    //console.log('adding beam');
+                    
+                    beaming.addNote({absTime: ts.absTime, uniq: note.uniq + '' }, notestem, resultElements);
+                }
             }); 
             if (ts.ties) {
                 ts.ties.forEach((tie: TieViewModel) => { 

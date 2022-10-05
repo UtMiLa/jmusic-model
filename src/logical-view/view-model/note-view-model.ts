@@ -8,7 +8,8 @@ export enum FlagType {
     F2,
     F3,
     F4,
-    F5
+    F5,
+    Beam
 }
 export interface NoteViewModel {
     positions: number[];
@@ -16,6 +17,7 @@ export interface NoteViewModel {
     direction: NoteDirection;
     flagType?: FlagType;
     dotNo?: number;
+    uniq?: string;
 }
 
 export function noteToView(note: Note, clef: Clef): NoteViewModel {
@@ -47,6 +49,7 @@ export function noteToView(note: Note, clef: Clef): NoteViewModel {
     };
 
     if (note.dotNo) res.dotNo = note.dotNo;
+    if (note.uniq) res.uniq = note.uniq;
 
     return res;
 }

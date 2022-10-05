@@ -1,3 +1,4 @@
+import { BeamingViewModel } from './beaming-view-model';
 import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
 import { Alternation } from './../../model/pitches/pitch';
 import { getAllBars, ScoreDef } from './../../model';
@@ -39,6 +40,7 @@ export interface TimeSlotViewModel {
     ties?: TieViewModel[];
     accidentals?: AccidentalViewModel[];
     notes: NoteViewModel[];
+    beaming?: BeamingViewModel;
 }
 export interface StaffViewModel {
     timeSlots: TimeSlotViewModel[]
@@ -60,10 +62,10 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
 }
 
 export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
-    return { staves: def.staves.map(staff => staffModelToViewModel(staff)) };
+    return { staves: def.staves.map((staff, staffNo) => staffModelToViewModel(staff, staffNo)) };
 }
 
-export function staffModelToViewModel(def: StaffDef): StaffViewModel {
+export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewModel {
 
     if (!def.voices) { 
         if (!def.seq) throw 'seq and voices undefined';
@@ -102,7 +104,7 @@ export function staffModelToViewModel(def: StaffDef): StaffViewModel {
 
     let staffEndTime = Time.newAbsolute(0, 1);
 
-    def.voices.forEach(voice => {        
+    def.voices.forEach((voice, voiceNo) => {        
         const voiceSequence = new Sequence(voice.content);
         const voiceTimeSlots = voiceSequence.groupByTimeSlots();
         const voiceEndTime = Time.fromStart(voiceSequence.duration);
@@ -114,7 +116,7 @@ export function staffModelToViewModel(def: StaffDef): StaffViewModel {
         const accidentalManager = new AccidentalManager();
         if (def.initialKey) accidentalManager.setKey(new Key(def.initialKey));
 
-        voiceTimeSlots.forEach(voiceTimeSlot => {
+        voiceTimeSlots.forEach((voiceTimeSlot, slotNo) => {
             const slot = getTimeSlot(timeSlots, voiceTimeSlot.time);
             //timeSlots.find(item => Time.equals(item.absTime, voiceTimeSlot.time));
             
@@ -123,8 +125,11 @@ export function staffModelToViewModel(def: StaffDef): StaffViewModel {
                 nextBar = nextBarIterator.next().value;
             }
 
-            const elements = voiceTimeSlot.elements.map(note => {
-                const noteClone = Note.clone(note, { direction: note.direction ? note.direction : voice.noteDirection });
+            const elements = voiceTimeSlot.elements.map((note, noteNo) => {
+                const noteClone = Note.clone(note, { 
+                    direction: note.direction ? note.direction : voice.noteDirection,
+                    uniq: `${staffNo}-${voiceNo}-${slotNo}`
+                });
                 const noteView = noteToView(noteClone, clef);
                 return noteView;
             });

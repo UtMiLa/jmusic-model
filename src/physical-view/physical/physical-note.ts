@@ -187,7 +187,7 @@ function getStemAndFlag(noteType: NoteType, flagType: FlagType | undefined, sett
                 position: { x: stemBaseX, y: stemBaseY }
             } as PhysicalHorizVarSizeElement];
 
-            if (flagType) {
+            if (flagType && flagType !== FlagType.Beam) {
                 const glyph: GlyphCode = getFlagGlyph(flagType, directionUp);
                 result.push({
                     position: { x: stemBaseX, y: stemBaseY + stemSign * (settings.quarterStemDefaultLength + chordLength) },
