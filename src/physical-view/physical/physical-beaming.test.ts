@@ -45,7 +45,7 @@ describe('Physical model, note beaming', () => {
                                     }
                                 ],
                                 beams: [
-                                    { fromIdx: 0, toIndex: 1 }
+                                    { fromIdx: 0, toIndex: 1, level: 0 }
                                 ]
                             } as BeamingViewModel]
                         },
@@ -166,8 +166,8 @@ describe('Physical model, note beaming', () => {
                 }
             ],
             beams: [
-                { fromIdx: 0, toIndex: 2 },
-                { fromIdx: 0, toIndex: 1 }
+                { fromIdx: 0, toIndex: 2, level: 0 },
+                { fromIdx: 0, toIndex: 1, level: 1 }
             ]
         };
         const physBM = new PhysicalBeamGroup(beaming as BeamingViewModel, defaultMetrics);
@@ -229,8 +229,8 @@ describe('Physical model, note beaming', () => {
                 }
             ],
             beams: [
-                { fromIdx: 0, toIndex: 2 },
-                { fromIdx: 1, toIndex: 2 }
+                { fromIdx: 0, toIndex: 2, level: 0 },
+                { fromIdx: 1, toIndex: 2, level: 1 }
             ]
         };
         const physBM = new PhysicalBeamGroup(beaming as BeamingViewModel, defaultMetrics);

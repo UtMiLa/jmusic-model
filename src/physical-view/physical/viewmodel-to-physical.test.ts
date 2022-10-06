@@ -370,7 +370,7 @@ describe('Physical model', () => {
                                 line: -2
                             },
                             beamings: [{
-                                beams: [{ fromIdx: 0, toIndex: 1 }],
+                                beams: [{ fromIdx: 0, toIndex: 1, level: 0 }],
                                 noteRefs: [
                                     {absTime: Time.newAbsolute(0, 1), uniq: '0-0-0'},
                                     {absTime: Time.newAbsolute(1, 8), uniq: '0-0-1'}
@@ -453,14 +453,14 @@ describe('Physical model', () => {
                                 line: -2
                             },
                             beamings: [{
-                                beams: [{ fromIdx: 0, toIndex: 1 }],
+                                beams: [{ fromIdx: 0, toIndex: 1, level: 0 }],
                                 noteRefs: [
                                     {absTime: Time.newAbsolute(0, 1), uniq: '0-0-0'},
                                     {absTime: Time.newAbsolute(1, 8), uniq: '0-0-1'}
                                 ]
                             },
                             {
-                                beams: [{ fromIdx: 0, toIndex: 2 }, { fromIdx: 0, toIndex: 1 }],
+                                beams: [{ fromIdx: 0, toIndex: 2, level: 0 }, { fromIdx: 0, toIndex: 1, level: 1 }],
                                 noteRefs: [
                                     {absTime: Time.newAbsolute(0, 1), uniq: '0-1-0'},
                                     {absTime: Time.newAbsolute(1, 16), uniq: '0-1-1'},

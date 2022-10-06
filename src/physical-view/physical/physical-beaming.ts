@@ -26,7 +26,7 @@ export class PhysicalBeamGroup {
 
     testNote(noteRef: NoteRef): boolean {
         const found = this.bvm.noteRefs.find(ref => Time.equals(ref.absTime, noteRef.absTime) && ref.uniq === noteRef.uniq);
-        console.log('testing', noteRef, this.bvm, this.registeredNotes);
+        //console.log('testing', noteRef, this.bvm, this.registeredNotes);
         
         return !!found;
     }
@@ -58,6 +58,8 @@ export class PhysicalBeamGroup {
                 const slope = this.calcSlope();
                 const startPoint = this.startPoint();
                 this.bvm.beams.forEach((beam, index) => {
+                    if (beam.fromIdx === undefined)return; // todo: short subbeams
+                    if (beam.toIndex === undefined)return; // todo: short subbeams
                     const firstNote = this.getNotestem(beam.fromIdx);
                     const lastNote = this.getNotestem(beam.toIndex);
                
@@ -67,7 +69,7 @@ export class PhysicalBeamGroup {
                     const yStart = (firstNote.position.x - startPoint.x) * slope + startPoint.y;
                     output.push({
                         element: VertVarSizeGlyphs.Beam,
-                        position: { x: firstNote.position.x, y: yStart - this.settings.scaleDegreeUnit * 2 * index * sign },
+                        position: { x: firstNote.position.x, y: yStart - this.settings.scaleDegreeUnit * 2 * beam.level * sign },
                         length,
                         height
                     });

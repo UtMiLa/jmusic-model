@@ -2,8 +2,30 @@ import { Time } from './../rationals/time';
 import { getAllBars, getAllBeats, Meter } from './../states/meter';
 import { Sequence } from './../score/sequence';
 import { Note } from './note';
+
+
+export interface BeamDef {
+    fromIdx: number | undefined;
+    toIndex: number | undefined;
+    level: number;
+}
+
 export interface BeamGroup {
     notes: Note[];
+    beams: BeamDef[];
+}
+
+function beamCount(denominator: number): number {
+    switch(denominator) {
+        case 1: case 2: case 4: return 0;
+        case 8: return 1;
+        case 16: return 2;
+        case 32: return 3;
+        case 64: return 4;
+        case 128: return 5;
+        case 256: return 6;
+        default: throw 'Illegal denominator: ' + denominator;
+    }
 }
 
 
@@ -12,23 +34,89 @@ export function calcBeamGroups(seq: Sequence, meter: Meter): BeamGroup[] {
     let nextBeat = meterIterator.next().value;
     const grouping: BeamGroup[] = [];
     let tempGroup: Note[] = [];
+    let tempSubGroups: BeamDef[] = [];
+    let subGroups: BeamDef[] = [];
     let time = Time.newAbsolute(0, 1);
+    let prevBeamCnt = 0;
+    let noteIdx = 0;
+
+    function finishGroup() {
+        while (prevBeamCnt >= 1) {
+            // end a subgroup
+            prevBeamCnt--;
+            const subGrp = tempSubGroups.pop() as BeamDef;
+            subGrp.toIndex = noteIdx - 1;
+            if (subGrp.level) subGroups.push(subGrp);
+        }
+
+        if (tempGroup.length >= 2) {
+            grouping.push({ 
+                notes: tempGroup, 
+                beams: [{    
+                    fromIdx: 0,
+                    toIndex: tempGroup.length - 1,
+                    level: 0
+                }, ...subGroups] 
+            });
+        }
+    }
 
     seq.elements.forEach(note => {
-        if (Time.sortComparison(time, nextBeat) >= 0) {
+        const currBeamCnt = beamCount(note.undottedDuration.denominator);
+        if (Time.sortComparison(time, nextBeat) >= 0 || currBeamCnt === 0) {
             // new beat
             //console.log('new beat', time, nextBeat, tempGroup);
-            
-            grouping.push({ notes: tempGroup });
+
+            finishGroup();
+
             tempGroup = [];
+            tempSubGroups = [];
+            subGroups = [];
+            noteIdx = 0;
             nextBeat = meterIterator.next().value;
         }
-        tempGroup.push(note);
+        if (currBeamCnt > 0) {
+            tempGroup.push(note);
+        }
+
+        while (currBeamCnt > prevBeamCnt) {
+            // start a subgroup
+            tempSubGroups.push({ fromIdx: noteIdx, toIndex: undefined, level: prevBeamCnt });
+            prevBeamCnt++;
+        } 
+        while (currBeamCnt < prevBeamCnt && prevBeamCnt >= 1) {
+            // end a subgroup
+            prevBeamCnt--;
+            const subGrp = tempSubGroups.pop() as BeamDef;
+            subGrp.toIndex = noteIdx - 1;
+            if (subGrp.level) subGroups.push(subGrp);
+        }
+        prevBeamCnt = currBeamCnt;
+
+
+        noteIdx++;
+
         time = Time.addTime(time, note.duration);
+
     });
 
-    if (tempGroup.length) grouping.push({ notes: tempGroup });
+    finishGroup();
+
     //console.log('tempGroup', time, tempGroup);
 
     return grouping;
 }
+
+/*
+8 16 16 16 8 16
+-------  ------
+   ----  -    -
+cur < prev: add new subgroup
+cur = prev: continue subgroups
+cur > prev: stop subgroup (if subgroup.length = 1: calc direction)
+
+
+         8   16    32       32      32      32      16        8      32       32
+grp 
+subgrp       [1-]  [1-,2-] [1-,2-] [1-,2-] [1-,2-] [1-,2-5] [1-6]    [9-,9-] [9-,9-]  [9-10,9-10]
+*/
