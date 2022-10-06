@@ -33,7 +33,7 @@ describe('Physical model, note beaming', () => {
                                     uniq: 'x1'
                                 } as NoteViewModel
                             ],
-                            beaming: {
+                            beamings: [{
                                 noteRefs: [
                                     {
                                         absTime: Time.newAbsolute(0, 1), 
@@ -47,7 +47,7 @@ describe('Physical model, note beaming', () => {
                                 beams: [
                                     { fromIdx: 0, toIndex: 1 }
                                 ]
-                            } as BeamingViewModel
+                            } as BeamingViewModel]
                         },
                         { 
                             absTime: Time.newAbsolute(1, 8), 
@@ -69,8 +69,8 @@ describe('Physical model, note beaming', () => {
 
     it('should render a beam between two eighth notes', () => {
 
-        const note1 = findNoteInViewModel((viewModel1.staves[0].timeSlots[0].beaming as BeamingViewModel).noteRefs[0], viewModel1);
-        const note2 = findNoteInViewModel((viewModel1.staves[0].timeSlots[0].beaming as BeamingViewModel).noteRefs[1], viewModel1);
+        const note1 = findNoteInViewModel(((viewModel1.staves[0].timeSlots[0].beamings as BeamingViewModel[])[0]).noteRefs[0], viewModel1);
+        const note2 = findNoteInViewModel(((viewModel1.staves[0].timeSlots[0].beamings as BeamingViewModel[])[0]).noteRefs[1], viewModel1);
 
         expect(note1, 'note1').to.exist;
         expect(note2, 'note2').to.exist;
@@ -95,13 +95,13 @@ describe('Physical model, note beaming', () => {
     });
 
     it('should create a physical beam object from a logical', () => {
-        const physBM = new PhysicalBeamGroup(viewModel1.staves[0].timeSlots[0].beaming as BeamingViewModel, defaultMetrics);
+        const physBM = new PhysicalBeamGroup((viewModel1.staves[0].timeSlots[0].beamings as BeamingViewModel[])[0], defaultMetrics);
 
         expect(physBM).to.exist;
     });
 
     it('should identify whether a note belongs to the physical beam object', () => {
-        const physBM = new PhysicalBeamGroup(viewModel1.staves[0].timeSlots[0].beaming as BeamingViewModel, defaultMetrics);
+        const physBM = new PhysicalBeamGroup((viewModel1.staves[0].timeSlots[0].beamings as BeamingViewModel[])[0], defaultMetrics);
    
         expect(physBM.testNote({
             uniq: 'nonexist',
@@ -115,7 +115,7 @@ describe('Physical model, note beaming', () => {
     });
 
     it('should collect notes in beam group and output beam when full', () => {
-        const physBM = new PhysicalBeamGroup(viewModel1.staves[0].timeSlots[0].beaming as BeamingViewModel, defaultMetrics);
+        const physBM = new PhysicalBeamGroup((viewModel1.staves[0].timeSlots[0].beamings as BeamingViewModel[])[0], defaultMetrics);
 
         const notestem1 = { element: HorizVarSizeGlyphs.Stem, height: 24, position: { x: 70+7, y: -1 * 6 } };
         const notestem2 = { element: HorizVarSizeGlyphs.Stem, height: 22, position: { x: 140+7, y: 1 * 6 } };

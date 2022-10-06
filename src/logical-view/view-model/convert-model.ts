@@ -40,7 +40,7 @@ export interface TimeSlotViewModel {
     ties?: TieViewModel[];
     accidentals?: AccidentalViewModel[];
     notes: NoteViewModel[];
-    beaming?: BeamingViewModel;
+    beamings?: BeamingViewModel[];
 }
 export interface StaffViewModel {
     timeSlots: TimeSlotViewModel[]

@@ -369,13 +369,13 @@ describe('Physical model', () => {
                                 clefType: ClefType.G,
                                 line: -2
                             },
-                            beaming: {
+                            beamings: [{
                                 beams: [{ fromIdx: 0, toIndex: 1 }],
                                 noteRefs: [
                                     {absTime: Time.newAbsolute(0, 1), uniq: '0-0-0'},
                                     {absTime: Time.newAbsolute(1, 8), uniq: '0-0-1'}
                                 ]
-                            },
+                            }],
                             notes: [
                                 {
                                     positions: [-5],
@@ -436,6 +436,158 @@ describe('Physical model', () => {
             element: HorizVarSizeGlyphs.Stem,
             height: defaultMetrics.quarterStemDefaultLength,
             position: { x: 50 + defaultMetrics.blackNoteHeadLeftXOffset, y: 0 }
+        });
+
+    });
+   
+    it('should convert note values with two simultaneous beams', () => {
+        const viewModel: ScoreViewModel = { 
+            staves: [
+                {
+                    timeSlots: [
+                        { 
+                            absTime: Time.newAbsolute(0, 1), 
+                            clef: { 
+                                position: 1,
+                                clefType: ClefType.G,
+                                line: -2
+                            },
+                            beamings: [{
+                                beams: [{ fromIdx: 0, toIndex: 1 }],
+                                noteRefs: [
+                                    {absTime: Time.newAbsolute(0, 1), uniq: '0-0-0'},
+                                    {absTime: Time.newAbsolute(1, 8), uniq: '0-0-1'}
+                                ]
+                            },
+                            {
+                                beams: [{ fromIdx: 0, toIndex: 2 }, { fromIdx: 0, toIndex: 1 }],
+                                noteRefs: [
+                                    {absTime: Time.newAbsolute(0, 1), uniq: '0-1-0'},
+                                    {absTime: Time.newAbsolute(1, 16), uniq: '0-1-1'},
+                                    {absTime: Time.newAbsolute(1, 8), uniq: '0-1-2'}
+                                ]
+                            }],
+                            notes: [
+                                {
+                                    positions: [-5],
+                                    noteType: NoteType.NQuarter,
+                                    direction: NoteDirection.Up,
+                                    flagType: FlagType.Beam,
+                                    uniq: '0-0-0'
+                                },
+                                {
+                                    positions: [5],
+                                    noteType: NoteType.NQuarter,
+                                    direction: NoteDirection.Up,
+                                    flagType: FlagType.Beam,
+                                    uniq: '0-1-0'
+                                },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(1, 16), 
+                            notes: [
+        
+                                {
+                                    positions: [4],
+                                    noteType: NoteType.NQuarter,
+                                    direction: NoteDirection.Up,
+                                    flagType: FlagType.Beam,
+                                    uniq: '0-1-1'
+                                },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(1, 8), 
+                            notes: [
+        
+                                {
+                                    positions: [-4],
+                                    noteType: NoteType.NQuarter,
+                                    direction: NoteDirection.Up,
+                                    flagType: FlagType.Beam,
+                                    uniq: '0-0-1'
+                                },
+                                {
+                                    positions: [4],
+                                    noteType: NoteType.NQuarter,
+                                    direction: NoteDirection.Up,
+                                    flagType: FlagType.Beam,
+                                    uniq: '0-1-2'
+                                },
+                            ]
+                        }                       
+                    ]
+                }
+            ]
+        };
+
+        const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
+
+        expect(physicalModel.elements.length).to.eq(5 + 1 + 5 + 6 + 2);
+
+        checkStaffLines(physicalModel.elements, 0, defaultMetrics.scaleDegreeUnit*2, 110);
+
+        expect(physicalModel.elements[7]).to.deep.eq({
+            glyph: 'noteheads.s2',
+            position: { x: 30, y: -defaultMetrics.scaleDegreeUnit }
+        });
+
+        expect(physicalModel.elements[13]).to.deep.eq({
+            glyph: 'noteheads.s2',
+            position: { x: 70, y: 0 }
+        });
+
+        expect(physicalModel.elements[14]).to.deep.eq({
+            element: VertVarSizeGlyphs.Beam,
+            height: defaultMetrics.scaleDegreeUnit,
+            length: 40,
+            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.scaleDegreeUnit + defaultMetrics.quarterStemDefaultLength }
+        });
+
+        // voice 2
+        expect(physicalModel.elements[9]).to.deep.eq({
+            glyph: 'noteheads.s2',
+            position: { x: 30, y: 9*defaultMetrics.scaleDegreeUnit }
+        });
+
+        expect(physicalModel.elements[11]).to.deep.eq({
+            glyph: 'noteheads.s2',
+            position: { x: 50, y: 8*defaultMetrics.scaleDegreeUnit }
+        });
+
+        expect(physicalModel.elements[16]).to.deep.eq({
+            glyph: 'noteheads.s2',
+            position: { x: 70, y: 8*defaultMetrics.scaleDegreeUnit }
+        });
+
+        expect(physicalModel.elements[17]).to.deep.eq({
+            element: VertVarSizeGlyphs.Beam,
+            height: -defaultMetrics.scaleDegreeUnit,
+            length: 40,
+            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: 9*defaultMetrics.scaleDegreeUnit + defaultMetrics.quarterStemDefaultLength }
+        });
+
+        expect(physicalModel.elements[18]).to.deep.eq({
+            element: VertVarSizeGlyphs.Beam,
+            height: -0.5*defaultMetrics.scaleDegreeUnit,
+            length: 20,
+            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: 7*defaultMetrics.scaleDegreeUnit + defaultMetrics.quarterStemDefaultLength }
+        });
+
+        //console.log(physicalModel.elements);
+        
+
+        // stems
+        expect(physicalModel.elements[6]).to.deep.eq({
+            element: HorizVarSizeGlyphs.Stem,
+            height: defaultMetrics.quarterStemDefaultLength,
+            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.scaleDegreeUnit }
+        });
+        expect(physicalModel.elements[12]).to.deep.eq({
+            element: HorizVarSizeGlyphs.Stem,
+            height: defaultMetrics.quarterStemDefaultLength,
+            position: { x: 70 + defaultMetrics.blackNoteHeadLeftXOffset, y: 0 }
         });
 
     });

@@ -57,14 +57,16 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
             length: width //calcLength(staffModel.timeSlots, settings)
         }));
 
-        let beaming: PhysicalBeamGroup;
+        const beamings: PhysicalBeamGroup[] = [];
 
         staffModel.timeSlots.forEach(ts =>  {
             const mapItem = measureMap.lookup(ts.absTime);
             if (!mapItem) throw 'Internal error in measure map';
            
-            if (ts.beaming) {
-                beaming = new PhysicalBeamGroup(ts.beaming, settings);
+            if (ts.beamings) {
+                ts.beamings.forEach(beaming => {
+                    beamings.push(new PhysicalBeamGroup(beaming, settings));
+                });
             }
             
             if (ts.clef) {
@@ -94,7 +96,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
                 if (note.flagType === FlagType.Beam && notestem) {
                     //console.log('adding beam');
                     
-                    beaming.addNote({absTime: ts.absTime, uniq: note.uniq + '' }, notestem, resultElements);
+                    beamings.forEach(beaming => beaming.addNote({absTime: ts.absTime, uniq: note.uniq + '' }, notestem, resultElements));
                 }
             }); 
             if (ts.ties) {

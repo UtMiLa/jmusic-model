@@ -26,6 +26,8 @@ export class PhysicalBeamGroup {
 
     testNote(noteRef: NoteRef): boolean {
         const found = this.bvm.noteRefs.find(ref => Time.equals(ref.absTime, noteRef.absTime) && ref.uniq === noteRef.uniq);
+        console.log('testing', noteRef, this.bvm, this.registeredNotes);
+        
         return !!found;
     }
 
@@ -43,14 +45,15 @@ export class PhysicalBeamGroup {
     }
 
     addNote(noteRef: NoteRef, notestem: PhysicalHorizVarSizeElement, output: any[]): boolean {
-        //console.log('adding note');    
+        //console.log('adding note');
         if (this.testNote(noteRef)) {
             this.registeredNotes[noteRef.uniq] = notestem;
 
-            //console.log('adding note, testnote ok');    
+            //console.log('adding note, testnote ok', noteRef, this.bvm, this.registeredNotes);    
         
             if (Object.keys(this.registeredNotes).length === this.bvm.noteRefs.length) {
                 //console.log('beam is full');                
+                //console.log('beam is full', noteRef, this.bvm, this.registeredNotes);
 
                 const slope = this.calcSlope();
                 const startPoint = this.startPoint();
