@@ -68,7 +68,7 @@ export class PhysicalBeamGroup {
                     let sign = 1;
                     let firstXPos: number, lastXPos: number;
                     if (beam.fromIdx === undefined) { 
-                        if (!beam.toIndex) throw 'Beam can not have undefined from and to index';
+                        if (beam.toIndex === undefined) throw 'Beam can not have undefined from and to index';
                         beam.fromIdx = beam.toIndex - 1;
                         const lastNote = this.getNotestem(beam.toIndex);
                         firstXPos = lastNote.position.x - this.settings.brokenBeamLength;

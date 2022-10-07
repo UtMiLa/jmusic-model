@@ -46,7 +46,13 @@ export function calcBeamGroups(seq: Sequence, meter: Meter): BeamGroup[] {
             prevBeamCnt--;
             const subGrp = tempSubGroups.pop() as BeamDef;
             subGrp.toIndex = noteIdx - 1;
-            if (subGrp.fromIdx === subGrp.toIndex) subGrp.fromIdx = undefined;
+            if (subGrp.fromIdx === subGrp.toIndex) {
+                if (subGrp.fromIdx === 0) {
+                    subGrp.toIndex = undefined;    
+                } else {
+                    subGrp.fromIdx = undefined;
+                }
+            }
             if (subGrp.level) subGroups.push(subGrp);
         }
 
@@ -93,7 +99,13 @@ export function calcBeamGroups(seq: Sequence, meter: Meter): BeamGroup[] {
             prevBeamCnt--;
             const subGrp = tempSubGroups.pop() as BeamDef;
             subGrp.toIndex = noteIdx - 1;
-            if (subGrp.fromIdx === subGrp.toIndex) subGrp.fromIdx = undefined;
+            if (subGrp.fromIdx === subGrp.toIndex) { // cheap and dirty; todo: make a better algoritm
+                if (subGrp.fromIdx === 0) {
+                    subGrp.toIndex = undefined;    
+                } else {
+                    subGrp.fromIdx = undefined;
+                }
+            }
             if (subGrp.level) subGroups.push(subGrp);
         }
         prevBeamCnt = currBeamCnt;

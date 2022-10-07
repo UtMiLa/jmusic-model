@@ -78,5 +78,40 @@ describe('View model', () => {
         expect(staffView.timeSlots[6].beamings, 'note 6').to.be.undefined;
     });
 
+    it('should make correct broken beams', () => {
+        const staff: StaffDef = { 
+            initialClef: { clefType: ClefType.G, line: 2 },
+            initialKey: { accidental: -1, count: 3 },
+            initialMeter: { count: 4, value: 4 },
+            voices:[{ content: {elements: 'bes16 bes8 b16'} }]
+        };
+
+        const staffView = staffModelToViewModel(staff);
+
+        expect(staffView.timeSlots.length).to.eq(3);
+        expect(staffView.timeSlots[0].beamings, 'note 1').to.deep.eq([{
+            noteRefs: [ 
+                {
+                    absTime: Time.newAbsolute(0, 1), 
+                    uniq: '0-0-0'
+                },
+                {
+                    absTime: Time.newAbsolute(1, 16),
+                    uniq: '0-0-1'
+                },
+                {
+                    absTime: Time.newAbsolute(3, 16),
+                    uniq: '0-0-2'
+                },
+            ],
+            beams: [
+                { fromIdx: 0, toIndex: 2, level: 0 },
+                { fromIdx: 0, toIndex: undefined, level: 1 },
+                { fromIdx: undefined, toIndex: 2, level: 1 },
+            ]
+        }]);
+
+    });
+
 
 });
