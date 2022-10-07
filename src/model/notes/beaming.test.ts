@@ -46,6 +46,17 @@ describe('Beaming', () => {
         expect(beamGroups[1].notes).to.have.length(2);
     });
 
+    
+    it('should ignore rests', () => {
+        const seq = new Sequence({ elements: 'c8 r8 c8 r8'});
+        const meter = MeterFactory.createRegularMeter({ count: 1, value: 2 });
+
+        const beamGroups = calcBeamGroups(seq, meter);
+
+        expect(beamGroups).to.have.length(0);
+    });
+
+
 
     it('should add extra beams for 16th and shorter', () => {
         const seq = new Sequence({ elements: 'c16 c16 c16 c16 c32 c32 c32 c32'});
@@ -82,7 +93,7 @@ describe('Beaming', () => {
     });
 
 
-    xit('should add subbeams according to note values', () => {
+    it('should add subbeams according to note values', () => {
         const seq = new Sequence({ elements: 'c8 c16 c16 c8. c16 c16 c8 c16'});
         const meter = MeterFactory.createRegularMeter({ count: 1, value: 4 });
 

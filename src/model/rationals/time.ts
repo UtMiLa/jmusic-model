@@ -75,6 +75,11 @@ export class Time {
         return { ...Rational.scale(t, scaleBy, divideBy), type: 'span' };
     }
 
+    static shorten<T extends RationalDef & { type: string } >(t: T): T {
+        //this.assertSpan(t);
+        return { ...Rational.shorten(t), type: t.type } as T;
+    }
+
     static equals(t1: AbsoluteTime, t2: AbsoluteTime): boolean {
         return t1.denominator * t2.numerator === t2.denominator * t1.numerator;
     }

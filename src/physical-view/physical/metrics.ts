@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 export interface Metrics {
+    brokenBeamLength: number;
     leftMargin: number;
     tieAfterNote: number;
     scaleDegreeUnit: number; 
@@ -37,6 +38,7 @@ export class StandardMetrics implements Metrics {
             (this as unknown as {[key: string]: number})[key] = seed[key];
         });
     }
+    brokenBeamLength = 6;
     leftMargin = 10;
     tieAfterNote: number = 9;
 

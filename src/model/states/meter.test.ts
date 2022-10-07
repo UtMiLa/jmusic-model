@@ -29,7 +29,12 @@ describe('Meter', () => {
         it('should have a counting time', () => {
             const meter = MeterFactory.createRegularMeter(meter1);
             expect(meter.countingTime).to.be.deep.eq({ numerator: 1, denominator: 4, type: 'span' });
+
+            const meter68 = MeterFactory.createRegularMeter(meter3);
+            expect(meter68.countingTime).to.be.deep.eq({ numerator: 3, denominator: 8, type: 'span' });
+
         });
+
         it('should have a correct bar length', () => {
             let meter = MeterFactory.createRegularMeter(meter1);
             expect(meter.measureLength).to.be.deep.eq({ numerator: 3, denominator: 4, type: 'span' });

@@ -57,19 +57,41 @@ export class PhysicalBeamGroup {
 
                 const slope = this.calcSlope();
                 const startPoint = this.startPoint();
+
+                this.bvm.noteRefs.forEach(nr => {
+                    const notestem = this.registeredNotes[nr.uniq];
+                    notestem.height = startPoint.y + slope * (notestem.position.x - startPoint.x) - notestem.position.y;
+                });
+                
+
                 this.bvm.beams.forEach((beam, index) => {
-                    if (beam.fromIdx === undefined)return; // todo: short subbeams
-                    if (beam.toIndex === undefined)return; // todo: short subbeams
-                    const firstNote = this.getNotestem(beam.fromIdx);
-                    const lastNote = this.getNotestem(beam.toIndex);
+                    let sign = 1;
+                    let firstXPos: number, lastXPos: number;
+                    if (beam.fromIdx === undefined) { 
+                        if (!beam.toIndex) throw 'Beam can not have undefined from and to index';
+                        beam.fromIdx = beam.toIndex - 1;
+                        const lastNote = this.getNotestem(beam.toIndex);
+                        firstXPos = lastNote.position.x - this.settings.brokenBeamLength;
+                    } else {
+                        const firstNote = this.getNotestem(beam.fromIdx);
+                        sign = Math.sign(firstNote.height);
+                        firstXPos = firstNote.position.x;
+                    }
+                    
+                    if (beam.toIndex === undefined) {
+                        lastXPos = firstXPos + this.settings.brokenBeamLength;
+                    } else {
+                        const lastNote = this.getNotestem(beam.toIndex);
+                        sign = Math.sign(lastNote.height);
+                        lastXPos = lastNote.position.x;
+                    }
                
-                    const length = lastNote.position.x - firstNote.position.x;
+                    const length = lastXPos - firstXPos;
                     const height = length * slope;
-                    const sign = Math.sign(firstNote.height);
-                    const yStart = (firstNote.position.x - startPoint.x) * slope + startPoint.y;
+                    const yStart = (firstXPos - startPoint.x) * slope + startPoint.y;
                     output.push({
                         element: VertVarSizeGlyphs.Beam,
-                        position: { x: firstNote.position.x, y: yStart - this.settings.scaleDegreeUnit * 2 * beam.level * sign },
+                        position: { x: firstXPos, y: yStart - this.settings.scaleDegreeUnit * 2 * beam.level * sign },
                         length,
                         height
                     });

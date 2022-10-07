@@ -6,13 +6,14 @@ import { MeterFactory } from './../../model';
 import { meterToView, MeterViewModel } from './convert-meter';
 import { AbsoluteTime, Time } from './../../model';
 import { keyToView, KeyViewModel } from './convert-key';
-import { noteToView, NoteViewModel } from './note-view-model';
+import { FlagType, noteToView, NoteViewModel } from './note-view-model';
 import { ClefType } from '../../model';
 import { Note, NoteDirection } from '../../model';
 import { Clef } from '../../model';
 import { Sequence } from '../../model';
 import { StaffDef } from '../../model';
 import { Key } from '../../model';
+import { calcBeamGroups } from '../../model';
 
 export interface ClefViewModel {
     position: number;
@@ -108,6 +109,7 @@ export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewMode
         const voiceSequence = new Sequence(voice.content);
         const voiceTimeSlots = voiceSequence.groupByTimeSlots();
         const voiceEndTime = Time.fromStart(voiceSequence.duration);
+        const voiceBeamGroups = meterModel ? calcBeamGroups(voiceSequence, meterModel) : [];
 
         if (Time.sortComparison(voiceEndTime, staffEndTime) > 0) {
             staffEndTime = voiceEndTime;
@@ -126,11 +128,37 @@ export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewMode
             }
 
             const elements = voiceTimeSlot.elements.map((note, noteNo) => {
+                const bg = voiceBeamGroups.find(vbg => vbg.notes.indexOf(note) > -1);
+                
+                if (bg && bg.notes[0] === note) {
+                    let noteTime = voiceTimeSlot.time;
+                    const beaming = {
+                        noteRefs: bg.notes.map((nt, idx) => { 
+                            const res = { absTime: noteTime, uniq: `${staffNo}-${voiceNo}-${slotNo + idx}` };
+                            noteTime = Time.addTime(noteTime, nt.duration);
+                            return res;
+                        }
+                        ),
+                        beams: bg.beams
+                    };
+                    if (slot.beamings) {
+                        slot.beamings.push(beaming);
+                    } else {
+                        slot.beamings = [beaming];
+                    }
+                    
+                    //console.log('beamings', slot);
+                    
+                }
+
                 const noteClone = Note.clone(note, { 
                     direction: note.direction ? note.direction : voice.noteDirection,
                     uniq: `${staffNo}-${voiceNo}-${slotNo}`
                 });
                 const noteView = noteToView(noteClone, clef);
+                
+                if (bg) noteView.flagType = FlagType.Beam;
+
                 return noteView;
             });
 

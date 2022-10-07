@@ -46,6 +46,7 @@ export function calcBeamGroups(seq: Sequence, meter: Meter): BeamGroup[] {
             prevBeamCnt--;
             const subGrp = tempSubGroups.pop() as BeamDef;
             subGrp.toIndex = noteIdx - 1;
+            if (subGrp.fromIdx === subGrp.toIndex) subGrp.fromIdx = undefined;
             if (subGrp.level) subGroups.push(subGrp);
         }
 
@@ -63,8 +64,9 @@ export function calcBeamGroups(seq: Sequence, meter: Meter): BeamGroup[] {
 
     seq.elements.forEach(note => {
         const currBeamCnt = beamCount(note.undottedDuration.denominator);
-        if (Time.sortComparison(time, nextBeat) >= 0 || currBeamCnt === 0) {
-            // new beat
+        const isOnNextBeat = Time.sortComparison(time, nextBeat) >= 0;
+        if (isOnNextBeat || currBeamCnt === 0 || !note.pitches.length) {
+            // new beat, or quarter note, or rest
             //console.log('new beat', time, nextBeat, tempGroup);
 
             finishGroup();
@@ -73,9 +75,11 @@ export function calcBeamGroups(seq: Sequence, meter: Meter): BeamGroup[] {
             tempSubGroups = [];
             subGroups = [];
             noteIdx = 0;
-            nextBeat = meterIterator.next().value;
+            if (isOnNextBeat) {
+                nextBeat = meterIterator.next().value;
+            }
         }
-        if (currBeamCnt > 0) {
+        if (currBeamCnt > 0 && note.pitches.length) {
             tempGroup.push(note);
         }
 
@@ -89,6 +93,7 @@ export function calcBeamGroups(seq: Sequence, meter: Meter): BeamGroup[] {
             prevBeamCnt--;
             const subGrp = tempSubGroups.pop() as BeamDef;
             subGrp.toIndex = noteIdx - 1;
+            if (subGrp.fromIdx === subGrp.toIndex) subGrp.fromIdx = undefined;
             if (subGrp.level) subGroups.push(subGrp);
         }
         prevBeamCnt = currBeamCnt;

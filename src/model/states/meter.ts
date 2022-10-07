@@ -35,11 +35,14 @@ class RegularMeter implements Meter {
         this.def = {...def};
     }
     get countingTime(): TimeSpan {
+        if (this.def.count % 3 === 0 && this.def.count !== 3) {
+            return { numerator: 3, denominator: this.def.value, type: 'span' };    
+        }
         return { numerator: 1, denominator: this.def.value, type: 'span' };
     }
     get measureLength(): TimeSpan {
         //return { ...Rational.shorten({}), type: 'span'};
-        return Time.scale(this.countingTime, this.def.count);
+        return Time.shorten(Time.newSpan(this.def.count, this.def.value));// .scale(this.countingTime, this.def.count);
     }
     get text(): string[] {
         return ['' + this.def.count, '' + this.def.value];
