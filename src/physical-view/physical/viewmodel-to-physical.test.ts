@@ -1,7 +1,7 @@
 import { KeyViewModel } from './../../logical-view/view-model/convert-key';
 import { MeterViewModel } from './../../logical-view/view-model/convert-meter';
 import { Clef } from './../../model/states/clef';
-import { TimeSlotViewModel, ClefViewModel } from './../../logical-view/view-model/convert-model';
+import { TimeSlotViewModel, ClefViewModel } from './../../logical-view';
 import { TimeSlot } from './../../model/score/sequence';
 import { Accidental } from './../../model/pitches/pitch';
 import { Time } from './../../model/rationals/time';
@@ -14,7 +14,7 @@ import { Metrics, StandardMetrics } from './metrics';
 import { VertVarSizeGlyphs, FixedSizeGlyphs } from './glyphs';
 import { expect } from 'chai';
 import { viewModelToPhysical } from './viewmodel-to-physical';
-import { ScoreViewModel } from '../../logical-view/view-model/convert-model';
+import { ScoreViewModel } from '../../logical-view';
 import { staffLineToY } from './functions';
 import { getTimeSlotWidth, MeasureMap } from './measure-map';
 import { FlagType } from '~/logical-view';

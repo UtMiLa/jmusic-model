@@ -2,9 +2,10 @@ import { Time } from './../../model/rationals/time';
 import { expect } from 'chai';
 import { ClefType } from './../../model/states/clef';
 import { StaffDef } from './../../model/score/staff';
-import { staffModelToViewModel, StaffViewModel } from './../../logical-view/view-model/convert-model';
+import { staffModelToViewModel } from './../../logical-view/view-model/convert-model';
 import { Metrics, StandardMetrics } from './metrics';
 import { MeasureMap, MeasureMapItem, MeasureMapXValueItem } from './measure-map';
+import { StaffViewModel } from '~/logical-view/view-model/score-view-model';
 
 describe('Physical model, measure map', () => {
     let defaultMetrics: Metrics;

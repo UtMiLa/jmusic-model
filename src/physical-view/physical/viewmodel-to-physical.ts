@@ -1,6 +1,4 @@
 import { PhysicalBeamGroup } from './physical-beaming';
-import { BeamingViewModel } from './../../logical-view/view-model/beaming-view-model';
-import { AccidentalViewModel } from './../../logical-view/view-model/convert-model';
 import { convertMeter } from './physical-meter';
 import { TimeSlotViewModel, TieViewModel, StaffViewModel, FlagType } from './../../logical-view';
 import { convertAccidentals, convertKey } from './physical-key';

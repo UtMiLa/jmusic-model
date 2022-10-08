@@ -2,9 +2,9 @@ import { Metrics } from './metrics';
 import { PhysicalHorizVarSizeElement, Point } from './physical-elements';
 import { VertVarSizeGlyphs } from './glyphs';
 import { Time } from './../../model/rationals/time';
-import { ScoreViewModel } from './../../logical-view/view-model/convert-model';
 import { NoteViewModel } from './../../logical-view/view-model/note-view-model';
-import { BeamingViewModel, NoteRef } from './../../logical-view/view-model/beaming-view-model';
+import { BeamingViewModel, NoteRef } from './../../logical-view/view-model/note-view-model';
+import { ScoreViewModel } from '../../logical-view';
 
 export function findNoteInViewModel(noteRef: NoteRef, viewModel: ScoreViewModel): NoteViewModel | undefined {
     for(let i = 0; i < viewModel.staves.length; i++) {

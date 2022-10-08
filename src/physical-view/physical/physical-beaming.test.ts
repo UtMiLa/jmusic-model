@@ -1,6 +1,6 @@
-import { BeamingViewModel } from './../../logical-view/view-model/beaming-view-model';
+import { BeamingViewModel } from './../../logical-view/view-model/note-view-model';
 import { Time } from './../../model/rationals/time';
-import { ScoreViewModel } from './../../logical-view/view-model/convert-model';
+import { ScoreViewModel } from './../../logical-view/view-model/score-view-model';
 import { PhysicalHorizVarSizeElement, PhysicalVertVarSizeElement } from './physical-elements';
 import { FlagType, NoteViewModel } from './../../logical-view/view-model/note-view-model';
 import { HorizVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';

@@ -1,6 +1,6 @@
 import { GlyphCode } from './glyphs';
 import { Accidental } from './../../model/pitches/pitch';
-import { AccidentalViewModel } from './../../logical-view/view-model/convert-model';
+import { AccidentalViewModel } from './../../logical-view';
 import { PhysicalElementBase } from './physical-elements';
 import { Metrics } from './metrics';
 import { KeyViewModel } from './../../logical-view';

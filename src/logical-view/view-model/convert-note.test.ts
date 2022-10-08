@@ -2,9 +2,9 @@ import { Clef } from '../../model/states/clef';
 import { Note } from '../../model/notes/note';
 /* eslint-disable comma-dangle */
 import { NoteType, NoteDirection } from '../../model/notes/note';
-import { ClefType } from '~/model/states/clef';
 import { expect } from 'chai';
-import { noteToView, FlagType } from './note-view-model';
+import { FlagType } from './note-view-model';
+import { noteToView } from './convert-note';
 
 describe('View model, note', () => {
 

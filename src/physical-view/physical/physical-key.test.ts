@@ -1,4 +1,4 @@
-import { AccidentalViewModel } from './../../logical-view/view-model/convert-model';
+import { AccidentalViewModel } from './../../logical-view';
 import { expect } from 'chai';
 import { KeyViewModel } from './../../logical-view';
 /* eslint-disable comma-dangle */

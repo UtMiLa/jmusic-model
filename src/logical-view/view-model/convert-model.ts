@@ -1,55 +1,19 @@
-import { BeamingViewModel } from './beaming-view-model';
 import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
-import { Alteration } from './../../model/pitches/pitch';
 import { getAllBars, ScoreDef } from './../../model';
 import { MeterFactory } from './../../model';
-import { meterToView, MeterViewModel } from './convert-meter';
+import { meterToView } from './convert-meter';
 import { AbsoluteTime, Time } from './../../model';
-import { keyToView, KeyViewModel } from './convert-key';
-import { FlagType, noteToView, NoteViewModel } from './note-view-model';
-import { ClefType } from '../../model';
+import { keyToView } from './convert-key';
+import { FlagType } from './note-view-model';
 import { Note, NoteDirection } from '../../model';
 import { Clef } from '../../model';
 import { Sequence } from '../../model';
 import { StaffDef } from '../../model';
 import { Key } from '../../model';
 import { calcBeamGroups } from '../../model';
+import { noteToView } from './convert-note';
+import { TimeSlotViewModel, ScoreViewModel, StaffViewModel, AccidentalViewModel, TieViewModel } from './score-view-model';
 
-export interface ClefViewModel {
-    position: number;
-    clefType: ClefType;
-    line: number;
-}
-
-export interface TieViewModel { 
-    position: number; 
-    direction: NoteDirection;
-    toTime?: AbsoluteTime;
-}
-
-export interface AccidentalViewModel {
-    position: number;
-    alteration: Alteration;
-    displacement: number;
-}
-export interface TimeSlotViewModel {
-    absTime: AbsoluteTime; 
-    clef?: ClefViewModel;
-    key?: KeyViewModel;
-    meter?: MeterViewModel;
-    bar?: boolean;
-    ties?: TieViewModel[];
-    accidentals?: AccidentalViewModel[];
-    notes: NoteViewModel[];
-    beamings?: BeamingViewModel[];
-}
-export interface StaffViewModel {
-    timeSlots: TimeSlotViewModel[]
-}
-
-export interface ScoreViewModel {
-    staves: StaffViewModel[];
-}
 
 function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSlotViewModel {
     const slot = timeSlots.find(item => Time.equals(item.absTime, time));
