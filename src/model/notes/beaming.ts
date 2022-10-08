@@ -40,20 +40,25 @@ export function calcBeamGroups(seq: Sequence, meter: Meter): BeamGroup[] {
     let prevBeamCnt = 0;
     let noteIdx = 0;
 
+    function finishSubgroup() {
+        prevBeamCnt--;
+        const subGrp = tempSubGroups.pop() as BeamDef;
+        subGrp.toIndex = noteIdx - 1;
+        if (subGrp.fromIdx === subGrp.toIndex) {
+            if (subGrp.fromIdx === 0) {
+                subGrp.toIndex = undefined;
+            } else {
+                subGrp.fromIdx = undefined;
+            }
+        }
+        if (subGrp.level)
+            subGroups.push(subGrp);
+    }
+
     function finishGroup() {
         while (prevBeamCnt >= 1) {
             // end a subgroup
-            prevBeamCnt--;
-            const subGrp = tempSubGroups.pop() as BeamDef;
-            subGrp.toIndex = noteIdx - 1;
-            if (subGrp.fromIdx === subGrp.toIndex) {
-                if (subGrp.fromIdx === 0) {
-                    subGrp.toIndex = undefined;    
-                } else {
-                    subGrp.fromIdx = undefined;
-                }
-            }
-            if (subGrp.level) subGroups.push(subGrp);
+            finishSubgroup();
         }
 
         if (tempGroup.length >= 2) {
@@ -96,17 +101,7 @@ export function calcBeamGroups(seq: Sequence, meter: Meter): BeamGroup[] {
         } 
         while (currBeamCnt < prevBeamCnt && prevBeamCnt >= 1) {
             // end a subgroup
-            prevBeamCnt--;
-            const subGrp = tempSubGroups.pop() as BeamDef;
-            subGrp.toIndex = noteIdx - 1;
-            if (subGrp.fromIdx === subGrp.toIndex) { // cheap and dirty; todo: make a better algoritm
-                if (subGrp.fromIdx === 0) {
-                    subGrp.toIndex = undefined;    
-                } else {
-                    subGrp.fromIdx = undefined;
-                }
-            }
-            if (subGrp.level) subGroups.push(subGrp);
+            finishSubgroup();
         }
         prevBeamCnt = currBeamCnt;
 
@@ -122,6 +117,7 @@ export function calcBeamGroups(seq: Sequence, meter: Meter): BeamGroup[] {
     //console.log('tempGroup', time, tempGroup);
 
     return grouping;
+
 }
 
 /*

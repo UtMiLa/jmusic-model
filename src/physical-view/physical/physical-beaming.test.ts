@@ -353,6 +353,93 @@ describe('Physical model, note beaming', () => {
         expect(notestem2.height).to.eq(24 - defaultMetrics.scaleDegreeUnit);*/
     });
 
+
+        
+    it('should prolong stems for 16th notes and smaller', () => {
+        const beaming = {
+            noteRefs: [
+                {
+                    absTime: Time.newAbsolute(0, 1), 
+                    uniq: '8'
+                },
+                {
+                    absTime: Time.newAbsolute(1, 8), 
+                    uniq: '32_1'
+                },
+                {
+                    absTime: Time.newAbsolute(5, 32), 
+                    uniq: '32_2'
+                },
+                {
+                    absTime: Time.newAbsolute(3, 16), 
+                    uniq: '16'
+                }
+            ],
+            beams: [
+                { fromIdx: 0, toIndex: 3, level: 0 },
+                { fromIdx: 1, toIndex: 3, level: 1 },
+                { fromIdx: 1, toIndex: 2, level: 2 }
+            ]
+        };
+        const physBM = new PhysicalBeamGroup(beaming as BeamingViewModel, defaultMetrics);
+
+        const notestem1 = { element: HorizVarSizeGlyphs.Stem, height: -24, position: { x: 70, y: -1 * 6 } };
+        const notestem2 = { element: HorizVarSizeGlyphs.Stem, height: -24, position: { x: 90, y: 1 * 6 } };
+        const notestem3 = { element: HorizVarSizeGlyphs.Stem, height: -24, position: { x: 110, y: 2 * 6 } };
+        const notestem4 = { element: HorizVarSizeGlyphs.Stem, height: -24, position: { x: 130, y: 2 * 6 } };
+
+        const notestem1clone = { element: HorizVarSizeGlyphs.Stem, height: -24, position: { x: 70, y: -1 * 6 } };
+        const notestem2clone = { element: HorizVarSizeGlyphs.Stem, height: -24, position: { x: 90, y: 1 * 6 } };
+        const notestem3clone = { element: HorizVarSizeGlyphs.Stem, height: -24, position: { x: 110, y: 2 * 6 } };
+        const notestem4clone = { element: HorizVarSizeGlyphs.Stem, height: -24, position: { x: 130, y: 2 * 6 } };
+
+        const output: any[] = [];
+   
+        expect(physBM.addNote({
+            uniq: '8',
+            absTime: Time.newAbsolute(0, 1)
+        }, notestem1clone, output)).to.be.false;
+
+        expect(physBM.addNote({
+            uniq: '32_1',
+            absTime: Time.newAbsolute(1, 8)
+        }, notestem2clone, output)).to.be.false;
+
+        expect(physBM.addNote({
+            uniq: '32_2',
+            absTime: Time.newAbsolute(5, 32)
+        }, notestem2clone, output)).to.be.false;
+
+        expect(output).to.have.length(0);
+
+        expect(physBM.addNote({
+            uniq: '16',
+            absTime: Time.newAbsolute(3, 16)  
+        }, notestem4clone, output)).to.be.true;
+
+        expect(output).to.have.length(3);
+
+        expect(physBM.calcSlope()).to.eq(3 * 6 / 60);
+
+        expect(notestem1.height).to.eq(notestem1clone.height + defaultMetrics.scaleDegreeUnit * 2);
+        
+        /*expect(output[0].element).to.eq(VertVarSizeGlyphs.Beam);
+        expect(output[0].position.x).to.eq(notestem1.position.x);
+        expect(output[0].position.y).to.eq(notestem1.position.y + notestem1.height);
+        expect(output[0].length).to.eq(notestem3.position.x - notestem1.position.x);
+        expect(output[0].height).to.eq(notestem3.position.y - notestem1.position.y);
+
+        expect(output[1].element, 'output[1].element').to.eq(VertVarSizeGlyphs.Beam);
+        expect(output[1].position.x, 'output[1].position.x').to.eq(notestem2.position.x);
+        expect(output[1].position.y, 'output[1].position.y').to.eq(
+            (notestem1.position.y + notestem1.height + notestem3.position.y + notestem3.height)/2 // midpoint
+            + 2*defaultMetrics.scaleDegreeUnit // + beam vert spacing
+        );
+        expect(output[1].length, 'output[1].length').to.eq(notestem3.position.x - notestem2.position.x);
+        expect(output[1].height, 'output[1].height').to.eq((notestem3.position.y - notestem1.position.y) * (90-70)/(110-70) );
+*/
+    });
+
 /*
 
     Når der kommer en BeamGrpVM, oprettes en physBeamGrp, som pushes i en lokal stak.
