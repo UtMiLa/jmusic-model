@@ -32,23 +32,23 @@ describe('Pitch', () => {
     it('should parse an alternated pitch', () => {
         let pitch = Pitch.parseLilypond('des');
         expect(pitch.pitchClass).to.equal(1);
-        expect(pitch.alternation).to.equal(-1);
+        expect(pitch.alteration).to.equal(-1);
 
         pitch = Pitch.parseLilypond('deses');
         expect(pitch.pitchClass).to.equal(1);
-        expect(pitch.alternation).to.equal(-2);
+        expect(pitch.alteration).to.equal(-2);
 
         pitch = Pitch.parseLilypond('dis');
         expect(pitch.pitchClass).to.equal(1);
-        expect(pitch.alternation).to.equal(1);
+        expect(pitch.alteration).to.equal(1);
 
         pitch = Pitch.parseLilypond('disis');
         expect(pitch.pitchClass).to.equal(1);
-        expect(pitch.alternation).to.equal(2);
+        expect(pitch.alteration).to.equal(2);
 
         pitch = Pitch.parseLilypond('d');
         expect(pitch.pitchClass).to.equal(1);
-        expect(pitch.alternation).to.equal(0);
+        expect(pitch.alteration).to.equal(0);
     });
 
 });

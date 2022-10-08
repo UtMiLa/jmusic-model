@@ -1,7 +1,7 @@
-import { Alternation, Pitch, PitchClass, Accidental } from './../pitches/pitch';
+import { Alteration, Pitch, PitchClass, Accidental } from './../pitches/pitch';
 
 export interface KeyDef {
-    accidental: Alternation;
+    accidental: Alteration;
     count: number;
 }
 
@@ -31,7 +31,7 @@ export class AccidentalManager {
         this.rememberPitchClasses = {};
     }
     getAccidental(pitch: Pitch): Accidental {
-        let res: Accidental = pitch.alternation;
+        let res: Accidental = pitch.alteration;
 
         const alreadyThere = this.rememberPitches[pitch.diatonicNumber];
 
@@ -54,7 +54,7 @@ export class AccidentalManager {
                 
                 const keyAcc = fixed.find((fix: PitchClass) => fix.pitchClass === pitch.pitchClass);
                 if (keyAcc) {
-                    if (res === keyAcc.alternation) return undefined;
+                    if (res === keyAcc.alteration) return undefined;
                 } else if (res === 0) res = undefined;
             }
             else if (res === 0) res = undefined;            

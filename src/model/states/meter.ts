@@ -1,5 +1,4 @@
 import { AbsoluteTime } from './../rationals/time';
-import { Rational } from '../rationals/rational';
 import { Time, TimeSpan } from '../rationals/time';
 export interface Meter {
     measureLength: TimeSpan;
@@ -41,8 +40,7 @@ class RegularMeter implements Meter {
         return { numerator: 1, denominator: this.def.value, type: 'span' };
     }
     get measureLength(): TimeSpan {
-        //return { ...Rational.shorten({}), type: 'span'};
-        return Time.shorten(Time.newSpan(this.def.count, this.def.value));// .scale(this.countingTime, this.def.count);
+        return Time.shorten(Time.newSpan(this.def.count, this.def.value));
     }
     get text(): string[] {
         return ['' + this.def.count, '' + this.def.value];

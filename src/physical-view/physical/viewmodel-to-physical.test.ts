@@ -701,7 +701,7 @@ describe('Physical model', () => {
                         { 
                             absTime: Time.newAbsolute(2, 1), 
                             accidentals: [{ 
-                                alternation: 1,
+                                alteration: 1,
                                 position: -1,
                                 displacement: 0
                             }],
@@ -869,7 +869,7 @@ describe('Physical model', () => {
                         { 
                             absTime: Time.newAbsolute(0, 1), 
                             key:    { 
-                                keyPositions: [{ alternation: -1, position: 3}]
+                                keyPositions: [{ alteration: -1, position: 3}]
                             },        
                             notes: [                
 
@@ -950,7 +950,7 @@ describe('Physical model', () => {
                                 line: -2
                             },
                             key: {
-                                keyPositions: [{ alternation: -1, position: 3}, { alternation: -1, position: 6}]
+                                keyPositions: [{ alteration: -1, position: 3}, { alteration: -1, position: 6}]
                             },
                             meter: {
                                 meterText: ['5', '4']
@@ -1108,7 +1108,7 @@ describe('Physical model', () => {
         it('should calculate the width of a key', () => {
             const timeSlot1: TimeSlotViewModel = {
                 absTime: Time.newAbsolute(1,1),
-                key: { keyPositions: [{ alternation: -1, position: 1 }] } as KeyViewModel,
+                key: { keyPositions: [{ alteration: -1, position: 1 }] } as KeyViewModel,
                 notes: []
             };
             const res = getTimeSlotWidth(timeSlot1, defaultMetrics);
@@ -1118,13 +1118,13 @@ describe('Physical model', () => {
             const timeSlot2: TimeSlotViewModel = {
                 absTime: Time.newAbsolute(1,1),
                 key: { keyPositions: [
-                    { alternation: 1, position: 1 },
-                    { alternation: 1, position: 2 },
-                    { alternation: 1, position: 3 },
-                    { alternation: 1, position: 4 },
-                    { alternation: 1, position: 5 },
-                    { alternation: 1, position: 6 },
-                    { alternation: 1, position: 7 }
+                    { alteration: 1, position: 1 },
+                    { alteration: 1, position: 2 },
+                    { alteration: 1, position: 3 },
+                    { alteration: 1, position: 4 },
+                    { alteration: 1, position: 5 },
+                    { alteration: 1, position: 6 },
+                    { alteration: 1, position: 7 }
                 ] } as KeyViewModel,
                 notes: []
             };
@@ -1158,7 +1158,7 @@ describe('Physical model', () => {
         it('should calculate the width of a note with accidental', () => {
             const timeSlot: TimeSlotViewModel = {
                 absTime: Time.newAbsolute(1, 1),
-                accidentals: [{position: 1, alternation: -1, displacement: 0}],
+                accidentals: [{position: 1, alteration: -1, displacement: 0}],
                 notes: [{noteType: NoteType.NWhole, positions: [1], direction: NoteDirection.Undefined }]
             };
             const res = getTimeSlotWidth(timeSlot, defaultMetrics);
@@ -1173,7 +1173,7 @@ describe('Physical model', () => {
                 absTime: Time.newAbsolute(1,1),
                 clef: { clefType: ClefType.G, line: 2 } as ClefViewModel,
                 bar: true,
-                key: { keyPositions: [{ alternation: -1, position: 1 }] } as KeyViewModel,
+                key: { keyPositions: [{ alteration: -1, position: 1 }] } as KeyViewModel,
                 meter: { meterText: ['3', '4'] } as MeterViewModel,
                 notes: [{noteType: NoteType.NWhole, positions: [1], direction: NoteDirection.Undefined }]
             };
@@ -1194,7 +1194,7 @@ describe('Physical model', () => {
 
             const timeSlot2: TimeSlotViewModel = {
                 absTime: Time.newAbsolute(1,1),
-                accidentals: [{ alternation: -1, position: 1, displacement: 0 }],
+                accidentals: [{ alteration: -1, position: 1, displacement: 0 }],
                 notes: [{noteType: NoteType.NWhole, positions: [1], direction: NoteDirection.Undefined }]
             };
             const w2 = getTimeSlotWidth(timeSlot2, defaultMetrics);

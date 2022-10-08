@@ -3,9 +3,9 @@ const accidentalNamesLy = ['eses', 'es', '', 'is', 'isis'];
 const accidentalNamesEn = [' dbl flat', ' flat', '', ' sharp', ' dbl sharp'];
 const accidentalNamesSymbol = ['𝄫', '♭', '♮', '♯', '𝄪'];
 
-export type Alternation = -2 | -1 | 0 | 1 | 2; // -2 = 𝄫 ... 2 = 𝄪 
+export type Alteration = -2 | -1 | 0 | 1 | 2; // -2 = 𝄫 ... 2 = 𝄪 
 
-export type Accidental = Alternation | undefined; // 0: ♮; undefined: nothing
+export type Accidental = Alteration | undefined; // 0: ♮; undefined: nothing
 
 export class Pitch {
     /**
@@ -14,7 +14,7 @@ export class Pitch {
      * @param _octave middle c in octave 4 etc
      * @param _accidental 0: natural; 1: sharp; -1: flat; 2/-2 double
      */
-    constructor(private _pitchClass: number, private _octave: number, private _accidental: Alternation = 0) {}
+    constructor(private _pitchClass: number, private _octave: number, private _accidental: Alteration = 0) {}
 
     static fromScientific(note: string, octave: number): Pitch {
         return new Pitch(pitchNames.indexOf(note), octave, 0);
@@ -34,14 +34,14 @@ export class Pitch {
         
         if (!parsed || parsed.length < 3) throw 'Illegal pitch: '+ input;
         let octave = 3;
-        let alternation: Alternation = 0;
+        let alteration: Alteration = 0;
         
         switch(parsed[2]) {
-            case '': alternation = 0; break;
-            case 'es': alternation = -1; break;
-            case 'eses': alternation = -2; break;
-            case 'is': alternation = 1; break;
-            case 'isis': alternation = 2; break;
+            case '': alteration = 0; break;
+            case 'es': alteration = -1; break;
+            case 'eses': alteration = -2; break;
+            case 'is': alteration = 1; break;
+            case 'isis': alteration = 2; break;
         }
         parsed[4].split('').forEach(char => {
             if (char === ',') octave--;
@@ -49,7 +49,7 @@ export class Pitch {
         });
         
         const res = Pitch.fromScientific(parsed[1], octave);
-        res._accidental = alternation;
+        res._accidental = alteration;
         return res;
     }
 
@@ -68,7 +68,7 @@ export class Pitch {
         return this._pitchClass;
     }
 
-    get alternation(): Alternation {
+    get alteration(): Alteration {
         return this._accidental;
     }
     /**
@@ -85,19 +85,20 @@ export class Pitch {
 }
 
 export class PitchClass {
-    constructor(private _pitchClass: number, private _accidental: Alternation = 0) {}
+    constructor(private _pitchClass: number, private _accidental: Alteration = 0) {}
 
-    
+    /** 0 = C, +1 = diatonic step up (1 = D, 2 = E) etc */    
     get pitchClass(): number {
         return this._pitchClass;
     }
+    /** 0 = C, +1 = fifth up (1 = G, 2 = D), -1 = fifth down (-1 = F etc) */    
     get circleOf5Number(): number {
         return this._pitchClass % 7 + 7 * this._accidental;
     }
     get pitchClassName(): string {
         return pitchNames[this._pitchClass];
     }
-    get alternation(): Alternation {
+    get alteration(): Alteration {
         return this._accidental;
     }
 }

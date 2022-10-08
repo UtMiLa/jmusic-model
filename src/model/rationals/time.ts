@@ -20,14 +20,14 @@ export class Time {
         return {numerator, denominator, type: 'abs'};
     }
 
-    static fromStart(span: TimeSpan): AbsoluteTime;
-    static fromStart(span: AbsoluteTime): TimeSpan;
-    static fromStart(span: TimeSpan | AbsoluteTime): TimeSpan | AbsoluteTime {
-        if (span.type === 'span') return this.newAbsolute(span.numerator, span.denominator);
-        return this.newSpan(span.numerator, span.denominator);        
+    static fromStart(time: TimeSpan): AbsoluteTime;
+    static fromStart(time: AbsoluteTime): TimeSpan;
+    static fromStart(time: TimeSpan | AbsoluteTime): TimeSpan | AbsoluteTime {
+        if (time.type === 'span') return this.newAbsolute(time.numerator, time.denominator);
+        return this.newSpan(time.numerator, time.denominator);        
     }
 
-    static fromLilypond(input: string) {
+    static fromLilypond(input: string): TimeSpan {
         const matcher = /(\d+)(\.*)/;
         const parsed = matcher.exec(input);
         if (!parsed) throw 'Illegal duration: ' + input;
@@ -45,10 +45,10 @@ export class Time {
         return Time.newSpan(numerator, denominator);
     }
 
-    public static assertSpan(value: TimeSpan) {
+    public static assertSpan(value: TimeSpan): void {
         if (value.type !== 'span') throw 'Type error';
     }
-    public static assertAbsolute(value: AbsoluteTime) {
+    public static assertAbsolute(value: AbsoluteTime): void {
         if (value.type !== 'abs') throw 'Type error';
     }
 

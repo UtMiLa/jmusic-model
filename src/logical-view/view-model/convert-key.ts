@@ -1,4 +1,4 @@
-import { Alternation } from './../../model';
+import { Alteration } from './../../model';
 import { Pitch } from '../../model';
 import { Clef } from './../../model';
 import { Key } from './../../model';
@@ -6,7 +6,7 @@ import { Key } from './../../model';
 
 export interface KeyViewModelElement {
     position: number;
-    alternation: Alternation;
+    alteration: Alteration;
 }
 
 export interface KeyViewModel {
@@ -31,13 +31,13 @@ export function keyToView(key: Key, clef: Clef): KeyViewModel {
                 // b
                 const magicNo = clefMagicNo['b'][clefOffset];
                 const staffLine = ((i * 4 + clefOffset + 8 - magicNo) % 7) + magicNo - 6;
-                return { position: 5 - staffLine, alternation: -1 };
+                return { position: 5 - staffLine, alteration: -1 };
             }
             else {
                 // x
                 const magicNo = clefMagicNo['x'][clefOffset];
                 const staffLine = ((i * 3 + clefOffset + 11 - magicNo) % 7) + magicNo - 6;
-                return { position: 5 - staffLine, alternation: 1 };
+                return { position: 5 - staffLine, alteration: 1 };
             }            
         })
     };

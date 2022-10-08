@@ -16,7 +16,7 @@ describe('View model: Keys', () => {
 
     it('should convert a key to view model', () => {
         const keySig = keyToView(keyAs, clefG);
-        expect(keySig.keyPositions).to.deep.equal([0, 3, -1, 2].map(p => ({ position: p, alternation: -1 })));
+        expect(keySig.keyPositions).to.deep.equal([0, 3, -1, 2].map(p => ({ position: p, alteration: -1 })));
     });
 
     const keydefs = { // key signatures in different clefs
@@ -42,30 +42,30 @@ describe('View model: Keys', () => {
 
     it('should place all flat keys according to clef', () => {
         const keySig1 = keyToView(keyCes, clefG);
-        const result1 = keydefs['b'][3].map(p => ({ position: 5 - p, alternation: -1 }));
+        const result1 = keydefs['b'][3].map(p => ({ position: 5 - p, alteration: -1 }));
         expect(keySig1.keyPositions).to.deep.equal(result1);
 
         const keySig2 = keyToView(keyCes, Clef.clefAlto);
-        const result2 = keydefs['b'][4].map(p => ({ position: 5 - p, alternation: -1 }));
+        const result2 = keydefs['b'][4].map(p => ({ position: 5 - p, alteration: -1 }));
         expect(keySig2.keyPositions).to.deep.equal(result2);
 
         const keySig3 = keyToView(keyCes, Clef.clefBass);
-        const result3 = keydefs['b'][5].map(p => ({ position: 5 - p, alternation: -1 }));
+        const result3 = keydefs['b'][5].map(p => ({ position: 5 - p, alteration: -1 }));
         expect(keySig3.keyPositions).to.deep.equal(result3);
 
     });
 
     it('should place all sharp keys according to clef', () => {
         const keySig1 = keyToView(keyCis, clefG);
-        const result1 = keydefs['x'][3].map(p => ({ position: 5 - p, alternation: 1 }));
+        const result1 = keydefs['x'][3].map(p => ({ position: 5 - p, alteration: 1 }));
         expect(keySig1.keyPositions).to.deep.equal(result1);
 
         const keySig2 = keyToView(keyCis, Clef.clefAlto);
-        const result2 = keydefs['x'][4].map(p => ({ position: 5 - p, alternation: 1 }));
+        const result2 = keydefs['x'][4].map(p => ({ position: 5 - p, alteration: 1 }));
         expect(keySig2.keyPositions).to.deep.equal(result2);
 
         const keySig3 = keyToView(keyCis, Clef.clefBass);
-        const result3 = keydefs['x'][5].map(p => ({ position: 5 - p, alternation: 1 }));
+        const result3 = keydefs['x'][5].map(p => ({ position: 5 - p, alteration: 1 }));
         expect(keySig3.keyPositions).to.deep.equal(result3);
 
     });

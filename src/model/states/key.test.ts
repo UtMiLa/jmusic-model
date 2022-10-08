@@ -1,7 +1,6 @@
 import { PitchClass } from './../pitches/pitch';
 import { Key, AccidentalManager, displaceAccidentals } from './key';
 import { Pitch } from '../pitches/pitch';
-import { Clef, ClefType } from './clef';
 import { expect } from 'chai';
 
 describe('Key', () => {
@@ -25,7 +24,7 @@ describe('Key', () => {
     it('should enumerate flats', () => {
         const pitches = Array.from<PitchClass>(keyEs.enumerate());
         expect(pitches.length).to.equal(3);
-        expect(pitches[0].alternation).to.equal(-1);
+        expect(pitches[0].alteration).to.equal(-1);
         expect(pitches[0].pitchClassName).to.equal('b');
         expect(pitches[1].pitchClassName).to.equal('e');
         expect(pitches[2].pitchClassName).to.equal('a');
@@ -34,7 +33,7 @@ describe('Key', () => {
     it('should enumerate sharps', () => {
         const pitches = Array.from<PitchClass>(keyH.enumerate());
         expect(pitches.length).to.equal(5);
-        expect(pitches[0].alternation).to.equal(1);
+        expect(pitches[0].alteration).to.equal(1);
         expect(pitches[0].pitchClassName).to.equal('f');
         expect(pitches[1].pitchClassName).to.equal('c');
         expect(pitches[2].pitchClassName).to.equal('g');
@@ -66,7 +65,7 @@ describe('Key', () => {
         
         it('should correctly set accidental displacements', () => {
             // Alignment samples from Gardner Read: Music Notation, p.133-4
-            const accMan = new AccidentalManager();
+            //const accMan = new AccidentalManager();
 
             const twoVoiceSamples = [
                 { in: 'f gis', out: [-1, 0] },

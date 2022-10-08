@@ -20,7 +20,7 @@ function accidentalToGlyph(alt: Accidental): GlyphCode {
 export function convertKey(key: KeyViewModel, xPos: number, settings: Metrics): PhysicalElementBase[] {
     return key.keyPositions.map((pos, i) => {
         return {
-            glyph: accidentalToGlyph(pos.alternation),
+            glyph: accidentalToGlyph(pos.alteration),
             position: {x: xPos + i * settings.keySigSpacing, y: staffLineToY(pos.position / 2, settings)}
         };
     });
@@ -29,7 +29,7 @@ export function convertKey(key: KeyViewModel, xPos: number, settings: Metrics): 
 export function convertAccidentals(accidentals: AccidentalViewModel[], xPos: number, settings: Metrics): PhysicalElementBase[] {
     return accidentals.map((pos) => {
         return {
-            glyph: accidentalToGlyph(pos.alternation),
+            glyph: accidentalToGlyph(pos.alteration),
             position: {x: xPos + pos.displacement * settings.accidentalDisplacement, y: staffLineToY(pos.position / 2, settings)}
         };
     });

@@ -22,10 +22,10 @@ describe('Physical model, keys', () => {
             keyPositions: []
         };
         keyAs = { 
-            keyPositions: [0, 3, -1, 2].map(p => ({ position: p, alternation: -1 }))
+            keyPositions: [0, 3, -1, 2].map(p => ({ position: p, alteration: -1 }))
         };
         keyH = {
-            keyPositions: [4, 1, 5, 2, -1].map(p => ({ position: p, alternation: 1 }))
+            keyPositions: [4, 1, 5, 2, -1].map(p => ({ position: p, alteration: 1 }))
         };
     
     });
@@ -74,7 +74,7 @@ describe('Physical model, accidentals', () => {
         });
         acc1 = {
             position: -3,
-            alternation: 1,
+            alteration: 1,
             displacement: 0
         };
     

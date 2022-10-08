@@ -27,10 +27,10 @@ describe('View model', () => {
         expect(staffView.timeSlots.length).to.eq(7);
         expect(staffView.timeSlots[0].accidentals).to.be.undefined;
         expect(staffView.timeSlots[2].accidentals).to.be.undefined;
-        expect(staffView.timeSlots[3].accidentals).to.deep.eq([{ alternation: 0, displacement: 0, position: -3}]);
+        expect(staffView.timeSlots[3].accidentals).to.deep.eq([{ alteration: 0, displacement: 0, position: -3}]);
         expect(staffView.timeSlots[4].accidentals).to.be.undefined;
         expect(staffView.timeSlots[5].accidentals).to.be.undefined;
-        expect(staffView.timeSlots[6].accidentals).to.deep.eq([{ alternation: -1, displacement: 0, position: -3}]);
+        expect(staffView.timeSlots[6].accidentals).to.deep.eq([{ alteration: -1, displacement: 0, position: -3}]);
     });
 
 

@@ -8,11 +8,14 @@ export interface StaffDef {
     initialClef: ClefDef;
     initialKey: KeyDef;
     initialMeter?: RegularMeterDef;
-    seq?: SequenceDef;
-    voices?: VoiceDef[];
+    voices: VoiceDef[];
 }
 
 
 export class Staff {
-    
+    static setSequence(staffDef: StaffDef, seq: SequenceDef): void {
+        staffDef.voices = [{ content: seq }];
+    }
 }
+
+

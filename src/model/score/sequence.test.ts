@@ -42,6 +42,7 @@ describe('Sequence', () => {
 
     it('should calculate the time slots of a sequence', () => {
         const seq1 = Sequence.createFromString(seq1Text);
+        
         expect(seq1.getTimeSlots()).to.deep.equal([
             Time.newAbsolute(0, 1),
             Time.newAbsolute(1, 4),

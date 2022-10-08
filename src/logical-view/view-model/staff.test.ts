@@ -1,24 +1,26 @@
+import { Staff } from './../../model/score/staff';
 import { Time } from './../../model/rationals/time';
 import { FlagType } from './note-view-model';
 import { NoteType, NoteDirection } from '../../model/notes/note';
-import { Staff, StaffDef } from '../../model/score/staff';
+import { StaffDef } from '../../model/score/staff';
 import { expect } from 'chai';
 import { ClefType } from '../../model/states/clef';
 import { staffModelToViewModel } from './convert-model';
-describe('Staff', () => {
+describe('Staff view model', () => {
     let staffClef: StaffDef;
 
     beforeEach(() => { 
         staffClef = {
             initialClef: { clefType: ClefType.G, line: -2 },
             initialKey: { accidental: -1, count: 4 },
-            seq: {
-                elements: ''
-            }
+            voices: []
         };
     });
 
     it('should convert an empty staff to view model', () => {
+
+        Staff.setSequence(staffClef, {elements: ''});
+
         const vm = staffModelToViewModel(staffClef);
 
         expect(vm).to.deep.equal({
@@ -32,19 +34,19 @@ describe('Staff', () => {
                     },
                     key: { 
                         keyPositions: [ {
-                            'alternation': -1,
+                            'alteration': -1,
                             'position': 0
                         },
                         {
-                            'alternation': -1,
+                            'alteration': -1,
                             'position': 3
                         },
                         {
-                            'alternation': -1,
+                            'alteration': -1,
                             'position': -1
                         },
                         {
-                            'alternation': -1,
+                            'alteration': -1,
                             'position': 2
                         }]
                     },
@@ -57,7 +59,7 @@ describe('Staff', () => {
     });
 
     it('should convert a staff with notes to view model', () => {
-        staffClef.seq = { elements: 'c\'1 des\'4 ees\'2' };
+        Staff.setSequence(staffClef, {elements: 'c\'1 des\'4 ees\'2'});
 
         const vm = staffModelToViewModel(staffClef);
 
@@ -71,19 +73,19 @@ describe('Staff', () => {
                         line: -2
                     },
                     key: { keyPositions: [ {
-                        'alternation': -1,
+                        'alteration': -1,
                         'position': 0
                     },
                     {
-                        'alternation': -1,
+                        'alteration': -1,
                         'position': 3
                     },
                     {
-                        'alternation': -1,
+                        'alteration': -1,
                         'position': -1
                     },
                     {
-                        'alternation': -1,
+                        'alteration': -1,
                         'position': 2
                     }]
                     },
@@ -244,7 +246,8 @@ describe('Staff', () => {
     });
 
     it('should convert a staff with a meter to view model', () => {
-        staffClef.seq = { elements: 'c\'1 d\'4 e\'2' };
+        
+        Staff.setSequence(staffClef, { elements: 'c\'1 d\'4 e\'2' });
         staffClef.initialMeter = { count: 12, value: 8 };
 
         const vm = staffModelToViewModel(staffClef);

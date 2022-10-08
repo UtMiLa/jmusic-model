@@ -3,7 +3,7 @@ import { getAllBars, MeterFactory, RegularMeterDef } from './meter';
 describe('Meter', () => {
     describe('Regular meter', () => {
         let meter1: RegularMeterDef, meter2: RegularMeterDef, meter3: RegularMeterDef;
-        let meterFactory: MeterFactory;
+        
         beforeEach(() => {
             meter1 = {
                 count: 3,
@@ -71,7 +71,7 @@ describe('Meter', () => {
 
     describe('Composite meter', () => {
         let meter1: RegularMeterDef, meter2: RegularMeterDef, meter3: RegularMeterDef;
-        let meterFactory: MeterFactory;
+        
         beforeEach(() => {
             meter1 = {
                 count: 3,

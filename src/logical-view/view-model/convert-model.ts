@@ -1,6 +1,6 @@
 import { BeamingViewModel } from './beaming-view-model';
 import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
-import { Alternation } from './../../model/pitches/pitch';
+import { Alteration } from './../../model/pitches/pitch';
 import { getAllBars, ScoreDef } from './../../model';
 import { MeterFactory } from './../../model';
 import { meterToView, MeterViewModel } from './convert-meter';
@@ -29,7 +29,7 @@ export interface TieViewModel {
 
 export interface AccidentalViewModel {
     position: number;
-    alternation: Alternation;
+    alteration: Alteration;
     displacement: number;
 }
 export interface TimeSlotViewModel {
@@ -68,11 +68,11 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
 
 export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewModel {
 
-    if (!def.voices) { 
+    /*if (!def.voices) { 
         if (!def.seq) throw 'seq and voices undefined';
 
         def.voices = [{ content: def.seq }];
-    }
+    }*/
 
     const clef = new Clef(def.initialClef);
 
@@ -168,7 +168,7 @@ export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewMode
                 note.pitches.forEach(pitch => {
                     const alt = accidentalManager.getAccidental(pitch);
                     if (alt !== undefined)
-                        accidentals.push({ alternation: alt, position: clef.map(pitch), displacement: 0 });
+                        accidentals.push({ alteration: alt, position: clef.map(pitch), displacement: 0 });
                 })
             );
 

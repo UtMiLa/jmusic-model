@@ -14,18 +14,18 @@ export enum NoteDirection {
 
 export class Note {
    
-    static clone(note: Note, arg1: { [key: string]: any } = {}): Note {        
+    static clone(note: Note, changeProperties: { [key: string]: any } = {}): Note {        
         const res = new Note(note._pitches, note._duration);
 
-        Object.keys(arg1).forEach(key => (res as any)[key] = arg1[key]);
+        Object.keys(changeProperties).forEach(key => (res as any)[key] = changeProperties[key]);
 
         return res;
     }
 
     constructor(private _pitches: Pitch[], private _duration: TimeSpan) {
-        //console.log('new note', _pitch, _duration);
-        
+        //console.log('new note', _pitch, _duration);        
     }
+
     static parseLily(input: string): Note {
         const matcher = /([a-gr](es|is)*[',]*)(\d+\.*)(~?)/i;
         const matcherChord = /<([a-z,' ]+)>(\d+\.*)(~?)/i;
