@@ -1,10 +1,12 @@
+import { Meter } from './../../model/states/meter';
+import { BeamGroup } from './../../model/notes/beaming';
 import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
-import { getAllBars, ScoreDef } from './../../model';
+import { getAllBars, ScoreDef, TimeSlot } from './../../model';
 import { MeterFactory } from './../../model';
 import { meterToView } from './convert-meter';
 import { AbsoluteTime, Time } from './../../model';
 import { keyToView } from './convert-key';
-import { FlagType } from './note-view-model';
+import { FlagType, NoteViewModel } from './note-view-model';
 import { Note, NoteDirection } from '../../model';
 import { Clef } from '../../model';
 import { Sequence } from '../../model';
@@ -13,6 +15,75 @@ import { Key } from '../../model';
 import { calcBeamGroups } from '../../model';
 import { noteToView } from './convert-note';
 import { TimeSlotViewModel, ScoreViewModel, StaffViewModel, AccidentalViewModel, TieViewModel } from './score-view-model';
+import { VoiceDef } from '../../model/score/voice';
+
+
+
+
+class State {
+    constructor (
+        public voiceBeamGroups: BeamGroup[], 
+        public staffNo: number, 
+        public voiceNo: number, 
+        public voice: VoiceDef, 
+        public clef: Clef
+    ) {
+        //        
+    }
+
+    public nextBarIterator: IterableIterator<AbsoluteTime> | undefined;
+    public nextBar = Time.newAbsolute(1, 0);
+
+
+    private _voiceTimeSlot: TimeSlot | undefined;
+    public get voiceTimeSlot(): TimeSlot {
+        if (!this._voiceTimeSlot) throw 'Internal error (voiceTimeSlot)';
+        return this._voiceTimeSlot;
+    }
+    public set voiceTimeSlot(value: TimeSlot) {
+        this._voiceTimeSlot = value;
+
+        if (this.nextBarIterator && Time.sortComparison(this.slot.absTime, this.nextBar) >= 0) {
+            this.newBar();
+            this.nextBar = this.nextBarIterator.next().value;
+        }
+
+    }
+
+    public slotNo = -1;
+    private _slot: TimeSlotViewModel | undefined;
+    public get slot(): TimeSlotViewModel {
+        if (!this._slot) throw 'Internal error (slot)';
+        return this._slot;
+    }
+    public set slot(value: TimeSlotViewModel) {
+        this._slot = value;
+    }
+
+    public accidentalManager = new AccidentalManager();
+
+    addNotes(elements: NoteViewModel[]) {
+        this.slot.notes = this.slot.notes.concat(elements);
+    }
+
+    setKey(key: Key) {
+        this.accidentalManager.setKey(key);
+    }
+
+    setMeter(meter: Meter) {
+        
+        if(meter) {
+            this.nextBarIterator = getAllBars(meter);
+            this.nextBar = this.nextBarIterator.next().value;
+        }
+    }
+
+    newBar() {
+        this.accidentalManager.newBar();
+    }
+}
+
+
 
 
 function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSlotViewModel {
@@ -32,16 +103,7 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
 
 export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewModel {
 
-    /*if (!def.voices) { 
-        if (!def.seq) throw 'seq and voices undefined';
-
-        def.voices = [{ content: def.seq }];
-    }*/
-
     const clef = new Clef(def.initialClef);
-
-    const meterModel = def.initialMeter ? MeterFactory.createRegularMeter(def.initialMeter) : undefined;
-    const meter = meterModel ? meterToView(meterModel) : undefined;
 
     const timeSlots: TimeSlotViewModel[] = [
         {
@@ -58,13 +120,11 @@ export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewMode
         }
     ];
 
-    let nextBarIterator: IterableIterator<AbsoluteTime>;
-    let nextBar = Time.newAbsolute(1, 0);
+    const meter = def.initialMeter ? MeterFactory.createRegularMeter(def.initialMeter) : undefined;
 
-    if(meterModel) {
-        timeSlots[0].meter = meter;
-        nextBarIterator = getAllBars(meterModel);
-        nextBar = nextBarIterator.next().value;
+    if (meter) {
+        const meterVM = meter ? meterToView(meter) : undefined;
+        timeSlots[0].meter = meterVM;
     }
 
     let staffEndTime = Time.newAbsolute(0, 1);
@@ -73,109 +133,36 @@ export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewMode
         const voiceSequence = new Sequence(voice.content);
         const voiceTimeSlots = voiceSequence.groupByTimeSlots();
         const voiceEndTime = Time.fromStart(voiceSequence.duration);
-        const voiceBeamGroups = meterModel ? calcBeamGroups(voiceSequence, meterModel) : [];
+        const voiceBeamGroups = meter ? calcBeamGroups(voiceSequence, meter) : [];
 
         if (Time.sortComparison(voiceEndTime, staffEndTime) > 0) {
             staffEndTime = voiceEndTime;
         }
 
-        const accidentalManager = new AccidentalManager();
-        if (def.initialKey) accidentalManager.setKey(new Key(def.initialKey));
+        const state = new State(voiceBeamGroups, staffNo, voiceNo, voice, clef);
+        if (def.initialKey) state.setKey(new Key(def.initialKey));
+        if (meter) state.setMeter(meter);
+
 
         voiceTimeSlots.forEach((voiceTimeSlot, slotNo) => {
-            const slot = getTimeSlot(timeSlots, voiceTimeSlot.time);
-            //timeSlots.find(item => Time.equals(item.absTime, voiceTimeSlot.time));
+            state.slot = getTimeSlot(timeSlots, voiceTimeSlot.time);
+            state.voiceTimeSlot = voiceTimeSlot;
+            state.slotNo = slotNo;
             
-            if (nextBarIterator && Time.sortComparison(slot.absTime, nextBar) >= 0) {
-                accidentalManager.newBar();
-                nextBar = nextBarIterator.next().value;
-            }
+            const elements = createNoteViewModels(state);
 
-            const elements = voiceTimeSlot.elements.map((note, noteNo) => {
-                const bg = voiceBeamGroups.find(vbg => vbg.notes.indexOf(note) > -1);
-                
-                if (bg && bg.notes[0] === note) {
-                    let noteTime = voiceTimeSlot.time;
-                    const beaming = {
-                        noteRefs: bg.notes.map((nt, idx) => { 
-                            const res = { absTime: noteTime, uniq: `${staffNo}-${voiceNo}-${slotNo + idx}` };
-                            noteTime = Time.addTime(noteTime, nt.duration);
-                            return res;
-                        }
-                        ),
-                        beams: bg.beams
-                    };
-                    if (slot.beamings) {
-                        slot.beamings.push(beaming);
-                    } else {
-                        slot.beamings = [beaming];
-                    }
-                    
-                    //console.log('beamings', slot);
-                    
-                }
+            createAccidentalViewModel(state);
 
-                const noteClone = Note.clone(note, { 
-                    direction: note.direction ? note.direction : voice.noteDirection,
-                    uniq: `${staffNo}-${voiceNo}-${slotNo}`
-                });
-                const noteView = noteToView(noteClone, clef);
-                
-                if (bg) noteView.flagType = FlagType.Beam;
+            state.addNotes(elements);
 
-                return noteView;
-            });
-
-            const accidentals: AccidentalViewModel[] = [];
-            
-            voiceTimeSlot.elements.forEach(note => 
-                note.pitches.forEach(pitch => {
-                    const alt = accidentalManager.getAccidental(pitch);
-                    if (alt !== undefined)
-                        accidentals.push({ alteration: alt, position: clef.map(pitch), displacement: 0 });
-                })
-            );
-
-            if (accidentals.length) {
-                const accidentalDisplacements = displaceAccidentals(accidentals.map(acc => acc.position));
-                accidentals.forEach((acc, idx) => { acc.displacement = accidentalDisplacements[idx]; });
-
-                if (slot.accidentals) { 
-                    slot.accidentals = slot.accidentals.concat(accidentals);
-                } else {
-                    slot.accidentals = accidentals;
-                }                
-            }
-
-            slot.notes = slot.notes.concat(elements);
-
-            const ties = [] as TieViewModel[];
-            voiceTimeSlot.elements.forEach(note => {
-                if (note.tie) {
-                    //console.log('note tie', note);
-                    
-                    note.pitches.map(p => clef.map(p)).sort().forEach(pos => {
-                        //console.log('adding ties', pos);
-                        ties.push({ 
-                            position: pos,
-                            direction: note.direction === NoteDirection.Undefined ? voice.noteDirection : note.direction,
-                            toTime: Time.addTime(voiceTimeSlot.time, note.duration)
-                        } as TieViewModel);
-                    });
-                }
-            });
-
-            if (ties.length) {
-                //console.log('setting ties', ties);
-                slot.ties = slot.ties ? slot.ties.concat(ties) : ties;
-            }
+            createTieViewModel(state);
         });
         
     });
 
-    if (meterModel) {
-        const measureTime = meterModel.measureLength;
-        let barTime = meterModel.firstBarTime;
+    if (meter) {
+        const measureTime = meter.measureLength;
+        let barTime = meter.firstBarTime;
         //console.log('bar', measureTime, barTime, staffEndTime, meterModel);
         
         while (Time.sortComparison(barTime, staffEndTime) <= 0) {
@@ -191,3 +178,92 @@ export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewMode
 
 
 }
+
+
+function createTieViewModel(state: State) {
+    //voiceTimeSlot: TimeSlot, clef: Clef, voice: VoiceDef, slot: TimeSlotViewModel) {
+    const ties = [] as TieViewModel[];
+    state.voiceTimeSlot.elements.forEach(note => {
+        if (note.tie) {
+            //console.log('note tie', note);
+            note.pitches.map(p => state.clef.map(p)).sort().forEach(pos => {
+                //console.log('adding ties', pos);
+                ties.push({
+                    position: pos,
+                    direction: note.direction === NoteDirection.Undefined ? state.voice.noteDirection : note.direction,
+                    toTime: Time.addTime(state.voiceTimeSlot.time, note.duration)
+                } as TieViewModel);
+            });
+        }
+    });
+
+    if (ties.length) {
+        //console.log('setting ties', ties);
+        state.slot.ties = state.slot.ties ? state.slot.ties.concat(ties) : ties;
+    }
+}
+
+function createAccidentalViewModel(state: State) {
+    const accidentals: AccidentalViewModel[] = [];
+            
+            
+    state.voiceTimeSlot.elements.forEach(note => note.pitches.forEach(pitch => {
+        const alt = state.accidentalManager.getAccidental(pitch);
+        if (alt !== undefined)
+            accidentals.push({ alteration: alt, position: state.clef.map(pitch), displacement: 0 });
+    })
+    );
+
+    if (accidentals.length) {
+        const accidentalDisplacements = displaceAccidentals(accidentals.map(acc => acc.position));
+        accidentals.forEach((acc, idx) => { acc.displacement = accidentalDisplacements[idx]; });
+
+        if (state.slot.accidentals) {
+            state.slot.accidentals = state.slot.accidentals.concat(accidentals);
+        } else {
+            state.slot.accidentals = accidentals;
+        }
+    }
+
+    return accidentals;
+}
+
+
+
+function createNoteViewModels(state: State) {
+    return state.voiceTimeSlot.elements.map((note, noteNo) => {
+        const bg = state.voiceBeamGroups.find(vbg => vbg.notes.indexOf(note) > -1);
+
+        if (bg && bg.notes[0] === note) {
+            let noteTime = state.voiceTimeSlot.time;
+            const beaming = {
+                noteRefs: bg.notes.map((nt, idx) => {
+                    const res = { absTime: noteTime, uniq: `${state.staffNo}-${state.voiceNo}-${state.slotNo + idx}` };
+                    noteTime = Time.addTime(noteTime, nt.duration);
+                    return res;
+                }
+                ),
+                beams: bg.beams
+            };
+            if (state.slot.beamings) {
+                state.slot.beamings.push(beaming);
+            } else {
+                state.slot.beamings = [beaming];
+            }
+
+            //console.log('beamings', slot);
+        }
+
+        const noteClone = Note.clone(note, {
+            direction: note.direction ? note.direction : state.voice.noteDirection,
+            uniq: `${state.staffNo}-${state.voiceNo}-${state.slotNo}`
+        });
+        const noteView = noteToView(noteClone, state.clef);
+
+        if (bg)
+            noteView.flagType = FlagType.Beam;
+
+        return noteView;
+    });
+}
+
