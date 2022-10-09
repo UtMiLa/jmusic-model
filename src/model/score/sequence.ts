@@ -1,3 +1,4 @@
+import { StateChange } from './../states/state';
 import { AbsoluteTime } from './../rationals/time';
 import { Note } from '../notes/note';
 import { Time, TimeSpan } from '../rationals/time';
@@ -15,7 +16,7 @@ export class Sequence {
         this.elements = def.elements ? Sequence.splitByNotes(def.elements).map(str => Note.parseLily(str)) : [];
     }
 
-    elements: Note[] = [];
+    elements: (Note | StateChange)[] = [];
 
     static createFromString(def: string): Sequence {
         return new Sequence({ elements: def });
@@ -61,10 +62,14 @@ export class Sequence {
 
         this.elements.forEach(elem => {
             const slot = res.find(item => Time.equals(item.time, time));
-            if (!slot) {
-                res.push({ time, elements: [elem]});
+            if ((elem as StateChange).isState) {
+                //
             } else {
-                slot.elements.push(elem);
+                if (!slot) {
+                    res.push({ time, elements: [elem as Note]});
+                } else {
+                    slot.elements.push(elem as Note);
+                }
             }
             time  = Time.addTime(time, elem.duration);
         });

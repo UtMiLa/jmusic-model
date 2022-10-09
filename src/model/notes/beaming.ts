@@ -1,3 +1,4 @@
+import { StateChange } from './../states/state';
 import { Time } from './../rationals/time';
 import { getAllBars, getAllBeats, Meter } from './../states/meter';
 import { Sequence } from './../score/sequence';
@@ -73,42 +74,48 @@ export function calcBeamGroups(seq: Sequence, meter: Meter): BeamGroup[] {
         }
     }
 
-    seq.elements.forEach(note => {
-        const currBeamCnt = beamCount(note.undottedDuration.denominator);
-        const isOnNextBeat = Time.sortComparison(time, nextBeat) >= 0;
-        if (isOnNextBeat || currBeamCnt === 0 || !note.pitches.length) {
-            // new beat, or quarter note, or rest
-            //console.log('new beat', time, nextBeat, tempGroup);
-
-            finishGroup();
-
-            tempGroup = [];
-            tempSubGroups = [];
-            subGroups = [];
-            noteIdx = 0;
-            if (isOnNextBeat) {
-                nextBeat = meterIterator.next().value;
+    seq.elements.forEach(element => {
+        if ((element as StateChange).isState) {
+            // state change
+        } else {
+            const note = element as Note;
+            const currBeamCnt = beamCount(note.undottedDuration.denominator);
+            const isOnNextBeat = Time.sortComparison(time, nextBeat) >= 0;
+            if (isOnNextBeat || currBeamCnt === 0 || !note.pitches.length) {
+                // new beat, or quarter note, or rest
+                //console.log('new beat', time, nextBeat, tempGroup);
+    
+                finishGroup();
+    
+                tempGroup = [];
+                tempSubGroups = [];
+                subGroups = [];
+                noteIdx = 0;
+                if (isOnNextBeat) {
+                    nextBeat = meterIterator.next().value;
+                }
             }
+            if (currBeamCnt > 0 && note.pitches.length) {
+                tempGroup.push(note);
+            }
+    
+            while (currBeamCnt > prevBeamCnt) {
+                // start a subgroup
+                tempSubGroups.push({ fromIdx: noteIdx, toIndex: undefined, level: prevBeamCnt });
+                prevBeamCnt++;
+            } 
+            while (currBeamCnt < prevBeamCnt && prevBeamCnt >= 1) {
+                // end a subgroup
+                finishSubgroup();
+            }
+            prevBeamCnt = currBeamCnt;
+    
+    
+            noteIdx++;
+    
+    
         }
-        if (currBeamCnt > 0 && note.pitches.length) {
-            tempGroup.push(note);
-        }
-
-        while (currBeamCnt > prevBeamCnt) {
-            // start a subgroup
-            tempSubGroups.push({ fromIdx: noteIdx, toIndex: undefined, level: prevBeamCnt });
-            prevBeamCnt++;
-        } 
-        while (currBeamCnt < prevBeamCnt && prevBeamCnt >= 1) {
-            // end a subgroup
-            finishSubgroup();
-        }
-        prevBeamCnt = currBeamCnt;
-
-
-        noteIdx++;
-
-        time = Time.addTime(time, note.duration);
+        time = Time.addTime(time, element.duration);
 
     });
 
