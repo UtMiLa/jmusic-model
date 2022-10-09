@@ -29,6 +29,17 @@ describe('Note', () => {
         expect(note2.pitches.length).to.eq(0);
         expect(note2.type).to.eq(NoteType.RHalf);
         expect(note2.duration).to.deep.eq(Time.newSpan(3, 4));
+
+
+        expect(Note.parseLily('r1').type).to.eq(NoteType.RWhole);
+
+        expect(Note.parseLily('r8').type).to.eq(NoteType.R8);
+        expect(Note.parseLily('r16').type).to.eq(NoteType.R16);
+        expect(Note.parseLily('r32').type).to.eq(NoteType.R32);
+        expect(Note.parseLily('r64').type).to.eq(NoteType.R64);
+        expect(Note.parseLily('r128').type).to.eq(NoteType.R128);
+
+
     });
 
     it('should support multiple pitches', () => {

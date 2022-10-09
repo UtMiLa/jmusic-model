@@ -6,9 +6,9 @@ import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElem
 import { calcDisplacements, staffLineToY } from './functions';
 
 
-export function testNote(viewModel: any): NoteViewModel | undefined {
+/*export function testNote(viewModel: any): NoteViewModel | undefined {
     return viewModel.noteType ? viewModel as NoteViewModel : undefined;
-}
+}*/
 
 
 export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics): PhysicalElementBase[] {

@@ -100,6 +100,30 @@ describe('Physical model, notes', () => {
             position: { x: 20, y: 3.5*defaultMetrics.scaleDegreeUnit*2 }
         });
 
+        note.flagType = FlagType.F1;
+        expect((convertNote(note, 20, defaultMetrics)[1] as any).glyph).to.eq('flags.u3');
+        note.flagType = FlagType.F2;
+        expect((convertNote(note, 20, defaultMetrics)[1] as any).glyph).to.eq('flags.u4');
+        note.flagType = FlagType.F3;
+        expect((convertNote(note, 20, defaultMetrics)[1] as any).glyph).to.eq('flags.u5');
+        note.flagType = FlagType.F4;
+        expect((convertNote(note, 20, defaultMetrics)[1] as any).glyph).to.eq('flags.u6');
+        note.flagType = FlagType.F5;
+        expect((convertNote(note, 20, defaultMetrics)[1] as any).glyph).to.eq('flags.u7');
+
+        note.direction = NoteDirection.Down;
+
+        note.flagType = FlagType.F1;
+        expect((convertNote(note, 20, defaultMetrics)[1] as any).glyph).to.eq('flags.d3');
+        note.flagType = FlagType.F2;
+        expect((convertNote(note, 20, defaultMetrics)[1] as any).glyph).to.eq('flags.d4');
+        note.flagType = FlagType.F3;
+        expect((convertNote(note, 20, defaultMetrics)[1] as any).glyph).to.eq('flags.d5');
+        note.flagType = FlagType.F4;
+        expect((convertNote(note, 20, defaultMetrics)[1] as any).glyph).to.eq('flags.d6');
+        note.flagType = FlagType.F5;
+        expect((convertNote(note, 20, defaultMetrics)[1] as any).glyph).to.eq('flags.d7');
+
     });
 
     describe('Rests', () => {
@@ -169,6 +193,29 @@ describe('Physical model, notes', () => {
                 position: { x: 50, y: 1 * defaultMetrics.scaleDegreeUnit*2 }
             });
 
+            note2.noteType = NoteType.RBreve;
+            expect((convertNote(note2, 50, defaultMetrics)[0] as any).glyph).to.eq('rests.M1');
+
+            note2.noteType = NoteType.RWhole;
+            expect((convertNote(note2, 50, defaultMetrics)[0] as any).glyph).to.eq('rests.0');
+
+            note2.noteType = NoteType.RHalf;
+            expect((convertNote(note2, 50, defaultMetrics)[0] as any).glyph).to.eq('rests.1');
+
+            note2.noteType = NoteType.R8;
+            expect((convertNote(note2, 50, defaultMetrics)[0] as any).glyph).to.eq('rests.3');
+
+            note2.noteType = NoteType.R16;
+            expect((convertNote(note2, 50, defaultMetrics)[0] as any).glyph).to.eq('rests.4');
+
+            note2.noteType = NoteType.R32;
+            expect((convertNote(note2, 50, defaultMetrics)[0] as any).glyph).to.eq('rests.5');
+
+            note2.noteType = NoteType.R128;
+            expect((convertNote(note2, 50, defaultMetrics)[0] as any).glyph).to.eq('rests.7');
+
+            note2.noteType = 789 as NoteType;
+            expect(() => (convertNote(note2, 50, defaultMetrics)[0] as any).glyph).to.throw('Illegal rest: 789');
         });
    
         it('should render dots after rests', () => {

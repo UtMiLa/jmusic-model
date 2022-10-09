@@ -82,9 +82,25 @@ describe('Physical model, accidentals', () => {
 
 
     it('should draw accidentals', () => {
-        const res = convertAccidentals([acc1], 30, defaultMetrics);
-
+        let res = convertAccidentals([acc1], 30, defaultMetrics);
         expect(res).to.deep.eq([{ glyph: 'accidentals.2', position: { x: 30, y: 0.5*defaultMetrics.scaleDegreeUnit*2 }}]);
+
+        acc1.alteration = 2;
+        res = convertAccidentals([acc1], 30, defaultMetrics);
+        expect(res).to.deep.eq([{ glyph: 'accidentals.doublesharp', position: { x: 30, y: 0.5*defaultMetrics.scaleDegreeUnit*2 }}]);
+
+        acc1.alteration = -1;
+        res = convertAccidentals([acc1], 30, defaultMetrics);
+        expect(res).to.deep.eq([{ glyph: 'accidentals.M2', position: { x: 30, y: 0.5*defaultMetrics.scaleDegreeUnit*2 }}]);
+
+        acc1.alteration = -2;
+        res = convertAccidentals([acc1], 30, defaultMetrics);
+        expect(res).to.deep.eq([{ glyph: 'accidentals.flatflat', position: { x: 30, y: 0.5*defaultMetrics.scaleDegreeUnit*2 }}]);
+
+        acc1.alteration = 0;
+        res = convertAccidentals([acc1], 30, defaultMetrics);
+        expect(res).to.deep.eq([{ glyph: 'accidentals.0', position: { x: 30, y: 0.5*defaultMetrics.scaleDegreeUnit*2 }}]);
+
     });
 
 
