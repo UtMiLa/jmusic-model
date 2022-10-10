@@ -2,6 +2,7 @@ import { StateChange } from './../states/state';
 import { AbsoluteTime } from './../rationals/time';
 import { Note } from '../notes/note';
 import { Time, TimeSpan } from '../rationals/time';
+import { Clef } from '../states/clef';
 
 export interface SequenceDef {
     elements: string;
@@ -10,10 +11,24 @@ export interface SequenceDef {
 export interface TimeSlot {
     time: AbsoluteTime;
     elements: Note[];
+    states: StateChange[];
 }
+
+
+function parseLilyElement(ly: string): Note | StateChange {
+    if (ly.startsWith('\\')) {
+        const sc = new StateChange();
+        sc.clef = Clef.clefAlto;
+        return sc;
+    } else {
+        return Note.parseLily(ly);
+    }
+
+}
+
 export class Sequence {
     constructor(public def: SequenceDef) {
-        this.elements = def.elements ? Sequence.splitByNotes(def.elements).map(str => Note.parseLily(str)) : [];
+        this.elements = def.elements ? Sequence.splitByNotes(def.elements).map(str => parseLilyElement(str)) : [];
     }
 
     elements: (Note | StateChange)[] = [];
@@ -63,10 +78,14 @@ export class Sequence {
         this.elements.forEach(elem => {
             const slot = res.find(item => Time.equals(item.time, time));
             if ((elem as StateChange).isState) {
-                //
+                if (!slot) {
+                    res.push({ time, elements: [], states: [elem as StateChange]});
+                } else {
+                    slot.elements.push(elem as Note);
+                }
             } else {
                 if (!slot) {
-                    res.push({ time, elements: [elem as Note]});
+                    res.push({ time, elements: [elem as Note], states: [] });
                 } else {
                     slot.elements.push(elem as Note);
                 }

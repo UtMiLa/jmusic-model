@@ -50,7 +50,7 @@ describe('Sequence', () => {
         ]);
 
         expect(seq1.groupByTimeSlots()).to.deep.equal([
-            { time: Time.newAbsolute(0, 1), elements: [
+            { time: Time.newAbsolute(0, 1), states: [], elements: [
                 {
                     '_duration': Time.newSpan(1, 4),
                     '_pitches': [
@@ -63,7 +63,7 @@ describe('Sequence', () => {
                     'direction': NoteDirection.Undefined
                 }
             ] },
-            { time: Time.newAbsolute(1, 4), elements: [
+            { time: Time.newAbsolute(1, 4), states: [], elements: [
                 {
                     '_duration': Time.newSpan(1, 8),
                     '_pitches': [
@@ -76,7 +76,7 @@ describe('Sequence', () => {
                     'direction': NoteDirection.Undefined
                 }
             ] },
-            { time: Time.newAbsolute(3, 8), elements: [
+            { time: Time.newAbsolute(3, 8), states: [], elements: [
                 {
                     '_duration': Time.newSpan(1, 8),
                     '_pitches': [

@@ -148,6 +148,20 @@ export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewMode
             state.slot = getTimeSlot(timeSlots, voiceTimeSlot.time);
             state.voiceTimeSlot = voiceTimeSlot;
             state.slotNo = slotNo;
+
+            if (state.voiceTimeSlot.states.length) {
+                state.voiceTimeSlot.states.forEach(stateChange => {
+                    if (stateChange.clef) {
+                        state.clef = stateChange.clef;
+                        console.log('change clef:', state);
+                        state.slot.clef = { 
+                            position: 1,
+                            clefType: stateChange.clef.def.clefType,
+                            line: stateChange.clef.def.line
+                        };
+                    }
+                });
+            }
             
             const elements = createNoteViewModels(state);
 
