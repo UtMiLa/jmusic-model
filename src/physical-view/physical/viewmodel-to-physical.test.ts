@@ -577,7 +577,6 @@ describe('Physical model', () => {
 
         //console.log(physicalModel.elements);
         
-
         // stems
         expect(physicalModel.elements[6]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
