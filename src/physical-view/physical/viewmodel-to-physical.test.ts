@@ -225,8 +225,8 @@ describe('Physical model', () => {
                             absTime: Time.newAbsolute(0, 1), 
                             clef:    { 
                                 position: 1,
-                                clefType: ClefType.G,
-                                line: -2
+                                clefType: ClefType.C,
+                                line: -3
                             },             
                             notes: [                
                    
@@ -249,8 +249,8 @@ describe('Physical model', () => {
         checkStaffLines(physicalModel.elements, 0, defaultMetrics.scaleDegreeUnit*2, 50);
 
         expect(physicalModel.elements[5]).to.deep.eq({
-            glyph: 'clefs.G',
-            position: { x: 10, y: defaultMetrics.scaleDegreeUnit*2 }
+            glyph: 'clefs.C',
+            position: { x: 10, y: defaultMetrics.scaleDegreeUnit*1 }
         });
 
         expect(physicalModel.elements[6]).to.deep.eq({
@@ -740,8 +740,8 @@ describe('Physical model', () => {
                             absTime: Time.newAbsolute(0, 1), 
                             clef:    { 
                                 position: 1,
-                                clefType: ClefType.G,
-                                line: -2
+                                clefType: ClefType.F,
+                                line: 2
                             },        
                             notes: [                
 
@@ -797,8 +797,8 @@ describe('Physical model', () => {
         checkStaffLines(physicalModel.elements, 0, alternativeMetrics.scaleDegreeUnit*2, 158);
 
         expect(physicalModel.elements[5]).to.deep.eq({
-            glyph: 'clefs.G',
-            position: { x: 10, y: alternativeMetrics.scaleDegreeUnit*2 }
+            glyph: 'clefs.F',
+            position: { x: 10, y: alternativeMetrics.scaleDegreeUnit*6 }
         });
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'noteheads.sM1',

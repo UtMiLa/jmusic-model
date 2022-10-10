@@ -23,9 +23,9 @@ export class MeterFactory {
     static createRegularMeter(def: RegularMeterDef): Meter {
         return new RegularMeter(def);
     }
-    static createCompositeMeter(def: CompositeMeterDef): Meter {
+    /*static createCompositeMeter(def: CompositeMeterDef): Meter {
         return new CompositeMeter(def);
-    }
+    }*/
 }
 
 class RegularMeter implements Meter {
@@ -58,7 +58,7 @@ class RegularMeter implements Meter {
 
 }
 
-class CompositeMeter implements Meter {
+/*class CompositeMeter implements Meter {
     private def: CompositeMeterDef;
     constructor(def: CompositeMeterDef) {
         if (!def.meters.length) throw 'Empty meter';
@@ -81,7 +81,7 @@ class CompositeMeter implements Meter {
         return Time.newSpan(0, 1);
     }
 
-}
+}*/
 
 
 export function* getAllBars(meter: Meter): IterableIterator<AbsoluteTime> {

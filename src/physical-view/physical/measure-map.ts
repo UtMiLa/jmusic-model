@@ -123,6 +123,11 @@ export class MeasureMap {
     }    
     
 
+    totalWidth(): number {
+        let width = 0;
+        this.measureMap.forEach(mm => width += mm.width);
+        return width;
+    }
 }
 
 
