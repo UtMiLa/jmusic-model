@@ -41,7 +41,7 @@ export class PhysicalBeamGroup {
     startPoint(): Point {
         const firstNote = this.getNotestem(0);
         const maxLevel = this.bvm.beams.reduce((prev, curr) => curr.level > prev ? curr.level : prev, 0);
-        const extraHeight = maxLevel > 1 ? (maxLevel - 1) * this.settings.scaleDegreeUnit * 2 * Math.sign(firstNote.height) : 0;
+        const extraHeight = maxLevel > 1 ? (maxLevel - 1) * this.settings.beamSpacing * Math.sign(firstNote.height) : 0;
 
         return { x: firstNote.position.x, y: firstNote.position.y + firstNote.height + extraHeight };
     }
@@ -93,7 +93,7 @@ export class PhysicalBeamGroup {
                     const yStart = (firstXPos - startPoint.x) * slope + startPoint.y;
                     output.push({
                         element: VertVarSizeGlyphs.Beam,
-                        position: { x: firstXPos, y: yStart - this.settings.scaleDegreeUnit * 2 * beam.level * sign },
+                        position: { x: firstXPos, y: yStart - this.settings.beamSpacing * beam.level * sign },
                         length,
                         height
                     });

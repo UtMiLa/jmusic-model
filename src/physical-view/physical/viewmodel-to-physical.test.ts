@@ -572,7 +572,7 @@ describe('Physical model', () => {
             element: VertVarSizeGlyphs.Beam,
             height: -0.5*defaultMetrics.scaleDegreeUnit,
             length: 20,
-            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: 7*defaultMetrics.scaleDegreeUnit + defaultMetrics.quarterStemDefaultLength }
+            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: 9*defaultMetrics.scaleDegreeUnit - defaultMetrics.beamSpacing + defaultMetrics.quarterStemDefaultLength }
         });
 
         //console.log(physicalModel.elements);

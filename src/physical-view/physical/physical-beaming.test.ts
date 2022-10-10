@@ -1,17 +1,14 @@
 import { BeamingViewModel } from './../../logical-view/view-model/note-view-model';
 import { Time } from './../../model/rationals/time';
 import { ScoreViewModel } from './../../logical-view/view-model/score-view-model';
-import { PhysicalHorizVarSizeElement, PhysicalVertVarSizeElement } from './physical-elements';
-import { FlagType, NoteViewModel } from './../../logical-view/view-model/note-view-model';
+import { NoteViewModel } from './../../logical-view/view-model/note-view-model';
 import { HorizVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */
 import { NoteType, NoteDirection } from '../../model/notes/note';
 import { Metrics, StandardMetrics } from './metrics';
 import { expect } from 'chai';
-import { convertNote } from './physical-note';
 import { viewModelToPhysical } from './viewmodel-to-physical';
 import { findNoteInViewModel, PhysicalBeamGroup } from './physical-beaming';
-import exp = require('constants');
 
 describe('Physical model, note beaming', () => {
     let defaultMetrics: Metrics;
@@ -205,11 +202,11 @@ describe('Physical model, note beaming', () => {
 
         expect(output[1].element).to.eq(VertVarSizeGlyphs.Beam);
         expect(output[1].position.x).to.eq(notestem1.position.x);
-        expect(output[1].position.y).to.eq(notestem1.position.y + notestem1.height - 6);
+        expect(output[1].position.y).to.eq(notestem1.position.y + notestem1.height - defaultMetrics.beamSpacing);
         expect(output[1].length).to.eq(notestem2.position.x - notestem1.position.x);
         expect(output[1].height).to.eq((notestem3.position.y - notestem1.position.y) * (90-70)/(110-70) );
 
-        expect(notestem2.height).to.eq(24 - defaultMetrics.scaleDegreeUnit);
+        expect(notestem2.height).to.eq(24 - 3);
     });
 
     
@@ -277,7 +274,7 @@ describe('Physical model, note beaming', () => {
         expect(output[1].position.x, 'output[1].position.x').to.eq(notestem2.position.x);
         expect(output[1].position.y, 'output[1].position.y').to.eq(
             (notestem1.position.y + notestem1.height + notestem3.position.y + notestem3.height)/2 // midpoint
-            + 2*defaultMetrics.scaleDegreeUnit // + beam vert spacing
+            + defaultMetrics.beamSpacing // + beam vert spacing
         );
         expect(output[1].length, 'output[1].length').to.eq(notestem3.position.x - notestem2.position.x);
         expect(output[1].height, 'output[1].height').to.eq((notestem3.position.y - notestem1.position.y) * (90-70)/(110-70) );
@@ -338,7 +335,7 @@ describe('Physical model, note beaming', () => {
 
         expect(output).to.have.length(3);
         
-        /*expect(output[0].element).to.eq(VertVarSizeGlyphs.Beam);
+        expect(output[0].element).to.eq(VertVarSizeGlyphs.Beam);
         expect(output[0].position.x).to.eq(notestem1.position.x);
         expect(output[0].position.y).to.eq(notestem1.position.y + notestem1.height);
         expect(output[0].length).to.eq(notestem3.position.x - notestem1.position.x);
@@ -346,11 +343,11 @@ describe('Physical model, note beaming', () => {
 
         expect(output[1].element).to.eq(VertVarSizeGlyphs.Beam);
         expect(output[1].position.x).to.eq(notestem1.position.x);
-        expect(output[1].position.y).to.eq(notestem1.position.y + notestem1.height - 6);
-        expect(output[1].length).to.eq(notestem2.position.x - notestem1.position.x);
-        expect(output[1].height).to.eq((notestem3.position.y - notestem1.position.y) * (90-70)/(110-70) );
+        expect(output[1].position.y).to.eq(notestem1.position.y + notestem1.height - defaultMetrics.beamSpacing);
+        expect(output[1].length).to.eq(defaultMetrics.brokenBeamLength);
+        expect(output[1].height).to.eq(defaultMetrics.brokenBeamLength * (6 * defaultMetrics.scaleDegreeUnit)/(110-70) );
 
-        expect(notestem2.height).to.eq(24 - defaultMetrics.scaleDegreeUnit);*/
+        expect(notestem2.height).to.eq(24 - defaultMetrics.scaleDegreeUnit);
     });
 
 
@@ -421,23 +418,8 @@ describe('Physical model, note beaming', () => {
 
         expect(physBM.calcSlope()).to.eq(3 * 6 / 60);
 
-        expect(notestem1.height).to.eq(notestem1clone.height + defaultMetrics.scaleDegreeUnit * 2);
+        expect(notestem1.height).to.eq(notestem1clone.height + defaultMetrics.beamSpacing);
         
-        /*expect(output[0].element).to.eq(VertVarSizeGlyphs.Beam);
-        expect(output[0].position.x).to.eq(notestem1.position.x);
-        expect(output[0].position.y).to.eq(notestem1.position.y + notestem1.height);
-        expect(output[0].length).to.eq(notestem3.position.x - notestem1.position.x);
-        expect(output[0].height).to.eq(notestem3.position.y - notestem1.position.y);
-
-        expect(output[1].element, 'output[1].element').to.eq(VertVarSizeGlyphs.Beam);
-        expect(output[1].position.x, 'output[1].position.x').to.eq(notestem2.position.x);
-        expect(output[1].position.y, 'output[1].position.y').to.eq(
-            (notestem1.position.y + notestem1.height + notestem3.position.y + notestem3.height)/2 // midpoint
-            + 2*defaultMetrics.scaleDegreeUnit // + beam vert spacing
-        );
-        expect(output[1].length, 'output[1].length').to.eq(notestem3.position.x - notestem2.position.x);
-        expect(output[1].height, 'output[1].height').to.eq((notestem3.position.y - notestem1.position.y) * (90-70)/(110-70) );
-*/
     });
 
 /*

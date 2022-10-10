@@ -4,6 +4,7 @@ export interface Metrics {
     leftMargin: number;
     tieAfterNote: number;
     scaleDegreeUnit: number; 
+    beamSpacing: number;
     staffLengthOffset: number;
 
     blackNoteHeadLeftXOffset: number;
@@ -43,8 +44,8 @@ export class StandardMetrics implements Metrics {
     tieAfterNote: number = 9;
 
     scaleDegreeUnit = 3;
-    //scaleDegreeUnit*2: number = 6; 
-    staffLengthOffset: number = 10;
+    beamSpacing: number = 5; 
+    staffLengthOffset: number = 10;    
 
     blackNoteHeadLeftXOffset = 6.5;
     blackNoteHeadRightXOffset = 0;
