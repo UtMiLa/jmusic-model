@@ -979,7 +979,58 @@ describe('Physical model', () => {
     });
    
     
-   
+    it('should render clef changes in a smaller size', () => {
+        const viewModel: ScoreViewModel = { 
+            staves: [
+                {
+                    timeSlots: [
+                        { 
+                            absTime: Time.newAbsolute(0, 1), 
+                            clef:    { 
+                                position: 1,
+                                clefType: ClefType.F,
+                                line: 2
+                            },        
+                            notes: [                
+                                {
+                                    positions: [-1],
+                                    noteType: NoteType.NWhole,
+                                    direction: NoteDirection.Up
+                                },
+                            ]
+                        },
+                        { 
+                            absTime: Time.newAbsolute(1, 1), 
+                            clef:    { 
+                                position: 1,
+                                clefType: ClefType.F,
+                                change: true,
+                                line: 2
+                            },        
+                            notes: [                
+                                {
+                                    positions: [-1],
+                                    noteType: NoteType.NWhole,
+                                    direction: NoteDirection.Up
+                                },
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
+
+        expect(physicalModel.elements[5]).to.deep.include({
+            glyph: 'clefs.F'
+        });
+
+        expect(physicalModel.elements[7]).to.deep.include({
+            glyph: 'clefs.F_change'
+        });
+
+    });   
 
     it('should render a bar view model', () => {
         const viewModel: ScoreViewModel = { 

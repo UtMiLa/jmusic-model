@@ -10,6 +10,7 @@ import { NoteDirection } from '../../model';
 export interface ClefViewModel {
     position: number;
     clefType: ClefType;
+    change?: boolean;
     line: number;
 }
 

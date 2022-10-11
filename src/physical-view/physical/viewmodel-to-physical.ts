@@ -155,6 +155,10 @@ function convertClef(clef: ClefViewModel, xPos: number, settings: Metrics): Phys
         case ClefType.G8: glyph = 'clefs.G'; break;
     }
 
+    if (clef.change) {
+        glyph += '_change';
+    }
+
     return {
         position: { x: xPos, y: staffLineToY(clef.line/2, settings) },
         glyph

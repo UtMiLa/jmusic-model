@@ -176,6 +176,7 @@ export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewMode
                     state.slot.clef = { 
                         position: 1,
                         clefType: stateChg.clef.def.clefType,
+                        change: true,
                         line: stateChg.clef.def.line
                     };
                 }
