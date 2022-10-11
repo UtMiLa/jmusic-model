@@ -1083,10 +1083,18 @@ describe('Physical model', () => {
                         { 
                             absTime: Time.newAbsolute(0, 1), 
                             ties: [
-                                { position: -6, direction: NoteDirection.Down },
-                                { position: -4, direction: NoteDirection.Up }
+                                { position: -6, direction: NoteDirection.Down, toTime: Time.newAbsolute(1, 0) },
+                                { position: -4, direction: NoteDirection.Up, toTime: Time.newAbsolute(1, 0) }
                             ],
-                            notes: [                                {
+                            notes: [{
+                                positions: [0],
+                                noteType: NoteType.NWhole,
+                                direction: NoteDirection.Up
+                            },] 
+                        } ,
+                        { 
+                            absTime: Time.newAbsolute(1, 1), 
+                            notes: [{
                                 positions: [0],
                                 noteType: NoteType.NWhole,
                                 direction: NoteDirection.Up
@@ -1099,7 +1107,7 @@ describe('Physical model', () => {
 
         const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
 
-        expect(physicalModel.elements.length).to.eq(8);
+        expect(physicalModel.elements.length).to.eq(9);
 
         expect(physicalModel.elements[6]).to.deep.equal(
             { 

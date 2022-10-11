@@ -1,4 +1,4 @@
-import { Time } from './../model/rationals/time';
+import { Time, AbsoluteTime } from './../model/rationals/time';
 import { expect } from 'chai';
 import { TimeMap } from './time-map';
 
@@ -64,6 +64,26 @@ describe('Time map', () => {
         const res1 = timeMap.get(Time.newAbsolute(1, 1));
 
         expect(timeMap.peek(Time.newAbsolute(1, 1))).to.eq(res1);
+    });
+
+
+    
+    it('should be able to supply a creator function', () => {
+        const timeMap = new TimeMap<TestItem>(() => ({ nodes: [], text: 'default' }));
+
+        const res1 = timeMap.get(Time.newAbsolute(1, 1));
+
+        expect(res1).to.deep.eq({ nodes: [], text: 'default' });
+    });
+
+
+        
+    it('should be able to supply a creator function using time', () => {
+        const timeMap = new TimeMap<TestItem>((time: AbsoluteTime) => ({ absTime: time,  nodes: [], text: 'default' }));
+
+        const res1 = timeMap.get(Time.newAbsolute(1, 1));
+
+        expect(res1).to.deep.eq({ absTime: Time.newAbsolute(1, 1), nodes: [], text: 'default' });
     });
 
 

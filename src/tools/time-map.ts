@@ -1,5 +1,8 @@
 import { AbsoluteTime, Time } from './../model/rationals/time';
 export class TimeMap<T> {
+
+    constructor(private creator?: (time: AbsoluteTime) => T) {}
+
     items: { absTime: AbsoluteTime, item: T }[] = [];
 
     get length(): number {
@@ -18,14 +21,13 @@ export class TimeMap<T> {
     }
 
     get(time: AbsoluteTime): T {
-        /*const res = this.items.filter(it => Time.sortComparison(time, it.absTime) === 0).map(it => it.item);
-        if (res.length) return res[0];*/
         const r1 = this.peek(time);
         if (r1) return r1;
-        const result = {} as T;
+        const result = this.creator ? this.creator(time) : {} as T;
         this.add(time, result);
         return result;
     }
+
     clear(): void {
         this.items = [];
     }

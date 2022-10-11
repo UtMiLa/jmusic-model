@@ -1,3 +1,4 @@
+import { TimeMap } from './../../tools/time-map';
 import { StateChange } from './../states/state';
 import { AbsoluteTime } from './../rationals/time';
 import { Note } from '../notes/note';
@@ -87,27 +88,22 @@ export class Sequence {
 
     groupByTimeSlots(): TimeSlot[] {
         let time = Time.newAbsolute(0, 1);
-        const res = [] as TimeSlot[];
+        
+        const res = new TimeMap<TimeSlot>((time) => ({ time, elements: [], states: []}));
 
         this.elements.forEach(elem => {
-            const slot = res.find(item => Time.equals(item.time, time));
+            const slot = res.get(time);
             if ((elem as StateChange).isState) {
-                if (!slot) {
-                    res.push({ time, elements: [], states: [elem as StateChange]});
-                } else {
-                    slot.elements.push(elem as Note);
-                }
+                
+                slot.states.push(elem as StateChange);
+                
             } else {
-                if (!slot) {
-                    res.push({ time, elements: [elem as Note], states: [] });
-                } else {
-                    slot.elements.push(elem as Note);
-                }
+                slot.elements.push(elem as Note);
             }
             time  = Time.addTime(time, elem.duration);
         });
 
-        return res;
+        return res.items.map(item => item.item);
     }
 }
 
