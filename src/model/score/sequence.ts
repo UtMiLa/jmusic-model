@@ -14,11 +14,22 @@ export interface TimeSlot {
     states: StateChange[];
 }
 
+function parseLilyClef(ly: string): Clef {
+    ly = ly.replace('\\clef ', '');
+    switch(ly) {
+        case 'G': case 'G2': case 'violin': case 'treble': return Clef.clefTreble;
+        case 'tenorG': return Clef.clefTenor;
+        case 'tenor': return Clef.clefTenorC;
+        case 'F': case 'bass': return Clef.clefBass;
+        case 'C': case 'alto': return Clef.clefAlto;
+    }
+    throw 'Illegal clef: ' + ly;
+}
 
 function parseLilyElement(ly: string): Note | StateChange {
-    if (ly.startsWith('\\')) {
+    if (ly.startsWith('\\clef')) {
         const sc = new StateChange();
-        sc.clef = Clef.clefAlto;
+        sc.clef = parseLilyClef(ly);
         return sc;
     } else {
         return Note.parseLily(ly);
@@ -41,6 +52,9 @@ export class Sequence {
         return def.split(' ').reduce((prev: string[], curr: string) => {
             if (prev.length) {
                 if (prev[prev.length - 1].match(/^<[^>]*$/)) {
+                    prev[prev.length - 1] += ` ${curr}`;
+                    return prev;
+                } else if (prev[prev.length - 1].match(/^\\(clef)$/)) {
                     prev[prev.length - 1] += ` ${curr}`;
                     return prev;
                 }
@@ -96,3 +110,5 @@ export class Sequence {
         return res;
     }
 }
+
+export const __internal = { parseLilyClef, parseLilyElement };

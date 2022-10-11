@@ -1,3 +1,5 @@
+import { StateChange } from './../../model/states/state';
+import { TimeMap } from './../../tools/time-map';
 import { Meter } from './../../model/states/meter';
 import { BeamGroup } from './../../model/notes/beaming';
 import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
@@ -103,6 +105,24 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
 
 export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewModel {
 
+    const stateMap = new TimeMap<StateChange>();
+
+    def.voices.forEach((voice) => {
+        const voiceSequence = new Sequence(voice.content);
+        const voiceTimeSlots = voiceSequence.groupByTimeSlots();
+        voiceTimeSlots.forEach(vts => {
+            if (vts.states.length) {
+                const stateChange = stateMap.get(vts.time);
+                vts.states.forEach(st => {
+                    if (st.clef) {
+                        if (stateChange.clef) throw 'Two clef changes in the same staff';
+                        stateChange.clef = st.clef;
+                    }
+                });
+            }
+        });
+    });
+
     const clef = new Clef(def.initialClef);
 
     const timeSlots: TimeSlotViewModel[] = [
@@ -149,18 +169,16 @@ export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewMode
             state.voiceTimeSlot = voiceTimeSlot;
             state.slotNo = slotNo;
 
-            if (state.voiceTimeSlot.states.length) {
-                state.voiceTimeSlot.states.forEach(stateChange => {
-                    if (stateChange.clef) {
-                        state.clef = stateChange.clef;
-                        console.log('change clef:', state);
-                        state.slot.clef = { 
-                            position: 1,
-                            clefType: stateChange.clef.def.clefType,
-                            line: stateChange.clef.def.line
-                        };
-                    }
-                });
+            const stateChg = stateMap.peek(voiceTimeSlot.time);
+            if (stateChg) {
+                if (stateChg.clef) {
+                    state.clef = stateChg.clef;
+                    state.slot.clef = { 
+                        position: 1,
+                        clefType: stateChg.clef.def.clefType,
+                        line: stateChg.clef.def.line
+                    };
+                }
             }
             
             const elements = createNoteViewModels(state);
@@ -245,7 +263,7 @@ function createAccidentalViewModel(state: State) {
 
 
 function createNoteViewModels(state: State) {
-    return state.voiceTimeSlot.elements.map((note, noteNo) => {
+    return state.voiceTimeSlot.elements.map((note) => {
         const bg = state.voiceBeamGroups.find(vbg => vbg.notes.indexOf(note) > -1);
 
         if (bg && bg.notes[0] === note) {
