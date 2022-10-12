@@ -115,6 +115,7 @@ export class Sequence {
         this.elements.forEach(elem => {
             const slot = res.get(time);
             if ((elem as StateChange).isState) {
+                //console.log('statechg', elem);
                 
                 slot.states.push(elem as StateChange);
                 

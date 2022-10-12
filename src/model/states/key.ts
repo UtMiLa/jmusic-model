@@ -21,13 +21,13 @@ export class Key {
 
     static fromMode(pitch: PitchClass, mode: string): Key {
         let no = pitch.circleOf5Number;
-        console.log('fromMode', no, pitch, mode);
+        //console.log('fromMode', no, pitch, mode);
         
         switch (mode) {
             case 'major': break;
             case 'minor': no -= 3; break;
         }
-        console.log('fromMode', no);
+        //console.log('fromMode', no);
 
         return new Key({accidental: Math.sign(no) as (0 | 1 | -1), count: Math.abs(no)});
     }

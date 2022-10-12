@@ -118,6 +118,11 @@ export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewMode
                         if (stateChange.clef) throw 'Two clef changes in the same staff';
                         stateChange.clef = st.clef;
                     }
+                    if (st.key) {
+                        //console.log('key ch', st.key);
+                        if (stateChange.key) throw 'Two key changes in the same staff';
+                        stateChange.key = st.key;
+                    }
                 });
             }
         });
@@ -179,6 +184,12 @@ export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewMode
                         change: true,
                         line: stateChg.clef.def.line
                     };
+                }
+                if (stateChg.key) {
+                    //console.log('set key', stateChg.key, state);
+                    
+                    state.setKey(stateChg.key);
+                    state.slot.key = keyToView(stateChg.key, state.clef);
                 }
             }
             
