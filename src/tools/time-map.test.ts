@@ -67,6 +67,23 @@ describe('Time map', () => {
     });
 
 
+    it('should be able to peek latest without creating', () => {
+        const timeMap = new TimeMap<TestItem>();
+
+        timeMap.add(Time.newAbsolute(2, 1), {text: '2-1'});
+        timeMap.add(Time.newAbsolute(1, 1), {text: '1-1'});
+        timeMap.add(Time.newAbsolute(3, 1), {text: '3-1'});
+
+        const res1 = timeMap.peekLatest(Time.newAbsolute(9, 4));
+
+        expect(res1).to.deep.eq({ text: '2-1' });
+
+        expect(timeMap.peekLatest(Time.newAbsolute(1, 1))).to.deep.eq({ text: '1-1' });
+        expect(timeMap.peekLatest(Time.newAbsolute(2, 1))).to.deep.eq({ text: '2-1' });
+        expect(timeMap.peekLatest(Time.newAbsolute(11, 4))).to.deep.eq({ text: '2-1' });
+        expect(timeMap.peekLatest(Time.newAbsolute(13, 4))).to.deep.eq({ text: '3-1' });
+    });
+
     
     it('should be able to supply a creator function', () => {
         const timeMap = new TimeMap<TestItem>(() => ({ nodes: [], text: 'default' }));
