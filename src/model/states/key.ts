@@ -19,6 +19,19 @@ export class Key {
 
     }
 
+    static fromMode(pitch: PitchClass, mode: string): Key {
+        let no = pitch.circleOf5Number;
+        console.log('fromMode', no, pitch, mode);
+        
+        switch (mode) {
+            case 'major': break;
+            case 'minor': no -= 3; break;
+        }
+        console.log('fromMode', no);
+
+        return new Key({accidental: Math.sign(no) as (0 | 1 | -1), count: Math.abs(no)});
+    }
+
 }
 
 export class AccidentalManager {
@@ -43,7 +56,7 @@ export class AccidentalManager {
             }
         } else {
 
-            const pitchClassAlreadyThere = this.rememberPitchClasses[pitch.pitchClass];
+            const pitchClassAlreadyThere = this.rememberPitchClasses[pitch.pitchClassNumber];
             //console.log(pitchClassAlreadyThere, this.rememberPitchClasses, pitch.pitchClass);
             
             if (pitchClassAlreadyThere !== undefined) {
@@ -52,7 +65,7 @@ export class AccidentalManager {
                 const fixed = Array.from<PitchClass>(this._key.enumerate());
                 //console.log(fixed, pitch.pitchClass);
                 
-                const keyAcc = fixed.find((fix: PitchClass) => fix.pitchClass === pitch.pitchClass);
+                const keyAcc = fixed.find((fix: PitchClass) => fix.pitchClass === pitch.pitchClassNumber);
                 if (keyAcc) {
                     if (res === keyAcc.alteration) return undefined;
                 } else if (res === 0) res = undefined;
@@ -61,7 +74,7 @@ export class AccidentalManager {
         }
 
         this.rememberPitches[pitch.diatonicNumber] = res;
-        this.rememberPitchClasses[pitch.pitchClass] = res;
+        this.rememberPitchClasses[pitch.pitchClassNumber] = res;
         return res;
     }
     setKey(key: Key): void {

@@ -64,8 +64,12 @@ export class Pitch {
         return pitchNames[this._pitchClass];
     }
 
-    get pitchClass(): number {
+    get pitchClassNumber(): number {
         return this._pitchClass;
+    }
+
+    get pitchClass(): PitchClass {
+        return new PitchClass(this._pitchClass, this._accidental);
     }
 
     get alteration(): Alteration {
@@ -93,7 +97,7 @@ export class PitchClass {
     }
     /** 0 = C, +1 = fifth up (1 = G, 2 = D), -1 = fifth down (-1 = F etc) */    
     get circleOf5Number(): number {
-        return this._pitchClass % 7 + 7 * this._accidental;
+        return (2 * this._pitchClass + 1) % 7 - 1 + 7 * this._accidental;
     }
     get pitchClassName(): string {
         return pitchNames[this._pitchClass];

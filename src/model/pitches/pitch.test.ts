@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Pitch } from './pitch';
+import { Pitch, PitchClass } from './pitch';
 describe('Pitch', () => {
     let pc: Pitch, pd: Pitch, pb: Pitch;
     beforeEach(() => { 
@@ -31,24 +31,39 @@ describe('Pitch', () => {
 
     it('should parse an alternated pitch', () => {
         let pitch = Pitch.parseLilypond('des');
-        expect(pitch.pitchClass).to.equal(1);
+        expect(pitch.pitchClassNumber).to.equal(1);
         expect(pitch.alteration).to.equal(-1);
 
         pitch = Pitch.parseLilypond('deses');
-        expect(pitch.pitchClass).to.equal(1);
+        expect(pitch.pitchClassNumber).to.equal(1);
         expect(pitch.alteration).to.equal(-2);
 
         pitch = Pitch.parseLilypond('dis');
-        expect(pitch.pitchClass).to.equal(1);
+        expect(pitch.pitchClassNumber).to.equal(1);
         expect(pitch.alteration).to.equal(1);
 
         pitch = Pitch.parseLilypond('disis');
-        expect(pitch.pitchClass).to.equal(1);
+        expect(pitch.pitchClassNumber).to.equal(1);
         expect(pitch.alteration).to.equal(2);
 
         pitch = Pitch.parseLilypond('d');
-        expect(pitch.pitchClass).to.equal(1);
+        expect(pitch.pitchClassNumber).to.equal(1);
         expect(pitch.alteration).to.equal(0);
     });
 
+    it('should get correct citcle of fifths number', () => {
+        expect(new PitchClass(0, 0).circleOf5Number).to.eq(0); // 2a
+        expect(new PitchClass(4, 0).circleOf5Number).to.eq(1); // 2a - 7
+        expect(new PitchClass(1, 0).circleOf5Number).to.eq(2); // 2a
+        expect(new PitchClass(5, 0).circleOf5Number).to.eq(3); // 2a - 7 // (c5 * 4) % 7 = a
+        expect(new PitchClass(2, 0).circleOf5Number).to.eq(4); // 2a
+        expect(new PitchClass(6, 0).circleOf5Number).to.eq(5); // 2a - 7
+        expect(new PitchClass(3, 1).circleOf5Number).to.eq(6);
+        expect(new PitchClass(3, 0).circleOf5Number).to.eq(-1);
+        expect(new PitchClass(6, -1).circleOf5Number).to.eq(-2);
+        expect(new PitchClass(2, -1).circleOf5Number).to.eq(-3);
+        expect(new PitchClass(5, -1).circleOf5Number).to.eq(-4);
+        expect(new PitchClass(1, -1).circleOf5Number).to.eq(-5);
+        expect(new PitchClass(4, -1).circleOf5Number).to.eq(-6);
+    });
 });

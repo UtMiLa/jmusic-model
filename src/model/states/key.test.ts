@@ -1,3 +1,5 @@
+import { Time } from './../rationals/time';
+import { Sequence, __internal } from './../score/sequence';
 import { PitchClass } from './../pitches/pitch';
 import { Key, AccidentalManager, displaceAccidentals } from './key';
 import { Pitch } from '../pitches/pitch';
@@ -40,6 +42,57 @@ describe('Key', () => {
         expect(pitches[3].pitchClassName).to.equal('d');
         expect(pitches[4].pitchClassName).to.equal('a');
     });
+
+    it('should parse a key change', () => {
+        const seq = new Sequence({ elements: 'c4 \\key d \\major c4' });
+
+        expect(seq.count).to.eq(3);
+        /*expect(seq.elements[1]).to.deep.eq({
+            key: new Key({
+                accidental: 1,
+                count: 2
+            }),
+            duration: Time.newSpan(0, 1),
+            isState: true
+        });*/
+
+        const seq2 = new Sequence({ elements: 'c4 \\key ees \\minor c4' });
+
+        expect(seq2.count).to.eq(3);
+        expect(seq2.elements[1]).to.deep.eq({
+            key: new Key({
+                accidental: -1,
+                count: 6
+            }),
+            duration: Time.newSpan(0, 1),
+            isState: true
+        });
+
+    });
+
+
+    it('should parse all key change types', () => {
+        expect(__internal.parseLilyKey('\\key c \\major')).to.deep.eq(new Key({ accidental: 0, count: 0 }));
+        expect(__internal.parseLilyKey('\\key d \\major')).to.deep.eq(new Key({ accidental: 1, count: 2 }));
+        expect(__internal.parseLilyKey('\\key e \\major')).to.deep.eq(new Key({ accidental: 1, count: 4 }));
+        expect(__internal.parseLilyKey('\\key ees \\major')).to.deep.eq(new Key({ accidental: -1, count: 3 }));
+        expect(__internal.parseLilyKey('\\key f \\major')).to.deep.eq(new Key({ accidental: -1, count: 1 }));
+        expect(__internal.parseLilyKey('\\key g \\major')).to.deep.eq(new Key({ accidental: 1, count: 1 }));
+        expect(__internal.parseLilyKey('\\key a \\major')).to.deep.eq(new Key({ accidental: 1, count: 3 }));
+        expect(__internal.parseLilyKey('\\key b \\major')).to.deep.eq(new Key({ accidental: 1, count: 5 }));
+
+        expect(__internal.parseLilyKey('\\key c \\minor')).to.deep.eq(new Key({ accidental: -1, count: 3 }));
+        expect(__internal.parseLilyKey('\\key d \\minor')).to.deep.eq(new Key({ accidental: -1, count: 1 }));
+        expect(__internal.parseLilyKey('\\key e \\minor')).to.deep.eq(new Key({ accidental: 1, count: 1 }));
+        expect(__internal.parseLilyKey('\\key ees \\minor')).to.deep.eq(new Key({ accidental: -1, count: 6 }));
+        expect(__internal.parseLilyKey('\\key f \\minor')).to.deep.eq(new Key({ accidental: -1, count: 4 }));
+        expect(__internal.parseLilyKey('\\key g \\minor')).to.deep.eq(new Key({ accidental: -1, count: 2 }));
+        expect(__internal.parseLilyKey('\\key a \\minor')).to.deep.eq(new Key({ accidental: 0, count: 0 }));
+        expect(__internal.parseLilyKey('\\key b \\minor')).to.deep.eq(new Key({ accidental: 1, count: 2 }));
+
+    });
+
+
 
     describe('Accidental rule', () => {
         it('should correctly set accidentals', () => {

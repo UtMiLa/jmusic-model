@@ -1,9 +1,12 @@
+import { Pitch } from './../pitches/pitch';
+import { Key } from './../states/key';
 import { TimeMap } from './../../tools/time-map';
 import { StateChange } from './../states/state';
 import { AbsoluteTime } from './../rationals/time';
 import { Note } from '../notes/note';
 import { Time, TimeSpan } from '../rationals/time';
 import { Clef } from '../states/clef';
+import { PitchClass } from '../pitches/pitch';
 
 export interface SequenceDef {
     elements: string;
@@ -13,6 +16,17 @@ export interface TimeSlot {
     time: AbsoluteTime;
     elements: Note[];
     states: StateChange[];
+}
+
+function parseLilyKey(ly: string): Key {
+    const tokens = ly.split(' ');
+    if (tokens.length !== 3) throw 'Illegal key change: ' + ly;
+
+    switch(tokens[2]) {
+        case '\\major': return Key.fromMode(Pitch.parseLilypond(tokens[1]).pitchClass, 'major');
+        case '\\minor': return Key.fromMode(Pitch.parseLilypond(tokens[1]).pitchClass, 'minor');
+    }
+    throw 'Illegal key change: ' + ly;
 }
 
 function parseLilyClef(ly: string): Clef {
@@ -31,6 +45,10 @@ function parseLilyElement(ly: string): Note | StateChange {
     if (ly.startsWith('\\clef')) {
         const sc = new StateChange();
         sc.clef = parseLilyClef(ly);
+        return sc;
+    } else if (ly.startsWith('\\key')) {
+        const sc = new StateChange();
+        sc.key = parseLilyKey(ly);
         return sc;
     } else {
         return Note.parseLily(ly);
@@ -56,6 +74,9 @@ export class Sequence {
                     prev[prev.length - 1] += ` ${curr}`;
                     return prev;
                 } else if (prev[prev.length - 1].match(/^\\(clef)$/)) {
+                    prev[prev.length - 1] += ` ${curr}`;
+                    return prev;
+                } else if (prev[prev.length - 1].match(/^\\(key)( \w+)?$/)) {
                     prev[prev.length - 1] += ` ${curr}`;
                     return prev;
                 }
@@ -107,4 +128,4 @@ export class Sequence {
     }
 }
 
-export const __internal = { parseLilyClef, parseLilyElement };
+export const __internal = { parseLilyClef, parseLilyKey, parseLilyElement };
