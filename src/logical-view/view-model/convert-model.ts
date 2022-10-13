@@ -103,14 +103,19 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
 
 export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
     const stateMap = new TimeMap<StateChange>();
+    //console.log('scoreModelToViewModel', def);    
 
     def.staves.forEach((staff, staffNo) => {
         staff.voices.forEach((voice) => {
             const voiceSequence = new Sequence(voice.content);
             const voiceTimeSlots = voiceSequence.groupByTimeSlots();
+            //console.log(voiceTimeSlots);
+            
             voiceTimeSlots.forEach(vts => {
                 if (vts.states.length) {
                     const stateChange = stateMap.get(vts.time);
+                    //console.log('stateChg', stateChange);
+                    
                     vts.states.forEach(st => {
                         /*if (st.clef) {
                             if (stateChange.clef) throw 'Two clef changes in the same staff';
@@ -135,6 +140,9 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
 
 export function staffModelToViewModel(def: StaffDef, stateMap: TimeMap<StateChange>, staffNo = 0): StaffViewModel {
 
+    console.log(def, stateMap, staffNo);
+    
+
     def.voices.forEach((voice) => {
         const voiceSequence = new Sequence(voice.content);
         const voiceTimeSlots = voiceSequence.groupByTimeSlots();
@@ -145,6 +153,7 @@ export function staffModelToViewModel(def: StaffDef, stateMap: TimeMap<StateChan
                     if (st.clef) {
                         if (stateChange.clef) throw 'Two clef changes in the same staff';
                         stateChange.clef = st.clef;
+                        stateChange.scope = [staffNo];
                     }
                     /*if (st.key) {
                         //console.log('key ch', st.key);
@@ -203,7 +212,7 @@ export function staffModelToViewModel(def: StaffDef, stateMap: TimeMap<StateChan
             state.slotNo = slotNo;
 
             const stateChg = stateMap.peekLatest(voiceTimeSlot.time);
-            if (stateChg) {
+            if (stateChg && (!stateChg.scope || stateChg.scope.includes(staffNo))) {
                 if (stateChg.clef && stateChg.clef !== state.clef) {
                     state.clef = stateChg.clef;
 

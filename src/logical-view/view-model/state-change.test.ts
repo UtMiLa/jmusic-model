@@ -8,7 +8,7 @@ import { StaffDef } from '../../model/score/staff';
 import { expect } from 'chai';
 import { ClefType } from '../../model/states/clef';
 import { scoreModelToViewModel, staffModelToViewModel } from './convert-model';
-import { TimeMap } from '~/tools/time-map';
+import { TimeMap } from '../../tools/time-map';
 
 describe('State change view model', () => {
 
@@ -34,7 +34,7 @@ describe('State change view model', () => {
             expect(vm.timeSlots[1].notes[0]).to.deep.include({ positions: [0] });
             expect(vm.timeSlots[2].notes[0]).to.deep.include({ positions: [6] });
         });
-    
+               
     
         it('should also change positions in another voice after a clef change', () => {
             Staff.setSequence(staffClef, {elements: 'c\'4 \\clef alto c\'4 \\clef bass c\'4'});
@@ -82,15 +82,6 @@ describe('State change view model', () => {
             );
     
             expect(score.staves[0].timeSlots[2].clef).to.be.undefined;
-
-            const vm = staffModelToViewModel(staffClef, new TimeMap<StateChange>);
-
-            expect(vm.timeSlots.length).to.eq(3);
-            expect(vm.timeSlots[0].notes[0]).to.deep.include({ positions: [-6] });
-            expect(vm.timeSlots[1].clef).to.deep.include({clefType: ClefType.C, line: 0});
-            expect(vm.timeSlots[1].notes[0]).to.deep.include({ positions: [0] });
-            expect(vm.timeSlots[2].notes[0]).to.deep.include({ positions: [6] });
-
 
             expect(score.staves[0].timeSlots[2].notes.map(ts => ts.positions)).to.deep.eq(
                 [[-7]]
@@ -235,6 +226,8 @@ describe('State change view model', () => {
     
         it('should show a key change on all staves, even if they dont share the timeslot of the key change');
    
+        // todo: should allow different clef changes at different staves at same time
+        // todo: peekLatest should find latest change in this scope
     });
 
 
