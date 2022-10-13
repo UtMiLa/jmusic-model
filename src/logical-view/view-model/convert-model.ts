@@ -100,12 +100,38 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
 }
 
 export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
-    return { staves: def.staves.map((staff, staffNo) => staffModelToViewModel(staff, staffNo)) };
+    const stateMap = new TimeMap<StateChange>();
+
+    def.staves.forEach((staff, staffNo) => {
+        staff.voices.forEach((voice) => {
+            const voiceSequence = new Sequence(voice.content);
+            const voiceTimeSlots = voiceSequence.groupByTimeSlots();
+            voiceTimeSlots.forEach(vts => {
+                if (vts.states.length) {
+                    const stateChange = stateMap.get(vts.time);
+                    vts.states.forEach(st => {
+                        /*if (st.clef) {
+                            if (stateChange.clef) throw 'Two clef changes in the same staff';
+                            stateChange.clef = st.clef;
+                            stateChange.scope = [staffNo];
+                        }*/
+                        if (st.key) {
+                            //console.log('key ch', st.key);
+                            if (stateChange.key) throw 'Two key changes in the same staff';
+                            stateChange.key = st.key;
+                        }
+                    });
+                }
+            });
+        });
+    
+    });
+
+
+    return { staves: def.staves.map((staff, staffNo) => staffModelToViewModel(staff, stateMap, staffNo)) };
 }
 
-export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewModel {
-
-    const stateMap = new TimeMap<StateChange>();
+export function staffModelToViewModel(def: StaffDef, stateMap: TimeMap<StateChange>, staffNo = 0): StaffViewModel {
 
     def.voices.forEach((voice) => {
         const voiceSequence = new Sequence(voice.content);
@@ -118,11 +144,11 @@ export function staffModelToViewModel(def: StaffDef, staffNo = 0): StaffViewMode
                         if (stateChange.clef) throw 'Two clef changes in the same staff';
                         stateChange.clef = st.clef;
                     }
-                    if (st.key) {
+                    /*if (st.key) {
                         //console.log('key ch', st.key);
-                        if (stateChange.key) throw 'Two key changes in the same staff';
+                        if (!stateChange.key) //throw 'Two key changes in the same staff';
                         stateChange.key = st.key;
-                    }
+                    }*/
                 });
             }
         });

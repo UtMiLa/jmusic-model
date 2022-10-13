@@ -10,10 +10,13 @@ export interface StateChangeDef {
     duration: TimeSpan;
 }
 
+export type StateChangeScope = number[] | undefined;
+
 export class StateChange {
     clef?: Clef;
     key?: Key;
     meter?: Meter;
     duration = Time.newSpan(0, 1);
     isState = true;
+    scope: StateChangeScope;
 }

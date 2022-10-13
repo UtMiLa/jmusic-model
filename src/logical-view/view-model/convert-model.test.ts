@@ -1,4 +1,6 @@
+import { StateChange } from './../../model/states/state';
 import { expect } from 'chai';
+import { TimeMap } from '~/tools/time-map';
 import { Time } from './../../model';
 import { ClefType, StaffDef } from './../../model';
 import { Sequence } from './../../model';
@@ -22,7 +24,7 @@ describe('View model', () => {
             voices:[{ content: {elements: 'bes8 r4 bes8 b8 b8. b16 bes8'} }]
         };
 
-        const staffView = staffModelToViewModel(staff);
+        const staffView = staffModelToViewModel(staff, new TimeMap<StateChange>());
 
         expect(staffView.timeSlots.length).to.eq(7);
         expect(staffView.timeSlots[0].accidentals).to.be.undefined;
@@ -43,7 +45,7 @@ describe('View model', () => {
             voices:[{ content: {elements: 'bes8 r4 bes8 b8 b8. b16 bes8'} }]
         };
 
-        const staffView = staffModelToViewModel(staff);
+        const staffView = staffModelToViewModel(staff, new TimeMap<StateChange>());
 
         expect(staffView.timeSlots.length).to.eq(7);
         expect(staffView.timeSlots[0].beamings, 'note 1').to.be.undefined;
@@ -86,7 +88,7 @@ describe('View model', () => {
             voices:[{ content: {elements: 'bes16 bes8 b16'} }]
         };
 
-        const staffView = staffModelToViewModel(staff);
+        const staffView = staffModelToViewModel(staff, new TimeMap<StateChange>());
 
         expect(staffView.timeSlots.length).to.eq(3);
         expect(staffView.timeSlots[0].beamings, 'note 1').to.deep.eq([{

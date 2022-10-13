@@ -1,3 +1,4 @@
+import { StateChange } from './../../model/states/state';
 import { Time } from './../../model/rationals/time';
 import { expect } from 'chai';
 import { ClefType } from './../../model/states/clef';
@@ -6,6 +7,7 @@ import { staffModelToViewModel } from './../../logical-view/view-model/convert-m
 import { Metrics, StandardMetrics } from './metrics';
 import { MeasureMap, MeasureMapItem, MeasureMapXValueItem } from './measure-map';
 import { StaffViewModel } from '~/logical-view/view-model/score-view-model';
+import { TimeMap } from '~/tools/time-map';
 
 describe('Physical model, measure map', () => {
     let defaultMetrics: Metrics;
@@ -24,7 +26,7 @@ describe('Physical model, measure map', () => {
             }]
         } as StaffDef;
 
-        staffViewModel = staffModelToViewModel(staff);
+        staffViewModel = staffModelToViewModel(staff, new TimeMap<StateChange>());
         //measureMapMaster = new MeasureMap();
     });
 
@@ -304,7 +306,7 @@ describe('Physical model, measure map', () => {
             }]
         } as StaffDef;
 
-        const staffViewModel1 = staffModelToViewModel(staff);
+        const staffViewModel1 = staffModelToViewModel(staff, new TimeMap<StateChange>());
 
         expect((staffViewModel1.timeSlots[1].accidentals as any)[0].displacement).to.eq(-3);
         expect((staffViewModel1.timeSlots[1].accidentals as any)[1].displacement).to.eq(-2);
