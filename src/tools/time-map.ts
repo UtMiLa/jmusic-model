@@ -20,6 +20,13 @@ export class TimeMap<T> {
         return undefined;
     }
 
+    peekLatest(time: AbsoluteTime): T | undefined {
+        const beforeTime = this.items.filter(it => Time.sortComparison(time, it.absTime) >= 0).sort((a,b) => Time.sortComparison(a.absTime, b.absTime));
+        if (!beforeTime.length) return undefined;
+
+        return beforeTime[beforeTime.length - 1].item;
+    }
+
     get(time: AbsoluteTime): T {
         const r1 = this.peek(time);
         if (r1) return r1;

@@ -52,6 +52,7 @@ class State {
 
     }
 
+    public key?: Key;
     public slotNo = -1;
     private _slot: TimeSlotViewModel | undefined;
     public get slot(): TimeSlotViewModel {
@@ -70,6 +71,7 @@ class State {
 
     setKey(key: Key) {
         this.accidentalManager.setKey(key);
+        this.key = key;
     }
 
     setMeter(meter: Meter) {
@@ -200,22 +202,27 @@ export function staffModelToViewModel(def: StaffDef, stateMap: TimeMap<StateChan
             state.voiceTimeSlot = voiceTimeSlot;
             state.slotNo = slotNo;
 
-            const stateChg = stateMap.peek(voiceTimeSlot.time);
+            const stateChg = stateMap.peekLatest(voiceTimeSlot.time);
             if (stateChg) {
-                if (stateChg.clef) {
+                if (stateChg.clef && stateChg.clef !== state.clef) {
                     state.clef = stateChg.clef;
-                    state.slot.clef = { 
-                        position: 1,
-                        clefType: stateChg.clef.def.clefType,
-                        change: true,
-                        line: stateChg.clef.def.line
-                    };
+
+                    if (stateMap.peek(voiceTimeSlot.time)) {
+                        state.slot.clef = { 
+                            position: 1,
+                            clefType: stateChg.clef.def.clefType,
+                            change: true,
+                            line: stateChg.clef.def.line
+                        };
+                    }
                 }
-                if (stateChg.key) {
+                if (stateChg.key && stateChg.key !== state.key) {
                     //console.log('set key', stateChg.key, state);
                     
                     state.setKey(stateChg.key);
-                    state.slot.key = keyToView(stateChg.key, state.clef);
+
+                    if (stateMap.peek(voiceTimeSlot.time))
+                        state.slot.key = keyToView(stateChg.key, state.clef);
                 }
             }
             
