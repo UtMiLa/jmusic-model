@@ -3,7 +3,7 @@ import { Time } from './../../model/rationals/time';
 import { expect } from 'chai';
 import { ClefType } from './../../model/states/clef';
 import { StaffDef } from './../../model/score/staff';
-import { staffModelToViewModel } from './../../logical-view/view-model/convert-model';
+import { createScopedTimeMap, __internal } from './../../logical-view/view-model/convert-model';
 import { Metrics, StandardMetrics } from './metrics';
 import { MeasureMap, MeasureMapItem, MeasureMapXValueItem } from './measure-map';
 import { StaffViewModel } from '~/logical-view/view-model/score-view-model';
@@ -26,7 +26,7 @@ describe('Physical model, measure map', () => {
             }]
         } as StaffDef;
 
-        staffViewModel = staffModelToViewModel(staff, new TimeMap<StateChange>());
+        staffViewModel = __internal.staffModelToViewModel(staff, createScopedTimeMap());
         //measureMapMaster = new MeasureMap();
     });
 
@@ -306,7 +306,7 @@ describe('Physical model, measure map', () => {
             }]
         } as StaffDef;
 
-        const staffViewModel1 = staffModelToViewModel(staff, new TimeMap<StateChange>());
+        const staffViewModel1 = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
         expect((staffViewModel1.timeSlots[1].accidentals as any)[0].displacement).to.eq(-3);
         expect((staffViewModel1.timeSlots[1].accidentals as any)[1].displacement).to.eq(-2);

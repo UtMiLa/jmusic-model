@@ -1,33 +1,35 @@
 import { AbsoluteTime, Time } from './../model/rationals/time';
-export class TimeMap<T> {
 
-    constructor(private creator?: (time: AbsoluteTime) => T) {}
 
-    items: { absTime: AbsoluteTime, item: T }[] = [];
+export class KeyedMap<T, Key> {
+
+    constructor(private compareKey: (key1: Key, key2: Key) => number, private creator?: (time: Key) => T) {}
+
+    items: { absTime: Key, item: T }[] = [];
 
     get length(): number {
         return this.items.length;
     }
 
-    add(time: AbsoluteTime, item: T): void {
+    add(time: Key, item: T): void {
         this.items.push({ absTime: time, item });
     }
 
-    peek(time: AbsoluteTime): T | undefined {
-        const res = this.items.filter(it => Time.sortComparison(time, it.absTime) === 0).map(it => it.item);
+    peek(time: Key): T | undefined {
+        const res = this.items.filter(it => this.compareKey(time, it.absTime) === 0).map(it => it.item);
         if (res.length) return res[0];
         
         return undefined;
     }
 
-    peekLatest(time: AbsoluteTime): T | undefined {
-        const beforeTime = this.items.filter(it => Time.sortComparison(time, it.absTime) >= 0).sort((a,b) => Time.sortComparison(a.absTime, b.absTime));
+    peekLatest(time: Key): T | undefined {
+        const beforeTime = this.items.filter(it => this.compareKey(time, it.absTime) >= 0).sort((a,b) => this.compareKey(a.absTime, b.absTime));
         if (!beforeTime.length) return undefined;
 
         return beforeTime[beforeTime.length - 1].item;
     }
 
-    get(time: AbsoluteTime): T {
+    get(time: Key): T {
         const r1 = this.peek(time);
         if (r1) return r1;
         const result = this.creator ? this.creator(time) : {} as T;
@@ -37,5 +39,12 @@ export class TimeMap<T> {
 
     clear(): void {
         this.items = [];
+    }
+}
+
+
+export class TimeMap<T> extends KeyedMap<T, AbsoluteTime> {
+    constructor(creator?: (time: AbsoluteTime) => T) {
+        super(Time.sortComparison, creator);
     }
 }

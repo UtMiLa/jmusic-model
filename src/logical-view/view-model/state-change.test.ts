@@ -1,14 +1,9 @@
-import { StateChange } from './../../model/states/state';
 import { Clef } from './../../model/states/clef';
 import { Staff } from './../../model/score/staff';
-import { Time } from './../../model/rationals/time';
-import { FlagType } from './note-view-model';
-import { NoteType, NoteDirection } from '../../model/notes/note';
 import { StaffDef } from '../../model/score/staff';
 import { expect } from 'chai';
 import { ClefType } from '../../model/states/clef';
-import { scoreModelToViewModel, staffModelToViewModel } from './convert-model';
-import { TimeMap } from '../../tools/time-map';
+import { scoreModelToViewModel } from './convert-model';
 
 describe('State change view model', () => {
 
@@ -106,6 +101,24 @@ describe('State change view model', () => {
             expect(vm.timeSlots[2].notes[1]).to.deep.include({ positions: [5] });
 
         });    
+
+        it('should allow different clef changes at different staves at same time', () => {
+            const staff2 = {...staffClef};
+
+            Staff.setSequence(staffClef, {elements: 'c\'4 \\clef alto c\'4 \\clef bass c\'4'});
+            staffClef.voices.push({content: { elements: 'b4 b4 b4'}});
+
+            Staff.setSequence(staff2, {elements: 'c\'4 \\clef bass c\'4 \\clef bass c\'4'});
+            staff2.voices.push({content: { elements: 'b4 b4 b4'}});
+
+            const scoreDef = {staves: [staffClef, staff2]};
+
+            const vm = scoreModelToViewModel(scoreDef);
+
+            expect(vm.staves[0].timeSlots).to.have.length(3);
+
+        });
+        
 
     });    
 
@@ -226,7 +239,6 @@ describe('State change view model', () => {
     
         it('should show a key change on all staves, even if they dont share the timeslot of the key change');
    
-        // todo: should allow different clef changes at different staves at same time
         // todo: peekLatest should find latest change in this scope
     });
 

@@ -1,5 +1,5 @@
 import { StateChange } from './../../model/states/state';
-import { TimeMap } from './../../tools/time-map';
+import { TimeMap, KeyedMap } from './../../tools/time-map';
 import { Meter } from './../../model/states/meter';
 import { BeamGroup } from './../../model/notes/beaming';
 import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
@@ -20,7 +20,10 @@ import { TimeSlotViewModel, ScoreViewModel, StaffViewModel, AccidentalViewModel,
 import { VoiceDef } from '../../model/score/voice';
 
 
-
+interface ScopedTimeKey {
+    absTime: AbsoluteTime;
+    scope: number[];
+}
 
 class State {
     constructor (
@@ -101,8 +104,20 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
     return res;
 }
 
+export function createScopedTimeMap(): KeyedMap<StateChange, ScopedTimeKey> {
+    return new KeyedMap<StateChange, ScopedTimeKey>((key1: ScopedTimeKey, key2: ScopedTimeKey) => {
+        if (key1.scope && key2.scope) {
+            if (key1.scope.every(n => !key2.scope.includes(n))) {
+                // if scopes do not overlap, no match
+                return -1;
+            }
+        }
+        return Time.sortComparison(key1.absTime, key2.absTime);
+    });
+}
+
 export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
-    const stateMap = new TimeMap<StateChange>();
+    const stateMap = createScopedTimeMap();
     //console.log('scoreModelToViewModel', def);    
 
     def.staves.forEach((staff, staffNo) => {
@@ -113,7 +128,7 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
             
             voiceTimeSlots.forEach(vts => {
                 if (vts.states.length) {
-                    const stateChange = stateMap.get(vts.time);
+                    const stateChange = stateMap.get({absTime: vts.time, scope: [staffNo]});
                     //console.log('stateChg', stateChange);
                     
                     vts.states.forEach(st => {
@@ -138,7 +153,7 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
     return { staves: def.staves.map((staff, staffNo) => staffModelToViewModel(staff, stateMap, staffNo)) };
 }
 
-export function staffModelToViewModel(def: StaffDef, stateMap: TimeMap<StateChange>, staffNo = 0): StaffViewModel {
+function staffModelToViewModel(def: StaffDef, stateMap: KeyedMap<StateChange, ScopedTimeKey>, staffNo = 0): StaffViewModel {
 
     //console.log(def, stateMap, staffNo);
 
@@ -188,12 +203,12 @@ export function staffModelToViewModel(def: StaffDef, stateMap: TimeMap<StateChan
             state.voiceTimeSlot = voiceTimeSlot;
             state.slotNo = slotNo;
 
-            const stateChg = stateMap.peekLatest(voiceTimeSlot.time);
+            const stateChg = stateMap.peekLatest({absTime: voiceTimeSlot.time, scope: [staffNo]});
             if (stateChg && (!stateChg.scope || stateChg.scope.includes(staffNo))) {
                 if (stateChg.clef && stateChg.clef !== state.clef) {
                     state.clef = stateChg.clef;
 
-                    if (stateMap.peek(voiceTimeSlot.time)) {
+                    if (stateMap.peek({absTime: voiceTimeSlot.time, scope: [staffNo]})) {
                         state.slot.clef = { 
                             position: 1,
                             clefType: stateChg.clef.def.clefType,
@@ -207,7 +222,7 @@ export function staffModelToViewModel(def: StaffDef, stateMap: TimeMap<StateChan
                     
                     state.setKey(stateChg.key);
 
-                    if (stateMap.peek(voiceTimeSlot.time))
+                    if (stateMap.peek({absTime: voiceTimeSlot.time, scope: [staffNo]}))
                         state.slot.key = keyToView(stateChg.key, state.clef);
                 }
             }
@@ -330,3 +345,4 @@ function createNoteViewModels(state: State) {
     });
 }
 
+export const __internal = { staffModelToViewModel };
