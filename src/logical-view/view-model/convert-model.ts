@@ -117,11 +117,11 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
                     //console.log('stateChg', stateChange);
                     
                     vts.states.forEach(st => {
-                        /*if (st.clef) {
+                        if (st.clef) {
                             if (stateChange.clef) throw 'Two clef changes in the same staff';
                             stateChange.clef = st.clef;
                             stateChange.scope = [staffNo];
-                        }*/
+                        }
                         if (st.key) {
                             //console.log('key ch', st.key);
                             if (stateChange.key) throw 'Two key changes in the same staff';
@@ -140,30 +140,7 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
 
 export function staffModelToViewModel(def: StaffDef, stateMap: TimeMap<StateChange>, staffNo = 0): StaffViewModel {
 
-    console.log(def, stateMap, staffNo);
-    
-
-    def.voices.forEach((voice) => {
-        const voiceSequence = new Sequence(voice.content);
-        const voiceTimeSlots = voiceSequence.groupByTimeSlots();
-        voiceTimeSlots.forEach(vts => {
-            if (vts.states.length) {
-                const stateChange = stateMap.get(vts.time);
-                vts.states.forEach(st => {
-                    if (st.clef) {
-                        if (stateChange.clef) throw 'Two clef changes in the same staff';
-                        stateChange.clef = st.clef;
-                        stateChange.scope = [staffNo];
-                    }
-                    /*if (st.key) {
-                        //console.log('key ch', st.key);
-                        if (!stateChange.key) //throw 'Two key changes in the same staff';
-                        stateChange.key = st.key;
-                    }*/
-                });
-            }
-        });
-    });
+    //console.log(def, stateMap, staffNo);
 
     const clef = new Clef(def.initialClef);
 

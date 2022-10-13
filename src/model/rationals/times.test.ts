@@ -102,6 +102,13 @@ describe('Times', ()=> {
             expect(Time.getSpan(r3, r4)).to.deep.eq({ numerator: 1, denominator: 28, type: 'span' });
         });
 
+        it('should correctly find timespan from start and vice versa', () => {
+            const r3: AbsoluteTime = { numerator: 5, denominator: 7, type: 'abs' };
+            const r4: TimeSpan = { numerator: 5, denominator: 7, type: 'span' };
+            expect(Time.fromStart(r3)).to.deep.eq(r4);
+            expect(Time.fromStart(r4)).to.deep.eq(r3);
+        });
+
 
         it('should correctly add two timespans', () => {
             const r3: TimeSpan = { numerator: 5, denominator: 7, type: 'span' };
