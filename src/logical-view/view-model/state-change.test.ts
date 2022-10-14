@@ -235,7 +235,96 @@ describe('State change view model', () => {
     
         });
     
-        it('should change key for all staves');
+        it('should change key for all staves', () => {
+            const score = scoreModelToViewModel({
+                staves: [{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    voices: [
+                        {content: {elements: '<c e f>2 \\key d \\major <c e f>1.'}}
+                    ]
+                },{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    voices: [
+                        {content: {elements: '<c e f>2 <c e f>1.'}}
+                    ]
+                }]
+            });
+    
+            // First staff
+            expect(score.staves[0].timeSlots).to.have.length(2);
+    
+            expect(score.staves[0].timeSlots[0]).to.deep.include({
+                accidentals: [{
+                    alteration: 0,
+                    displacement: 0,
+                    position: 1
+                }]
+            });
+            expect(score.staves[0].timeSlots[1].key).to.deep.eq({
+                keyPositions: [
+                    {
+                        alteration: 1,
+                        position: 2
+                    },
+                    {
+                        alteration: 1,
+                        position: -1
+                    }
+                ]
+            });
+    
+            expect(score.staves[0].timeSlots[1]).to.deep.include({
+                accidentals: [{
+                    alteration: 0,
+                    displacement: -1,
+                    position: -1
+                },{
+                    alteration: 0,
+                    displacement: 0,
+                    position: 2
+                }]
+            });
+    
+            // second staff
+            expect(score.staves[1].timeSlots).to.have.length(2);
+    
+            expect(score.staves[1].timeSlots[0]).to.deep.include({
+                accidentals: [{
+                    alteration: 0,
+                    displacement: 0,
+                    position: 1
+                }]
+            });
+            /*expect(score.staves[1].timeSlots[1].key).to.deep.eq({
+                keyPositions: [
+                    {
+                        alteration: 1,
+                        position: 2
+                    },
+                    {
+                        alteration: 1,
+                        position: -1
+                    }
+                ]
+            });*/
+    
+            expect(score.staves[1].timeSlots[1]).to.deep.include({
+                accidentals: [{
+                    alteration: 0,
+                    displacement: -1,
+                    position: -1
+                },{
+                    alteration: 0,
+                    displacement: 0,
+                    position: 2
+                }]
+            });
+    
+
+    
+        });
     
         it('should show a key change on all staves, even if they dont share the timeslot of the key change');
    
