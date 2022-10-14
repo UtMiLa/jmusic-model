@@ -106,12 +106,12 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
 
 export function createScopedTimeMap(): KeyedMap<StateChange, ScopedTimeKey> {
     return new KeyedMap<StateChange, ScopedTimeKey>((key1: ScopedTimeKey, key2: ScopedTimeKey) => {
-        if (key1.scope && key2.scope) {
+        /*if (key1.scope && key2.scope) {
             if (key1.scope.every(n => !key2.scope.includes(n))) {
                 // if scopes do not overlap, no match
-                return -1;
+                return 1;
             }
-        }
+        }*/
         return Time.sortComparison(key1.absTime, key2.absTime);
     });
 }

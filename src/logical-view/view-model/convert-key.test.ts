@@ -1,10 +1,7 @@
-import { ScoreViewModel } from './score-view-model';
 import { Key } from './../../model/states/key';
 import { Clef } from './../../model/states/clef';
 import { expect } from 'chai';
 import { keyToView } from './convert-key';
-import { scoreModelToViewModel } from './convert-model';
-import { viewModelToPhysical } from '~/physical-view';
 
 describe('View model: Keys', () => {
 
