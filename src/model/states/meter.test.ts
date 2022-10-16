@@ -177,8 +177,6 @@ describe('Meter', () => {
             expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(2, 1)});
             expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(19, 8)});
             expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(11, 4)});
-            /*expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(9, 2)});
-            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(21, 4)});*/
         });
 
     });

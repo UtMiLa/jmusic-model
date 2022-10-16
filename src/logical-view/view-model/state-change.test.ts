@@ -479,6 +479,28 @@ describe('State change view model', () => {
             
         });               
     
+        it('should change beaming after a meter change with longer notes before change', () => {
+            const score = scoreModelToViewModel({
+                staves: [{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4},
+                    voices: [
+                        {content: {elements: 'c2. \\meter 6/8 c8 c8 c8 c8 c8 c8'}}
+                    ]
+                }]
+            });
+    
+            expect(score.staves[0].timeSlots).to.have.length(8);
+
+            const beamingGroups = score.staves[0].timeSlots
+                .map((ts, n) => ({ ts, n }))
+                .filter(item => item.ts.beamings)
+                .map((item) => item.n);
+            expect(beamingGroups).to.deep.eq([1, 4]);
+            
+        });               
+    
         it('should change meter for all staves, even if they dont share the timeslot of the meter change', () => {
             const score = scoreModelToViewModel({
                 staves: [{

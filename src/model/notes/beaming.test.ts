@@ -1,4 +1,5 @@
-import { getAllBeats, MeterFactory } from './../states/meter';
+import { Time } from './../rationals/time';
+import { getAllBeats, MeterFactory, MeterMap } from './../states/meter';
 import { Sequence } from './../score/sequence';
 import { expect } from 'chai';
 import { calcBeamGroups } from './beaming';
@@ -106,6 +107,37 @@ describe('Beaming', () => {
             fromIdx: 1,
             toIndex: 2,
             level: 1
+        }]);
+    });
+
+    it('should change meter correctly', () => {
+        const seq = new Sequence({ elements: 'c2. \\meter 6/8 c8 c8 c8 c8 c8 c8'});
+        //const meter = MeterFactory.createRegularMeter({ count: 3, value: 4 });
+
+        const meterMap = new MeterMap();
+        meterMap.add(Time.newAbsolute(1, 0), MeterFactory.createRegularMeter({ count: 3, value: 4 }));
+        meterMap.add(Time.newAbsolute(3, 4), MeterFactory.createRegularMeter({ count: 6, value: 8 }));
+
+
+        const iter = meterMap.getAllBeats();
+        expect(iter.next()).to.deep.eq({ done: false, value: Time.newAbsolute(1, 4)});
+        expect(iter.next()).to.deep.eq({ done: false, value: Time.newAbsolute(1, 2)});
+        expect(iter.next()).to.deep.eq({ done: false, value: Time.newAbsolute(3, 4)});
+        expect(iter.next()).to.deep.eq({ done: false, value: Time.newAbsolute(9, 8)});
+        expect(iter.next()).to.deep.eq({ done: false, value: Time.newAbsolute(3, 2)});
+
+        const beamGroups = calcBeamGroups(seq, meterMap.getAllBeats());
+
+        expect(beamGroups).to.have.length(2);
+        expect(beamGroups[0].beams[0]).to.deep.eq({
+            fromIdx: 0,
+            toIndex: 2,
+            level: 0
+        });
+        expect(beamGroups[1].beams).to.deep.eq([{    
+            fromIdx: 0,
+            toIndex: 2,
+            level: 0
         }]);
     });
 

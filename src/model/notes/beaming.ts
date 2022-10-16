@@ -78,11 +78,6 @@ export function calcBeamGroups(seq: Sequence, meterIterator: IterableIterator<Ab
         if ((element as StateChange).isState) {
             // state change
             const stC = element as StateChange;
-            /*if (stC.meter) {
-                meter = stC.meter;
-                meterIterator = getAllBeats(meter, time);
-                nextBeat = meterIterator.next().value;
-            }*/
         } else {
             const note = element as Note;
             const currBeamCnt = beamCount(note.undottedDuration.denominator);
@@ -98,7 +93,8 @@ export function calcBeamGroups(seq: Sequence, meterIterator: IterableIterator<Ab
                 subGroups = [];
                 noteIdx = 0;
                 if (isOnNextBeat) {
-                    nextBeat = meterIterator.next().value;
+                    while (Time.sortComparison(time, nextBeat) >= 0)
+                        nextBeat = meterIterator.next().value;
                 }
             }
             if (currBeamCnt > 0 && note.pitches.length) {
