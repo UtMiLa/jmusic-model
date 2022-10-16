@@ -1,6 +1,6 @@
 import { StateChange } from './../../model/states/state';
 import { TimeMap, KeyedMap } from './../../tools/time-map';
-import { Meter } from './../../model/states/meter';
+import { Meter, MeterMap } from './../../model/states/meter';
 import { BeamGroup } from './../../model/notes/beaming';
 import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
 import { getAllBars, ScoreDef, TimeSlot } from './../../model';
@@ -55,6 +55,8 @@ class State {
 
     }
 
+    private _meter?: Meter;
+
     private _key?: Key | undefined;
     public get key(): Key | undefined {
         return this._key;
@@ -80,10 +82,14 @@ class State {
         this.slot.notes = this.slot.notes.concat(elements);
     }
 
-    setMeter(meter: Meter) {
-        
+    get meter(): Meter | undefined { 
+        return this._meter; 
+    }
+
+    setMeter(meter: Meter, atTime: AbsoluteTime) {
+        this._meter = meter;
         if(meter) {
-            this.nextBarIterator = getAllBars(meter);
+            this.nextBarIterator = getAllBars(meter, atTime);
             this.nextBar = this.nextBarIterator.next().value;
         }
     }
@@ -151,6 +157,11 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
                             if (stateChange.key) throw 'Two key changes in the same staff';
                             stateChange.key = st.key;
                         }
+                        if (st.meter) {
+                            //console.log('key ch', st.key);
+                            if (stateChange.key) throw 'Two meter changes in the same staff';
+                            stateChange.meter = st.meter;
+                        }
                     });
 
                 }
@@ -187,16 +198,22 @@ function staffModelToViewModel(def: StaffDef, stateMap: KeyedMap<StateChange, Sc
     ];
 
     const meter = def.initialMeter ? MeterFactory.createRegularMeter(def.initialMeter) : undefined;
+    const meterMap = new MeterMap();
 
     if (meter) {
         const meterVM = meter ? meterToView(meter) : undefined;
         timeSlots[0].meter = meterVM;
+        meterMap.add(Time.newAbsolute(0, 1), meter);
     }
 
     let currentClef = new Clef(def.initialClef);
     stateMap.forEach((key, value) => {
         const ts = getTimeSlot(timeSlots, key.absTime);
         if (value.key) ts.key = keyToView(value.key, currentClef);
+        if (value.meter) {
+            ts.meter = meterToView(value.meter);
+            meterMap.add(key.absTime, value.meter);
+        }
         if (value.clef) {
             currentClef = value.clef;
             ts.clef =  { 
@@ -223,7 +240,7 @@ function staffModelToViewModel(def: StaffDef, stateMap: KeyedMap<StateChange, Sc
 
         const state = new State(voiceBeamGroups, staffNo, voiceNo, voice, clef);
         if (def.initialKey) state.key = new Key(def.initialKey);
-        if (meter) state.setMeter(meter);
+        if (meter) state.setMeter(meter, Time.newAbsolute(0, 1));
 
 
         voiceTimeSlots.forEach((voiceTimeSlot, slotNo) => {
@@ -241,6 +258,11 @@ function staffModelToViewModel(def: StaffDef, stateMap: KeyedMap<StateChange, Sc
                 state.key = keyChg.key;
             }
             
+            const meterChg = stateMap.peekLatest({absTime: voiceTimeSlot.time, scope: undefined}, (key, value) => !!value.meter);
+            if (meterChg && meterChg.meter && meterChg.meter !== state.meter) {
+                state.setMeter(meterChg.meter, voiceTimeSlot.time);
+            }
+            
             const elements = createNoteViewModels(state);
 
             createAccidentalViewModel(state);
@@ -254,13 +276,19 @@ function staffModelToViewModel(def: StaffDef, stateMap: KeyedMap<StateChange, Sc
 
     if (meter) {
         const measureTime = meter.measureLength;
-        let barTime = meter.firstBarTime;
+        //let barTime = meter.firstBarTime;
         //console.log('bar', measureTime, barTime, staffEndTime, meterModel);
+
+        const barIterator = meterMap.getAllBars();
+        let barTime: AbsoluteTime = barIterator.next().value;
         
         while (Time.sortComparison(barTime, staffEndTime) <= 0) {
-            const slot = getTimeSlot(timeSlots, barTime);
-            slot.bar = true;
-            barTime = Time.addTime(barTime, measureTime);
+            if (barTime.numerator > 0) {
+                const slot = getTimeSlot(timeSlots, barTime);
+                slot.bar = true;
+            }
+            //barTime = Time.addTime(barTime, measureTime);
+            barTime = barIterator.next().value;
             //console.log('bar adding', slot, barTime);
         }
     }

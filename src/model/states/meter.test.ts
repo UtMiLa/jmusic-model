@@ -1,5 +1,9 @@
+import { StateChange } from './state';
+import { TimeMap } from '~/tools/time-map';
+import { Time } from './../rationals/time';
+import { Sequence, __internal } from './../score/sequence';
 import { expect } from 'chai';
-import { getAllBars, MeterFactory, RegularMeterDef } from './meter';
+import { getAllBars, Meter, MeterFactory, RegularMeterDef, MeterMap } from './meter';
 describe('Meter', () => {
     describe('Regular meter', () => {
         let meter1: RegularMeterDef, meter2: RegularMeterDef, meter3: RegularMeterDef;
@@ -65,7 +69,28 @@ describe('Meter', () => {
 
         });
 
-
+        it('should parse a meter change', () => {
+            const seq = new Sequence({ elements: 'c4 \\meter 3/4 c4' });
+    
+            expect(seq.count).to.eq(3);
+            expect(seq.elements[1]).to.deep.eq({
+                meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }),
+                duration: Time.newSpan(0, 1),
+                isState: true
+            });
+    
+        });
+    
+    
+        it('should parse different regular meter changes', () => {
+            expect(__internal.parseLilyMeter('\\meter 3/4')).to.deep.eq(MeterFactory.createRegularMeter({ count: 3, value: 4 }));
+            expect(__internal.parseLilyMeter('\\meter 2/2')).to.deep.eq(MeterFactory.createRegularMeter({ count: 2, value: 2 }));
+            expect(__internal.parseLilyMeter('\\meter 6/8')).to.deep.eq(MeterFactory.createRegularMeter({ count: 6, value: 8 }));
+            expect(__internal.parseLilyMeter('\\meter 12/16')).to.deep.eq(MeterFactory.createRegularMeter({ count: 12, value: 16 }));
+            expect(__internal.parseLilyMeter('\\meter 4/4')).to.deep.eq(MeterFactory.createRegularMeter({ count: 4, value: 4 }));    
+        });
+    
+    
     });
 
 
@@ -96,4 +121,40 @@ describe('Meter', () => {
             expect(meter.countingTime).to.be.deep.eq({ numerator: 1, denominator: 4, type: 'span' });
         });
     });*/
+
+
+    describe('Meter map', () => {
+        it('should generate correct bars after meter change', () => {
+            const meterMap = new MeterMap();
+
+            meterMap.add(Time.newAbsolute(0, 1), MeterFactory.createRegularMeter({ count: 4, value: 4 }));
+            meterMap.add(Time.newAbsolute(3, 1), MeterFactory.createRegularMeter({ count: 3, value: 4 }));
+            meterMap.add(Time.newAbsolute(6, 1), MeterFactory.createRegularMeter({ count: 6, value: 8 }));
+
+            const barsIterator = meterMap.getAllBars();
+
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(0, 1)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(1, 1)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(2, 1)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(3, 1)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(15, 4)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(9, 2)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(21, 4)});
+        });
+
+        it('should generate correct bars after meter change with upbeat', () => {
+            const meterMap = new MeterMap();
+
+            meterMap.add(Time.newAbsolute(0, 1), MeterFactory.createRegularMeter({ count: 4, value: 4, upBeat: Time.newSpan(3, 8) }));
+            meterMap.add(Time.newAbsolute(11, 8), MeterFactory.createRegularMeter({ count: 3, value: 4 }));
+
+            const barsIterator = meterMap.getAllBars();
+
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(3, 8)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(11, 8)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(17, 8)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(23, 8)});
+        });
+
+    });
 });

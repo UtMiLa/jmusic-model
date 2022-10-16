@@ -1,3 +1,4 @@
+import { TimeMap } from '../../tools/time-map';
 import { AbsoluteTime } from './../rationals/time';
 import { Time, TimeSpan } from '../rationals/time';
 export interface Meter {
@@ -84,16 +85,16 @@ class RegularMeter implements Meter {
 }*/
 
 
-export function* getAllBars(meter: Meter): IterableIterator<AbsoluteTime> {
-    let time = meter.firstBarTime;
+export function* getAllBars(meter: Meter, startTime?: AbsoluteTime): IterableIterator<AbsoluteTime> {
+    let time = startTime ? startTime : meter.firstBarTime;
     while (true) {
         yield time;
         time = Time.addTime(time, meter.measureLength);
     }
 }
 
-export function* getAllBeats(meter: Meter): IterableIterator<AbsoluteTime> {
-    let time = Time.fromStart(meter.upbeat);
+export function* getAllBeats(meter: Meter, startTime?: AbsoluteTime): IterableIterator<AbsoluteTime> {
+    let time = startTime ? startTime : Time.fromStart(meter.upbeat);
     if (Time.equals(time, Time.newAbsolute(0, 1))) {
         time = Time.fromStart(meter.countingTime);
     }
@@ -103,3 +104,21 @@ export function* getAllBeats(meter: Meter): IterableIterator<AbsoluteTime> {
     }
 }
 
+export class MeterMap extends TimeMap<Meter> {
+    *getAllBars(): IterableIterator<AbsoluteTime> {
+        let meter = this.items[0].value;
+        let time = meter.upbeat ? Time.fromStart(meter.upbeat) : Time.newAbsolute(0, 1);
+        let iterator = getAllBars(meter, time);
+        while (true) {
+            const latestMeter = this.peekLatest(time);
+            if (latestMeter && latestMeter !== meter) {
+                meter = latestMeter;
+                iterator = getAllBars(meter, time);
+            }
+            const res = iterator.next();
+            if (res.done) return;
+            yield res.value;
+            time = Time.addTime(time, meter.measureLength);
+        }        
+    }
+}

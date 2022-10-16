@@ -1,3 +1,4 @@
+import { Meter, MeterFactory } from './../states/meter';
 import { Pitch } from './../pitches/pitch';
 import { Key } from './../states/key';
 import { TimeMap } from './../../tools/time-map';
@@ -7,6 +8,7 @@ import { Note } from '../notes/note';
 import { Time, TimeSpan } from '../rationals/time';
 import { Clef } from '../states/clef';
 import { PitchClass } from '../pitches/pitch';
+import { RegularMeterDef } from '../states/meter';
 
 export interface SequenceDef {
     elements: string;
@@ -29,6 +31,15 @@ function parseLilyKey(ly: string): Key {
     throw 'Illegal key change: ' + ly;
 }
 
+function parseLilyMeter(ly: string): Meter {
+    const tokens = ly.split(' ');
+    if (tokens.length !== 2 || !/^\d+\/\d+$/.test(tokens[1])) throw 'Illegal meter change: ' + ly;
+
+    const [count, value] = tokens[1].split('/');
+
+    return MeterFactory.createRegularMeter({ count: +count, value: +value });
+}
+
 function parseLilyClef(ly: string): Clef {
     ly = ly.replace('\\clef ', '');
     switch(ly) {
@@ -49,6 +60,10 @@ function parseLilyElement(ly: string): Note | StateChange {
     } else if (ly.startsWith('\\key')) {
         const sc = new StateChange();
         sc.key = parseLilyKey(ly);
+        return sc;
+    } else if (ly.startsWith('\\meter')) {
+        const sc = new StateChange();
+        sc.meter = parseLilyMeter(ly);
         return sc;
     } else {
         return Note.parseLily(ly);
@@ -74,6 +89,9 @@ export class Sequence {
                     prev[prev.length - 1] += ` ${curr}`;
                     return prev;
                 } else if (prev[prev.length - 1].match(/^\\(clef)$/)) {
+                    prev[prev.length - 1] += ` ${curr}`;
+                    return prev;
+                } else if (prev[prev.length - 1].match(/^\\(meter)$/)) {
                     prev[prev.length - 1] += ` ${curr}`;
                     return prev;
                 } else if (prev[prev.length - 1].match(/^\\(key)( \w+)?$/)) {
@@ -129,4 +147,4 @@ export class Sequence {
     }
 }
 
-export const __internal = { parseLilyClef, parseLilyKey, parseLilyElement };
+export const __internal = { parseLilyClef, parseLilyKey, parseLilyElement, parseLilyMeter };

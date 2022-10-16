@@ -1,3 +1,6 @@
+import { MeterFactory } from './../../model/states/meter';
+import { ScoreDef } from './../../model/score/score';
+import { Time } from './../../model/rationals/time';
 import { Clef } from './../../model/states/clef';
 import { Staff } from './../../model/score/staff';
 import { StaffDef } from '../../model/score/staff';
@@ -297,7 +300,7 @@ describe('State change view model', () => {
                     position: 1
                 }]
             });
-            /*expect(score.staves[1].timeSlots[1].key).to.deep.eq({
+            expect(score.staves[1].timeSlots[1].key).to.deep.eq({
                 keyPositions: [
                     {
                         alteration: 1,
@@ -308,7 +311,7 @@ describe('State change view model', () => {
                         position: -1
                     }
                 ]
-            });*/
+            });
     
             expect(score.staves[1].timeSlots[1]).to.deep.include({
                 accidentals: [{
@@ -326,11 +329,180 @@ describe('State change view model', () => {
     
         });
     
-        it('should show a key change on all staves, even if they dont share the timeslot of the key change');
+        it('should show a key change on all staves, even if they dont share the timeslot of the key change', () => {
+            const score = scoreModelToViewModel({
+                staves: [{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    voices: [
+                        {content: {elements: '<c e f>2 \\key d \\major <c e f>1.'}}
+                    ]
+                },{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    voices: [
+                        {content: {elements: '<c e f>1 <c e f>2'}}
+                    ]
+                }]
+            });
+    
+            // First staff
+            expect(score.staves[0].timeSlots).to.have.length(2);
+    
+            expect(score.staves[0].timeSlots[0]).to.deep.include({
+                accidentals: [{
+                    alteration: 0,
+                    displacement: 0,
+                    position: 1
+                }]
+            });
+            expect(score.staves[0].timeSlots[1].key).to.deep.eq({
+                keyPositions: [
+                    {
+                        alteration: 1,
+                        position: 2
+                    },
+                    {
+                        alteration: 1,
+                        position: -1
+                    }
+                ]
+            });
+    
+            expect(score.staves[0].timeSlots[1]).to.deep.include({
+                accidentals: [{
+                    alteration: 0,
+                    displacement: -1,
+                    position: -1
+                },{
+                    alteration: 0,
+                    displacement: 0,
+                    position: 2
+                }]
+            });
+    
+            // second staff
+            expect(score.staves[1].timeSlots).to.have.length(3);
+    
+            expect(score.staves[1].timeSlots[0]).to.deep.include({
+                accidentals: [{
+                    alteration: 0,
+                    displacement: 0,
+                    position: 1
+                }]
+            });
+            expect(score.staves[1].timeSlots[1].key).to.deep.eq({
+                keyPositions: [
+                    {
+                        alteration: 1,
+                        position: 2
+                    },
+                    {
+                        alteration: 1,
+                        position: -1
+                    }
+                ]
+            });
+    
+            expect(score.staves[1].timeSlots[1]).to.deep.include({
+                absTime: Time.newAbsolute(1, 2)
+            });
+    
+
+    
+        });
    
-        // todo: peekLatest should find latest change in this scope
+        // todo: if a staff has individual meter/key, it should ignore global meter/key changes
+
     });
 
+    describe('meter changes', () => {
+        it('should show a meter change', () => {
+            const score = scoreModelToViewModel({
+                staves: [{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: {elements: 'c8 c4 c4 c4 \\meter 5/8 c4 c4 c4 c4 c1'}}
+                    ]
+                }]
+            });
 
+            //expect(score.staves[0].timeSlots).to.have.length(10);
+
+            expect(score.staves[0].timeSlots[4].meter).to.deep.eq({ meterText: ['5', '8']});
+                
+        });
+
+        it('should change bar lines after a meter change', () => {
+            const score = scoreModelToViewModel({
+                staves: [{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: {elements: 'c8 c4 c4 c4 \\meter 4/4 c4 c4 c4 c4 c1'}}
+                    ]
+                }]
+            });
+    
+            expect(score.staves[0].timeSlots).to.have.length(10);
+
+            const bars = score.staves[0].timeSlots
+                .map((ts, n) => ({ ts, n }))
+                .filter(item => item.ts.bar)
+                .map((item) => item.n);
+            expect(bars).to.deep.eq([1, 4, 8, 9]);
+               
+        });               
+    
+        xit('should change meter for all staves, even if they dont share the timeslot of the meter change', () => {
+            const score = scoreModelToViewModel({
+                staves: [{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: {elements: 'c8 c4 c4 c4 \\meter 4/4 c4 c4 c4 c4 c1'}}
+                    ]
+                },{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: {elements: 'c8 c1 c4 c4 c4 c1'}}
+                    ]
+                }]
+            });
+    
+        });
+
+        xit('should disallow different meter changes at different staves at same time', () => {
+            const scoreModel: ScoreDef = {
+                staves: [{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: {elements: 'c8 c4 c4 c4 \\meter 4/4 c4 c4 c4 c4 c1'}}
+                    ]
+                },{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: {elements: 'c8 c4 c4 c4 \\meter 6/8 c4 c4 c4 c4 c1'}}
+                    ]
+                }]
+            };
+
+            expect(() => scoreModelToViewModel(scoreModel)).to.throw();
+    
+        });
+
+        // beaming after meter chg
+
+    });
 
 });
