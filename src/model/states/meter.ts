@@ -105,6 +105,26 @@ export function* getAllBeats(meter: Meter, startTime?: AbsoluteTime): IterableIt
 }
 
 export class MeterMap extends TimeMap<Meter> {
+    *getAllBeats(): IterableIterator<AbsoluteTime> {
+        let meter = this.items[0].value;
+        let time = meter.upbeat ? Time.fromStart(meter.upbeat) : Time.newAbsolute(0, 1);
+        let iterator = getAllBeats(meter, time);
+        while (true) {
+            const latestMeter = this.peekLatest(time);
+            if (latestMeter && latestMeter !== meter) {
+                meter = latestMeter;
+                iterator = getAllBeats(meter, time);
+                iterator.next();
+                //yield time;
+                //continue;
+            }
+            const res = iterator.next();
+            if (res.done) return;
+            yield res.value;
+            time = Time.addTime(time, meter.countingTime);
+        }        
+    }
+
     *getAllBars(): IterableIterator<AbsoluteTime> {
         let meter = this.items[0].value;
         let time = meter.upbeat ? Time.fromStart(meter.upbeat) : Time.newAbsolute(0, 1);

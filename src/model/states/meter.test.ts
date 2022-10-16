@@ -156,5 +156,30 @@ describe('Meter', () => {
             expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(23, 8)});
         });
 
+        it('should generate correct beats after meter change', () => {
+            const meterMap = new MeterMap();
+
+            meterMap.add(Time.newAbsolute(0, 1), MeterFactory.createRegularMeter({ count: 4, value: 4 }));
+            meterMap.add(Time.newAbsolute(2, 1), MeterFactory.createRegularMeter({ count: 6, value: 8 }));
+            meterMap.add(Time.newAbsolute(5, 1), MeterFactory.createRegularMeter({ count: 3, value: 4 }));
+
+            const barsIterator = meterMap.getAllBeats();
+
+            //expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(0, 1)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(1, 4)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(1, 2)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(3, 4)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(1, 1)});
+            barsIterator.next();
+            barsIterator.next();
+            barsIterator.next();
+
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(2, 1)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(19, 8)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(11, 4)});
+            /*expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(9, 2)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(21, 4)});*/
+        });
+
     });
 });

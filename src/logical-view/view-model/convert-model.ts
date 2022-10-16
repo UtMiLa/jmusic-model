@@ -159,7 +159,7 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
                         }
                         if (st.meter) {
                             //console.log('key ch', st.key);
-                            if (stateChange.key) throw 'Two meter changes in the same staff';
+                            if (stateChange.meter) throw 'Two meter changes in the same staff';
                             stateChange.meter = st.meter;
                         }
                     });
@@ -232,7 +232,7 @@ function staffModelToViewModel(def: StaffDef, stateMap: KeyedMap<StateChange, Sc
         const voiceSequence = new Sequence(voice.content);
         const voiceTimeSlots = voiceSequence.groupByTimeSlots();
         const voiceEndTime = Time.fromStart(voiceSequence.duration);
-        const voiceBeamGroups = meter ? calcBeamGroups(voiceSequence, meter) : [];
+        const voiceBeamGroups = meter ? calcBeamGroups(voiceSequence, meterMap.getAllBeats()) : [];
 
         if (Time.sortComparison(voiceEndTime, staffEndTime) > 0) {
             staffEndTime = voiceEndTime;

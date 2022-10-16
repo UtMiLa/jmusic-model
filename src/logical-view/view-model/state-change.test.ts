@@ -457,7 +457,29 @@ describe('State change view model', () => {
                
         });               
     
-        xit('should change meter for all staves, even if they dont share the timeslot of the meter change', () => {
+        it('should change beaming after a meter change', () => {
+            const score = scoreModelToViewModel({
+                staves: [{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4},
+                    voices: [
+                        {content: {elements: 'c8 c8 c8 c8 c8 c8 \\meter 6/8 c8 c8 c8 c8 c8 c8'}}
+                    ]
+                }]
+            });
+    
+            expect(score.staves[0].timeSlots).to.have.length(13);
+
+            const beamingGroups = score.staves[0].timeSlots
+                .map((ts, n) => ({ ts, n }))
+                .filter(item => item.ts.beamings)
+                .map((item) => item.n);
+            expect(beamingGroups).to.deep.eq([0, 2, 4, 6, 9]);
+            
+        });               
+    
+        it('should change meter for all staves, even if they dont share the timeslot of the meter change', () => {
             const score = scoreModelToViewModel({
                 staves: [{
                     initialClef: Clef.clefBass.def,
@@ -478,7 +500,7 @@ describe('State change view model', () => {
     
         });
 
-        xit('should disallow different meter changes at different staves at same time', () => {
+        it('should disallow different meter changes at different staves at same time', () => {
             const scoreModel: ScoreDef = {
                 staves: [{
                     initialClef: Clef.clefBass.def,
@@ -497,7 +519,7 @@ describe('State change view model', () => {
                 }]
             };
 
-            expect(() => scoreModelToViewModel(scoreModel)).to.throw();
+            expect(() => scoreModelToViewModel(scoreModel)).to.throw('Two meter changes in the same staff');
     
         });
 

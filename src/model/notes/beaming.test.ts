@@ -1,4 +1,4 @@
-import { MeterFactory } from './../states/meter';
+import { getAllBeats, MeterFactory } from './../states/meter';
 import { Sequence } from './../score/sequence';
 import { expect } from 'chai';
 import { calcBeamGroups } from './beaming';
@@ -9,7 +9,7 @@ describe('Beaming', () => {
         const seq = new Sequence({ elements: 'c8 c16 c16 c8. c16 c16 c8 c16'});
         const meter = MeterFactory.createRegularMeter({ count: 1, value: 4 });
 
-        const beamGroups = calcBeamGroups(seq, meter);
+        const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
 
         expect(beamGroups).to.have.length(3);
         expect(beamGroups[0].notes).to.have.length(3);
@@ -21,7 +21,7 @@ describe('Beaming', () => {
         const seq = new Sequence({ elements: 'c8 c8 c4 c4 c2 c8 c8 c1'});
         const meter = MeterFactory.createRegularMeter({ count: 1, value: 2 });
 
-        const beamGroups = calcBeamGroups(seq, meter);
+        const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
 
         expect(beamGroups).to.have.length(2);
         expect(beamGroups[0].beams).to.deep.eq([{    
@@ -44,7 +44,7 @@ describe('Beaming', () => {
         const seq = new Sequence({ elements: 'c8 r8 c8 r8'});
         const meter = MeterFactory.createRegularMeter({ count: 1, value: 2 });
 
-        const beamGroups = calcBeamGroups(seq, meter);
+        const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
 
         expect(beamGroups).to.have.length(0);
     });
@@ -55,7 +55,7 @@ describe('Beaming', () => {
         const seq = new Sequence({ elements: 'c16 c16 c16 c16 c32 c32 c32 c32'});
         const meter = MeterFactory.createRegularMeter({ count: 1, value: 4 });
 
-        const beamGroups = calcBeamGroups(seq, meter);
+        const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
 
         expect(beamGroups).to.have.length(2);
         expect(beamGroups[0].beams).to.deep.eq([{
@@ -90,7 +90,7 @@ describe('Beaming', () => {
         const seq = new Sequence({ elements: 'c8 c16 c16 c8. c16 c16 c8 c16'});
         const meter = MeterFactory.createRegularMeter({ count: 1, value: 4 });
 
-        const beamGroups = calcBeamGroups(seq, meter);
+        const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
 
         expect(beamGroups).to.have.length(3);
         expect(beamGroups[0].beams[0]).to.deep.eq({
