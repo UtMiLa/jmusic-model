@@ -18,5 +18,5 @@ export class StateChange {
     meter?: Meter;
     duration = Time.newSpan(0, 1);
     isState = true;
-    scope: StateChangeScope;
+    //scope: StateChangeScope;
 }

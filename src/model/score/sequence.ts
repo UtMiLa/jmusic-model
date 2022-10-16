@@ -125,7 +125,7 @@ export class Sequence {
             time  = Time.addTime(time, elem.duration);
         });
 
-        return res.items.map(item => item.item);
+        return res.items.map(item => item.value);
     }
 }
 

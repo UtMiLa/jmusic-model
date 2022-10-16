@@ -22,7 +22,7 @@ import { VoiceDef } from '../../model/score/voice';
 
 interface ScopedTimeKey {
     absTime: AbsoluteTime;
-    scope: number[];
+    scope?: number;
 }
 
 class State {
@@ -55,7 +55,15 @@ class State {
 
     }
 
-    public key?: Key;
+    private _key?: Key | undefined;
+    public get key(): Key | undefined {
+        return this._key;
+    }
+    public set key(value: Key | undefined) {
+        if (!value) throw 'Cannot set key to undefined';
+        this._key = value;
+        this.accidentalManager.setKey(value);
+    }
     public slotNo = -1;
     private _slot: TimeSlotViewModel | undefined;
     public get slot(): TimeSlotViewModel {
@@ -70,11 +78,6 @@ class State {
 
     addNotes(elements: NoteViewModel[]) {
         this.slot.notes = this.slot.notes.concat(elements);
-    }
-
-    setKey(key: Key) {
-        this.accidentalManager.setKey(key);
-        this.key = key;
     }
 
     setMeter(meter: Meter) {
@@ -106,13 +109,12 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
 
 export function createScopedTimeMap(): KeyedMap<StateChange, ScopedTimeKey> {
     return new KeyedMap<StateChange, ScopedTimeKey>((key1: ScopedTimeKey, key2: ScopedTimeKey) => {
-        /*if (key1.scope && key2.scope) {
-            if (key1.scope.every(n => !key2.scope.includes(n))) {
-                // if scopes do not overlap, no match
-                return 1;
-            }
-        }*/
-        return Time.sortComparison(key1.absTime, key2.absTime);
+        const cmpTime = Time.sortComparison(key1.absTime, key2.absTime);
+        if (cmpTime !== 0) return cmpTime;
+        if (key1.scope === key2.scope) {
+            return 0;
+        }
+        return -1;//key1.scope > key2.scope ? 1 : -1
     });
 }
 
@@ -128,21 +130,29 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
             
             voiceTimeSlots.forEach(vts => {
                 if (vts.states.length) {
-                    const stateChange = stateMap.get({absTime: vts.time, scope: [staffNo]});
+                    const scopedStateChange = stateMap.get({absTime: vts.time, scope: staffNo});
                     //console.log('stateChg', stateChange);
                     
                     vts.states.forEach(st => {
                         if (st.clef) {
-                            if (stateChange.clef) throw 'Two clef changes in the same staff';
-                            stateChange.clef = st.clef;
-                            stateChange.scope = [staffNo];
+                            if (scopedStateChange.clef) throw 'Two clef changes in the same staff';
+                            scopedStateChange.clef = st.clef;
+                            //stateChange.scope = [staffNo];
                         }
+                    });
+
+                    const stateChange = stateMap.get({absTime: vts.time, scope: undefined});
+                    //console.log('stateChg', stateChange);
+                    
+                    vts.states.forEach(st => {
+
                         if (st.key) {
                             //console.log('key ch', st.key);
                             if (stateChange.key) throw 'Two key changes in the same staff';
                             stateChange.key = st.key;
                         }
                     });
+
                 }
             });
         });
@@ -150,7 +160,9 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
     });
 
 
-    return { staves: def.staves.map((staff, staffNo) => staffModelToViewModel(staff, stateMap, staffNo)) };
+    return { staves: def.staves.map((staff, staffNo) => staffModelToViewModel(staff, stateMap.clone((key: ScopedTimeKey, value: StateChange) => {
+        return key.scope === undefined || key.scope === staffNo;
+    }), staffNo)) };
 }
 
 function staffModelToViewModel(def: StaffDef, stateMap: KeyedMap<StateChange, ScopedTimeKey>, staffNo = 0): StaffViewModel {
@@ -181,6 +193,22 @@ function staffModelToViewModel(def: StaffDef, stateMap: KeyedMap<StateChange, Sc
         timeSlots[0].meter = meterVM;
     }
 
+    let currentClef = new Clef(def.initialClef);
+    stateMap.forEach((key, value) => {
+        const ts = getTimeSlot(timeSlots, key.absTime);
+        if (value.key) ts.key = keyToView(value.key, currentClef);
+        if (value.clef) {
+            currentClef = value.clef;
+            ts.clef =  { 
+                position: 1,
+                clefType: value.clef.def.clefType,
+                change: true,
+                line: value.clef.def.line
+            };
+        }
+    });
+
+
     let staffEndTime = Time.newAbsolute(0, 1);
 
     def.voices.forEach((voice, voiceNo) => {        
@@ -194,7 +222,7 @@ function staffModelToViewModel(def: StaffDef, stateMap: KeyedMap<StateChange, Sc
         }
 
         const state = new State(voiceBeamGroups, staffNo, voiceNo, voice, clef);
-        if (def.initialKey) state.setKey(new Key(def.initialKey));
+        if (def.initialKey) state.key = new Key(def.initialKey);
         if (meter) state.setMeter(meter);
 
 
@@ -203,28 +231,14 @@ function staffModelToViewModel(def: StaffDef, stateMap: KeyedMap<StateChange, Sc
             state.voiceTimeSlot = voiceTimeSlot;
             state.slotNo = slotNo;
 
-            const stateChg = stateMap.peekLatest({absTime: voiceTimeSlot.time, scope: [staffNo]});
-            if (stateChg && (!stateChg.scope || stateChg.scope.includes(staffNo))) {
-                if (stateChg.clef && stateChg.clef !== state.clef) {
-                    state.clef = stateChg.clef;
+            const clefChg = stateMap.peekLatest({absTime: voiceTimeSlot.time, scope: staffNo}, (key, value) => !!value.clef);
+            if (clefChg && clefChg.clef && clefChg.clef !== state.clef) {
+                state.clef = clefChg.clef;
+            }
 
-                    if (stateMap.peek({absTime: voiceTimeSlot.time, scope: [staffNo]})) {
-                        state.slot.clef = { 
-                            position: 1,
-                            clefType: stateChg.clef.def.clefType,
-                            change: true,
-                            line: stateChg.clef.def.line
-                        };
-                    }
-                }
-                if (stateChg.key && stateChg.key !== state.key) {
-                    //console.log('set key', stateChg.key, state);
-                    
-                    state.setKey(stateChg.key);
-
-                    if (stateMap.peek({absTime: voiceTimeSlot.time, scope: [staffNo]}))
-                        state.slot.key = keyToView(stateChg.key, state.clef);
-                }
+            const keyChg = stateMap.peekLatest({absTime: voiceTimeSlot.time, scope: undefined}, (key, value) => !!value.key);
+            if (keyChg && keyChg.key && keyChg.key !== state.key) {
+                state.key = keyChg.key;
             }
             
             const elements = createNoteViewModels(state);
