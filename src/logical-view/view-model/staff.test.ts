@@ -1,4 +1,4 @@
-import { KeyedMap } from './../../tools/time-map';
+import { IndexedMap } from './../../tools/time-map';
 import { StateChange } from './../../model/states/state';
 import { Staff } from './../../model/score/staff';
 import { Time } from './../../model/rationals/time';

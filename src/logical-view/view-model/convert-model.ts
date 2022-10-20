@@ -1,5 +1,5 @@
 import { StateChange } from './../../model/states/state';
-import { TimeMap, KeyedMap } from './../../tools/time-map';
+import { TimeMap, IndexedMap } from './../../tools/time-map';
 import { Meter, MeterMap } from './../../model/states/meter';
 import { BeamGroup } from './../../model/notes/beaming';
 import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
@@ -113,14 +113,14 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
     return res;
 }
 
-export function createScopedTimeMap(): KeyedMap<StateChange, ScopedTimeKey> {
-    return new KeyedMap<StateChange, ScopedTimeKey>((key1: ScopedTimeKey, key2: ScopedTimeKey) => {
+export function createScopedTimeMap(): IndexedMap<StateChange, ScopedTimeKey> {
+    return new IndexedMap<StateChange, ScopedTimeKey>((key1: ScopedTimeKey, key2: ScopedTimeKey) => {
         const cmpTime = Time.sortComparison(key1.absTime, key2.absTime);
         if (cmpTime !== 0) return cmpTime;
         if (key1.scope === key2.scope) {
             return 0;
         }
-        return -1;//key1.scope > key2.scope ? 1 : -1
+        return -1;
     });
 }
 
@@ -176,7 +176,7 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
     }), staffNo)) };
 }
 
-function staffModelToViewModel(def: StaffDef, stateMap: KeyedMap<StateChange, ScopedTimeKey>, staffNo = 0): StaffViewModel {
+function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0): StaffViewModel {
 
     //console.log(def, stateMap, staffNo);
 

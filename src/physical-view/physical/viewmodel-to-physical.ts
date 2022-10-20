@@ -1,3 +1,5 @@
+import { Time } from './../../model/rationals/time';
+import { Cursor } from './cursor';
 import { PhysicalBeamGroup } from './physical-beaming';
 import { convertMeter } from './physical-meter';
 import { TieViewModel, StaffViewModel, FlagType, TimeSlotViewModel } from './../../logical-view';
@@ -34,7 +36,7 @@ import { MeasureMap, MeasureMapXValueItem } from './measure-map';
 
 
 
-export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics): PhysicalModel {
+export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics, cursor?: Cursor): PhysicalModel {
 
     let measureMap = new MeasureMap();
     viewModel.staves.forEach(staffModel => {
@@ -53,9 +55,9 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
         const beamings: PhysicalBeamGroup[] = [];
 
         staffModel.timeSlots.forEach(ts => {
-            staffResultElements = convertStaff(measureMap, ts, beamings, settings, staffResultElements);
+            staffResultElements = convertStaff(measureMap, ts, beamings, settings, staffResultElements, cursor);
         });
-     
+
         staffResultElements.forEach(re => re.position.y += y0);
 
 
@@ -77,7 +79,14 @@ function addStaffLines(settings: Metrics, width: number): PhysicalElementBase[] 
     }));
 }
 
-function convertStaff(measureMap: MeasureMap, timeSlot: TimeSlotViewModel, beamings: PhysicalBeamGroup[], settings: Metrics, resultElements: PhysicalElementBase[]) {
+function convertStaff(
+    measureMap: MeasureMap, 
+    timeSlot: TimeSlotViewModel, 
+    beamings: PhysicalBeamGroup[], 
+    settings: Metrics, 
+    resultElements: PhysicalElementBase[], 
+    cursor?: Cursor
+) {
     const mapItem = measureMap.lookup(timeSlot.absTime);
     if (!mapItem)
         throw 'Internal error in measure map';
@@ -109,7 +118,7 @@ function convertStaff(measureMap: MeasureMap, timeSlot: TimeSlotViewModel, beami
 
     }
     timeSlot.notes.forEach((note: NoteViewModel) => {
-        const addItems = convertNote(note, mapItem.note as number, settings);
+        const addItems = convertNote(note, mapItem.note, settings);
         resultElements = resultElements.concat(addItems);
         const notestem = addItems.find(elm => elm.element === HorizVarSizeGlyphs.Stem) as PhysicalHorizVarSizeElement;
         if (note.flagType === FlagType.Beam && notestem) {
@@ -120,6 +129,16 @@ function convertStaff(measureMap: MeasureMap, timeSlot: TimeSlotViewModel, beami
     if (timeSlot.ties) {
         resultElements = resultElements.concat(convertTies(timeSlot.ties, measureMap, mapItem, settings));
     }
+
+    let cursorElement: PhysicalHorizVarSizeElement | undefined;
+
+    if (cursor && Time.sortComparison(timeSlot.absTime, cursor.absTime) === 0) {
+        cursorElement = { element: HorizVarSizeGlyphs.Cursor, height: 20, position: { x: mapItem.note, y: staffLineToY(cursor.position / 2, settings) } };
+        //console.log('cursor', cursor, cursorElement);        
+    }
+
+    if (cursorElement) resultElements.push(cursorElement);
+     
     return resultElements;
 }
 

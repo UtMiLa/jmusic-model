@@ -1,42 +1,42 @@
 import { AbsoluteTime, Time } from './../model/rationals/time';
 
 
-export class KeyedMap<T, Key> {
+export class IndexedMap<T, Index> {
 
-    constructor(private compareKey: (key1: Key, key2: Key) => number, private creator?: (time: Key) => T) {}
+    constructor(private compareIndex: (index1: Index, index2: Index) => number, private creator?: (time: Index) => T) {}
 
-    items: { key: Key, value: T }[] = [];
+    items: { index: Index, value: T }[] = [];
 
     get length(): number {
         return this.items.length;
     }
 
-    add(time: Key, item: T): void {
-        this.items.push({ key: time, value: item });
+    add(time: Index, item: T): void {
+        this.items.push({ index: time, value: item });
     }
 
-    peek(time: Key): T | undefined {
-        const res = this.items.filter(it => this.compareKey(time, it.key) === 0).map(it => it.value);
+    peek(time: Index): T | undefined {
+        const res = this.items.filter(it => this.compareIndex(time, it.index) === 0).map(it => it.value);
         if (res.length) return res[0];
         
         return undefined;
     }
 
-    peekLatest(key: Key, filter: (key: Key, value: T) => boolean = () => true): T | undefined {
+    peekLatest(index: Index, filter: (index: Index, value: T) => boolean = () => true): T | undefined {
         const beforeTime = this.items
-            .filter(it => filter(it.key, it.value))
-            .filter(it => this.compareKey(key, it.key) >= 0)
-            .sort((a,b) => this.compareKey(a.key, b.key));
+            .filter(it => filter(it.index, it.value))
+            .filter(it => this.compareIndex(index, it.index) >= 0)
+            .sort((a,b) => this.compareIndex(a.index, b.index));
         if (!beforeTime.length) return undefined;
 
         return beforeTime[beforeTime.length - 1].value;
     }
 
-    get(key: Key): T {
-        const r1 = this.peek(key);
+    get(index: Index): T {
+        const r1 = this.peek(index);
         if (r1) return r1;
-        const result = this.creator ? this.creator(key) : {} as T;
-        this.add(key, result);
+        const result = this.creator ? this.creator(index) : {} as T;
+        this.add(index, result);
         return result;
     }
 
@@ -44,19 +44,19 @@ export class KeyedMap<T, Key> {
         this.items = [];
     }
 
-    clone(filter: (key: Key, value: T) => boolean): KeyedMap<T, Key> {
-        const res = new KeyedMap<T, Key>(this.compareKey, this.creator);
-        res.items = this.items.filter(item => filter(item.key, item.value));
+    clone(filter: (index: Index, value: T) => boolean): IndexedMap<T, Index> {
+        const res = new IndexedMap<T, Index>(this.compareIndex, this.creator);
+        res.items = this.items.filter(item => filter(item.index, item.value));
         return res;
     }
 
-    forEach(callBack: (key: Key, value: T) => void): void {
-        this.items.forEach(item => callBack(item.key, item.value));
+    forEach(callBack: (index: Index, value: T) => void): void {
+        this.items.forEach(item => callBack(item.index, item.value));
     }
 }
 
 
-export class TimeMap<T> extends KeyedMap<T, AbsoluteTime> {
+export class TimeMap<T> extends IndexedMap<T, AbsoluteTime> {
     constructor(creator?: (time: AbsoluteTime) => T) {
         super(Time.sortComparison, creator);
     }

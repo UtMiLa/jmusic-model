@@ -149,6 +149,17 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
                 { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
                 { type: DrawOperationType.Stroke, points: []}
             ]);
+        } else if ((elem as any).element === HorizVarSizeGlyphs.Cursor) {
+            ctx.strokeStyle = '#ff5555';
+
+            draw(ctx, [
+                { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y - (elem as PhysicalHorizVarSizeElement).height)}]},
+                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
+                { type: DrawOperationType.Stroke, points: []},
+                { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x - 5), y: convertY(elem.position.y)}]},
+                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x + 5), y: convertY(elem.position.y)}]},
+                { type: DrawOperationType.Stroke, points: []}
+            ]);
         } else if ((elem as any).glyph) {
             const scale = (elem as any).scale ? (elem as any).scale : 1;
             ctx.font = (20 * position.scaleY * scale) + 'px Emmentaler';
