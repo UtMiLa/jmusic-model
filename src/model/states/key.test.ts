@@ -44,7 +44,7 @@ describe('Key', () => {
     });
 
     it('should parse a key change', () => {
-        const seq = new Sequence({ elements: 'c4 \\key d \\major c4' });
+        const seq = new Sequence( 'c4 \\key d \\major c4' );
 
         expect(seq.count).to.eq(3);
         /*expect(seq.elements[1]).to.deep.eq({
@@ -56,7 +56,7 @@ describe('Key', () => {
             isState: true
         });*/
 
-        const seq2 = new Sequence({ elements: 'c4 \\key ees \\minor c4' });
+        const seq2 = new Sequence( 'c4 \\key ees \\minor c4' );
 
         expect(seq2.count).to.eq(3);
         expect(seq2.elements[1]).to.deep.eq({

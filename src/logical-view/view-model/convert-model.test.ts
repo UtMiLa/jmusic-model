@@ -19,7 +19,7 @@ describe('View model', () => {
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4, upBeat: Time.newSpan(1, 8) },
-            voices:[{ content: new Sequence({elements: 'bes8 r4 bes8 b8 b8. b16 bes8'}) }]
+            voices:[{ content: new Sequence( 'bes8 r4 bes8 b8 b8. b16 bes8') }]
         };
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
@@ -40,7 +40,7 @@ describe('View model', () => {
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4, upBeat: Time.newSpan(1, 8) },
-            voices:[{ content: new Sequence({elements: 'bes8 r4 bes8 b8 b8. b16 bes8'}) }]
+            voices:[{ content: new Sequence( 'bes8 r4 bes8 b8 b8. b16 bes8') }]
         };
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
@@ -83,7 +83,7 @@ describe('View model', () => {
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4 },
-            voices:[{ content: new Sequence({elements: 'bes16 bes8 b16'}) }]
+            voices:[{ content: new Sequence( 'bes16 bes8 b16') }]
         };
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());

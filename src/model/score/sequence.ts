@@ -77,14 +77,23 @@ function parseLilyElement(ly: string): Note | StateChange {
 }
 
 export class Sequence implements ISequence {
-    constructor(public def: SequenceDef) {
-        this.elements = def.elements ? Sequence.splitByNotes(def.elements).map(str => parseLilyElement(str)) : [];
+    constructor(def: string) {
+        this.def = def;
+    }
+
+    private _def!: string;
+    public get def(): string {
+        return this._def;
+    }
+    public set def(value: string) {
+        this._def = value;
+        this.elements = value ? Sequence.splitByNotes(value).map(str => parseLilyElement(str)) : [];
     }
 
     elements: (Note | StateChange)[] = [];
 
     static createFromString(def: string): Sequence {
-        return new Sequence({ elements: def });
+        return new Sequence(def);
     }
 
     static splitByNotes(def: string): string[] {

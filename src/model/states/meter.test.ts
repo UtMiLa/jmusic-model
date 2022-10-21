@@ -70,7 +70,7 @@ describe('Meter', () => {
         });
 
         it('should parse a meter change', () => {
-            const seq = new Sequence({ elements: 'c4 \\meter 3/4 c4' });
+            const seq = new Sequence( 'c4 \\meter 3/4 c4' );
     
             expect(seq.count).to.eq(3);
             expect(seq.elements[1]).to.deep.eq({
