@@ -130,7 +130,7 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
 
     def.staves.forEach((staff, staffNo) => {
         staff.voices.forEach((voice) => {
-            const voiceSequence = new Sequence(voice.content);
+            const voiceSequence = voice.content;
             const voiceTimeSlots = voiceSequence.groupByTimeSlots();
             //console.log(voiceTimeSlots);
             
@@ -229,7 +229,7 @@ function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, 
     let staffEndTime = Time.newAbsolute(0, 1);
 
     def.voices.forEach((voice, voiceNo) => {        
-        const voiceSequence = new Sequence(voice.content);
+        const voiceSequence = voice.content;
         const voiceTimeSlots = voiceSequence.groupByTimeSlots();
         const voiceEndTime = Time.fromStart(voiceSequence.duration);
         const voiceBeamGroups = meter ? calcBeamGroups(voiceSequence, meterMap.getAllBeats()) : [];

@@ -7,8 +7,13 @@ import { AbsoluteTime } from './../rationals/time';
 import { Note } from '../notes/note';
 import { Time, TimeSpan } from '../rationals/time';
 import { Clef } from '../states/clef';
-import { PitchClass } from '../pitches/pitch';
-import { RegularMeterDef } from '../states/meter';
+
+
+export interface ISequence {
+    elements: (Note | StateChange)[];
+    duration: TimeSpan;
+    groupByTimeSlots(): TimeSlot[];
+}
 
 export interface SequenceDef {
     elements: string;
@@ -71,7 +76,7 @@ function parseLilyElement(ly: string): Note | StateChange {
 
 }
 
-export class Sequence {
+export class Sequence implements ISequence {
     constructor(public def: SequenceDef) {
         this.elements = def.elements ? Sequence.splitByNotes(def.elements).map(str => parseLilyElement(str)) : [];
     }

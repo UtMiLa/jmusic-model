@@ -41,3 +41,62 @@ Units are pixels.
 * Rendering physical model on HTML canvas, svg and potentially more
 * From (x,y)-position to model object (for interactivity)
 
+# Vision
+The aim of this project is to create the number one note entry and display tool for the web (including wikis, forums, and blogs).
+
+Additionally, it is intended to be the simplest open source component as a basis for music applications on desktop or mobile platforms (using Electron/Ionic). Possible uses could be:
+* user-friendly entry of music for processing by LilyPond
+* tools for composing or music analysis
+
+# Todos
+## Important
+Model and draw:
+* simple repeats
+* tuplets
+* lyrics
+* note expressions (staccato, fermata, breath, arpeggio...)
+* staff expressions (textual, including M.M.)
+* long expressions (hairpins, trill extensions, ottavas)
+* manual override note direction, accidentals
+
+Functionality:
+* Point and click to set cursor
+* Show selected notes, and select using mouse
+* Show excerpt of score (remembering key, clef etc)
+
+Import/export:
+* Lilypond (don't expect a full implementation, though)
+* MusicXml
+* ABC notation
+
+Model operations:
+* Add note
+* Add/remove/alter pitch to note
+* Change note value
+* Delete note
+* Clear area
+* Change meter/key/clef
+* Copy/paste selection
+* Define and use variables
+
+Transformations on sequences:
+* transpose chromatically/diatonically
+* invert chromatically/diatonically
+* retrograde
+* split chords to voices
+* join voices to form chords
+* keep notes on strong beats only
+
+Controls in Angular/React (probably in a sub-project):
+* Score display
+* Meter entry
+* Key entry
+* Clef entry
+* Note value entry
+
+## Nice to have
+* staff groups and accolades/brackets
+* time-based horizontal spacing
+* music playback
+* midi-assisted entry
+* Finale/Sibelius emulation

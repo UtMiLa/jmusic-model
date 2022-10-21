@@ -1,3 +1,4 @@
+import { Sequence } from './../../model/score/sequence';
 import { StateChange } from './../../model/states/state';
 import { Time } from './../../model/rationals/time';
 import { expect } from 'chai';
@@ -22,7 +23,7 @@ describe('Physical model, measure map', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0},
             voices: [{
-                content: { elements: 'c4 d2 e4 f1'}
+                content: new Sequence({ elements: 'c4 d2 e4 f1'})
             }]
         } as StaffDef;
 
@@ -302,7 +303,7 @@ describe('Physical model, measure map', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0},
             voices: [{
-                content: { elements: 'c4 <fis, ais, cis dis>2'}
+                content: new Sequence({ elements: 'c4 <fis, ais, cis dis>2'})
             }]
         } as StaffDef;
 

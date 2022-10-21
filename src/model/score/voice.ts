@@ -1,9 +1,9 @@
 import { NoteDirection } from './../notes/note';
-import { SequenceDef } from './sequence';
+import { ISequence } from './sequence';
   
 
 export interface VoiceDef {
-    content: SequenceDef;
+    content: ISequence;
     noteDirection?: NoteDirection;
 }
 

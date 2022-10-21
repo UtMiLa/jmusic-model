@@ -1,7 +1,7 @@
 import { StateChange } from './../states/state';
 import { Time, AbsoluteTime } from './../rationals/time';
 import { getAllBars, getAllBeats, Meter } from './../states/meter';
-import { Sequence } from './../score/sequence';
+import { ISequence } from './../score/sequence';
 import { Note } from './note';
 
 
@@ -30,7 +30,7 @@ function beamCount(denominator: number): number {
 }
 
 
-export function calcBeamGroups(seq: Sequence, meterIterator: IterableIterator<AbsoluteTime>): BeamGroup[] {
+export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<AbsoluteTime>): BeamGroup[] {
     //const meterIterator = getAllBeats(meter);
     let nextBeat = meterIterator.next().value;
     const grouping: BeamGroup[] = [];
