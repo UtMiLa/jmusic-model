@@ -8,6 +8,18 @@ export interface AbsoluteTime extends RationalDef {
 }
 
 export class Time {
+
+    static StartTime = Time.newAbsolute(0, 1);
+    static EternityTime = Time.newAbsolute(1, 0);
+    
+    static NoTime = Time.newSpan(0, 1);
+    static WholeTime = Time.newSpan(1, 1);
+    static HalfTime = Time.newSpan(1, 2);
+    static QuarterTime = Time.newSpan(1, 4);
+    static EightsTime = Time.newSpan(1, 8);
+    static InfiniteTime = Time.newSpan(1, 0);
+
+
     static sortComparison(time1: AbsoluteTime, time2: AbsoluteTime): number {
         return time1.numerator * time2.denominator - time2.numerator * time1.denominator;
     }

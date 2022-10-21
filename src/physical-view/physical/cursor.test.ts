@@ -1,4 +1,4 @@
-import { Sequence } from './../../model/score/sequence';
+import { SimpleSequence } from './../../model/score/sequence';
 import { HorizVarSizeGlyphs } from './glyphs';
 import { Cursor } from './cursor';
 import { Pitch } from '../../model/pitches/pitch';
@@ -24,7 +24,7 @@ describe('Physical model, cursor', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0},
             voices: [{
-                content: new Sequence( 'c\'4 d\'2 e\'4 f\'1')
+                content: new SimpleSequence( 'c\'4 d\'2 e\'4 f\'1')
             }]
         } as StaffDef;
 

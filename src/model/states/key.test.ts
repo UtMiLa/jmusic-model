@@ -1,5 +1,5 @@
 import { Time } from './../rationals/time';
-import { Sequence, __internal } from './../score/sequence';
+import { SimpleSequence, __internal } from './../score/sequence';
 import { PitchClass } from './../pitches/pitch';
 import { Key, AccidentalManager, displaceAccidentals } from './key';
 import { Pitch } from '../pitches/pitch';
@@ -44,7 +44,7 @@ describe('Key', () => {
     });
 
     it('should parse a key change', () => {
-        const seq = new Sequence( 'c4 \\key d \\major c4' );
+        const seq = new SimpleSequence( 'c4 \\key d \\major c4' );
 
         expect(seq.count).to.eq(3);
         /*expect(seq.elements[1]).to.deep.eq({
@@ -56,7 +56,7 @@ describe('Key', () => {
             isState: true
         });*/
 
-        const seq2 = new Sequence( 'c4 \\key ees \\minor c4' );
+        const seq2 = new SimpleSequence( 'c4 \\key ees \\minor c4' );
 
         expect(seq2.count).to.eq(3);
         expect(seq2.elements[1]).to.deep.eq({

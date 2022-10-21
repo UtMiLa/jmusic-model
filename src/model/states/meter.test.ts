@@ -1,7 +1,7 @@
 import { StateChange } from './state';
 import { TimeMap } from '~/tools/time-map';
 import { Time } from './../rationals/time';
-import { Sequence, __internal } from './../score/sequence';
+import { SimpleSequence, __internal } from './../score/sequence';
 import { expect } from 'chai';
 import { getAllBars, Meter, MeterFactory, RegularMeterDef, MeterMap } from './meter';
 describe('Meter', () => {
@@ -70,7 +70,7 @@ describe('Meter', () => {
         });
 
         it('should parse a meter change', () => {
-            const seq = new Sequence( 'c4 \\meter 3/4 c4' );
+            const seq = new SimpleSequence( 'c4 \\meter 3/4 c4' );
     
             expect(seq.count).to.eq(3);
             expect(seq.elements[1]).to.deep.eq({

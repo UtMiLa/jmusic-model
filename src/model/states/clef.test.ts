@@ -1,5 +1,5 @@
 import { Time } from './../rationals/time';
-import { Sequence, __internal } from './../score/sequence';
+import { SimpleSequence, __internal } from './../score/sequence';
 import { Pitch } from '../pitches/pitch';
 import { Clef, ClefType } from './clef';
 import { expect } from 'chai';
@@ -41,7 +41,7 @@ describe('Clef', () => {
     });
 
     it('should parse a clef change', () => {
-        const seq = new Sequence( 'c4 \\clef treble c4' );
+        const seq = new SimpleSequence( 'c4 \\clef treble c4' );
 
         expect(seq.count).to.eq(3);
         expect(seq.elements[1]).to.deep.eq({
@@ -53,7 +53,7 @@ describe('Clef', () => {
             isState: true
         });
 
-        const seq2 = new Sequence( 'c4 \\clef bass c4' );
+        const seq2 = new SimpleSequence( 'c4 \\clef bass c4' );
 
         expect(seq2.count).to.eq(3);
         expect(seq2.elements[1]).to.deep.eq({

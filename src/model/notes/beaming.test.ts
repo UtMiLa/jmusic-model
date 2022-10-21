@@ -1,13 +1,13 @@
 import { Time } from './../rationals/time';
 import { getAllBeats, MeterFactory, MeterMap } from './../states/meter';
-import { Sequence } from './../score/sequence';
+import { SimpleSequence } from './../score/sequence';
 import { expect } from 'chai';
 import { calcBeamGroups } from './beaming';
 
 describe('Beaming', () => {
 
     it('should group notes according to meter', () => {
-        const seq = new Sequence( 'c8 c16 c16 c8. c16 c16 c8 c16');
+        const seq = new SimpleSequence( 'c8 c16 c16 c8. c16 c16 c8 c16');
         const meter = MeterFactory.createRegularMeter({ count: 1, value: 4 });
 
         const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
@@ -19,7 +19,7 @@ describe('Beaming', () => {
     });
 
     it('should ignore quarters and longer', () => {
-        const seq = new Sequence( 'c8 c8 c4 c4 c2 c8 c8 c1');
+        const seq = new SimpleSequence( 'c8 c8 c4 c4 c2 c8 c8 c1');
         const meter = MeterFactory.createRegularMeter({ count: 1, value: 2 });
 
         const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
@@ -42,7 +42,7 @@ describe('Beaming', () => {
 
     
     it('should ignore rests', () => {
-        const seq = new Sequence( 'c8 r8 c8 r8');
+        const seq = new SimpleSequence( 'c8 r8 c8 r8');
         const meter = MeterFactory.createRegularMeter({ count: 1, value: 2 });
 
         const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
@@ -53,7 +53,7 @@ describe('Beaming', () => {
 
 
     it('should add extra beams for 16th and shorter', () => {
-        const seq = new Sequence( 'c16 c16 c16 c16 c32 c32 c32 c32');
+        const seq = new SimpleSequence( 'c16 c16 c16 c16 c32 c32 c32 c32');
         const meter = MeterFactory.createRegularMeter({ count: 1, value: 4 });
 
         const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
@@ -88,7 +88,7 @@ describe('Beaming', () => {
 
 
     it('should add subbeams according to note values', () => {
-        const seq = new Sequence( 'c8 c16 c16 c8. c16 c16 c8 c16');
+        const seq = new SimpleSequence( 'c8 c16 c16 c8. c16 c16 c8 c16');
         const meter = MeterFactory.createRegularMeter({ count: 1, value: 4 });
 
         const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
@@ -111,7 +111,7 @@ describe('Beaming', () => {
     });
 
     it('should change meter correctly', () => {
-        const seq = new Sequence( 'c2. \\meter 6/8 c8 c8 c8 c8 c8 c8');
+        const seq = new SimpleSequence( 'c2. \\meter 6/8 c8 c8 c8 c8 c8 c8');
         //const meter = MeterFactory.createRegularMeter({ count: 3, value: 4 });
 
         const meterMap = new MeterMap();

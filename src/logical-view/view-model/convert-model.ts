@@ -11,7 +11,7 @@ import { keyToView } from './convert-key';
 import { FlagType, NoteViewModel } from './note-view-model';
 import { Note, NoteDirection } from '../../model';
 import { Clef } from '../../model';
-import { Sequence } from '../../model';
+import { SimpleSequence } from '../../model';
 import { StaffDef } from '../../model';
 import { Key } from '../../model';
 import { calcBeamGroups } from '../../model';
@@ -37,7 +37,7 @@ class State {
     }
 
     public nextBarIterator: IterableIterator<AbsoluteTime> | undefined;
-    public nextBar = Time.newAbsolute(1, 0);
+    public nextBar = Time.EternityTime;
 
 
     private _voiceTimeSlot: TimeSlot | undefined;

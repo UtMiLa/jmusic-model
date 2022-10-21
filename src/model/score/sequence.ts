@@ -76,7 +76,7 @@ function parseLilyElement(ly: string): Note | StateChange {
 
 }
 
-export class Sequence implements ISequence {
+export class SimpleSequence implements ISequence {
     constructor(def: string) {
         this.def = def;
     }
@@ -87,13 +87,13 @@ export class Sequence implements ISequence {
     }
     public set def(value: string) {
         this._def = value;
-        this.elements = value ? Sequence.splitByNotes(value).map(str => parseLilyElement(str)) : [];
+        this.elements = value ? SimpleSequence.splitByNotes(value).map(str => parseLilyElement(str)) : [];
     }
 
     elements: (Note | StateChange)[] = [];
 
-    static createFromString(def: string): Sequence {
-        return new Sequence(def);
+    static createFromString(def: string): SimpleSequence {
+        return new SimpleSequence(def);
     }
 
     static splitByNotes(def: string): string[] {
@@ -160,5 +160,28 @@ export class Sequence implements ISequence {
         return res.items.map(item => item.value);
     }
 }
+
+
+export class CompositeSequence implements ISequence {
+    constructor(...sequences: ISequence[]) {
+        this._sequences = sequences;
+    }
+
+    private _sequences: ISequence[];
+
+    public get elements(): (Note | StateChange)[] {
+        return this._sequences.reduce((prev: (Note | StateChange)[], curr: ISequence) => prev.concat(curr.elements), []);
+    }
+
+    public get duration(): TimeSpan {
+        return this._sequences.reduce((prev: TimeSpan, curr: ISequence) => Time.addSpans(prev, curr.duration), Time.newSpan(0, 1));
+    }
+
+    groupByTimeSlots(): TimeSlot[] {
+        throw new Error('Method not implemented.');
+    }
+    
+}
+
 
 export const __internal = { parseLilyClef, parseLilyKey, parseLilyElement, parseLilyMeter };

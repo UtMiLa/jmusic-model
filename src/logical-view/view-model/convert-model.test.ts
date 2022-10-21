@@ -1,4 +1,4 @@
-import { Sequence } from './../../model/score/sequence';
+import { SimpleSequence } from './../../model/score/sequence';
 import { expect } from 'chai';
 import { Time } from './../../model';
 import { ClefType, StaffDef } from './../../model';
@@ -18,8 +18,8 @@ describe('View model', () => {
         const staff: StaffDef = { 
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
-            initialMeter: { count: 4, value: 4, upBeat: Time.newSpan(1, 8) },
-            voices:[{ content: new Sequence( 'bes8 r4 bes8 b8 b8. b16 bes8') }]
+            initialMeter: { count: 4, value: 4, upBeat: Time.EightsTime },
+            voices:[{ content: new SimpleSequence( 'bes8 r4 bes8 b8 b8. b16 bes8') }]
         };
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
@@ -39,8 +39,8 @@ describe('View model', () => {
         const staff: StaffDef = { 
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
-            initialMeter: { count: 4, value: 4, upBeat: Time.newSpan(1, 8) },
-            voices:[{ content: new Sequence( 'bes8 r4 bes8 b8 b8. b16 bes8') }]
+            initialMeter: { count: 4, value: 4, upBeat: Time.EightsTime },
+            voices:[{ content: new SimpleSequence( 'bes8 r4 bes8 b8 b8. b16 bes8') }]
         };
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
@@ -83,7 +83,7 @@ describe('View model', () => {
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4 },
-            voices:[{ content: new Sequence( 'bes16 bes8 b16') }]
+            voices:[{ content: new SimpleSequence( 'bes16 bes8 b16') }]
         };
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
@@ -92,7 +92,7 @@ describe('View model', () => {
         expect(staffView.timeSlots[0].beamings, 'note 1').to.deep.eq([{
             noteRefs: [ 
                 {
-                    absTime: Time.newAbsolute(0, 1), 
+                    absTime: Time.StartTime, 
                     uniq: '0-0-0'
                 },
                 {
