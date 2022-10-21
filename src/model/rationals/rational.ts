@@ -16,6 +16,13 @@ export class Rational {
         });
     }
 
+    static multiply(rational1: RationalDef, rational2: RationalDef): RationalDef {
+        return this.shorten({
+            numerator: rational1.numerator * rational2.numerator, 
+            denominator: rational1.denominator * rational2.denominator            
+        });
+    }
+
     static subtract(rational1: RationalDef, rational2: RationalDef): RationalDef {
         return this.shorten({
             numerator: rational1.numerator * rational2.denominator - rational1.denominator * rational2.numerator, 

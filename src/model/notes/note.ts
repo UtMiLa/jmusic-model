@@ -1,3 +1,4 @@
+import { RationalDef } from '../../model/rationals/rational';
 import { Rational } from '../rationals/rational';
 import { TimeSpan, Time } from '../rationals/time';
 import { Pitch } from '../pitches/pitch';
@@ -62,16 +63,27 @@ export class Note {
     }
 
     get duration(): TimeSpan {
+        if (this.tupletFactor) {
+            return {...Rational.multiply(this._duration, this.tupletFactor), type: 'span'};
+        } else {
+            return this._duration;
+        }
+        
+    }
+
+    get nominalDuration(): TimeSpan {
         return this._duration;
     }
 
+    tupletFactor?: RationalDef;
+
     get dotNo(): number {
-        return Time.getDotNo(this.duration.numerator);
+        return Time.getDotNo(this.nominalDuration.numerator);
     }
 
     get undottedDuration(): TimeSpan {        
         return Time.scale(
-            Time.addSpans(this.duration, Time.newSpan(1, this.duration.denominator)),
+            Time.addSpans(this.nominalDuration, Time.newSpan(1, this.nominalDuration.denominator)),
             1, 2
         );
     }
@@ -91,7 +103,7 @@ export class Note {
             }
     
         }
-        if (Rational.value(this.duration) >= 2) 
+        if (Rational.value(this.nominalDuration) >= 2) 
             return NoteType.NBreve;
         switch (this.undottedDuration.denominator) {
             case 1: return NoteType.NWhole;

@@ -1,3 +1,4 @@
+import { TimeSpan } from './../rationals/time';
 import { Time } from '../rationals/time';
 import { Note, NoteType } from './note';
 import { expect } from 'chai';
@@ -102,6 +103,18 @@ describe('Note', () => {
         expect(note1.tie).to.be.undefined;
         const note2 = Note.parseLily('<c\' e\' g\'>4~');
         expect(note2.tie).to.be.true;
+    });
+
+    it('should create a tuplet note', () => {
+        const note = Note.parseLily('c4');
+        expect(note.duration).to.deep.equal(Time.newSpan(1, 4));
+        expect(note.undottedDuration).to.deep.equal(Time.newSpan(1, 4));
+        expect(note.nominalDuration).to.deep.equal(Time.newSpan(1, 4));
+
+        note.tupletFactor = { numerator: 2, denominator: 3 };
+        expect(note.duration).to.deep.equal(Time.newSpan(1, 6));
+        expect(note.undottedDuration).to.deep.equal(Time.newSpan(1, 4));
+        expect(note.nominalDuration).to.deep.equal(Time.newSpan(1, 4));
     });
 
 

@@ -76,8 +76,52 @@ function parseLilyElement(ly: string): Note | StateChange {
 
 }
 
-export class SimpleSequence implements ISequence {
+export abstract class BaseSequence implements ISequence {
+    abstract elements: (StateChange | Note)[];
+    abstract duration: TimeSpan;
+
+    getTimeSlots(): AbsoluteTime[] {
+        let time = Time.newAbsolute(0, 1);
+        const res = [] as AbsoluteTime[];
+
+        this.elements.forEach(elem => {
+            if (!res.find(item => Time.equals(item, time))) {
+                res.push(time);
+            }
+            time  = Time.addTime(time, elem.duration);
+        });
+
+        return res;
+    }
+
+    groupByTimeSlots(): TimeSlot[] {
+        let time = Time.newAbsolute(0, 1);
+        
+        const res = new TimeMap<TimeSlot>((time) => ({ time, elements: [], states: []}));
+
+        this.elements.forEach(elem => {
+            const slot = res.get(time);
+            if ((elem as StateChange).isState) {
+                //console.log('statechg', elem);
+                
+                slot.states.push(elem as StateChange);
+                
+            } else {
+                slot.elements.push(elem as Note);
+            }
+            time  = Time.addTime(time, elem.duration);
+        });
+
+        return res.items.map(item => item.value);
+    }
+
+}
+
+
+export class SimpleSequence extends BaseSequence {
     constructor(def: string) {
+        super();
+
         this.def = def;
     }
 
@@ -125,7 +169,7 @@ export class SimpleSequence implements ISequence {
         return this.elements.reduce((prev, curr) => Time.addSpans(prev, curr.duration), Time.newSpan(0, 1));
     }
 
-    getTimeSlots(): AbsoluteTime[] {
+    /*getTimeSlots(): AbsoluteTime[] {
         let time = Time.newAbsolute(0, 1);
         const res = [] as AbsoluteTime[];
 
@@ -137,9 +181,9 @@ export class SimpleSequence implements ISequence {
         });
 
         return res;
-    }
+    }*/
 
-    groupByTimeSlots(): TimeSlot[] {
+/*    groupByTimeSlots(): TimeSlot[] {
         let time = Time.newAbsolute(0, 1);
         
         const res = new TimeMap<TimeSlot>((time) => ({ time, elements: [], states: []}));
@@ -158,12 +202,13 @@ export class SimpleSequence implements ISequence {
         });
 
         return res.items.map(item => item.value);
-    }
+    }*/
 }
 
 
-export class CompositeSequence implements ISequence {
+export class CompositeSequence extends BaseSequence {
     constructor(...sequences: ISequence[]) {
+        super();
         this._sequences = sequences;
     }
 
@@ -177,10 +222,6 @@ export class CompositeSequence implements ISequence {
         return this._sequences.reduce((prev: TimeSpan, curr: ISequence) => Time.addSpans(prev, curr.duration), Time.newSpan(0, 1));
     }
 
-    groupByTimeSlots(): TimeSlot[] {
-        throw new Error('Method not implemented.');
-    }
-    
 }
 
 

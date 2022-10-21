@@ -21,12 +21,19 @@ describe('Times', ()=> {
         });
 
 
+
         it('should correctly scale a rational', () => {
             const r3 = { numerator: 5, denominator: 7 };
             const r4 = { numerator: 35, denominator: 12 };
             expect(Rational.scale(r3, 2)).to.deep.eq({ numerator: 10, denominator: 7 });
             expect(Rational.scale(r3, 2, 3)).to.deep.eq({ numerator: 10, denominator: 21 });
             expect(Rational.scale(r4, 2, 5)).to.deep.eq({ numerator: 7, denominator: 6 });
+        });
+
+        it('should correctly multiply two rationals', () => {
+            const r3 = { numerator: 5, denominator: 7 };
+            const r4 = { numerator: 12, denominator: 35 };
+            expect(Rational.multiply(r3, r4)).to.deep.eq({ numerator: 12, denominator: 49 });
         });
 
         it('should calculate lcd for two ints', () => {            

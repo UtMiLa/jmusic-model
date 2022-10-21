@@ -9,4 +9,5 @@ export * from './score/score';
 export * from './score/sequence';
 export * from './score/staff';
 export * from './score/voice';
+export * from './score/transformations';
 export * from './notes/beaming';
