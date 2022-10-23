@@ -1,3 +1,4 @@
+//import { generateUniqueId } from '../../tools/unique-id';
 import { Meter, MeterFactory } from './../states/meter';
 import { Pitch } from './../pitches/pitch';
 import { Key } from './../states/key';
@@ -12,7 +13,7 @@ import { Clef } from '../states/clef';
 export interface ISequence {
     elements: (Note | StateChange)[];
     duration: TimeSpan;
-    groupByTimeSlots(): TimeSlot[];
+    groupByTimeSlots(keyPrefix: string): TimeSlot[];
 }
 
 export interface SequenceDef {
@@ -80,6 +81,16 @@ export abstract class BaseSequence implements ISequence {
     abstract elements: (StateChange | Note)[];
     abstract duration: TimeSpan;
 
+    /*protected uniqueId = generateUniqueId();
+
+    /*transferElement(element: (StateChange | Note), index: number): (StateChange | Note) {
+        if ((element as StateChange).isState) {
+            return element;    
+        }
+        const note = element as Note;
+        return note;// Note.clone(note, { uniq: this.uniqueId + '/' + index });
+    }*/
+
     getTimeSlots(): AbsoluteTime[] {
         let time = Time.newAbsolute(0, 1);
         const res = [] as AbsoluteTime[];
@@ -94,12 +105,12 @@ export abstract class BaseSequence implements ISequence {
         return res;
     }
 
-    groupByTimeSlots(): TimeSlot[] {
+    groupByTimeSlots(keyPrefix: string): TimeSlot[] {
         let time = Time.newAbsolute(0, 1);
         
         const res = new TimeMap<TimeSlot>((time) => ({ time, elements: [], states: []}));
 
-        this.elements.forEach(elem => {
+        this.elements.forEach((elem, index) => {
             const slot = res.get(time);
             if ((elem as StateChange).isState) {
                 //console.log('statechg', elem);
@@ -107,7 +118,7 @@ export abstract class BaseSequence implements ISequence {
                 slot.states.push(elem as StateChange);
                 
             } else {
-                slot.elements.push(elem as Note);
+                slot.elements.push(Note.clone(elem as Note, { uniq: `${keyPrefix}-${index}` }));
             }
             time  = Time.addTime(time, elem.duration);
         });
@@ -131,10 +142,17 @@ export class SimpleSequence extends BaseSequence {
     }
     public set def(value: string) {
         this._def = value;
-        this.elements = value ? SimpleSequence.splitByNotes(value).map(str => parseLilyElement(str)) : [];
+        this._elements = value ? SimpleSequence.splitByNotes(value).map(str => parseLilyElement(str)) : [];
     }
 
-    elements: (Note | StateChange)[] = [];
+    private _elements: (Note | StateChange)[] = [];
+    public get elements(): (Note | StateChange)[] {
+        return this._elements;
+    }
+
+    public addElement(element: (Note | StateChange)): void {
+        this._elements.push(element);
+    }
 
     static createFromString(def: string): SimpleSequence {
         return new SimpleSequence(def);
@@ -169,40 +187,6 @@ export class SimpleSequence extends BaseSequence {
         return this.elements.reduce((prev, curr) => Time.addSpans(prev, curr.duration), Time.newSpan(0, 1));
     }
 
-    /*getTimeSlots(): AbsoluteTime[] {
-        let time = Time.newAbsolute(0, 1);
-        const res = [] as AbsoluteTime[];
-
-        this.elements.forEach(elem => {
-            if (!res.find(item => Time.equals(item, time))) {
-                res.push(time);
-            }
-            time  = Time.addTime(time, elem.duration);
-        });
-
-        return res;
-    }*/
-
-/*    groupByTimeSlots(): TimeSlot[] {
-        let time = Time.newAbsolute(0, 1);
-        
-        const res = new TimeMap<TimeSlot>((time) => ({ time, elements: [], states: []}));
-
-        this.elements.forEach(elem => {
-            const slot = res.get(time);
-            if ((elem as StateChange).isState) {
-                //console.log('statechg', elem);
-                
-                slot.states.push(elem as StateChange);
-                
-            } else {
-                slot.elements.push(elem as Note);
-            }
-            time  = Time.addTime(time, elem.duration);
-        });
-
-        return res.items.map(item => item.value);
-    }*/
 }
 
 
@@ -215,7 +199,8 @@ export class CompositeSequence extends BaseSequence {
     private _sequences: ISequence[];
 
     public get elements(): (Note | StateChange)[] {
-        return this._sequences.reduce((prev: (Note | StateChange)[], curr: ISequence) => prev.concat(curr.elements), []);
+        return this._sequences
+            .reduce((prev: (Note | StateChange)[], curr: ISequence) => prev.concat(curr.elements), []);
     }
 
     public get duration(): TimeSpan {

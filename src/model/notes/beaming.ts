@@ -30,7 +30,7 @@ function beamCount(denominator: number): number {
 }
 
 
-export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<AbsoluteTime>): BeamGroup[] {
+export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<AbsoluteTime>, keyPrefix = ''): BeamGroup[] {
     //const meterIterator = getAllBeats(meter);
     let nextBeat = meterIterator.next().value;
     const grouping: BeamGroup[] = [];
@@ -74,7 +74,7 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
         }
     }
 
-    seq.elements.forEach(element => {
+    seq.elements.forEach((element, elmIndex) => {
         if ((element as StateChange).isState) {
             // state change
             const stC = element as StateChange;
@@ -86,19 +86,23 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
                 // new beat, or quarter note, or rest
                 //console.log('new beat', time, nextBeat, tempGroup);
     
-                finishGroup();
+                if (Time.sortComparison(time, nextBeat) === 0 || !isOnNextBeat) {
+                    // beams should go across beats when there is no note exactly on the beat (e.g. tuplets)
+                    finishGroup();
     
-                tempGroup = [];
-                tempSubGroups = [];
-                subGroups = [];
-                noteIdx = 0;
+                    tempGroup = [];
+                    tempSubGroups = [];
+                    subGroups = [];
+                    noteIdx = 0;    
+                }
+
                 if (isOnNextBeat) {
                     while (Time.sortComparison(time, nextBeat) >= 0)
                         nextBeat = meterIterator.next().value;
                 }
             }
             if (currBeamCnt > 0 && note.pitches.length) {
-                tempGroup.push(note);
+                tempGroup.push(Note.clone(note, {uniq: keyPrefix + '-' + elmIndex }));
             }
     
             while (currBeamCnt > prevBeamCnt) {

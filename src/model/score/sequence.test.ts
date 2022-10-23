@@ -49,7 +49,10 @@ describe('Sequence', () => {
             Time.newAbsolute(3, 8)
         ]);
 
-        expect(seq1.groupByTimeSlots()).to.deep.equal([
+        const slots = seq1.groupByTimeSlots('x');
+        expect(slots).to.have.length(3);
+
+        expect(slots[0]).to.deep.include(
             { time: Time.newAbsolute(0, 1), states: [], elements: [
                 {
                     '_duration': Time.newSpan(1, 4),
@@ -60,7 +63,26 @@ describe('Sequence', () => {
                             '_pitchClass': 0
                         }
                     ],
-                    'direction': NoteDirection.Undefined
+                    'direction': NoteDirection.Undefined,
+                    uniq: 'x-0'
+                }
+            ]}
+        );
+
+
+        expect(slots).to.deep.eq([
+            { time: Time.newAbsolute(0, 1), states: [], elements: [
+                {
+                    '_duration': Time.newSpan(1, 4),
+                    '_pitches': [
+                        {
+                            '_accidental': 0,
+                            '_octave': 3,
+                            '_pitchClass': 0
+                        }
+                    ],
+                    'direction': NoteDirection.Undefined,
+                    uniq: 'x-0'
                 }
             ] },
             { time: Time.newAbsolute(1, 4), states: [], elements: [
@@ -73,7 +95,8 @@ describe('Sequence', () => {
                             '_pitchClass': 1
                         }
                     ],
-                    'direction': NoteDirection.Undefined
+                    'direction': NoteDirection.Undefined,
+                    uniq: 'x-1'
                 }
             ] },
             { time: Time.newAbsolute(3, 8), states: [], elements: [
@@ -86,7 +109,8 @@ describe('Sequence', () => {
                             '_pitchClass': 2
                         }
                     ],
-                    'direction': NoteDirection.Undefined
+                    'direction': NoteDirection.Undefined,
+                    uniq: 'x-2'
                 }
 
             ] }
@@ -138,7 +162,7 @@ describe('Sequence', () => {
 
             expect(seqCombined.duration).to.deep.equal(Time.newSpan(7, 4));
 
-            seq1.elements.push(Note.parseLily('d4'));
+            seq1.addElement(Note.parseLily('d4'));
 
             expect(seqCombined.elements).to.have.length(12);
 

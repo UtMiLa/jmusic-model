@@ -17,6 +17,10 @@ export class Note {
    
     static clone(note: Note, changeProperties: { [key: string]: any } = {}): Note {        
         const res = new Note(note._pitches, note._duration);
+        if (note.uniq) res.uniq = note.uniq;
+        if (note.tupletFactor) res.tupletFactor = note.tupletFactor;
+        if (note.tie) res.tie = note.tie;
+        if (note.direction) res.direction = note.direction;
 
         Object.keys(changeProperties).forEach(key => (res as any)[key] = changeProperties[key]);
 
@@ -54,7 +58,7 @@ export class Note {
         }
         //console.log(match);
         const res = new Note(pitches.map(pitch => Pitch.parseLilypond(pitch)), Time.fromLilypond(durationString));
-        if (tie) res.tie = tie;
+        if (tie) res.tie = tie;        
         return res;
     }
 

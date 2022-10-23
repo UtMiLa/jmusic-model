@@ -124,14 +124,18 @@ export function createScopedTimeMap(): IndexedMap<StateChange, ScopedTimeKey> {
     });
 }
 
+function createIdPrefix(staffNo: number, voiceNo: number): string {
+    return `${staffNo}-${voiceNo}`;
+}
+
 export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
     const stateMap = createScopedTimeMap();
     //console.log('scoreModelToViewModel', def);    
 
     def.staves.forEach((staff, staffNo) => {
-        staff.voices.forEach((voice) => {
-            const voiceSequence = voice.content;
-            const voiceTimeSlots = voiceSequence.groupByTimeSlots();
+        staff.voices.forEach((voice, voiceNo) => {
+            const voiceSequence = voice.content;            
+            const voiceTimeSlots = voiceSequence.groupByTimeSlots(createIdPrefix(staffNo, voiceNo));
             //console.log(voiceTimeSlots);
             
             voiceTimeSlots.forEach(vts => {
@@ -230,9 +234,10 @@ function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, 
 
     def.voices.forEach((voice, voiceNo) => {        
         const voiceSequence = voice.content;
-        const voiceTimeSlots = voiceSequence.groupByTimeSlots();
+        const voiceTimeSlots = voiceSequence.groupByTimeSlots(createIdPrefix(staffNo, voiceNo));
         const voiceEndTime = Time.fromStart(voiceSequence.duration);
-        const voiceBeamGroups = meter ? calcBeamGroups(voiceSequence, meterMap.getAllBeats()) : [];
+        const voiceBeamGroups = meter ? calcBeamGroups(voiceSequence, meterMap.getAllBeats(), `${staffNo}-${voiceNo}`) : [];
+        //console.log('voiceBeamGroups', voiceBeamGroups);        
 
         if (Time.sortComparison(voiceEndTime, staffEndTime) > 0) {
             staffEndTime = voiceEndTime;
@@ -352,13 +357,13 @@ function createAccidentalViewModel(state: State) {
 
 function createNoteViewModels(state: State) {
     return state.voiceTimeSlot.elements.map((note) => {
-        const bg = state.voiceBeamGroups.find(vbg => vbg.notes.indexOf(note) > -1);
+        const bg = state.voiceBeamGroups.find(vbg => vbg.notes.find(n => n.uniq === note.uniq));
 
-        if (bg && bg.notes[0] === note) {
+        if (bg && bg.notes[0].uniq === note.uniq) {
             let noteTime = state.voiceTimeSlot.time;
             const beaming = {
                 noteRefs: bg.notes.map((nt, idx) => {
-                    const res = { absTime: noteTime, uniq: `${state.staffNo}-${state.voiceNo}-${state.slotNo + idx}` };
+                    const res = { absTime: noteTime, uniq: nt.uniq + '' };
                     noteTime = Time.addTime(noteTime, nt.duration);
                     return res;
                 }
@@ -376,7 +381,7 @@ function createNoteViewModels(state: State) {
 
         const noteClone = Note.clone(note, {
             direction: note.direction ? note.direction : state.voice.noteDirection,
-            uniq: `${state.staffNo}-${state.voiceNo}-${state.slotNo}`
+            uniq: note.uniq
         });
         const noteView = noteToView(noteClone, state.clef);
 

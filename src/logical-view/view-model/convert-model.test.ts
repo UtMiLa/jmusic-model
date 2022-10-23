@@ -1,4 +1,5 @@
-import { SimpleSequence } from './../../model/score/sequence';
+import { RetrogradeSequence, TupletSequence } from './../../model/score/transformations';
+import { SimpleSequence, CompositeSequence } from './../../model/score/sequence';
 import { expect } from 'chai';
 import { Time } from './../../model';
 import { ClefType, StaffDef } from './../../model';
@@ -113,5 +114,129 @@ describe('View model', () => {
 
     });
 
+
+    it('should make correct beams in cloned notes', () => {
+
+        const baseSequence = new SimpleSequence( 'bes8 b8 c8');
+        const retrogradeSequence = new RetrogradeSequence(baseSequence);
+        const combinedSequence = new CompositeSequence(baseSequence, retrogradeSequence);
+
+        const staff: StaffDef = { 
+            initialClef: { clefType: ClefType.G, line: 2 },
+            initialKey: { accidental: -1, count: 3 },
+            initialMeter: { count: 4, value: 4 },
+            voices:[{ content: combinedSequence }]
+        };
+
+        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+
+        expect(staffView.timeSlots.length).to.eq(6);
+        expect(staffView.timeSlots[0].beamings, 'note 1').to.deep.eq([{
+            noteRefs: [ 
+                {
+                    absTime: Time.StartTime, 
+                    uniq: '0-0-0'
+                },
+                {
+                    absTime: Time.newAbsolute(1, 8),
+                    uniq: '0-0-1'
+                }
+            ],
+            beams: [
+                { fromIdx: 0, toIndex: 1, level: 0 },
+            ]
+        }]);
+
+        expect(staffView.timeSlots[2].beamings, 'note 3').to.deep.eq([{
+            noteRefs: [ 
+                {
+                    absTime: Time.newAbsolute(1, 4),
+                    uniq: '0-0-2'
+                },
+                {
+                    absTime: Time.newAbsolute(3, 8),
+                    uniq: '0-0-3'
+                }
+            ],
+            beams: [
+                { fromIdx: 0, toIndex: 1, level: 0 },
+            ]
+        }]);
+
+        expect(staffView.timeSlots[4].beamings, 'note 5').to.deep.eq([{
+            noteRefs: [ 
+                {
+                    absTime: Time.newAbsolute(1, 2),
+                    uniq: '0-0-4'
+                },
+                {
+                    absTime: Time.newAbsolute(5, 8),
+                    uniq: '0-0-5'
+                }
+            ],
+            beams: [
+                { fromIdx: 0, toIndex: 1, level: 0 },
+            ]
+        }]);
+
+    });
+
+    it('should make correct beams in cloned tuplet notes', () => {
+
+        const baseSequence = new SimpleSequence('bes8 b8 c8 d8 e8 f8');
+        const tupletSequence = new TupletSequence(baseSequence, { numerator: 2, denominator: 3 });
+        
+
+        const staff: StaffDef = { 
+            initialClef: { clefType: ClefType.G, line: 2 },
+            initialKey: { accidental: -1, count: 3 },
+            initialMeter: { count: 4, value: 4 },
+            voices:[{ content: tupletSequence }]
+        };
+
+        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+
+        expect(staffView.timeSlots.length).to.eq(6);
+        expect(staffView.timeSlots[0].beamings, 'note 1').to.deep.eq([{
+            noteRefs: [ 
+                {
+                    absTime: Time.StartTime, 
+                    uniq: '0-0-0'
+                },
+                {
+                    absTime: Time.newAbsolute(1, 12),
+                    uniq: '0-0-1'
+                },
+                {
+                    absTime: Time.newAbsolute(1, 6),
+                    uniq: '0-0-2'
+                }
+            ],
+            beams: [
+                { fromIdx: 0, toIndex: 2, level: 0 },
+            ]
+        }]);
+
+        expect(staffView.timeSlots[3].beamings, 'note 3').to.deep.eq([{
+            noteRefs: [ 
+                {
+                    absTime: Time.newAbsolute(1, 4),
+                    uniq: '0-0-3'
+                },
+                {
+                    absTime: Time.newAbsolute(1, 3),
+                    uniq: '0-0-4'
+                },
+                {
+                    absTime: Time.newAbsolute(5, 12),
+                    uniq: '0-0-5'
+                }
+            ],
+            beams: [
+                { fromIdx: 0, toIndex: 2, level: 0 },
+            ]
+        }]);
+
+    });
 
 });

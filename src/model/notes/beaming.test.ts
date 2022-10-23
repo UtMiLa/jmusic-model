@@ -1,3 +1,4 @@
+import { TupletSequence } from './../score/transformations';
 import { Time } from './../rationals/time';
 import { getAllBeats, MeterFactory, MeterMap } from './../states/meter';
 import { SimpleSequence } from './../score/sequence';
@@ -140,5 +141,27 @@ describe('Beaming', () => {
             level: 0
         }]);
     });
+
+
+    it('should group tuplets according to meter', () => {
+        const seq = new TupletSequence(new SimpleSequence( 'c8 c8 c8'), { numerator: 2, denominator: 3 });
+        const meter = MeterFactory.createRegularMeter({ count: 1, value: 4 });
+
+        const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
+
+        expect(beamGroups).to.have.length(1);
+        expect(beamGroups[0].notes).to.have.length(3);
+
+
+        const seq2 = new TupletSequence(new SimpleSequence( 'c8 c8 c8 c8 c8'), { numerator: 4, denominator: 5 });
+        const meter2 = MeterFactory.createRegularMeter({ count: 4, value: 4 });
+
+        const beamGroups2 = calcBeamGroups(seq2, getAllBeats(meter2));
+
+        expect(beamGroups2).to.have.length(1);
+        expect(beamGroups2[0].notes).to.have.length(5);
+
+    });
+
 
 });
