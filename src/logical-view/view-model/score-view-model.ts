@@ -1,4 +1,4 @@
-import { BeamingViewModel } from './note-view-model';
+import { BeamingViewModel, TupletViewModel } from './note-view-model';
 import { Alteration } from './../../model/pitches/pitch';
 import { MeterViewModel } from './convert-meter';
 import { AbsoluteTime } from './../../model';
@@ -35,6 +35,7 @@ export interface TimeSlotViewModel {
     accidentals?: AccidentalViewModel[];
     notes: NoteViewModel[];
     beamings?: BeamingViewModel[];
+    tuplet?: TupletViewModel;
 }
 export interface StaffViewModel {
     timeSlots: TimeSlotViewModel[]

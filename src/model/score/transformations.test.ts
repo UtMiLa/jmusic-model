@@ -1,4 +1,4 @@
-import { RetrogradeSequence } from './transformations';
+import { RetrogradeSequence, TupletSequence } from './transformations';
 import { Note, NoteDirection } from './../notes/note';
 import { Time } from '../rationals/time';
 import { SimpleSequence, CompositeSequence } from './sequence';
@@ -21,6 +21,31 @@ describe('Sequence transformations', () => {
         expect(retro.elements[2]).to.deep.equal(Note.parseLily('c,2'));
         expect(retro.elements[0]).to.deep.equal(Note.parseLily('<e, c>4'));
     });
+
+    it('should create the a tuplet group from a sequence', () => {
+        const seq1 = SimpleSequence.createFromString(seq1Text);
+        const tuplet = new TupletSequence(seq1, { numerator: 2, denominator: 3 });
+        
+        expect(tuplet.elements.length).to.equal(3);
+        expect(tuplet.duration).to.deep.equal(Time.newSpan(1, 3));
+        expect(seq1.elements[0].duration).to.deep.equal(Time.newSpan(1, 4));
+        expect(tuplet.elements[0].duration).to.deep.equal(Time.newSpan(1, 6));
+        expect(tuplet.elements[2].duration).to.deep.equal(Time.newSpan(1, 12));
+        
+    });
+
+    it('should create a tuplet group from a tuplet sequence', () => {
+        const seq1 = SimpleSequence.createFromString(seq1Text);
+        const tuplet = new TupletSequence(seq1, { numerator: 2, denominator: 3 });
+        
+        const slots = tuplet.groupByTimeSlots('x');
+        expect(slots).to.have.length(3);
+        expect(slots[0].elements[0]).to.deep.include({
+            tupletGroup: ['x-0', 'x-1', 'x-2']
+        });
+        // todo: what if this sequence becomes transformed and changes uniqs?
+    });
+
 
 /*    it('should parse a sequence', () => {
         const seq1 = SimpleSequence.createFromString(seq1Text);

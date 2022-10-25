@@ -1,3 +1,4 @@
+import { PhysicalTupletBracketElement } from './../physical/physical-elements';
 import { NoteDirection } from './../../model';
 import { Point, PhysicalBeamElement, PhysicalVertVarSizeElement } from '../physical/physical-elements';
 import { GlyphCode } from '../physical/glyphs';
@@ -99,6 +100,18 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
                 { type: DrawOperationType.MoveTo, points: [convertXY(elmBeam.position)]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height })]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height - 3})]},
+                { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x, y: elmBeam.position.y - 3 })]},
+                { type: DrawOperationType.Fill, points: []}
+            ]);
+
+        } else if ((elem as any).element === VertVarSizeGlyphs.TupletBracket) {
+            ctx.strokeStyle = '#ff8888';
+            const elmBeam = elem as PhysicalTupletBracketElement;
+
+            draw(ctx, [
+                { type: DrawOperationType.MoveTo, points: [convertXY(elmBeam.position)]},
+                { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height + 4 })]},
+                { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height + 5 })]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x, y: elmBeam.position.y - 3 })]},
                 { type: DrawOperationType.Fill, points: []}
             ]);

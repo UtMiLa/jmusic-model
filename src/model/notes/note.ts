@@ -14,7 +14,6 @@ export enum NoteDirection {
 }
 
 export class Note {
-   
     static clone(note: Note, changeProperties: { [key: string]: any } = {}): Note {        
         const res = new Note(note._pitches, note._duration);
         if (note.uniq) res.uniq = note.uniq;
@@ -80,6 +79,7 @@ export class Note {
     }
 
     tupletFactor?: RationalDef;
+    tupletGroup?: string[];
 
     get dotNo(): number {
         return Time.getDotNo(this.nominalDuration.numerator);

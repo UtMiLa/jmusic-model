@@ -27,7 +27,7 @@ export class TupletSequence extends BaseSequence {
     }
     
     public get elements(): (Note | StateChange)[] {
-        return this.sequence.elements.map(ele => {
+        return this.sequence.elements.map((ele, index) => {
             if ((ele as StateChange).isState) {
                 return ele;
             } else {
@@ -37,6 +37,14 @@ export class TupletSequence extends BaseSequence {
     }
     
     public get duration(): TimeSpan {
-        return this.sequence.duration;
+        return {...Rational.multiply(this.fraction, this.sequence.duration), type: 'span' };
+    }
+
+    public groupByTimeSlots(keyPrefix: string): TimeSlot[] {
+        const res = super.groupByTimeSlots(keyPrefix);
+
+        res[0].elements[0].tupletGroup = res.map(slot => slot.elements[0].uniq + '');
+        
+        return res;
     }
 }

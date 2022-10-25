@@ -1,15 +1,17 @@
+import { PhysicalLongElement } from './physical-long-element';
+import { PhysicalTupletBracket } from './physical-tuplet-bracket';
 import { Time } from './../../model/rationals/time';
 import { Cursor } from './cursor';
 import { PhysicalBeamGroup } from './physical-beaming';
 import { convertMeter } from './physical-meter';
-import { TieViewModel, StaffViewModel, FlagType, TimeSlotViewModel } from './../../logical-view';
+import { TieViewModel, StaffViewModel, FlagType, TimeSlotViewModel, TupletViewModel } from './../../logical-view';
 import { convertAccidentals, convertKey } from './physical-key';
 import { NoteViewModel } from '../../logical-view';
 import { ClefType } from '../../model';
 import { Metrics } from './metrics';
 import { VertVarSizeGlyphs, GlyphCode, HorizVarSizeGlyphs } from './glyphs';
 
-import { PhysicalModel, PhysicalElementBase, PhysicalFixedSizeElement, PhysicalVertVarSizeElement, PhysicalHorizVarSizeElement } from './physical-elements';
+import { PhysicalModel, PhysicalElementBase, PhysicalFixedSizeElement, PhysicalVertVarSizeElement, PhysicalHorizVarSizeElement, PhysicalBeamElement, PhysicalTupletBracketElement } from './physical-elements';
 import { convertNote } from './physical-note';
 import { ClefViewModel, ScoreViewModel } from '../../logical-view';
 import { staffLineToY } from './functions';
@@ -52,7 +54,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
 
         let staffResultElements: PhysicalElementBase[] = addStaffLines(settings, width);
 
-        const beamings: PhysicalBeamGroup[] = [];
+        const beamings: PhysicalLongElement[] = [];
 
         staffModel.timeSlots.forEach(ts => {
             staffResultElements = convertStaff(measureMap, ts, beamings, settings, staffResultElements, cursor);
@@ -82,7 +84,7 @@ function addStaffLines(settings: Metrics, width: number): PhysicalElementBase[] 
 function convertStaff(
     measureMap: MeasureMap, 
     timeSlot: TimeSlotViewModel, 
-    beamings: PhysicalBeamGroup[], 
+    beamings: PhysicalLongElement[], 
     settings: Metrics, 
     resultElements: PhysicalElementBase[], 
     cursor?: Cursor
@@ -95,6 +97,10 @@ function convertStaff(
         timeSlot.beamings.forEach(beaming => {
             beamings.push(new PhysicalBeamGroup(beaming, settings));
         });
+    }
+
+    if (timeSlot.tuplet) {
+        beamings.push(new PhysicalTupletBracket(timeSlot.tuplet, settings));
     }
 
     if (timeSlot.clef) {
@@ -123,6 +129,9 @@ function convertStaff(
         const notestem = addItems.find(elm => elm.element === HorizVarSizeGlyphs.Stem) as PhysicalHorizVarSizeElement;
         if (note.flagType === FlagType.Beam && notestem) {
             //console.log('adding beam');
+            beamings.forEach(beaming => beaming.addNote({ absTime: timeSlot.absTime, uniq: note.uniq + '' }, notestem, resultElements));
+        }
+        if (note.tuplet) {
             beamings.forEach(beaming => beaming.addNote({ absTime: timeSlot.absTime, uniq: note.uniq + '' }, notestem, resultElements));
         }
     });
@@ -183,3 +192,15 @@ function convertClef(clef: ClefViewModel, xPos: number, settings: Metrics): Phys
         glyph
     } as PhysicalFixedSizeElement;
 }
+
+function convertTupletBracket(tuplet: TupletViewModel, settings: Metrics): PhysicalTupletBracketElement {
+
+    return {
+        element: VertVarSizeGlyphs.TupletBracket,
+        height: 0,
+        length: 0,
+        position: {x:0, y:0},
+        text: tuplet.tuplets[0].tuplet
+    };
+}
+

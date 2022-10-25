@@ -36,6 +36,13 @@ export interface PhysicalBeamElement extends PhysicalElementBase {
     height: number;
 }
 
+export interface PhysicalTupletBracketElement extends PhysicalElementBase {
+    element: VertVarSizeGlyphs.TupletBracket;
+    length: number;
+    height: number;
+    text: string;
+}
+
 export interface PhysicalModel {
     elements: PhysicalElementBase[];
 }

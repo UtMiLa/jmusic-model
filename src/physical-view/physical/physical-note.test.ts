@@ -1,4 +1,4 @@
-import { PhysicalHorizVarSizeElement, PhysicalVertVarSizeElement } from './physical-elements';
+import { PhysicalVertVarSizeElement } from './physical-elements';
 import { FlagType } from './../../logical-view/view-model/note-view-model';
 import { HorizVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */

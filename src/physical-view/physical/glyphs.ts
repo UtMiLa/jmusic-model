@@ -169,6 +169,7 @@ export enum VertVarSizeGlyphs {
     LedgerLine = 3,
     Tie = 4,
     Beam = 5,
+    TupletBracket = 6
 }
 
 

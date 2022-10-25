@@ -353,6 +353,9 @@ function createAccidentalViewModel(state: State) {
     return accidentals;
 }
 
+function createTupletViewModel(){
+    //
+}
 
 
 function createNoteViewModels(state: State) {

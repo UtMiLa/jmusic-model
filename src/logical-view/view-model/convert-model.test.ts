@@ -239,4 +239,63 @@ describe('View model', () => {
 
     });
 
+    
+    xit('should make correct tuplet brackets', () => {
+
+        const baseSequence = new SimpleSequence('bes8 b8 c8 d8 e8 f8');
+        const tupletSequence = new TupletSequence(baseSequence, { numerator: 2, denominator: 3 });
+        
+
+        const staff: StaffDef = { 
+            initialClef: { clefType: ClefType.G, line: 2 },
+            initialKey: { accidental: -1, count: 3 },
+            initialMeter: { count: 4, value: 4 },
+            voices:[{ content: tupletSequence }]
+        };
+
+        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+
+        expect(staffView.timeSlots.length).to.eq(6);
+        expect(staffView.timeSlots[0].tuplet, 'note 1').to.deep.eq({
+            noteRefs: [ 
+                {
+                    absTime: Time.StartTime, 
+                    uniq: '0-0-0'
+                },
+                {
+                    absTime: Time.newAbsolute(1, 12),
+                    uniq: '0-0-1'
+                },
+                {
+                    absTime: Time.newAbsolute(1, 6),
+                    uniq: '0-0-2'
+                }
+            ],
+            beams: [
+                { fromIdx: 0, toIndex: 2, tuplet: '3' },
+            ]
+        });
+
+        expect(staffView.timeSlots[3].tuplet, 'note 3').to.deep.eq({
+            noteRefs: [ 
+                {
+                    absTime: Time.newAbsolute(1, 4),
+                    uniq: '0-0-3'
+                },
+                {
+                    absTime: Time.newAbsolute(1, 3),
+                    uniq: '0-0-4'
+                },
+                {
+                    absTime: Time.newAbsolute(5, 12),
+                    uniq: '0-0-5'
+                }
+            ],
+            beams: [
+                { fromIdx: 0, toIndex: 2, tuplet: '3' },
+            ]
+        });
+
+    });
+
 });

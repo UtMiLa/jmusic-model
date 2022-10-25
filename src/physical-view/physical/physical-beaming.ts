@@ -1,5 +1,5 @@
 import { Metrics } from './metrics';
-import { PhysicalHorizVarSizeElement, Point } from './physical-elements';
+import { PhysicalHorizVarSizeElement, Point, PhysicalBeamElement, PhysicalVertVarSizeElement, PhysicalElementBase } from './physical-elements';
 import { VertVarSizeGlyphs } from './glyphs';
 import { Time } from './../../model/rationals/time';
 import { NoteViewModel } from './../../logical-view/view-model/note-view-model';
@@ -46,7 +46,7 @@ export class PhysicalBeamGroup {
         return { x: firstNote.position.x, y: firstNote.position.y + firstNote.height + extraHeight };
     }
 
-    addNote(noteRef: NoteRef, notestem: PhysicalHorizVarSizeElement, output: any[]): boolean {
+    addNote(noteRef: NoteRef, notestem: PhysicalHorizVarSizeElement, output: PhysicalElementBase[]): boolean {
         //console.log('adding note');
         if (this.testNote(noteRef)) {
             this.registeredNotes[noteRef.uniq] = notestem;

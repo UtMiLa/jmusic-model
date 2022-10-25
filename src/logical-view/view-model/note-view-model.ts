@@ -13,6 +13,17 @@ export interface BeamingViewModel {
     beams: BeamDef[];
 }
 
+export interface TupletDef {
+    fromIdx: number | undefined;
+    toIndex: number | undefined;
+    tuplet: string;
+}
+
+export interface TupletViewModel {
+    noteRefs: NoteRef[];    
+    tuplets: TupletDef[];
+}
+
 
 export enum FlagType {
     None,
@@ -30,5 +41,6 @@ export interface NoteViewModel {
     flagType?: FlagType;
     dotNo?: number;
     uniq?: string;
+    tuplet?: boolean;
 }
 
