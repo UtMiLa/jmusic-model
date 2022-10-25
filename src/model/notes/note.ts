@@ -13,6 +13,10 @@ export enum NoteDirection {
     Undefined = 0, Up = 1, Down = 2
 }
 
+export enum TupletState {
+    None, Begin, Inside, End
+}
+
 export class Note {
     static clone(note: Note, changeProperties: { [key: string]: any } = {}): Note {        
         const res = new Note(note._pitches, note._duration);
@@ -20,6 +24,7 @@ export class Note {
         if (note.tupletFactor) res.tupletFactor = note.tupletFactor;
         if (note.tie) res.tie = note.tie;
         if (note.direction) res.direction = note.direction;
+        if (note.tupletGroup) res.tupletGroup = note.tupletGroup;
 
         Object.keys(changeProperties).forEach(key => (res as any)[key] = changeProperties[key]);
 
@@ -79,7 +84,7 @@ export class Note {
     }
 
     tupletFactor?: RationalDef;
-    tupletGroup?: string[];
+    tupletGroup?: TupletState;
 
     get dotNo(): number {
         return Time.getDotNo(this.nominalDuration.numerator);

@@ -1,5 +1,5 @@
 import { Rational, RationalDef } from '../../model/rationals/rational';
-import { Note } from '../notes/note';
+import { Note, TupletState } from '../notes/note';
 import { TimeSpan } from '../rationals/time';
 import { StateChange } from '../states/state';
 import { BaseSequence, ISequence, TimeSlot } from './sequence';
@@ -11,7 +11,17 @@ export class RetrogradeSequence extends BaseSequence {
     }
     
     public get elements(): (Note | StateChange)[] {
-        return [...this.sequence.elements].reverse();
+        const res = this.sequence.elements.map(n => {
+            if ((n as StateChange).isState) return n;
+            const note = Note.clone(n as Note);
+            if ((note as Note).tupletGroup === TupletState.Begin) {
+                (note as Note).tupletGroup = TupletState.End;
+            } else if ((note as Note).tupletGroup === TupletState.End) {
+                (note as Note).tupletGroup = TupletState.Begin;
+            }
+            return note;
+        }).reverse();
+        return res;
     }
     
     public get duration(): TimeSpan {
@@ -27,11 +37,12 @@ export class TupletSequence extends BaseSequence {
     }
     
     public get elements(): (Note | StateChange)[] {
-        return this.sequence.elements.map((ele, index) => {
+        return this.sequence.elements.map((ele, i, arr) => {
             if ((ele as StateChange).isState) {
                 return ele;
             } else {
-                return Note.clone(ele as Note, { tupletFactor : this.fraction });
+                const tupletGroup = i ? (i === arr.length - 1 ? TupletState.End : TupletState.Inside) : TupletState.Begin;
+                return Note.clone(ele as Note, { tupletFactor : this.fraction, tupletGroup });
             }
         });
     }
@@ -40,11 +51,12 @@ export class TupletSequence extends BaseSequence {
         return {...Rational.multiply(this.fraction, this.sequence.duration), type: 'span' };
     }
 
-    public groupByTimeSlots(keyPrefix: string): TimeSlot[] {
+    /*public groupByTimeSlots(keyPrefix: string): TimeSlot[] {
         const res = super.groupByTimeSlots(keyPrefix);
 
-        res[0].elements[0].tupletGroup = res.map(slot => slot.elements[0].uniq + '');
+        res.forEach((ts, i) => ts.elements[0].tupletGroup = i ? (i === res.length - 1 ? TupletState.End : TupletState.Inside) : TupletState.Begin );
+        //res[0].elements[0]; //res.map(slot => slot.elements[0].uniq + '');
         
         return res;
-    }
+    }*/
 }

@@ -6,6 +6,7 @@ export interface Metrics {
     scaleDegreeUnit: number; 
     beamSpacing: number;
     tupletSpacing: number;
+    tupletBracketHeight: number;
     staffLengthOffset: number;
 
     blackNoteHeadLeftXOffset: number;
@@ -46,7 +47,8 @@ export class StandardMetrics implements Metrics {
 
     scaleDegreeUnit = 3;
     beamSpacing: number = 5;
-    tupletSpacing = 5; 
+    tupletSpacing = -10; 
+    tupletBracketHeight = 5; 
     staffLengthOffset: number = 10;    
 
     blackNoteHeadLeftXOffset = 6.5;

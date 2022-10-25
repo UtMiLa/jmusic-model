@@ -35,7 +35,7 @@ export interface TimeSlotViewModel {
     accidentals?: AccidentalViewModel[];
     notes: NoteViewModel[];
     beamings?: BeamingViewModel[];
-    tuplet?: TupletViewModel;
+    tuplets?: TupletViewModel[];
 }
 export interface StaffViewModel {
     timeSlots: TimeSlotViewModel[]

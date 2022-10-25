@@ -40,6 +40,7 @@ export interface PhysicalTupletBracketElement extends PhysicalElementBase {
     element: VertVarSizeGlyphs.TupletBracket;
     length: number;
     height: number;
+    bracketHeight: number;
     text: string;
 }
 

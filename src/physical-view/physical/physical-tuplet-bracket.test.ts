@@ -45,7 +45,7 @@ describe('Physical model, tuplet brackets', () => {
                                     uniq: 'x1'
                                 } as NoteViewModel
                             ],
-                            tuplet: {
+                            tuplets: [{
                                 noteRefs: [
                                     {
                                         absTime: Time.StartTime, 
@@ -63,7 +63,7 @@ describe('Physical model, tuplet brackets', () => {
                                 tuplets: [
                                     { fromIdx: 0, toIndex: 2, tuplet: '3' }
                                 ]
-                            } as TupletViewModel
+                            } as TupletViewModel]
                         },
                         { 
                             absTime: Time.newAbsolute(1, 6), 

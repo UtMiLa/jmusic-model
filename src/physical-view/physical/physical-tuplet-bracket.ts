@@ -53,12 +53,6 @@ export class PhysicalTupletBracket {
                 const slope = this.calcSlope();
                 const startPoint = this.startPoint();
 
-                /*this.tvm.noteRefs.forEach(nr => {
-                    const notestem = this.registeredNotes[nr.uniq];
-                    notestem.height = startPoint.y + slope * (notestem.position.x - startPoint.x) - notestem.position.y;
-                });*/
-                
-
                 this.tvm.tuplets.forEach((tupletBrk) => {
                     let sign = 1;
                     //let firstXPos: number, lastXPos: number;
@@ -82,6 +76,7 @@ export class PhysicalTupletBracket {
                         position: { x: firstXPos, y: yStart - this.settings.tupletSpacing * sign },
                         length,
                         height,
+                        bracketHeight: this.settings.tupletBracketHeight * sign,
                         text: '3'
                     } as PhysicalTupletBracketElement);
     

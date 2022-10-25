@@ -19,12 +19,15 @@ export enum DrawOperationType {
     MoveTo,
     LineTo,
     CurveTo,
+    Text,
     Stroke,
     Fill
 }
 
 export interface DrawOperation {
     type: DrawOperationType;
+    text?: string;
+    font?: string;
     points: Point[];
 }
 
@@ -44,6 +47,13 @@ function draw(ctx: CanvasRenderingContext2D, operations: DrawOperation[]): void 
                     operation.points[1].x, operation.points[1].y,
                     operation.points[2].x, operation.points[2].y
                 );
+                break;
+            case DrawOperationType.Text:
+                //const scale = (elem as any).scale ? (elem as any).scale : 1;
+                if (operation.font) ctx.font = operation.font;
+                //const glyph = emmentalerCodes[(elem as PhysicalFixedSizeElement).glyph as GlyphCode] as string;
+                ctx.fillText(operation.text as string, operation.points[0].x, operation.points[0].y);
+                     
                 break;
             case DrawOperationType.Stroke:
                 ctx.stroke();
@@ -105,15 +115,22 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
             ]);
 
         } else if ((elem as any).element === VertVarSizeGlyphs.TupletBracket) {
-            ctx.strokeStyle = '#ff8888';
+            ctx.strokeStyle = '#000000';
             const elmBeam = elem as PhysicalTupletBracketElement;
+            const scale = (elem as any).scale ? (elem as any).scale : 1;
+            
 
             draw(ctx, [
                 { type: DrawOperationType.MoveTo, points: [convertXY(elmBeam.position)]},
-                { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height + 4 })]},
-                { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height + 5 })]},
-                { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x, y: elmBeam.position.y - 3 })]},
-                { type: DrawOperationType.Fill, points: []}
+                { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x, y: elmBeam.position.y + elmBeam.bracketHeight })]},
+                { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height + elmBeam.bracketHeight })]},
+                { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height })]},
+                { type: DrawOperationType.Stroke, points: []},
+                { type: DrawOperationType.Text, 
+                    points: [convertXY({ x: elmBeam.position.x + elmBeam.length / 2, y: elmBeam.position.y + elmBeam.height / 2 + 2 * elmBeam.bracketHeight })], 
+                    font: Math.trunc(12 * position.scaleY * scale) + 'px Emmentaler',
+                    text: elmBeam.text 
+                }
             ]);
 
         } else if ((elem as any).element === VertVarSizeGlyphs.Tie) {

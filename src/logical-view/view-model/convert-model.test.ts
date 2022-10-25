@@ -256,7 +256,7 @@ describe('View model', () => {
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
         expect(staffView.timeSlots.length).to.eq(6);
-        expect(staffView.timeSlots[0].tuplet, 'note 1').to.deep.eq({
+        expect(staffView.timeSlots[0].tuplets, 'note 1').to.deep.eq({
             noteRefs: [ 
                 {
                     absTime: Time.StartTime, 
@@ -276,7 +276,7 @@ describe('View model', () => {
             ]
         });
 
-        expect(staffView.timeSlots[3].tuplet, 'note 3').to.deep.eq({
+        expect(staffView.timeSlots[3].tuplets, 'note 3').to.deep.eq({
             noteRefs: [ 
                 {
                     absTime: Time.newAbsolute(1, 4),

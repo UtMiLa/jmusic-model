@@ -99,8 +99,8 @@ function convertStaff(
         });
     }
 
-    if (timeSlot.tuplet) {
-        beamings.push(new PhysicalTupletBracket(timeSlot.tuplet, settings));
+    if (timeSlot.tuplets) {
+        timeSlot.tuplets.forEach(tuplet => beamings.push(new PhysicalTupletBracket(tuplet, settings)));
     }
 
     if (timeSlot.clef) {
@@ -192,7 +192,7 @@ function convertClef(clef: ClefViewModel, xPos: number, settings: Metrics): Phys
         glyph
     } as PhysicalFixedSizeElement;
 }
-
+/*
 function convertTupletBracket(tuplet: TupletViewModel, settings: Metrics): PhysicalTupletBracketElement {
 
     return {
@@ -201,6 +201,7 @@ function convertTupletBracket(tuplet: TupletViewModel, settings: Metrics): Physi
         length: 0,
         position: {x:0, y:0},
         text: tuplet.tuplets[0].tuplet
-    };
+    } as PhysicalTupletBracketElement;
 }
 
+*/

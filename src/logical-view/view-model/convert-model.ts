@@ -3,12 +3,12 @@ import { TimeMap, IndexedMap } from './../../tools/time-map';
 import { Meter, MeterMap } from './../../model/states/meter';
 import { BeamGroup } from './../../model/notes/beaming';
 import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
-import { getAllBars, ScoreDef, TimeSlot } from './../../model';
+import { getAllBars, ScoreDef, TimeSlot, TupletState } from './../../model';
 import { MeterFactory } from './../../model';
 import { meterToView } from './convert-meter';
 import { AbsoluteTime, Time } from './../../model';
 import { keyToView } from './convert-key';
-import { FlagType, NoteViewModel } from './note-view-model';
+import { FlagType, NoteViewModel, TupletViewModel } from './note-view-model';
 import { Note, NoteDirection } from '../../model';
 import { Clef } from '../../model';
 import { SimpleSequence } from '../../model';
@@ -38,6 +38,8 @@ class State {
 
     public nextBarIterator: IterableIterator<AbsoluteTime> | undefined;
     public nextBar = Time.EternityTime;
+    public tupletGroups = [] as TupletViewModel[];
+    public tupletGroup: TupletViewModel | undefined;
 
 
     private _voiceTimeSlot: TimeSlot | undefined;
@@ -78,7 +80,7 @@ class State {
 
     public accidentalManager = new AccidentalManager();
 
-    addNotes(elements: NoteViewModel[]) {
+    addNotes(elements: NoteViewModel[]): void {
         this.slot.notes = this.slot.notes.concat(elements);
     }
 
@@ -86,7 +88,7 @@ class State {
         return this._meter; 
     }
 
-    setMeter(meter: Meter, atTime: AbsoluteTime) {
+    setMeter(meter: Meter, atTime: AbsoluteTime): void {
         this._meter = meter;
         if(meter) {
             this.nextBarIterator = getAllBars(meter, atTime);
@@ -94,7 +96,7 @@ class State {
         }
     }
 
-    newBar() {
+    newBar(): void {
         this.accidentalManager.newBar();
     }
 }
@@ -237,6 +239,7 @@ function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, 
         const voiceTimeSlots = voiceSequence.groupByTimeSlots(createIdPrefix(staffNo, voiceNo));
         const voiceEndTime = Time.fromStart(voiceSequence.duration);
         const voiceBeamGroups = meter ? calcBeamGroups(voiceSequence, meterMap.getAllBeats(), `${staffNo}-${voiceNo}`) : [];
+        //const voiceTupletGroups = 
         //console.log('voiceBeamGroups', voiceBeamGroups);        
 
         if (Time.sortComparison(voiceEndTime, staffEndTime) > 0) {
@@ -252,6 +255,7 @@ function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, 
             state.slot = getTimeSlot(timeSlots, voiceTimeSlot.time);
             state.voiceTimeSlot = voiceTimeSlot;
             state.slotNo = slotNo;
+            updateTupletViewModel(state);
 
             const clefChg = stateMap.peekLatest({absTime: voiceTimeSlot.time, scope: staffNo}, (key, value) => !!value.clef);
             if (clefChg && clefChg.clef && clefChg.clef !== state.clef) {
@@ -353,12 +357,38 @@ function createAccidentalViewModel(state: State) {
     return accidentals;
 }
 
-function createTupletViewModel(){
-    //
+function updateTupletViewModel(state: State): void {
+    state.voiceTimeSlot.elements.forEach((note) => {
+        switch (note.tupletGroup) {
+            case TupletState.Begin: 
+                if (state.tupletGroup) throw 'Internal Error (createTupletViewModel)';
+                state.tupletGroup = { noteRefs: [], tuplets: [] };
+                if (!state.slot.tuplets) state.slot.tuplets = [];
+                state.slot.tuplets.push(state.tupletGroup);
+                state.tupletGroup.noteRefs.push({absTime: state.voiceTimeSlot.time, uniq: note.uniq + ''});
+                state.tupletGroup.tuplets.push({
+                    fromIdx: 0,
+                    tuplet: '3',
+                    toIndex: undefined
+                });
+                break;
+            case TupletState.Inside:
+                if (!state.tupletGroup) throw 'Internal Error (createTupletViewModel)';
+                state.tupletGroup.noteRefs.push({absTime: state.voiceTimeSlot.time, uniq: note.uniq + ''});
+                break;
+            case TupletState.End: 
+                if (!state.tupletGroup) throw 'Internal Error (createTupletViewModel)';
+                state.tupletGroup.noteRefs.push({absTime: state.voiceTimeSlot.time, uniq: note.uniq + ''});
+                state.tupletGroup.tuplets[0].toIndex = state.tupletGroup.noteRefs.length - 1;
+                state.tupletGroups.push(state.tupletGroup);
+                state.tupletGroup = undefined;
+                break;
+        }
+    });
 }
 
 
-function createNoteViewModels(state: State) {
+function createNoteViewModels(state: State): NoteViewModel[] {
     return state.voiceTimeSlot.elements.map((note) => {
         const bg = state.voiceBeamGroups.find(vbg => vbg.notes.find(n => n.uniq === note.uniq));
 
@@ -395,4 +425,4 @@ function createNoteViewModels(state: State) {
     });
 }
 
-export const __internal = { staffModelToViewModel };
+export const __internal = { staffModelToViewModel, createNoteViewModels, State };

@@ -1,10 +1,13 @@
-import { Clef } from '../../model/states/clef';
+import { TupletSequence } from './../../model/score/transformations';
+import { SimpleSequence } from './../../model/score/sequence';
+import { Clef, ClefType } from '../../model/states/clef';
 import { Note } from '../../model/notes/note';
 /* eslint-disable comma-dangle */
 import { NoteType, NoteDirection } from '../../model/notes/note';
 import { expect } from 'chai';
 import { FlagType } from './note-view-model';
 import { noteToView } from './convert-note';
+import { __internal } from './convert-model';
 
 describe('View model, note', () => {
 
@@ -150,5 +153,25 @@ describe('View model, note', () => {
         expect(viewModel2.dotNo).to.be.undefined;
     });
     
+    it('should create a tuplet group from a tuplet sequence', () => {
+        const seq1Text = 'c8 d8 e8';
+
+        const seq1 = SimpleSequence.createFromString(seq1Text);
+        const tuplet = new TupletSequence(seq1, { numerator: 2, denominator: 3 });
+        const state = new __internal.State([], 0, 0, { content: tuplet }, new Clef({ clefType: ClefType.G, line: -2 }));
+        const timeSlots = tuplet.groupByTimeSlots('bb');
+        state.voiceTimeSlot = timeSlots[0];
+
+        const elements = __internal.createNoteViewModels(state);
+        expect(elements[0]).to.deep.include({
+            positions: [-13],
+            tuplet: true
+        });
+        
+        /*expect(elements[1]).to.deep.include({
+            positions: [-13]
+        });*/
+        
+    });
 
 });
