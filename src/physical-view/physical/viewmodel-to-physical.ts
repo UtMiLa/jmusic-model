@@ -50,7 +50,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
 
     const resultElements = viewModel.staves.map((staffModel: StaffViewModel, idx: number) => {
 
-        const y0 = -70 * idx;
+        const y0 = -settings.staffTopMargin -(settings.staffBottomMargin + settings.staffTopMargin + 8 * settings.scaleDegreeUnit) * idx;
 
         let staffResultElements: PhysicalElementBase[] = addStaffLines(settings, width);
 

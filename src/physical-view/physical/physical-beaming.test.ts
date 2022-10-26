@@ -79,12 +79,12 @@ describe('Physical model, note beaming', () => {
 
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: defaultMetrics.staffLengthOffset, y: 4 * defaultMetrics.scaleDegreeUnit }
+            position: { x: defaultMetrics.staffLengthOffset, y: 4 * defaultMetrics.scaleDegreeUnit -defaultMetrics.staffTopMargin }
         });
 
         expect(physicalModel.elements[8]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: defaultMetrics.staffLengthOffset + defaultMetrics.defaultSpacing, y: 6 * defaultMetrics.scaleDegreeUnit }
+            position: { x: defaultMetrics.staffLengthOffset + defaultMetrics.defaultSpacing, y: 6 * defaultMetrics.scaleDegreeUnit -defaultMetrics.staffTopMargin }
         });
 
         //  { "element": VertVarSizeGlyphs.Beam, "length": 70, "height": 10, "position": { "x": 70+7, "y": 3 * lineWidth } },

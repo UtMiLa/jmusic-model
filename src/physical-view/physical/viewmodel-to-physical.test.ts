@@ -38,7 +38,7 @@ describe('Physical model', () => {
             const element: PhysicalVertVarSizeElement = elements[from + i] as PhysicalVertVarSizeElement;
 
             expect(element.element).to.equal(VertVarSizeGlyphs.Line);
-            expect(element.position).to.deep.equal({ x: 0, y: (no - i - 1) * width });
+            expect(element.position).to.deep.equal({ x: 0, y: (no - i - 1) * width -defaultMetrics.staffTopMargin });
         }
     }
 
@@ -72,27 +72,27 @@ describe('Physical model', () => {
         expect(physicalModel).to.deep.include({ elements: [
             { 
                 element: VertVarSizeGlyphs.Line,
-                position: { x: 0, y: 4 * lineWidth },
+                position: { x: 0, y: 4 * lineWidth -defaultMetrics.staffTopMargin },
                 length: 0
             },
             { 
                 element: VertVarSizeGlyphs.Line,
-                position: { x: 0, y: 3 * lineWidth },
+                position: { x: 0, y: 3 * lineWidth -defaultMetrics.staffTopMargin },
                 length: 0
             },
             { 
                 element: VertVarSizeGlyphs.Line,
-                position: { x: 0, y: 2 * lineWidth },
+                position: { x: 0, y: 2 * lineWidth -defaultMetrics.staffTopMargin },
                 length: 0
             },
             { 
                 element: VertVarSizeGlyphs.Line,
-                position: { x: 0, y: lineWidth },
+                position: { x: 0, y: lineWidth -defaultMetrics.staffTopMargin },
                 length: 0
             },
             { 
                 element: VertVarSizeGlyphs.Line,
-                position: { x: 0, y: 0 },
+                position: { x: 0, y: 0 -defaultMetrics.staffTopMargin },
                 length: 0
             }
         ] });
@@ -212,7 +212,7 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[5]).to.deep.eq({
             glyph: 'clefs.G',
-            position: { x: 10, y: defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 10, y: defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
     });
     
@@ -250,12 +250,12 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[5]).to.deep.eq({
             glyph: 'clefs.C',
-            position: { x: 10, y: defaultMetrics.scaleDegreeUnit*1 }
+            position: { x: 10, y: defaultMetrics.scaleDegreeUnit*1 -defaultMetrics.staffTopMargin }
         });
 
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'noteheads.s0',
-            position: { x: 30, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 30, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
     });
    
@@ -326,20 +326,20 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'noteheads.sM1',
-            position: { x: 30, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 30, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
 
         expect(physicalModel.elements[7]).to.deep.eq({
             glyph: 'noteheads.s0',
-            position: { x: 50, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 50, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
         expect(physicalModel.elements[9]).to.deep.eq({
             glyph: 'noteheads.s1',
-            position: { x: 70, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 70, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
         expect(physicalModel.elements[11]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 90, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 90, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
 
 
@@ -347,12 +347,12 @@ describe('Physical model', () => {
         expect(physicalModel.elements[8]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
             height: defaultMetrics.quarterStemDefaultLength,
-            position: { x: 70 + defaultMetrics.halfNoteHeadLeftXOffset, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 70 + defaultMetrics.halfNoteHeadLeftXOffset, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
         expect(physicalModel.elements[10]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
             height: defaultMetrics.quarterStemDefaultLength,
-            position: { x: 90 + defaultMetrics.blackNoteHeadLeftXOffset, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 90 + defaultMetrics.blackNoteHeadLeftXOffset, y: -0.5 * defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
 
     });
@@ -412,30 +412,30 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[7]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 30, y: -defaultMetrics.scaleDegreeUnit }
+            position: { x: 30, y: -defaultMetrics.scaleDegreeUnit -defaultMetrics.staffTopMargin }
         });
 
         expect(physicalModel.elements[9]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 50, y: 0 }
+            position: { x: 50, y: -defaultMetrics.staffTopMargin  }
         });
         expect(physicalModel.elements[10]).to.deep.eq({
             element: VertVarSizeGlyphs.Beam,
             height: defaultMetrics.scaleDegreeUnit,
             length: 20,
-            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.scaleDegreeUnit + defaultMetrics.quarterStemDefaultLength }
+            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.scaleDegreeUnit + defaultMetrics.quarterStemDefaultLength -defaultMetrics.staffTopMargin }
         });
 
         // stems
         expect(physicalModel.elements[6]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
             height: defaultMetrics.quarterStemDefaultLength,
-            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.scaleDegreeUnit }
+            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.scaleDegreeUnit -defaultMetrics.staffTopMargin }
         });
         expect(physicalModel.elements[8]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
             height: defaultMetrics.quarterStemDefaultLength,
-            position: { x: 50 + defaultMetrics.blackNoteHeadLeftXOffset, y: 0 }
+            position: { x: 50 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.staffTopMargin }
         });
 
     });
@@ -530,49 +530,49 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[7]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 30, y: -defaultMetrics.scaleDegreeUnit }
+            position: { x: 30, y: -defaultMetrics.scaleDegreeUnit -defaultMetrics.staffTopMargin }
         });
 
         expect(physicalModel.elements[13]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 70, y: 0 }
+            position: { x: 70, y: -defaultMetrics.staffTopMargin }
         });
 
         expect(physicalModel.elements[14]).to.deep.eq({
             element: VertVarSizeGlyphs.Beam,
             height: defaultMetrics.scaleDegreeUnit,
             length: 40,
-            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.scaleDegreeUnit + defaultMetrics.quarterStemDefaultLength }
+            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.scaleDegreeUnit + defaultMetrics.quarterStemDefaultLength -defaultMetrics.staffTopMargin }
         });
 
         // voice 2
         expect(physicalModel.elements[9]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 30, y: 9*defaultMetrics.scaleDegreeUnit }
+            position: { x: 30, y: 9*defaultMetrics.scaleDegreeUnit -defaultMetrics.staffTopMargin }
         });
 
         expect(physicalModel.elements[11]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 50, y: 8*defaultMetrics.scaleDegreeUnit }
+            position: { x: 50, y: 8*defaultMetrics.scaleDegreeUnit -defaultMetrics.staffTopMargin }
         });
 
         expect(physicalModel.elements[16]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 70, y: 8*defaultMetrics.scaleDegreeUnit }
+            position: { x: 70, y: 8*defaultMetrics.scaleDegreeUnit -defaultMetrics.staffTopMargin }
         });
 
         expect(physicalModel.elements[17]).to.deep.eq({
             element: VertVarSizeGlyphs.Beam,
             height: -defaultMetrics.scaleDegreeUnit,
             length: 40,
-            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: 9*defaultMetrics.scaleDegreeUnit + defaultMetrics.quarterStemDefaultLength }
+            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: 9*defaultMetrics.scaleDegreeUnit + defaultMetrics.quarterStemDefaultLength -defaultMetrics.staffTopMargin }
         });
 
         expect(physicalModel.elements[18]).to.deep.eq({
             element: VertVarSizeGlyphs.Beam,
             height: -0.5*defaultMetrics.scaleDegreeUnit,
             length: 20,
-            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: 9*defaultMetrics.scaleDegreeUnit - defaultMetrics.beamSpacing + defaultMetrics.quarterStemDefaultLength }
+            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: 9*defaultMetrics.scaleDegreeUnit - defaultMetrics.beamSpacing + defaultMetrics.quarterStemDefaultLength -defaultMetrics.staffTopMargin }
         });
 
         //console.log(physicalModel.elements);
@@ -581,12 +581,12 @@ describe('Physical model', () => {
         expect(physicalModel.elements[6]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
             height: defaultMetrics.quarterStemDefaultLength,
-            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.scaleDegreeUnit }
+            position: { x: 30 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.scaleDegreeUnit -defaultMetrics.staffTopMargin }
         });
         expect(physicalModel.elements[12]).to.deep.eq({
             element: HorizVarSizeGlyphs.Stem,
             height: defaultMetrics.quarterStemDefaultLength,
-            position: { x: 70 + defaultMetrics.blackNoteHeadLeftXOffset, y: 0 }
+            position: { x: 70 + defaultMetrics.blackNoteHeadLeftXOffset, y: -defaultMetrics.staffTopMargin }
         });
 
     });
@@ -659,19 +659,19 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'noteheads.sM1',
-            position: { x: 30, y: 2*defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 30, y: 2*defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
         expect(physicalModel.elements[7]).to.deep.eq({
             glyph: 'noteheads.s0',
-            position: { x: 50, y: 1.5*defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 50, y: 1.5*defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
         expect(physicalModel.elements[9]).to.deep.eq({
             glyph: 'noteheads.s1',
-            position: { x: 70, y: defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 70, y: defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
         expect(physicalModel.elements[11]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 90, y: 0.5*defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 90, y: 0.5*defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
     });
    
@@ -724,7 +724,7 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[7]).to.deep.eq({
             glyph: 'accidentals.2',
-            position: { x: 50, y: 1.5*defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 50, y: 1.5*defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
 
     });
@@ -794,26 +794,26 @@ describe('Physical model', () => {
         expect(physicalModel.elements.length).to.eq(5 + 1 + 4 + 2);
 
         checkStaffLines(physicalModel.elements, 0, alternativeMetrics.scaleDegreeUnit*2, 158);
-
+        
         expect(physicalModel.elements[5]).to.deep.eq({
             glyph: 'clefs.F',
-            position: { x: 10, y: alternativeMetrics.scaleDegreeUnit*6 }
+            position: { x: 10, y: alternativeMetrics.scaleDegreeUnit*6 - alternativeMetrics.staffTopMargin }
         });
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'noteheads.sM1',
-            position: { x: 10 + alternativeMetrics.defaultSpacing, y: 2*alternativeMetrics.scaleDegreeUnit*2 }
+            position: { x: 10 + alternativeMetrics.defaultSpacing, y: 2*alternativeMetrics.scaleDegreeUnit*2 - alternativeMetrics.staffTopMargin }
         });
         expect(physicalModel.elements[7]).to.deep.eq({
             glyph: 'noteheads.s0',
-            position: { x: 10 + alternativeMetrics.defaultSpacing*2, y: 1.5*alternativeMetrics.scaleDegreeUnit*2 }
+            position: { x: 10 + alternativeMetrics.defaultSpacing*2, y: 1.5*alternativeMetrics.scaleDegreeUnit*2 - alternativeMetrics.staffTopMargin }
         });
         expect(physicalModel.elements[9]).to.deep.eq({
             glyph: 'noteheads.s1',
-            position: { x: 10 + alternativeMetrics.defaultSpacing*3, y: alternativeMetrics.scaleDegreeUnit*2 }
+            position: { x: 10 + alternativeMetrics.defaultSpacing*3, y: alternativeMetrics.scaleDegreeUnit*2 - alternativeMetrics.staffTopMargin }
         });
         expect(physicalModel.elements[11]).to.deep.eq({
             glyph: 'noteheads.s2',
-            position: { x: 10 + alternativeMetrics.defaultSpacing*4, y: 0.5*alternativeMetrics.scaleDegreeUnit*2 }
+            position: { x: 10 + alternativeMetrics.defaultSpacing*4, y: 0.5*alternativeMetrics.scaleDegreeUnit*2 - alternativeMetrics.staffTopMargin }
         });
     });
 
@@ -890,7 +890,7 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[5]).to.deep.eq({
             glyph: 'accidentals.M2',
-            position: { x: 10, y: 3.5 * defaultMetrics.scaleDegreeUnit*2 }
+            position: { x: 10, y: 3.5 * defaultMetrics.scaleDegreeUnit*2 -defaultMetrics.staffTopMargin }
         });
     });
    
@@ -927,12 +927,12 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[6]).to.deep.eq({
             glyph: 'five',
-            position: { x: 30, y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY }
+            position: { x: 30, y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY -defaultMetrics.staffTopMargin }
         });
 
         expect(physicalModel.elements[7]).to.deep.eq({
             glyph: 'four',
-            position: { x: 30, y: defaultMetrics.meterAdjustY }
+            position: { x: 30, y: defaultMetrics.meterAdjustY -defaultMetrics.staffTopMargin }
         });
     });
     
@@ -969,12 +969,18 @@ describe('Physical model', () => {
 
         expect(physicalModel.elements[8]).to.deep.eq({
             glyph: 'five',
-            position: { x: 30 + 2 * defaultMetrics.keySigSpacing + defaultMetrics.defaultSpacing, y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY }
+            position: { 
+                x: 30 + 2 * defaultMetrics.keySigSpacing + defaultMetrics.defaultSpacing, 
+                y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY -defaultMetrics.staffTopMargin
+            }
         });
 
         expect(physicalModel.elements[9]).to.deep.eq({
             glyph: 'four',
-            position: { x: 30 + 2 * defaultMetrics.keySigSpacing + defaultMetrics.defaultSpacing, y: defaultMetrics.meterAdjustY }
+            position: { 
+                x: 30 + 2 * defaultMetrics.keySigSpacing + defaultMetrics.defaultSpacing, 
+                y: defaultMetrics.meterAdjustY -defaultMetrics.staffTopMargin
+            }
         });
     });
    
@@ -1066,7 +1072,7 @@ describe('Physical model', () => {
         expect(physicalModel.elements[6]).to.deep.equal(
             { 
                 element: HorizVarSizeGlyphs.Bar,
-                position: { x: 30, y: 0 },
+                position: { x: 30, y: -defaultMetrics.staffTopMargin },
                 height: 4 * lineWidth
             }
         );
@@ -1112,7 +1118,7 @@ describe('Physical model', () => {
         expect(physicalModel.elements[6]).to.deep.equal(
             { 
                 element: VertVarSizeGlyphs.Tie,
-                position: { x: 10 + defaultMetrics.tieAfterNote, y: -defaultMetrics.scaleDegreeUnit*2 },
+                position: { x: 10 + defaultMetrics.tieAfterNote, y: -defaultMetrics.scaleDegreeUnit*2 - defaultMetrics.staffTopMargin },
                 direction: NoteDirection.Down,
                 length: 12
             }
@@ -1122,7 +1128,7 @@ describe('Physical model', () => {
 
             { 
                 element: VertVarSizeGlyphs.Tie,
-                position: { x: 10 + defaultMetrics.tieAfterNote, y: 0 },
+                position: { x: 10 + defaultMetrics.tieAfterNote, y: -defaultMetrics.staffTopMargin },
                 direction: NoteDirection.Up,
                 length: 12
             }

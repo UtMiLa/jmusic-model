@@ -8,6 +8,8 @@ export interface Metrics {
     tupletSpacing: number;
     tupletBracketHeight: number;
     staffLengthOffset: number;
+    staffBottomMargin: number;
+    staffTopMargin: number;
 
     blackNoteHeadLeftXOffset: number;
     blackNoteHeadRightXOffset: number;
@@ -49,7 +51,9 @@ export class StandardMetrics implements Metrics {
     beamSpacing: number = 5;
     tupletSpacing = -10; 
     tupletBracketHeight = 5; 
-    staffLengthOffset: number = 10;    
+    staffLengthOffset: number = 10;
+    staffBottomMargin = 30;
+    staffTopMargin = 30;
 
     blackNoteHeadLeftXOffset = 6.5;
     blackNoteHeadRightXOffset = 0;

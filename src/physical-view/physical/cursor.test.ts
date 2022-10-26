@@ -55,7 +55,7 @@ describe('Physical model, cursor', () => {
             element: HorizVarSizeGlyphs.Cursor,
             position: { 
                 x: cursorNotePosition.x,
-                y: 12
+                y: 12-defaultMetrics.staffTopMargin 
             }
         });
 
