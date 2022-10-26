@@ -99,6 +99,42 @@ class State {
     newBar(): void {
         this.accidentalManager.newBar();
     }
+
+
+
+    updateTupletViewModel(): void {
+        this.voiceTimeSlot.elements.forEach((note) => {
+            switch (note.tupletGroup) {
+                case TupletState.Begin: 
+                    if (this.tupletGroup) throw 'Internal Error (createTupletViewModel)';
+                    this.tupletGroup = { noteRefs: [], tuplets: [] };
+                    if (!this.slot.tuplets) this.slot.tuplets = [];
+                    this.slot.tuplets.push(this.tupletGroup);
+                    this.tupletGroup.noteRefs.push({absTime: this.voiceTimeSlot.time, uniq: note.uniq + ''});
+                    this.tupletGroup.tuplets.push({
+                        fromIdx: 0,
+                        tuplet: '3',
+                        toIndex: undefined
+                    });
+                    break;
+                case TupletState.Inside:
+                    if (!this.tupletGroup) throw 'Internal Error (createTupletViewModel)';
+                    this.tupletGroup.noteRefs.push({absTime: this.voiceTimeSlot.time, uniq: note.uniq + ''});
+                    break;
+                case TupletState.End: 
+                    if (!this.tupletGroup) throw 'Internal Error (createTupletViewModel)';
+                    this.tupletGroup.noteRefs.push({absTime: this.voiceTimeSlot.time, uniq: note.uniq + ''});
+                    this.tupletGroup.tuplets[0].toIndex = this.tupletGroup.noteRefs.length - 1;
+                    this.tupletGroups.push(this.tupletGroup);
+                    this.tupletGroup = undefined;
+                    break;
+            }
+        });
+    }
+    
+    
+
+
 }
 
 
@@ -232,82 +268,90 @@ function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, 
     });
 
 
+    const staffEndTime = createViewModelsForVoice(def, staffNo, meter, meterMap, clef, timeSlots, stateMap);
+
+    if (meter) {
+        addBarLines(meterMap, staffEndTime, timeSlots);
+    }
+    return { 
+        timeSlots: timeSlots.sort((ts1, ts2) => Time.sortComparison(ts1.absTime, ts2.absTime))
+    };
+}
+
+
+function createViewModelsForVoice(def: StaffDef, staffNo: number, meter: Meter | undefined, meterMap: MeterMap, clef: Clef, timeSlots: TimeSlotViewModel[], stateMap: IndexedMap<StateChange, ScopedTimeKey>) {
     let staffEndTime = Time.newAbsolute(0, 1);
 
-    def.voices.forEach((voice, voiceNo) => {        
+    def.voices.forEach((voice, voiceNo) => {
         const voiceSequence = voice.content;
         const voiceTimeSlots = voiceSequence.groupByTimeSlots(createIdPrefix(staffNo, voiceNo));
         const voiceEndTime = Time.fromStart(voiceSequence.duration);
         const voiceBeamGroups = meter ? calcBeamGroups(voiceSequence, meterMap.getAllBeats(), `${staffNo}-${voiceNo}`) : [];
-        //const voiceTupletGroups = 
-        //console.log('voiceBeamGroups', voiceBeamGroups);        
 
         if (Time.sortComparison(voiceEndTime, staffEndTime) > 0) {
             staffEndTime = voiceEndTime;
         }
 
         const state = new State(voiceBeamGroups, staffNo, voiceNo, voice, clef);
-        if (def.initialKey) state.key = new Key(def.initialKey);
-        if (meter) state.setMeter(meter, Time.newAbsolute(0, 1));
+        if (def.initialKey)
+            state.key = new Key(def.initialKey);
+        if (meter)
+            state.setMeter(meter, Time.newAbsolute(0, 1));
 
 
         voiceTimeSlots.forEach((voiceTimeSlot, slotNo) => {
             state.slot = getTimeSlot(timeSlots, voiceTimeSlot.time);
             state.voiceTimeSlot = voiceTimeSlot;
             state.slotNo = slotNo;
-            updateTupletViewModel(state);
+            state.updateTupletViewModel();
 
-            const clefChg = stateMap.peekLatest({absTime: voiceTimeSlot.time, scope: staffNo}, (key, value) => !!value.clef);
-            if (clefChg && clefChg.clef && clefChg.clef !== state.clef) {
-                state.clef = clefChg.clef;
-            }
-
-            const keyChg = stateMap.peekLatest({absTime: voiceTimeSlot.time, scope: undefined}, (key, value) => !!value.key);
-            if (keyChg && keyChg.key && keyChg.key !== state.key) {
-                state.key = keyChg.key;
-            }
-            
-            const meterChg = stateMap.peekLatest({absTime: voiceTimeSlot.time, scope: undefined}, (key, value) => !!value.meter);
-            if (meterChg && meterChg.meter && meterChg.meter !== state.meter) {
-                state.setMeter(meterChg.meter, voiceTimeSlot.time);
-            }
-            
-            const elements = createNoteViewModels(state);
-
-            createAccidentalViewModel(state);
-
-            state.addNotes(elements);
-
-            createTieViewModel(state);
+            createTimeSlotViewModels(state, voiceTimeSlot, stateMap, staffNo);
         });
-        
+
     });
-
-    if (meter) {
-        const measureTime = meter.measureLength;
-        //let barTime = meter.firstBarTime;
-        //console.log('bar', measureTime, barTime, staffEndTime, meterModel);
-
-        const barIterator = meterMap.getAllBars();
-        let barTime: AbsoluteTime = barIterator.next().value;
-        
-        while (Time.sortComparison(barTime, staffEndTime) <= 0) {
-            if (barTime.numerator > 0) {
-                const slot = getTimeSlot(timeSlots, barTime);
-                slot.bar = true;
-            }
-            //barTime = Time.addTime(barTime, measureTime);
-            barTime = barIterator.next().value;
-            //console.log('bar adding', slot, barTime);
-        }
-    }
-    return { 
-        timeSlots: timeSlots.sort((ts1, ts2) => Time.sortComparison(ts1.absTime, ts2.absTime))
-    };
-
-
+    return staffEndTime;
 }
 
+function createTimeSlotViewModels(state: State, voiceTimeSlot: TimeSlot, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo: number) {
+
+    const clefChg = stateMap.peekLatest({ absTime: voiceTimeSlot.time, scope: staffNo }, (key, value) => !!value.clef);
+    if (clefChg && clefChg.clef && clefChg.clef !== state.clef) {
+        state.clef = clefChg.clef;
+    }
+
+    const keyChg = stateMap.peekLatest({ absTime: voiceTimeSlot.time, scope: undefined }, (key, value) => !!value.key);
+    if (keyChg && keyChg.key && keyChg.key !== state.key) {
+        state.key = keyChg.key;
+    }
+
+    const meterChg = stateMap.peekLatest({ absTime: voiceTimeSlot.time, scope: undefined }, (key, value) => !!value.meter);
+    if (meterChg && meterChg.meter && meterChg.meter !== state.meter) {
+        state.setMeter(meterChg.meter, voiceTimeSlot.time);
+    }
+
+    const elements = createNoteViewModels(state);
+
+    createAccidentalViewModel(state);
+
+    state.addNotes(elements);
+
+    createTieViewModel(state);
+}
+
+function addBarLines(meterMap: MeterMap, staffEndTime: AbsoluteTime, timeSlots: TimeSlotViewModel[]) {
+    const barIterator = meterMap.getAllBars();
+    let barTime: AbsoluteTime = barIterator.next().value;
+
+    while (Time.sortComparison(barTime, staffEndTime) <= 0) {
+        if (barTime.numerator > 0) {
+            const slot = getTimeSlot(timeSlots, barTime);
+            slot.bar = true;
+        }
+        //barTime = Time.addTime(barTime, measureTime);
+        barTime = barIterator.next().value;
+        //console.log('bar adding', slot, barTime);
+    }
+}
 
 function createTieViewModel(state: State) {
     //voiceTimeSlot: TimeSlot, clef: Clef, voice: VoiceDef, slot: TimeSlotViewModel) {
@@ -357,35 +401,6 @@ function createAccidentalViewModel(state: State) {
     return accidentals;
 }
 
-function updateTupletViewModel(state: State): void {
-    state.voiceTimeSlot.elements.forEach((note) => {
-        switch (note.tupletGroup) {
-            case TupletState.Begin: 
-                if (state.tupletGroup) throw 'Internal Error (createTupletViewModel)';
-                state.tupletGroup = { noteRefs: [], tuplets: [] };
-                if (!state.slot.tuplets) state.slot.tuplets = [];
-                state.slot.tuplets.push(state.tupletGroup);
-                state.tupletGroup.noteRefs.push({absTime: state.voiceTimeSlot.time, uniq: note.uniq + ''});
-                state.tupletGroup.tuplets.push({
-                    fromIdx: 0,
-                    tuplet: '3',
-                    toIndex: undefined
-                });
-                break;
-            case TupletState.Inside:
-                if (!state.tupletGroup) throw 'Internal Error (createTupletViewModel)';
-                state.tupletGroup.noteRefs.push({absTime: state.voiceTimeSlot.time, uniq: note.uniq + ''});
-                break;
-            case TupletState.End: 
-                if (!state.tupletGroup) throw 'Internal Error (createTupletViewModel)';
-                state.tupletGroup.noteRefs.push({absTime: state.voiceTimeSlot.time, uniq: note.uniq + ''});
-                state.tupletGroup.tuplets[0].toIndex = state.tupletGroup.noteRefs.length - 1;
-                state.tupletGroups.push(state.tupletGroup);
-                state.tupletGroup = undefined;
-                break;
-        }
-    });
-}
 
 
 function createNoteViewModels(state: State): NoteViewModel[] {
