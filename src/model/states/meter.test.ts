@@ -1,7 +1,7 @@
 import { StateChange } from './state';
 import { TimeMap } from '~/tools/time-map';
 import { Time } from './../rationals/time';
-import { SimpleSequence, __internal } from './../score/sequence';
+import { parseLilyMeter, SimpleSequence, __internal } from './../score/sequence';
 import { expect } from 'chai';
 import { getAllBars, Meter, MeterFactory, RegularMeterDef, MeterMap } from './meter';
 describe('Meter', () => {
@@ -83,11 +83,11 @@ describe('Meter', () => {
     
     
         it('should parse different regular meter changes', () => {
-            expect(__internal.parseLilyMeter('\\meter 3/4')).to.deep.eq(MeterFactory.createRegularMeter({ count: 3, value: 4 }));
-            expect(__internal.parseLilyMeter('\\meter 2/2')).to.deep.eq(MeterFactory.createRegularMeter({ count: 2, value: 2 }));
-            expect(__internal.parseLilyMeter('\\meter 6/8')).to.deep.eq(MeterFactory.createRegularMeter({ count: 6, value: 8 }));
-            expect(__internal.parseLilyMeter('\\meter 12/16')).to.deep.eq(MeterFactory.createRegularMeter({ count: 12, value: 16 }));
-            expect(__internal.parseLilyMeter('\\meter 4/4')).to.deep.eq(MeterFactory.createRegularMeter({ count: 4, value: 4 }));    
+            expect(parseLilyMeter('\\meter 3/4')).to.deep.eq(MeterFactory.createRegularMeter({ count: 3, value: 4 }));
+            expect(parseLilyMeter('\\meter 2/2')).to.deep.eq(MeterFactory.createRegularMeter({ count: 2, value: 2 }));
+            expect(parseLilyMeter('\\meter 6/8')).to.deep.eq(MeterFactory.createRegularMeter({ count: 6, value: 8 }));
+            expect(parseLilyMeter('\\meter 12/16')).to.deep.eq(MeterFactory.createRegularMeter({ count: 12, value: 16 }));
+            expect(parseLilyMeter('\\meter 4/4')).to.deep.eq(MeterFactory.createRegularMeter({ count: 4, value: 4 }));    
         });
     
     

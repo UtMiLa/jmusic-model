@@ -1,5 +1,5 @@
 import { Time } from './../rationals/time';
-import { SimpleSequence, __internal } from './../score/sequence';
+import { parseLilyClef, SimpleSequence } from './../score/sequence';
 import { Pitch } from '../pitches/pitch';
 import { Clef, ClefType } from './clef';
 import { expect } from 'chai';
@@ -69,25 +69,25 @@ describe('Clef', () => {
 
 
     it('should parse all clef types', () => {
-        expect(__internal.parseLilyClef('\\clef G')).to.deep.eq(new Clef({ clefType: ClefType.G, line: -2 }));
-        expect(__internal.parseLilyClef('\\clef treble')).to.deep.eq(new Clef({ clefType: ClefType.G, line: -2 }));
-        expect(__internal.parseLilyClef('\\clef violin')).to.deep.eq(new Clef({ clefType: ClefType.G, line: -2 }));
-        expect(__internal.parseLilyClef('\\clef G2')).to.deep.eq(new Clef({ clefType: ClefType.G, line: -2 }));
-        //expect(__internal.parseLilyClef('\\clef french')).to.deep.eq(new Clef({ clefType: ClefType.G, line: -4 }));
-        expect(__internal.parseLilyClef('\\clef tenorG')).to.deep.eq(new Clef({ clefType: ClefType.G8, line: -2 }));
+        expect(parseLilyClef('\\clef G')).to.deep.eq(new Clef({ clefType: ClefType.G, line: -2 }));
+        expect(parseLilyClef('\\clef treble')).to.deep.eq(new Clef({ clefType: ClefType.G, line: -2 }));
+        expect(parseLilyClef('\\clef violin')).to.deep.eq(new Clef({ clefType: ClefType.G, line: -2 }));
+        expect(parseLilyClef('\\clef G2')).to.deep.eq(new Clef({ clefType: ClefType.G, line: -2 }));
+        //expect(parseLilyClef('\\clef french')).to.deep.eq(new Clef({ clefType: ClefType.G, line: -4 }));
+        expect(parseLilyClef('\\clef tenorG')).to.deep.eq(new Clef({ clefType: ClefType.G8, line: -2 }));
 
-        //expect(__internal.parseLilyClef('\\clef soprano')).to.deep.eq(new Clef({ clefType: ClefType.C, line: -4 }));
-        expect(__internal.parseLilyClef('\\clef C')).to.deep.eq(new Clef({ clefType: ClefType.C, line: 0 }));
-        expect(__internal.parseLilyClef('\\clef alto')).to.deep.eq(new Clef({ clefType: ClefType.C, line: 0 }));
-        //expect(__internal.parseLilyClef('\\clef mezzosoprano')).to.deep.eq(new Clef({ clefType: ClefType.C, line: -2 }));
-        //expect(__internal.parseLilyClef('\\clef baritone')).to.deep.eq(new Clef({ clefType: ClefType.C, line: 4 }));
-        expect(__internal.parseLilyClef('\\clef tenor')).to.deep.eq(new Clef({ clefType: ClefType.C, line: 2 }));
+        //expect(parseLilyClef('\\clef soprano')).to.deep.eq(new Clef({ clefType: ClefType.C, line: -4 }));
+        expect(parseLilyClef('\\clef C')).to.deep.eq(new Clef({ clefType: ClefType.C, line: 0 }));
+        expect(parseLilyClef('\\clef alto')).to.deep.eq(new Clef({ clefType: ClefType.C, line: 0 }));
+        //expect(parseLilyClef('\\clef mezzosoprano')).to.deep.eq(new Clef({ clefType: ClefType.C, line: -2 }));
+        //expect(parseLilyClef('\\clef baritone')).to.deep.eq(new Clef({ clefType: ClefType.C, line: 4 }));
+        expect(parseLilyClef('\\clef tenor')).to.deep.eq(new Clef({ clefType: ClefType.C, line: 2 }));
 
-        expect(__internal.parseLilyClef('\\clef F')).to.deep.eq(new Clef({ clefType: ClefType.F, line: 2 }));
-        expect(__internal.parseLilyClef('\\clef bass')).to.deep.eq(new Clef({ clefType: ClefType.F, line: 2 }));
-        //expect(__internal.parseLilyClef('\\clef baritonevarF')).to.deep.eq(new Clef({ clefType: ClefType.F, line: 0 }));
-        //expect(__internal.parseLilyClef('\\clef varbaritone')).to.deep.eq(new Clef({ clefType: ClefType.F, line: 0 }));
-        //expect(__internal.parseLilyClef('\\clef subbass')).to.deep.eq(new Clef({ clefType: ClefType.F, line: 4 }));
+        expect(parseLilyClef('\\clef F')).to.deep.eq(new Clef({ clefType: ClefType.F, line: 2 }));
+        expect(parseLilyClef('\\clef bass')).to.deep.eq(new Clef({ clefType: ClefType.F, line: 2 }));
+        //expect(parseLilyClef('\\clef baritonevarF')).to.deep.eq(new Clef({ clefType: ClefType.F, line: 0 }));
+        //expect(parseLilyClef('\\clef varbaritone')).to.deep.eq(new Clef({ clefType: ClefType.F, line: 0 }));
+        //expect(parseLilyClef('\\clef subbass')).to.deep.eq(new Clef({ clefType: ClefType.F, line: 4 }));
     });
 
 

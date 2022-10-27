@@ -26,7 +26,7 @@ export interface TimeSlot {
     states: StateChange[];
 }
 
-function parseLilyKey(ly: string): Key {
+export function parseLilyKey(ly: string): Key {
     const tokens = ly.split(' ');
     if (tokens.length !== 3) throw 'Illegal key change: ' + ly;
 
@@ -37,7 +37,7 @@ function parseLilyKey(ly: string): Key {
     throw 'Illegal key change: ' + ly;
 }
 
-function parseLilyMeter(ly: string): Meter {
+export function parseLilyMeter(ly: string): Meter {
     const tokens = ly.split(' ');
     if (tokens.length !== 2 || !/^\d+\/\d+$/.test(tokens[1])) throw 'Illegal meter change: ' + ly;
 
@@ -46,7 +46,7 @@ function parseLilyMeter(ly: string): Meter {
     return MeterFactory.createRegularMeter({ count: +count, value: +value });
 }
 
-function parseLilyClef(ly: string): Clef {
+export function parseLilyClef(ly: string): Clef {
     ly = ly.replace('\\clef ', '');
     switch(ly) {
         case 'G': case 'G2': case 'violin': case 'treble': return Clef.clefTreble;
@@ -210,4 +210,4 @@ export class CompositeSequence extends BaseSequence {
 }
 
 
-export const __internal = { parseLilyClef, parseLilyKey, parseLilyElement, parseLilyMeter };
+export const __internal = { /*parseLilyClef, parseLilyKey,*/ parseLilyElement/*, parseLilyMeter*/ };
