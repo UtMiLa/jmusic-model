@@ -7,6 +7,10 @@ export type Alteration = -2 | -1 | 0 | 1 | 2; // -2 = 𝄫 ... 2 = 𝄪
 
 export type Accidental = Alteration | undefined; // 0: ♮; undefined: nothing
 
+export interface PitchDef {
+    type: 'Pitch';
+    data: [number, number, number];
+}
 export class Pitch {
     /**
      * Internal values to define a pitch. Should not be used outside this class, since implementation may change.
@@ -85,6 +89,13 @@ export class Pitch {
     static compare(p1: Pitch, p2: Pitch): number {
         return p1._octave * 7 + p1._pitchClass + p1._accidental / 10 - 
             ( p2._octave * 7 + p2._pitchClass + p2._accidental / 10);
+    }
+
+    getDef(): PitchDef {
+        return {
+            type: 'Pitch',
+            data: [this._pitchClass, this._octave, this._accidental]
+        };
     }
 }
 
