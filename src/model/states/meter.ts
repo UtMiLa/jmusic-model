@@ -1,7 +1,9 @@
+import { Rational, RationalDef } from '../rationals/rational';
 import { TimeMap } from '../../tools/time-map';
 import { AbsoluteTime } from './../rationals/time';
 import { Time, TimeSpan } from '../rationals/time';
 export interface Meter {
+    equals(meter: Meter): boolean;
     measureLength: TimeSpan;
     countingTime: TimeSpan;
     text: string[];
@@ -33,6 +35,22 @@ class RegularMeter implements Meter {
     private def: RegularMeterDef;
     constructor(def: RegularMeterDef) {
         this.def = {...def};
+    }
+    equals(meter: Meter): boolean {
+        if (!(meter as RegularMeter).def) return false;
+
+        if (this.def.upBeat && ! (meter as RegularMeter).def.upBeat) return false;
+        if (!this.def.upBeat && (meter as RegularMeter).def.upBeat) return false;
+
+        let upbeatIdentical = false;
+        if (!this.def.upBeat && !(meter as RegularMeter).def.upBeat) { 
+            upbeatIdentical = true;
+        } else if (Rational.compare(this.def.upBeat as RationalDef, (meter as RegularMeter).def.upBeat as RationalDef) === 0) {
+            upbeatIdentical = true;
+        }
+        return this.def.count === (meter as RegularMeter).def.count && 
+            this.def.value === (meter as RegularMeter).def.value && 
+            upbeatIdentical;
     }
     get countingTime(): TimeSpan {
         if (this.def.count % 3 === 0 && this.def.count !== 3) {

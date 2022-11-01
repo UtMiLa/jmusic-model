@@ -18,7 +18,10 @@ export class Clef {
         return -this.def.clefType + this.def.line + pitch.diatonicNumber;
     }
 
-
+    equals(clef: Clef): boolean {
+        return this.def.clefType === clef.def.clefType && this.def.line === clef.def.line;
+    }
+    
     static clefTreble = new Clef({ clefType: ClefType.G, line: -2 });
     static clefAlto = new Clef({ clefType: ClefType.C, line: 0 });
     static clefBass = new Clef({ clefType: ClefType.F, line: 2 });

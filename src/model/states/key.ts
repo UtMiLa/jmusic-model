@@ -32,6 +32,9 @@ export class Key {
         return new Key({accidental: Math.sign(no) as (0 | 1 | -1), count: Math.abs(no)});
     }
 
+    equals(key: Key): boolean {        
+        return this.def.accidental === key.def.accidental && this.def.count === key.def.count;
+    }
 }
 
 export class AccidentalManager {

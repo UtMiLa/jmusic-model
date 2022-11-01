@@ -92,7 +92,14 @@ describe('Key', () => {
 
     });
 
+    it('should compare two key changes', () => {
+        const key1 = parseLilyKey('\\key d \\major');
+        const key2 = parseLilyKey('\\key b \\minor');
+        const key3 = parseLilyKey('\\key d \\minor');
 
+        expect(key1.equals(key2)).to.be.true;
+        expect(key3.equals(key1)).to.be.false;
+    });
 
     describe('Accidental rule', () => {
         it('should correctly set accidentals', () => {

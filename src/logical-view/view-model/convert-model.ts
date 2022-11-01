@@ -183,7 +183,7 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
                     
                     vts.states.forEach(st => {
                         if (st.clef) {
-                            if (scopedStateChange.clef) throw 'Two clef changes in the same staff';
+                            if (scopedStateChange.clef && !scopedStateChange.clef.equals(st.clef)) throw 'Two clef changes in the same staff';
                             scopedStateChange.clef = st.clef;
                             //stateChange.scope = [staffNo];
                         }
@@ -196,12 +196,12 @@ export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
 
                         if (st.key) {
                             //console.log('key ch', st.key);
-                            if (stateChange.key) throw 'Two key changes in the same staff';
+                            if (stateChange.key && !stateChange.key.equals(st.key)) throw 'Two key changes in the same staff';
                             stateChange.key = st.key;
                         }
                         if (st.meter) {
                             //console.log('key ch', st.key);
-                            if (stateChange.meter) throw 'Two meter changes in the same staff';
+                            if (stateChange.meter && !stateChange.meter.equals(st.meter)) throw 'Two meter changes in the same staff';
                             stateChange.meter = st.meter;
                         }
                     });

@@ -124,6 +124,43 @@ describe('State change view model', () => {
         });
         
 
+
+        it('should disallow different key changes at the same staff at same time', () => {
+            const scoreModel: ScoreDef = {
+                staves: [{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: new SimpleSequence( 'c8 c4 c4 c4 \\clef treble c4 c4 c4 c4 c1')},
+                        {content: new SimpleSequence( 'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1')}
+                    ]
+                }]
+            };
+
+            expect(() => scoreModelToViewModel(scoreModel)).to.throw('Two clef changes in the same staff');
+    
+        });
+
+        it('should allow equal key changes at the same staff at same time', () => {
+            const scoreModel: ScoreDef = {
+                staves: [{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: new SimpleSequence( 'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1')},
+                        {content: new SimpleSequence( 'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1')}
+                    ]
+                }]
+            };
+
+            expect(() => scoreModelToViewModel(scoreModel)).to.not.throw();
+    
+        });
+
+
+
     });    
 
 
@@ -413,6 +450,52 @@ describe('State change view model', () => {
     
         });
    
+        it('should disallow different key changes at different staves at same time', () => {
+            const scoreModel: ScoreDef = {
+                staves: [{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: new SimpleSequence( 'c8 c4 c4 c4 \\key d \\major c4 c4 c4 c4 c1')}
+                    ]
+                },{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: new SimpleSequence( 'c8 c4 c4 c4 \\key e \\minor c4 c4 c4 c4 c1')}
+                    ]
+                }]
+            };
+
+            expect(() => scoreModelToViewModel(scoreModel)).to.throw('Two key changes in the same staff');
+    
+        });
+
+        it('should allow equal key changes at different staves at same time', () => {
+            const scoreModel: ScoreDef = {
+                staves: [{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: new SimpleSequence( 'c8 c4 c4 c4 \\key d \\major c4 c4 c4 c4 c1')}
+                    ]
+                },{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: new SimpleSequence( 'c8 c4 c4 c4 \\key d \\major c4 c4 c4 c4 c1')}
+                    ]
+                }]
+            };
+
+            expect(() => scoreModelToViewModel(scoreModel)).to.not.throw();
+    
+        });
+
         // todo: if a staff has individual meter/key, it should ignore global meter/key changes
 
     });
@@ -543,6 +626,29 @@ describe('State change view model', () => {
             };
 
             expect(() => scoreModelToViewModel(scoreModel)).to.throw('Two meter changes in the same staff');
+    
+        });
+
+        it('should allow equal meter changes at different staves at same time', () => {
+            const scoreModel: ScoreDef = {
+                staves: [{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: new SimpleSequence( 'c8 c4 c4 c4 \\meter 6/8 c4 c4 c4 c4 c1')}
+                    ]
+                },{
+                    initialClef: Clef.clefBass.def,
+                    initialKey: { accidental: -1, count: 3 },
+                    initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
+                    voices: [
+                        {content: new SimpleSequence( 'c8 c4 c4 c4 \\meter 6/8 c4 c4 c4 c4 c1')}
+                    ]
+                }]
+            };
+
+            expect(() => scoreModelToViewModel(scoreModel)).to.not.throw();
     
         });
 

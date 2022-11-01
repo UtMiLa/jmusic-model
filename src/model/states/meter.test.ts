@@ -90,7 +90,14 @@ describe('Meter', () => {
             expect(parseLilyMeter('\\meter 4/4')).to.deep.eq(MeterFactory.createRegularMeter({ count: 4, value: 4 }));    
         });
     
-    
+        it('should compare two meter changes', () => {
+            const meter1 = MeterFactory.createRegularMeter({ count: 6, value: 8 });
+            const meter2 = MeterFactory.createRegularMeter({ count: 3, value: 4 });
+            const meter3 = MeterFactory.createRegularMeter({ count: 3, value: 4 });
+
+            expect(meter1.equals(meter2)).to.be.false;
+            expect(meter3.equals(meter2)).to.be.true;
+        });
     });
 
 

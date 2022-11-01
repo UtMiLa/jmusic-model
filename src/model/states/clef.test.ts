@@ -90,6 +90,17 @@ describe('Clef', () => {
         //expect(parseLilyClef('\\clef subbass')).to.deep.eq(new Clef({ clefType: ClefType.F, line: 4 }));
     });
 
+    it('should compare two clefs', () => {
+        const clef1 = new Clef({ clefType: ClefType.F, line: -2 });
+        const clef2 = new Clef({ clefType: ClefType.F, line: 2 });
+        const clef3 = new Clef({ clefType: ClefType.C, line: 2 });
+        
+        expect(clef1.equals(clef2)).to.be.false;
+        expect(clef1.equals(clef3)).to.be.false;
+        expect(clef3.equals(clef2)).to.be.false;
+        expect(clef3.equals(Clef.clefTenorC)).to.be.true;
+
+    });
 
 
 });

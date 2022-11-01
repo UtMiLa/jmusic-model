@@ -1,3 +1,4 @@
+import { Pitch } from './../pitches/pitch';
 import { Note, NoteDirection } from './../notes/note';
 import { Time } from '../rationals/time';
 import { SimpleSequence, CompositeSequence } from './sequence';
@@ -57,11 +58,12 @@ describe('Sequence', () => {
                 {
                     '_duration': Time.newSpan(1, 4),
                     '_pitches': [
-                        {
+                        new Pitch(0, 3, 0)
+                        /*{
                             '_accidental': 0,
                             '_octave': 3,
                             '_pitchClass': 0
-                        }
+                        }*/
                     ],
                     'direction': NoteDirection.Undefined,
                     uniq: 'x-0'
@@ -75,11 +77,12 @@ describe('Sequence', () => {
                 {
                     '_duration': Time.newSpan(1, 4),
                     '_pitches': [
-                        {
+                        new Pitch(0, 3, 0)
+                        /*{
                             '_accidental': 0,
                             '_octave': 3,
                             '_pitchClass': 0
-                        }
+                        }*/
                     ],
                     'direction': NoteDirection.Undefined,
                     uniq: 'x-0'
@@ -89,11 +92,12 @@ describe('Sequence', () => {
                 {
                     '_duration': Time.newSpan(1, 8),
                     '_pitches': [
-                        {
+                        new Pitch(1, 3, 0)
+                        /*{
                             '_accidental': 0,
                             '_octave': 3,
                             '_pitchClass': 1
-                        }
+                        }*/
                     ],
                     'direction': NoteDirection.Undefined,
                     uniq: 'x-1'
@@ -103,18 +107,19 @@ describe('Sequence', () => {
                 {
                     '_duration': Time.newSpan(1, 8),
                     '_pitches': [
-                        {
+                        new Pitch(2, 3, 0)
+                        /*{
                             '_accidental': 0,
                             '_octave': 3,
                             '_pitchClass': 2
-                        }
+                        }*/
                     ],
                     'direction': NoteDirection.Undefined,
                     uniq: 'x-2'
                 }
 
             ] }
-        ]);
+        ]);        
         
         const seq2 = SimpleSequence.createFromString(seq2Text);
         expect(seq2.getTimeSlots()).to.deep.equal([
