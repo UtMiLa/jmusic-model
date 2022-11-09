@@ -17,6 +17,7 @@ export function findNoteInViewModel(noteRef: NoteRef, viewModel: ScoreViewModel)
     /*const f = viewModel.staves[noteRef.staff].timeSlots.find(ts => Time.equals(ts.absTime, noteRef.absTime));
     
     return f ? f.notes[noteRef.voice] : undefined;*/
+    return undefined;
 }
 
 export class PhysicalBeamGroup {
