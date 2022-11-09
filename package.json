@@ -1,6 +1,6 @@
 {
   "name": "jmusic-model",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Music theory model",
   "main": "dist/index.js",
   "author": "John Ekberg <john@apus.dk>",
@@ -14,7 +14,6 @@
     "lint": "eslint src/**/*.ts --fix",
     "start:dev": "nodemon --config .nodemonrc.json src/index.ts",
     "start:prod": "node dist/index.js",
-    
     "prepub": "copy package.json dist",
     "pub": "cd dist & npm publish",
     "postpub": "cd dist & del package.json"
