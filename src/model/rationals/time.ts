@@ -81,6 +81,13 @@ export class Time {
         this.assertSpan(t2);
         return { ...Rational.add(t2, t1), type: 'abs' };
     }
+
+    static subtractTime(t1: AbsoluteTime, t2: TimeSpan): AbsoluteTime {
+        this.assertAbsolute(t1);
+        this.assertSpan(t2);
+        return { ...Rational.subtract(t1, t2), type: 'abs' };
+    }
+
     
     static scale(t: TimeSpan, scaleBy: number, divideBy= 1): TimeSpan {
         this.assertSpan(t);

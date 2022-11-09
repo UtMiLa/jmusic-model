@@ -129,6 +129,12 @@ describe('Times', ()=> {
             expect(Time.addTime(r3, r4)).to.deep.eq({ numerator: 41, denominator: 28, type: 'abs' });
         });
  
+        it('should correctly subtract timespan from absolute time', () => {
+            const r3: AbsoluteTime = { numerator: 5, denominator: 7, type: 'abs' };
+            const r4: TimeSpan = { numerator: 3, denominator: 4, type: 'span' };
+            expect(Time.subtractTime(r3, r4)).to.deep.eq({ numerator: -1, denominator: 28, type: 'abs' });
+        });
+ 
         it('should multiply a timespan with a scalar', () => {
             const r1 = Time.newSpan(5, 7);
             const scalar = 6;

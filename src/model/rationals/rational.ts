@@ -35,6 +35,7 @@ export class Rational {
     }
 
     static lcd(i1: number, i2: number): number {
+        if (i1 < 0) return this.lcd(-i1, i2);
         if (i1 < i2) [i1, i2] = [i2, i1];
         if (i2 === 0) return i1;
         return this.lcd(i2, i1 - i2);
