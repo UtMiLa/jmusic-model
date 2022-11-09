@@ -1,6 +1,6 @@
 {
   "name": "jmusic-model",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "Music theory model",
   "main": "dist/index.js",
   "author": "John Ekberg <john@apus.dk>",
@@ -13,7 +13,11 @@
     "coverage": "nyc mocha --config .mocharc.json src/**/*.test.ts",
     "lint": "eslint src/**/*.ts --fix",
     "start:dev": "nodemon --config .nodemonrc.json src/index.ts",
-    "start:prod": "node dist/index.js"
+    "start:prod": "node dist/index.js",
+    
+    "prepub": "copy package.json dist",
+    "pub": "cd dist & npm publish",
+    "postpub": "cd dist & del package.json"
   },
   "dependencies": {
     "node": "^15.3.0"
