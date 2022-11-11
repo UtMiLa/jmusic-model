@@ -39,8 +39,8 @@ export class Key {
 
 export class AccidentalManager {
     private _key: Key | undefined;
-    private rememberPitches: { [key: number]: Accidental } = {};
-    private rememberPitchClasses: { [key: number]: Accidental } = {};
+    private rememberPitches: { [key: number]: { value: Accidental } } = {};
+    private rememberPitchClasses: { [key: number]: { value: Accidental } } = {};
 
     newBar(): void {
         this.rememberPitches = {};
@@ -52,7 +52,7 @@ export class AccidentalManager {
         const alreadyThere = this.rememberPitches[pitch.diatonicNumber];
 
         if (alreadyThere !== undefined) {
-            if (alreadyThere === res) {
+            if (alreadyThere.value === res) {
                 return undefined;
             } else {
                 if (!res) res = 0;
@@ -62,22 +62,33 @@ export class AccidentalManager {
             const pitchClassAlreadyThere = this.rememberPitchClasses[pitch.pitchClassNumber];
             //console.log(pitchClassAlreadyThere, this.rememberPitchClasses, pitch.pitchClass);
             
+            let final = false;
             if (pitchClassAlreadyThere !== undefined) {
-                if (!res) res = 0;
-            } else if (this._key) { 
-                const fixed = Array.from<PitchClass>(this._key.enumerate());
-                //console.log(fixed, pitch.pitchClass);
-                
-                const keyAcc = fixed.find((fix: PitchClass) => fix.pitchClass === pitch.pitchClassNumber);
-                if (keyAcc) {
-                    if (res === keyAcc.alteration) return undefined;
-                } else if (res === 0) res = undefined;
+                //if (!res) res = 0;
+                if (pitchClassAlreadyThere.value === res) {
+                    // use key value
+                    final = false;
+                } else {
+                    res = pitch.alteration;
+                    final = true;
+                }
+            } 
+            if (!final) {
+                if (this._key) { 
+                    const fixed = Array.from<PitchClass>(this._key.enumerate());
+                    //console.log(fixed, pitch.pitchClass);
+                    
+                    const keyAcc = fixed.find((fix: PitchClass) => fix.pitchClass === pitch.pitchClassNumber);
+                    if (keyAcc) {
+                        if (res === keyAcc.alteration) return undefined;
+                    } else if (res === 0) res = undefined;
+                }
+                else if (res === 0) res = undefined;
             }
-            else if (res === 0) res = undefined;            
         }
 
-        this.rememberPitches[pitch.diatonicNumber] = res;
-        this.rememberPitchClasses[pitch.pitchClassNumber] = res;
+        this.rememberPitches[pitch.diatonicNumber] = { value: res };
+        this.rememberPitchClasses[pitch.pitchClassNumber] = { value: pitch.alteration };
         return res;
     }
     setKey(key: Key): void {

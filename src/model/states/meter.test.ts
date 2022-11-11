@@ -98,6 +98,20 @@ describe('Meter', () => {
             expect(meter1.equals(meter2)).to.be.false;
             expect(meter3.equals(meter2)).to.be.true;
         });
+
+        it('should compare two meters with upbeats', () => {
+            const meter1 = MeterFactory.createRegularMeter({ count: 3, value: 4, upBeat: Time.EightsTime });
+            const meter2 = MeterFactory.createRegularMeter({ count: 3, value: 4, upBeat: Time.EightsTime });
+            const meter3 = MeterFactory.createRegularMeter({ count: 3, value: 4, upBeat: Time.QuarterTime });
+            const meter4 = MeterFactory.createRegularMeter({ count: 3, value: 4 });
+
+            expect(meter1.equals(meter2)).to.be.true;
+            expect(meter1.equals(meter3)).to.be.false;
+            expect(meter1.equals(meter4)).to.be.false;
+            expect(meter4.equals(meter1)).to.be.false;
+            expect(meter3.equals(meter4)).to.be.false;
+            expect(meter3.equals({} as Meter)).to.be.false;
+        });
     });
 
 

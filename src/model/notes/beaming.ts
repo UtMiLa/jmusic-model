@@ -1,6 +1,5 @@
 import { StateChange } from './../states/state';
 import { Time, AbsoluteTime } from './../rationals/time';
-import { getAllBars, getAllBeats, Meter } from './../states/meter';
 import { ISequence } from './../score/sequence';
 import { Note } from './note';
 
