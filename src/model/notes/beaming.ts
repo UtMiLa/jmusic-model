@@ -132,6 +132,7 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
 
 }
 
+export const __beaming_internal = { beamCount };
 /*
 8 16 16 16 8 16
 -------  ------

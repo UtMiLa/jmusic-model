@@ -91,6 +91,9 @@ export class Note {
     }
 
     get undottedDuration(): TimeSpan {        
+        if (this.nominalDuration.denominator === 1 && this.nominalDuration.numerator === 2) {
+            return this.nominalDuration; // todo: what if 6/1? but we have no longa yet
+        }
         return Time.scale(
             Time.addSpans(this.nominalDuration, Time.newSpan(1, this.nominalDuration.denominator)),
             1, 2
@@ -100,7 +103,11 @@ export class Note {
     get type(): NoteType {
         if (!this.pitches.length) {
             switch (this.undottedDuration.denominator) {
-                case 1: return NoteType.RWhole;
+                case 1: {
+                    if (this.undottedDuration.numerator === 1) return NoteType.RWhole;
+                    if (this.undottedDuration.numerator === 2) return NoteType.RBreve;
+                    throw 'Illegal numerator: ' + this.undottedDuration.numerator;
+                }
                 case 2: return NoteType.RHalf;
                 case 4: return NoteType.RQuarter;
                 case 8: return NoteType.R8;

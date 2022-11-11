@@ -40,6 +40,11 @@ describe('Note', () => {
         expect(Note.parseLily('r64').type).to.eq(NoteType.R64);
         expect(Note.parseLily('r128').type).to.eq(NoteType.R128);
 
+        const goodRest = new Note([], Time.newSpan(2, 1));
+        expect(goodRest.type).to.eq(NoteType.RBreve);
+
+        const badRest = new Note([], Time.newSpan(1, 3));
+        expect(() => badRest.type).to.throw();
 
     });
 
@@ -93,6 +98,9 @@ describe('Note', () => {
         expect(notes[0].type).to.deep.eq(NoteType.NQuarter);
         expect(notes[1].undottedDuration).to.deep.eq(Time.newSpan(1, 8));
         expect(notes[2].undottedDuration).to.deep.eq(Time.newSpan(1, 2));
+
+        const goodRest = new Note([], Time.newSpan(2, 1));
+        expect(goodRest.undottedDuration).to.deep.eq(Time.newSpan(2, 1));
     });
 
     
