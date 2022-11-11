@@ -1,3 +1,4 @@
+import { Rational, RationalDef } from './../../model/rationals/rational';
 import { StateChange } from './../../model/states/state';
 import { TimeMap, IndexedMap } from './../../tools/time-map';
 import { Meter, MeterMap } from './../../model/states/meter';
@@ -113,7 +114,7 @@ class State {
                     this.tupletGroup.noteRefs.push({absTime: this.voiceTimeSlot.time, uniq: note.uniq + ''});
                     this.tupletGroup.tuplets.push({
                         fromIdx: 0,
-                        tuplet: '3',
+                        tuplet: '' + (note.tupletFactor as RationalDef).denominator,
                         toIndex: undefined
                     });
                     break;

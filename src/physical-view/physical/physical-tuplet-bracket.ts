@@ -77,7 +77,7 @@ export class PhysicalTupletBracket {
                         length,
                         height,
                         bracketHeight: this.settings.tupletBracketHeight * sign,
-                        text: '3'
+                        text: tupletBrk.tuplet
                     } as PhysicalTupletBracketElement);
     
                 });

@@ -239,8 +239,54 @@ describe('View model', () => {
 
     });
 
+    it('should make correct quintuplet brackets', () => {
+
+        const baseSequence = new SimpleSequence('bes8 b8 c8 d8 e8');
+        const tupletSequence = new TupletSequence(baseSequence, { numerator: 4, denominator: 5 });
+        
+
+        const staff: StaffDef = { 
+            initialClef: { clefType: ClefType.G, line: 2 },
+            initialKey: { accidental: -1, count: 3 },
+            initialMeter: { count: 4, value: 4 },
+            voices:[{ content: tupletSequence }]
+        };
+
+        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+
+        expect(staffView.timeSlots.length).to.eq(5);
+        expect(staffView.timeSlots[0].tuplets, 'note 1').to.deep.eq([{
+            noteRefs: [ 
+                {
+                    absTime: Time.StartTime, 
+                    uniq: '0-0-0'
+                },
+                {
+                    absTime: Time.newAbsolute(1, 10),
+                    uniq: '0-0-1'
+                },
+                {
+                    absTime: Time.newAbsolute(1, 5),
+                    uniq: '0-0-2'
+                },
+                {
+                    absTime: Time.newAbsolute(3, 10),
+                    uniq: '0-0-3'
+                },
+                {
+                    absTime: Time.newAbsolute(2, 5),
+                    uniq: '0-0-4'
+                }
+            ],
+            tuplets: [
+                { fromIdx: 0, toIndex: 4, tuplet: '5' },
+            ]
+        }]);
+
+    });
+
     
-    xit('should make correct tuplet brackets', () => {
+    xit('should make split sextuplets to triplets', () => {
 
         const baseSequence = new SimpleSequence('bes8 b8 c8 d8 e8 f8');
         const tupletSequence = new TupletSequence(baseSequence, { numerator: 2, denominator: 3 });
@@ -254,9 +300,10 @@ describe('View model', () => {
         };
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
-
+        
         expect(staffView.timeSlots.length).to.eq(6);
-        expect(staffView.timeSlots[0].tuplets, 'note 1').to.deep.eq({
+
+        expect(staffView.timeSlots[0].tuplets, 'note 1').to.deep.eq([{
             noteRefs: [ 
                 {
                     absTime: Time.StartTime, 
@@ -271,10 +318,10 @@ describe('View model', () => {
                     uniq: '0-0-2'
                 }
             ],
-            beams: [
+            tuplets: [
                 { fromIdx: 0, toIndex: 2, tuplet: '3' },
             ]
-        });
+        }]);
 
         expect(staffView.timeSlots[3].tuplets, 'note 3').to.deep.eq({
             noteRefs: [ 
@@ -291,7 +338,7 @@ describe('View model', () => {
                     uniq: '0-0-5'
                 }
             ],
-            beams: [
+            tuplets: [
                 { fromIdx: 0, toIndex: 2, tuplet: '3' },
             ]
         });
