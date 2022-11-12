@@ -15,7 +15,7 @@ import { PhysicalModel, PhysicalElementBase, PhysicalFixedSizeElement, PhysicalV
 import { convertNote } from './physical-note';
 import { ClefViewModel, ScoreViewModel } from '../../logical-view';
 import { staffLineToY } from './functions';
-import { MeasureMap, MeasureMapXValueItem } from './measure-map';
+import { generateMeasureMap, MeasureMap, MeasureMapXValueItem } from './measure-map';
 
 /**
  * Physical Model
@@ -26,25 +26,9 @@ import { MeasureMap, MeasureMapXValueItem } from './measure-map';
  */
 
 
-/*function calcSlotLength(timeSlot: TimeSlotViewModel, settings: Metrics): number {
-    return settings.defaultSpacing * timeSlot.notes.length + 
-        (timeSlot.key ? settings.keySigSpacing * timeSlot.key.keyPositions.length : 0) +
-        (timeSlot.clef ? settings.defaultSpacing : 0);
-}*/
-
-/*function calcLength(timeSlots: TimeSlotViewModel[], settings: Metrics): number {
-    return settings.staffLengthOffset + timeSlots.map(slot => calcSlotLength(slot, settings)).reduce((prev, curr) => prev + curr, 0);
-}*/
-
-
-
 export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics, cursor?: Cursor): PhysicalModel {
 
-    let measureMap = new MeasureMap();
-    viewModel.staves.forEach(staffModel => {
-        const measureMapX = MeasureMap.generate(staffModel, settings);
-        measureMap = measureMap.mergeWith(measureMapX);
-    });
+    const measureMap = generateMeasureMap(viewModel, settings);
 
     const width = measureMap.totalWidth();
 
@@ -72,6 +56,7 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
     }
     return resultElements.reduce((prev, curr) => ({ elements: [...prev.elements, ...curr.elements] }), { elements: [] });
 }
+
 
 function addStaffLines(settings: Metrics, width: number): PhysicalElementBase[] {
     return [0, 1, 2, 3, 4].map(n => ({

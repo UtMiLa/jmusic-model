@@ -335,7 +335,9 @@ describe('Physical model, measure map', () => {
         });
     });
 
-
+    it('should convert x,y coordinates to objects', () => {
+        //
+    });
 
 });
 

@@ -5,6 +5,7 @@ import { Time } from './../../model';
 import { ClefType, StaffDef } from './../../model';
 import { Clef } from './../../model';
 import { createScopedTimeMap, __internal } from './convert-model';
+import { createTestStaff } from '../../tools/test-tools';
 /* eslint-disable comma-dangle */
 
 describe('View model', () => {
@@ -16,33 +17,23 @@ describe('View model', () => {
     });
 
     it('should remember accidentals within the same measure', () => {
-        const staff: StaffDef = { 
-            initialClef: { clefType: ClefType.G, line: 2 },
-            initialKey: { accidental: -1, count: 3 },
-            initialMeter: { count: 4, value: 4, upBeat: Time.EightsTime },
-            voices:[{ content: new SimpleSequence( 'bes8 r4 bes8 b8 b8. b16 bes8') }]
-        };
+        const staff: StaffDef = createTestStaff(['bes8 r4 bes8 b8 b8. b16 bes8'], [4, 4, 1, 8], [-1, 3]);
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
         expect(staffView.timeSlots.length).to.eq(7);
         expect(staffView.timeSlots[0].accidentals).to.be.undefined;
         expect(staffView.timeSlots[2].accidentals).to.be.undefined;
-        expect(staffView.timeSlots[3].accidentals).to.deep.eq([{ alteration: 0, displacement: 0, position: -3}]);
+        expect(staffView.timeSlots[3].accidentals).to.deep.eq([{ alteration: 0, displacement: 0, position: -7}]);
         expect(staffView.timeSlots[4].accidentals).to.be.undefined;
         expect(staffView.timeSlots[5].accidentals).to.be.undefined;
-        expect(staffView.timeSlots[6].accidentals).to.deep.eq([{ alteration: -1, displacement: 0, position: -3}]);
+        expect(staffView.timeSlots[6].accidentals).to.deep.eq([{ alteration: -1, displacement: 0, position: -7}]);
     });
 
 
     
     it('should make correct beaming', () => {
-        const staff: StaffDef = { 
-            initialClef: { clefType: ClefType.G, line: 2 },
-            initialKey: { accidental: -1, count: 3 },
-            initialMeter: { count: 4, value: 4, upBeat: Time.EightsTime },
-            voices:[{ content: new SimpleSequence( 'bes8 r4 bes8 b8 b8. b16 bes8') }]
-        };
+        const staff: StaffDef = createTestStaff(['bes8 r4 bes8 b8 b8. b16 bes8'], [4, 4, 1, 8], [-1, 3]);
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
@@ -80,12 +71,7 @@ describe('View model', () => {
     });
 
     it('should make correct broken beams', () => {
-        const staff: StaffDef = { 
-            initialClef: { clefType: ClefType.G, line: 2 },
-            initialKey: { accidental: -1, count: 3 },
-            initialMeter: { count: 4, value: 4 },
-            voices:[{ content: new SimpleSequence( 'bes16 bes8 b16') }]
-        };
+        const staff: StaffDef = createTestStaff(['bes16 bes8 b16'], [4, 4], [-1, 3]);
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 

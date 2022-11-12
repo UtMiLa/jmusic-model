@@ -1,3 +1,4 @@
+import { ScoreViewModel } from './../../../dist/logical-view/view-model/score-view-model.d';
 import { AbsoluteTime, Time } from './../../model';
 
 import { Metrics } from './metrics';
@@ -18,6 +19,14 @@ export interface MeasureMapItem {
     offsets: MeasureMapXValueItem;
 }
 
+export function generateMeasureMap(viewModel: ScoreViewModel, settings: Metrics): MeasureMap {
+    let measureMap = new MeasureMap();
+    viewModel.staves.forEach(staffModel => {
+        const measureMapX = MeasureMap.generate(staffModel, settings);
+        measureMap = measureMap.mergeWith(measureMapX);
+    });
+    return measureMap;
+}
 
 
 export class MeasureMap {

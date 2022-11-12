@@ -1,3 +1,4 @@
+import { createTestScore, createTestScoreVM } from '../../tools/test-tools';
 import { SimpleSequence } from './../../model/score/sequence';
 import { MeterFactory } from './../../model/states/meter';
 import { ScoreDef } from './../../model/score/score';
@@ -54,16 +55,10 @@ describe('State change view model', () => {
     
     
         it('should change clef for all voices, even if they dont share the timeslot of the clef change', () => {
-            const score = scoreModelToViewModel({
-                staves: [{
-                    initialClef: Clef.clefBass.def,
-                    initialKey: { accidental: -1, count: 3 },
-                    voices: [
-                        {content: new SimpleSequence( 'c2 \\clef C c1.')},
-                        {content: new SimpleSequence( 'c1 c1')}
-                    ]
-                }]
-            });
+            const score = createTestScoreVM([[
+                'c2 \\clef C c1.',
+                'c1 c1'
+            ]], [], [-1, 3], ['bass']);
     
             expect(score.staves[0].timeSlots).to.have.length(3);
     
@@ -126,7 +121,7 @@ describe('State change view model', () => {
 
 
         it('should disallow different key changes at the same staff at same time', () => {
-            const scoreModel: ScoreDef = {
+            /*const scoreModel: ScoreDef = {
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
@@ -136,14 +131,18 @@ describe('State change view model', () => {
                         {content: new SimpleSequence( 'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1')}
                     ]
                 }]
-            };
+            };*/
+            const scoreModel = createTestScore([[
+                'c8 c4 c4 c4 \\clef treble c4 c4 c4 c4 c1',
+                'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1'
+            ]], [3, 4, 1, 8], [-1, 3], ['bass']);
 
             expect(() => scoreModelToViewModel(scoreModel)).to.throw('Two clef changes in the same staff');
     
         });
 
         it('should allow equal key changes at the same staff at same time', () => {
-            const scoreModel: ScoreDef = {
+            /*const scoreModel1: ScoreDef = {
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
@@ -153,7 +152,12 @@ describe('State change view model', () => {
                         {content: new SimpleSequence( 'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1')}
                     ]
                 }]
-            };
+            };*/
+
+            const scoreModel = createTestScore([[
+                'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1',
+                'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1'
+            ]], [3, 4, 1, 8], [-1, 3], ['bass']);
 
             expect(() => scoreModelToViewModel(scoreModel)).to.not.throw();
     
