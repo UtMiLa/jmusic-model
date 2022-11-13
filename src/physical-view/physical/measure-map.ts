@@ -1,8 +1,7 @@
-import { ScoreViewModel } from './../../../dist/logical-view/view-model/score-view-model.d';
 import { AbsoluteTime, Time } from './../../model';
 
 import { Metrics } from './metrics';
-import { StaffViewModel, TimeSlotViewModel } from './../../logical-view';
+import { ScoreViewModel, StaffViewModel, TimeSlotViewModel } from './../../logical-view';
 
 export type MeasureMapXValueItem = {
     [index in XValueKey]: number;
@@ -19,9 +18,16 @@ export interface MeasureMapItem {
     offsets: MeasureMapXValueItem;
 }
 
+export interface LocalizedObject {
+    time: AbsoluteTime;
+    staff: number;
+    item: string;
+    pitch: number;
+}
+
 export function generateMeasureMap(viewModel: ScoreViewModel, settings: Metrics): MeasureMap {
     let measureMap = new MeasureMap();
-    viewModel.staves.forEach(staffModel => {
+    viewModel.staves.forEach((staffModel: StaffViewModel) => {
         const measureMapX = MeasureMap.generate(staffModel, settings);
         measureMap = measureMap.mergeWith(measureMapX);
     });
@@ -78,9 +84,17 @@ export class MeasureMap {
         const map = this.measureMap;
         const res = map.find(mp => Time.equals(mp.absTime, time));
         if (!res) return undefined;
+
+        const result = this.calcOffsets(res);
+
+        return result;
+    }
+
+
+    private calcOffsets(res: MeasureMapItem) {
+        const result = {} as MeasureMapXValueItem;
         if (!res.startPos) res.startPos = 0;
 
-        const result = {} as MeasureMapXValueItem; 
         let pos = res.startPos;
         if (res.widths.bar) {
             result.bar = pos + res.offsets.bar;
@@ -110,10 +124,8 @@ export class MeasureMap {
             result.note = pos + res.offsets.note;
             pos += res.widths.note;
         }
-
         return result;
     }
-
 
     mergeWidths(item: MeasureMapItem, updateWith: MeasureMapItem, field: XValueKey): void {
         const f1 = updateWith.widths[field];
@@ -131,6 +143,43 @@ export class MeasureMap {
         }
     }    
     
+    localize(x: number, y: number): LocalizedObject | undefined {
+        const mapItem = this.measureMap.find(mi => mi.startPos && mi.startPos + mi.width > x);
+        if (!mapItem) {
+            return undefined;
+        }
+        const offsetItem = this.calcOffsets(mapItem);
+        //const diff = x - (mapItem.startPos as number);
+        //let itemType: XValueKey | undefined = undefined;
+
+
+        const setItemType = (field: XValueKey): XValueKey | undefined => {
+            if (mapItem.widths[field] && x >= offsetItem[field] && x < offsetItem[field] + mapItem.widths[field]) { return field; }    
+        };
+
+        /*if (mapItem.widths.clef && diff >= offsetItem.clef && diff < offsetItem.clef + mapItem.widths.clef) {itemType = 'clef';}
+        if (mapItem.widths.key && diff >= offsetItem.key && diff < offsetItem.key + mapItem.widths.key) {itemType = 'key';}*/
+
+        const itemType = setItemType('clef')
+        || setItemType('key')
+        || setItemType('meter')
+        || setItemType('accidentals')
+        || setItemType('bar')
+        || setItemType('note');
+
+        const staffSpacing = 70;
+        const noteSpacing = 3;
+        const staff = Math.trunc(y / staffSpacing);
+        
+        if (!itemType) return undefined;
+
+        return {
+            time: mapItem?.absTime,
+            staff,
+            item: itemType,
+            pitch: Math.trunc((y - staffSpacing * staff) / noteSpacing)
+        };
+    }
 
     totalWidth(): number {
         let width = 0;
@@ -138,7 +187,6 @@ export class MeasureMap {
         return width;
     }
 }
-
 
 export function getTimeSlotWidth(slot: TimeSlotViewModel, settings: Metrics): number {
     return getTimeSlotSpacing(slot, settings).width;

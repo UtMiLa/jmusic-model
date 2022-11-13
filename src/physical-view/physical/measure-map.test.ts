@@ -6,24 +6,25 @@ import { ClefType } from './../../model/states/clef';
 import { StaffDef } from './../../model/score/staff';
 import { createScopedTimeMap, __internal } from './../../logical-view/view-model/convert-model';
 import { Metrics, StandardMetrics } from './metrics';
-import { MeasureMap, MeasureMapItem, MeasureMapXValueItem } from './measure-map';
-import { StaffViewModel } from '~/logical-view/view-model/score-view-model';
-import { TimeMap } from '~/tools/time-map';
+import { generateMeasureMap, MeasureMap, MeasureMapItem, MeasureMapXValueItem } from './measure-map';
+import { StaffViewModel } from '../../logical-view/view-model/score-view-model';
+import { TimeMap } from '../../tools/time-map';
+import { createTestScoreVM } from '../../tools/test-tools';
 
 describe('Physical model, measure map', () => {
     let defaultMetrics: Metrics;
     let staffViewModel: StaffViewModel;
     //let measureMapMaster: MeasureMap;
 
-    beforeEach(() => { 
+    beforeEach(() => {
         defaultMetrics = new StandardMetrics();
 
         const staff = {
             initialClef: { clefType: ClefType.G, line: -2 },
             initialMeter: { count: 4, value: 4 },
-            initialKey: { accidental: -1, count: 0},
+            initialKey: { accidental: -1, count: 0 },
             voices: [{
-                content: new SimpleSequence( 'c4 d2 e4 f1')
+                content: new SimpleSequence('c4 d2 e4 f1')
             }]
         } as StaffDef;
 
@@ -92,7 +93,7 @@ describe('Physical model, measure map', () => {
         const measureMap = MeasureMap.generate(staffViewModel, defaultMetrics);
 
         //console.log('map', map);
-        
+
 
         expect(measureMap.lookup(Time.newAbsolute(0, 1))).to.deep.equal({
             clef: defaultMetrics.leftMargin,
@@ -103,11 +104,11 @@ describe('Physical model, measure map', () => {
 
         expect(measureMap.lookup(Time.newAbsolute(1, 4))).to.deep.equal({
             note: 80 + defaultMetrics.leftMargin
-        });       
+        });
 
         expect(measureMap.lookup(Time.newAbsolute(2, 1))).to.deep.equal({
             bar: 7 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin + defaultMetrics.afterBarSpacing
-        });       
+        });
 
     });
 
@@ -301,9 +302,9 @@ describe('Physical model, measure map', () => {
         const staff = {
             initialClef: { clefType: ClefType.G, line: -2 },
             initialMeter: { count: 4, value: 4 },
-            initialKey: { accidental: -1, count: 0},
+            initialKey: { accidental: -1, count: 0 },
             voices: [{
-                content: new SimpleSequence( 'c4 <fis, ais, cis dis>2')
+                content: new SimpleSequence('c4 <fis, ais, cis dis>2')
             }]
         } as StaffDef;
 
@@ -319,10 +320,10 @@ describe('Physical model, measure map', () => {
 
         expect(res.measureMap[1]).to.deep.include({
             absTime: Time.newAbsolute(1, 4),
-            width: defaultMetrics.defaultSpacing + defaultMetrics.accidentalSpacing + 3*defaultMetrics.accidentalDisplacement,
+            width: defaultMetrics.defaultSpacing + defaultMetrics.accidentalSpacing + 3 * defaultMetrics.accidentalDisplacement,
             startPos: 80 + defaultMetrics.leftMargin,
             widths: {
-                accidentals: defaultMetrics.accidentalSpacing + 3*defaultMetrics.accidentalDisplacement,
+                accidentals: defaultMetrics.accidentalSpacing + 3 * defaultMetrics.accidentalDisplacement,
                 note: 20
             }
         });
@@ -331,12 +332,141 @@ describe('Physical model, measure map', () => {
         const xpos1 = res.lookup(Time.newAbsolute(1, 4));
 
         expect(xpos1).to.deep.include({
-            accidentals: 80 + defaultMetrics.leftMargin + 3*defaultMetrics.accidentalDisplacement
+            accidentals: 80 + defaultMetrics.leftMargin + 3 * defaultMetrics.accidentalDisplacement
         });
     });
 
     it('should convert x,y coordinates to objects', () => {
-        //
+        const score = createTestScoreVM([[
+            'c\'\'4 c\'\'4 cis\'\'4 c\'\'4',
+            'c\'8 c\'4 c\'4 c\'4 c\'8'
+        ], [
+            'c2 c4 c4'
+        ]], [4, 4], [-1, 3]);
+
+        const mm = generateMeasureMap(score, defaultMetrics);
+
+
+
+        const map = {
+            'measureMap': [
+                {
+                    'absTime': { 'numerator': 0, 'denominator': 1, 'type': 'abs' },
+                    'width': 98,
+                    'startPos': 10,
+                    'widths': {
+                        'clef': 20,
+                        'key': 38,
+                        'meter': 20,
+                        'note': 20
+                    }
+                },
+                {
+                    'absTime': { 'numerator': 1, 'denominator': 8, 'type': 'abs' },
+                    'width': 20,
+                    'startPos': 108,
+                    'widths': {
+                        'note': 20
+                    }
+                },
+                {
+                    'absTime': { 'numerator': 1, 'denominator': 4, 'type': 'abs' },
+                    'width': 20,
+                    'startPos': 128,
+                    'widths': {
+                        'note': 20
+                    }
+                },
+                {
+                    'absTime': { 'numerator': 3, 'denominator': 8, 'type': 'abs' },
+                    'width': 20,
+                    'startPos': 148,
+                    'widths': {
+                        'note': 20
+                    }
+                },
+                {
+                    'absTime': { 'numerator': 1, 'denominator': 2, 'type': 'abs' },
+                    'width': 29,
+                    'startPos': 168,
+                    'widths': {
+                        'accidentals': 9,
+                        'note': 20
+                    }
+                },
+                {
+                    'absTime': { 'numerator': 5, 'denominator': 8, 'type': 'abs' },
+                    'width': 20,
+                    'startPos': 197,
+                    'widths': {
+                        'note': 20
+                    }
+                },
+                {
+                    'absTime': { 'numerator': 3, 'denominator': 4, 'type': 'abs'},
+                    'width': 29,
+                    'startPos': 217,
+                    'widths': {
+                        'accidentals': 9,
+                        'note': 20
+                    }
+                },
+                {
+                    'absTime': { 'numerator': 7, 'denominator': 8, 'type': 'abs' },
+                    'width': 20,
+                    'startPos': 246,
+                    'widths': {
+                        'note': 20
+                    }
+                },
+                {
+                    'absTime': { 'numerator': 1, 'denominator': 1, 'type': 'abs' },
+                    'width': 8,
+                    'startPos': 266,
+                    'widths': {
+                        'bar': 8
+                    }
+                }
+            ]
+        };
+
+
+        expect(mm.localize(25, 10)).to.deep.eq({
+            time: Time.newAbsolute(0, 1),
+            staff: 0,
+            item: 'clef',
+            pitch: 3
+        });
+
+        expect(mm.localize(46, 10)).to.deep.eq({
+            time: Time.newAbsolute(0, 1),
+            staff: 0,
+            item: 'key',
+            pitch: 3
+        });
+
+        expect(mm.localize(120, 10)).to.deep.eq({
+            time: Time.newAbsolute(1, 8),
+            staff: 0,
+            item: 'note',
+            pitch: 3
+        });
+
+        expect(mm.localize(170, 10)).to.deep.eq({
+            time: Time.newAbsolute(1, 2),
+            staff: 0,
+            item: 'accidentals',
+            pitch: 3
+        });
+
+        expect(mm.localize(178, 10)).to.deep.eq({
+            time: Time.newAbsolute(1, 2),
+            staff: 0,
+            item: 'note',
+            pitch: 3
+        });
+
+
     });
 
 });

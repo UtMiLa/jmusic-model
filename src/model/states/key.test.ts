@@ -106,7 +106,7 @@ describe('Key', () => {
             const accMan = new AccidentalManager();
 
             expect(accMan.getAccidental(new Pitch(0, 4, 0))).to.be.undefined; // c'
-            //expect(accMan.getAccidental(new Pitch(0, 4, 0))).to.be.undefined; // c'
+            expect(accMan.getAccidental(new Pitch(0, 4, 0))).to.be.undefined; // c'
             expect(accMan.getAccidental(new Pitch(0, 3, 0))).to.be.undefined; // c
             expect(accMan.getAccidental(new Pitch(0, 4, 1))).to.eq(1); // cis'
             expect(accMan.getAccidental(new Pitch(0, 4, 1))).to.be.undefined; // cis'
@@ -114,6 +114,7 @@ describe('Key', () => {
             accMan.newBar();
 
             accMan.setKey(keyEs);
+            expect(accMan.getAccidental(new Pitch(0, 4, 0))).to.be.undefined; // c'
             expect(accMan.getAccidental(new Pitch(0, 4, 0))).to.be.undefined; // c'
             expect(accMan.getAccidental(new Pitch(0, 4, 1))).to.eq(1); // cis'
             expect(accMan.getAccidental(new Pitch(0, 4, 1))).to.be.undefined; // cis'

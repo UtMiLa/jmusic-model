@@ -39,7 +39,7 @@ export class Key {
 
 export class AccidentalManager {
     private _key: Key | undefined;
-    private rememberPitches: { [key: number]: { value: Accidental } } = {};
+    private rememberPitches: { [key: number]: { value: Accidental, alteration: Accidental } } = {};
     private rememberPitchClasses: { [key: number]: { value: Accidental } } = {};
 
     newBar(): void {
@@ -52,7 +52,7 @@ export class AccidentalManager {
         const alreadyThere = this.rememberPitches[pitch.diatonicNumber];
 
         if (alreadyThere !== undefined) {
-            if (alreadyThere.value === res) {
+            if (alreadyThere.alteration === (res ? res : 0)) {
                 return undefined;
             } else {
                 if (!res) res = 0;
@@ -87,12 +87,14 @@ export class AccidentalManager {
             }
         }
 
-        this.rememberPitches[pitch.diatonicNumber] = { value: res };
+        this.rememberPitches[pitch.diatonicNumber] = { value: res, alteration: pitch.alteration };
         this.rememberPitchClasses[pitch.pitchClassNumber] = { value: pitch.alteration };
         return res;
     }
     setKey(key: Key): void {
         this._key = key;
+        this.rememberPitches = {};
+        this.rememberPitchClasses = {};
     }
 
 }
