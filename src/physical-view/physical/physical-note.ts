@@ -3,7 +3,7 @@ import { NoteDirection, NoteType } from '../../model';
 import { GlyphCode, HorizVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
 import { Metrics } from './metrics';
 import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement, PhysicalVertVarSizeElement } from './physical-elements';
-import { calcDisplacements, staffLineToY } from './functions';
+import { calcDisplacements, scaleDegreeToY } from './functions';
 
 
 /*export function testNote(viewModel: any): NoteViewModel | undefined {
@@ -21,7 +21,8 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
     const directionUp = note.direction === NoteDirection.Up;
 
     note.positions.sort((a, b) => a - b);
-    const yPositions = note.positions.map(pos => staffLineToY(pos / 2, settings));
+    //const yPositions = note.positions.map(pos => staffLineToY(pos / 2, settings));
+    const yPositions = note.positions.map(pos => scaleDegreeToY(pos, settings));
     //if (note.positions.length > 1) console.log('note.positions', note.positions, yPositions);
     
     const chordLength = yPositions[yPositions.length - 1] - yPositions[0];

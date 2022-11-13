@@ -14,7 +14,7 @@ import { VertVarSizeGlyphs, GlyphCode, HorizVarSizeGlyphs } from './glyphs';
 import { PhysicalModel, PhysicalElementBase, PhysicalFixedSizeElement, PhysicalVertVarSizeElement, PhysicalHorizVarSizeElement, PhysicalBeamElement, PhysicalTupletBracketElement } from './physical-elements';
 import { convertNote } from './physical-note';
 import { ClefViewModel, ScoreViewModel } from '../../logical-view';
-import { staffLineToY } from './functions';
+import { scaleDegreeToY } from './functions';
 import { generateMeasureMap, MeasureMap, MeasureMapXValueItem } from './measure-map';
 
 /**
@@ -127,7 +127,7 @@ function convertStaff(
     let cursorElement: PhysicalHorizVarSizeElement | undefined;
 
     if (cursor && Time.sortComparison(timeSlot.absTime, cursor.absTime) === 0) {
-        cursorElement = { element: HorizVarSizeGlyphs.Cursor, height: 20, position: { x: mapItem.note, y: staffLineToY(cursor.position / 2, settings) } };
+        cursorElement = { element: HorizVarSizeGlyphs.Cursor, height: 20, position: { x: mapItem.note, y: scaleDegreeToY(cursor.position, settings) } };
         //console.log('cursor', cursor, cursorElement);        
     }
 
@@ -150,7 +150,7 @@ function convertTies(ties: TieViewModel[], measureMap: MeasureMap, mapItem: Meas
                 element: VertVarSizeGlyphs.Tie,
                 length,
                 direction: tie.direction,
-                position: { x: mapItem.note as number + settings.tieAfterNote, y: staffLineToY(tie.position / 2, settings) }
+                position: { x: mapItem.note as number + settings.tieAfterNote, y: scaleDegreeToY(tie.position, settings) }
             } as PhysicalVertVarSizeElement
         );
 
@@ -173,7 +173,7 @@ function convertClef(clef: ClefViewModel, xPos: number, settings: Metrics): Phys
     }
 
     return {
-        position: { x: xPos, y: staffLineToY(clef.line/2, settings) },
+        position: { x: xPos, y: scaleDegreeToY(clef.line, settings) },
         glyph
     } as PhysicalFixedSizeElement;
 }

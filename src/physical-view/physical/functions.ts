@@ -2,8 +2,20 @@ import { NoteDirection } from '../../model';
 import { NoteViewModel } from './../../logical-view';
 import { Metrics } from './metrics';
 
+export function scaleDegreeToY(scaleDegree: number, settings: Metrics): number {
+    return settings.scaleDegreeUnit*2 - (-2 - scaleDegree) * settings.scaleDegreeUnit;
+}
+
+export function yToScaleDegree(y: number, settings: Metrics): number {
+    return (y - settings.scaleDegreeUnit*2) / (settings.scaleDegreeUnit) - 2;
+}
+
 export function staffLineToY(staffLine: number, settings: Metrics): number {
     return settings.scaleDegreeUnit*2 - (-1 - staffLine) * settings.scaleDegreeUnit*2;
+}
+
+export function yToStaffLine(y: number, settings: Metrics): number {
+    return (y  - settings.scaleDegreeUnit*2) / (settings.scaleDegreeUnit*2) - 1;
 }
 
 export function calcDisplacements(note: NoteViewModel): number[] {

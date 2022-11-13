@@ -7,6 +7,7 @@ export class InsertionPoint {
     time = Time.StartTime;
     public voiceNo = 0;
     public staffNo = 0;
+    public position = 0;
 
     moveToTime(time: AbsoluteTime): void {
         this.time = time;

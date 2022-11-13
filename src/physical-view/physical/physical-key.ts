@@ -4,7 +4,7 @@ import { AccidentalViewModel } from './../../logical-view';
 import { PhysicalElementBase } from './physical-elements';
 import { Metrics } from './metrics';
 import { KeyViewModel } from './../../logical-view';
-import { staffLineToY } from './functions';
+import { scaleDegreeToY } from './functions';
 
 function accidentalToGlyph(alt: Accidental): GlyphCode {
     switch (alt) {
@@ -21,7 +21,7 @@ export function convertKey(key: KeyViewModel, xPos: number, settings: Metrics): 
     return key.keyPositions.map((pos, i) => {
         return {
             glyph: accidentalToGlyph(pos.alteration),
-            position: {x: xPos + i * settings.keySigSpacing, y: staffLineToY(pos.position / 2, settings)}
+            position: {x: xPos + i * settings.keySigSpacing, y: scaleDegreeToY(pos.position, settings)}
         };
     });
 }
@@ -30,7 +30,7 @@ export function convertAccidentals(accidentals: AccidentalViewModel[], xPos: num
     return accidentals.map((pos) => {
         return {
             glyph: accidentalToGlyph(pos.alteration),
-            position: {x: xPos + pos.displacement * settings.accidentalDisplacement, y: staffLineToY(pos.position / 2, settings)}
+            position: {x: xPos + pos.displacement * settings.accidentalDisplacement, y: scaleDegreeToY(pos.position, settings)}
         };
     });
 }

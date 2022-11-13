@@ -2,6 +2,7 @@ import { AbsoluteTime, Time } from './../../model';
 
 import { Metrics } from './metrics';
 import { ScoreViewModel, StaffViewModel, TimeSlotViewModel } from './../../logical-view';
+import { yToStaffLine } from './functions';
 
 export type MeasureMapXValueItem = {
     [index in XValueKey]: number;
@@ -143,7 +144,7 @@ export class MeasureMap {
         }
     }    
     
-    localize(x: number, y: number): LocalizedObject | undefined {
+    localize(x: number, y: number, settings: Metrics): LocalizedObject | undefined {
         const mapItem = this.measureMap.find(mi => mi.startPos && mi.startPos + mi.width > x);
         if (!mapItem) {
             return undefined;
@@ -167,8 +168,8 @@ export class MeasureMap {
         || setItemType('bar')
         || setItemType('note');
 
-        const staffSpacing = 70;
-        const noteSpacing = 3;
+        const staffSpacing = settings.staffBottomMargin + settings.staffTopMargin + /*(settings.scaleDegreeUnit **/ 110;
+        //const noteSpacing = settings.staffBottomMargin + settings.staffTopMargin;
         const staff = Math.trunc(y / staffSpacing);
         
         if (!itemType) return undefined;
@@ -177,7 +178,7 @@ export class MeasureMap {
             time: mapItem?.absTime,
             staff,
             item: itemType,
-            pitch: Math.trunc((y - staffSpacing * staff) / noteSpacing)
+            pitch: Math.trunc(yToStaffLine(y - staffSpacing * staff, settings))
         };
     }
 
