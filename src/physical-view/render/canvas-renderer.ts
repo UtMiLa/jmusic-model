@@ -12,8 +12,10 @@ export class CanvasRenderer implements Renderer {
 
     ctx: CanvasRenderingContext2D;
 
-    draw(operations: DrawOperation[]): void {
-        this.ctx.beginPath();
+    draw(strokeColor: string, fillColor: string, operations: DrawOperation[], path = true): void {
+        this.ctx.fillStyle = fillColor;
+        this.ctx.strokeStyle = strokeColor;
+        if (path) this.ctx.beginPath();
         operations.forEach(operation => {
             switch(operation.type) {
                 case DrawOperationType.MoveTo:
@@ -29,12 +31,13 @@ export class CanvasRenderer implements Renderer {
                         operation.points[2].x, operation.points[2].y
                     );
                     break;
-                case DrawOperationType.Text:
+                case DrawOperationType.Text: {
                     //const scale = (elem as any).scale ? (elem as any).scale : 1;
+                    
                     if (operation.font) this.ctx.font = operation.font;
                     //const glyph = emmentalerCodes[(elem as PhysicalFixedSizeElement).glyph as GlyphCode] as string;
                     this.ctx.fillText(operation.text as string, operation.points[0].x, operation.points[0].y);
-                         
+                }
                     break;
                 case DrawOperationType.Stroke:
                     this.ctx.stroke();
@@ -46,32 +49,6 @@ export class CanvasRenderer implements Renderer {
         });
     
     }
-
-    getContext(x: string): Renderer {
-        return this;
-    }
-
-    private _fillStyle = '';
-    public get fillStyle() {
-        return this._fillStyle;
-    }
-    public set fillStyle(value) {
-        this._fillStyle = value;
-        this.ctx.fillStyle = value;
-    }
-    
-    private _strokeStyle = '';
-    public get strokeStyle() {
-        return this._strokeStyle;
-    }
-    public set strokeStyle(value) {
-        this._strokeStyle = value;
-        this.ctx.strokeStyle = value;
-    }
-
-    /*fillRect(x: number, y: number, x1: number, y1: number): void {
-        this.ctx.fillRect(x, y, x1, y1);
-    }*/
 
     clear(color: string): void {        
         this.ctx.fillStyle = color;
@@ -90,17 +67,5 @@ export class CanvasRenderer implements Renderer {
         this.ctx.lineWidth = value;
     }
 
-    private _font = '';
-    public get font() {
-        return this._font;
-    }
-    public set font(value) {
-        this._font = value;
-        this.ctx.font = value;
-    }
-
-    fillText(glyph: string, x: number, y: number): void {
-        this.ctx.fillText(glyph, x, y);
-    }
 
 }

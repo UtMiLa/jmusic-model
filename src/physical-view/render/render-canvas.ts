@@ -18,15 +18,8 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
 }
 
 export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Renderer, position: RenderPosition): void {
-    /*const ctx = canvas.getContext('2d');
-    if (!ctx) throw 'Canvas context is null';*/
 
-    /*ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);*/
     renderer.clear('white');
-
-    renderer.fillStyle = '#330000';
-    renderer.strokeStyle = '#223344';//'solid black 1px';
 
     function convertX(x: number): number {
         return (position.offsetX + x) * position.scaleX;
@@ -46,20 +39,18 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
 
     physicalModel.elements.forEach(elem => {
         if ((elem as any).element === VertVarSizeGlyphs.Line || (elem as any).element === VertVarSizeGlyphs.LedgerLine) {
-            renderer.strokeStyle = '#888888';
             renderer.lineWidth = 1.3;
 
-            renderer.draw([
+            renderer.draw('#888888', '#888888', [
                 { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elem.position.x + (elem as PhysicalVertVarSizeElement).length, y: elem.position.y })]},
                 { type: DrawOperationType.Stroke, points: []}
             ]);
 
         } else if ((elem as any).element === VertVarSizeGlyphs.Beam) {
-            renderer.strokeStyle = '#888888';
             const elmBeam = elem as PhysicalBeamElement;
 
-            renderer.draw([
+            renderer.draw('#888888', '#888888', [
                 { type: DrawOperationType.MoveTo, points: [convertXY(elmBeam.position)]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height })]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height - 3})]},
@@ -68,12 +59,11 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
             ]);
 
         } else if ((elem as any).element === VertVarSizeGlyphs.TupletBracket) {
-            renderer.strokeStyle = '#000000';
             const elmBeam = elem as PhysicalTupletBracketElement;
             const scale = (elem as any).scale ? (elem as any).scale : 1;
             
 
-            renderer.draw([
+            renderer.draw('#000000', '#000000', [
                 { type: DrawOperationType.MoveTo, points: [convertXY(elmBeam.position)]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x, y: elmBeam.position.y + elmBeam.bracketHeight })]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height + elmBeam.bracketHeight })]},
@@ -87,7 +77,6 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
             ]);
 
         } else if ((elem as any).element === VertVarSizeGlyphs.Tie) {
-            renderer.fillStyle = '#000000';
 
             const tieDir = (elem as any).direction === NoteDirection.Up ? 1 : -1;
             const tieStart = convertXY({ x: elem.position.x, y: elem.position.y });
@@ -113,29 +102,26 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
                 { type: DrawOperationType.Fill, points: []}                
             ];
 
-            renderer.draw(path);
+            renderer.draw('#000000', '#000000', path);
 
         } else if ((elem as any).element === HorizVarSizeGlyphs.Stem) {
-            renderer.strokeStyle = '#222222';
 
-            renderer.draw([
+            renderer.draw('#222222', '#222222', [
                 { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
                 { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
                 { type: DrawOperationType.Stroke, points: []}
             ]);
 
         } else if ((elem as any).element === HorizVarSizeGlyphs.Bar) {
-            renderer.strokeStyle = '#555555';
 
-            renderer.draw([
+            renderer.draw('#555555', '#555555', [
                 { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
                 { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
                 { type: DrawOperationType.Stroke, points: []}
             ]);
         } else if ((elem as any).element === HorizVarSizeGlyphs.Cursor) {
-            renderer.strokeStyle = '#ff5555';
 
-            renderer.draw([
+            renderer.draw('#ff5555', '#ff5555', [
                 { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y - (elem as PhysicalHorizVarSizeElement).height)}]},
                 { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
                 { type: DrawOperationType.Stroke, points: []},
@@ -145,9 +131,12 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
             ]);
         } else if ((elem as any).glyph) {
             const scale = (elem as any).scale ? (elem as any).scale : 1;
-            renderer.font = Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler';
             const glyph = emmentalerCodes[(elem as PhysicalFixedSizeElement).glyph as GlyphCode] as string;
-            renderer.fillText(glyph, convertX(elem.position.x), convertY(elem.position.y));
+
+
+            renderer.draw('#330000', '#330000', [
+                { type: DrawOperationType.Text, points: [convertXY(elem.position)], text: glyph, font: Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler' }
+            ], false);
         }
     });
 }
