@@ -41,7 +41,8 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
         const beamings: PhysicalLongElement[] = [];
 
         staffModel.timeSlots.forEach(ts => {
-            staffResultElements = convertStaff(measureMap, ts, beamings, settings, staffResultElements, cursor);
+            staffResultElements = convertStaff(measureMap, ts, beamings, settings, staffResultElements, 
+                cursor && cursor.staff === idx ? cursor : undefined);
         });
 
         staffResultElements.forEach(re => re.position.y += y0);
