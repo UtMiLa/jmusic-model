@@ -1,3 +1,4 @@
+import { DrawOperationType, DrawOperation, RenderPosition } from './render-types';
 import { PhysicalTupletBracketElement } from './../physical/physical-elements';
 import { NoteDirection } from './../../model';
 import { Point, PhysicalBeamElement, PhysicalVertVarSizeElement } from '../physical/physical-elements';
@@ -7,73 +8,25 @@ import { emmentalerCodes } from '../../font/emmentaler-codes';
 import { VertVarSizeGlyphs } from '../physical/glyphs';
 import { PhysicalHorizVarSizeElement, PhysicalModel } from '../physical/physical-elements';
 import { HorizVarSizeGlyphs } from '../physical/glyphs';
+import { Renderer } from './base-renderer';
+import { CanvasRenderer } from './canvas-renderer';
 
-export interface RenderPosition {
-    offsetX: number;
-    offsetY: number;
-    scaleX: number;
-    scaleY: number;
-}
 
-export enum DrawOperationType {
-    MoveTo,
-    LineTo,
-    CurveTo,
-    Text,
-    Stroke,
-    Fill
-}
-
-export interface DrawOperation {
-    type: DrawOperationType;
-    text?: string;
-    font?: string;
-    points: Point[];
-}
-
-function draw(ctx: CanvasRenderingContext2D, operations: DrawOperation[]): void {
-    ctx.beginPath();
-    operations.forEach(operation => {
-        switch(operation.type) {
-            case DrawOperationType.MoveTo:
-                ctx.moveTo(operation.points[0].x, operation.points[0].y);
-                break;
-            case DrawOperationType.LineTo:
-                ctx.lineTo(operation.points[0].x, operation.points[0].y);
-                break;
-            case DrawOperationType.CurveTo:
-                ctx.bezierCurveTo(
-                    operation.points[0].x, operation.points[0].y,
-                    operation.points[1].x, operation.points[1].y,
-                    operation.points[2].x, operation.points[2].y
-                );
-                break;
-            case DrawOperationType.Text:
-                //const scale = (elem as any).scale ? (elem as any).scale : 1;
-                if (operation.font) ctx.font = operation.font;
-                //const glyph = emmentalerCodes[(elem as PhysicalFixedSizeElement).glyph as GlyphCode] as string;
-                ctx.fillText(operation.text as string, operation.points[0].x, operation.points[0].y);
-                     
-                break;
-            case DrawOperationType.Stroke:
-                ctx.stroke();
-                break;
-            case DrawOperationType.Fill:
-                ctx.fill();
-                break;
-        }
-    });
-}
 
 export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition): void {
-    const ctx = canvas.getContext('2d');
-    if (!ctx) throw 'Canvas context is null';
+    renderOnRenderer(physicalModel, new CanvasRenderer(canvas), position);
+}
 
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Renderer, position: RenderPosition): void {
+    /*const ctx = canvas.getContext('2d');
+    if (!ctx) throw 'Canvas context is null';*/
 
-    ctx.fillStyle = '#330000';
-    ctx.strokeStyle = '#223344';//'solid black 1px';
+    /*ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);*/
+    renderer.clear('white');
+
+    renderer.fillStyle = '#330000';
+    renderer.strokeStyle = '#223344';//'solid black 1px';
 
     function convertX(x: number): number {
         return (position.offsetX + x) * position.scaleX;
@@ -93,20 +46,20 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
 
     physicalModel.elements.forEach(elem => {
         if ((elem as any).element === VertVarSizeGlyphs.Line || (elem as any).element === VertVarSizeGlyphs.LedgerLine) {
-            ctx.strokeStyle = '#888888';
-            ctx.lineWidth = 1.3;
+            renderer.strokeStyle = '#888888';
+            renderer.lineWidth = 1.3;
 
-            draw(ctx, [
+            renderer.draw([
                 { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elem.position.x + (elem as PhysicalVertVarSizeElement).length, y: elem.position.y })]},
                 { type: DrawOperationType.Stroke, points: []}
             ]);
 
         } else if ((elem as any).element === VertVarSizeGlyphs.Beam) {
-            ctx.strokeStyle = '#888888';
+            renderer.strokeStyle = '#888888';
             const elmBeam = elem as PhysicalBeamElement;
 
-            draw(ctx, [
+            renderer.draw([
                 { type: DrawOperationType.MoveTo, points: [convertXY(elmBeam.position)]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height })]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height - 3})]},
@@ -115,12 +68,12 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
             ]);
 
         } else if ((elem as any).element === VertVarSizeGlyphs.TupletBracket) {
-            ctx.strokeStyle = '#000000';
+            renderer.strokeStyle = '#000000';
             const elmBeam = elem as PhysicalTupletBracketElement;
             const scale = (elem as any).scale ? (elem as any).scale : 1;
             
 
-            draw(ctx, [
+            renderer.draw([
                 { type: DrawOperationType.MoveTo, points: [convertXY(elmBeam.position)]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x, y: elmBeam.position.y + elmBeam.bracketHeight })]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height + elmBeam.bracketHeight })]},
@@ -134,7 +87,7 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
             ]);
 
         } else if ((elem as any).element === VertVarSizeGlyphs.Tie) {
-            ctx.fillStyle = '#000000';
+            renderer.fillStyle = '#000000';
 
             const tieDir = (elem as any).direction === NoteDirection.Up ? 1 : -1;
             const tieStart = convertXY({ x: elem.position.x, y: elem.position.y });
@@ -160,29 +113,29 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
                 { type: DrawOperationType.Fill, points: []}                
             ];
 
-            draw(ctx, path);
+            renderer.draw(path);
 
         } else if ((elem as any).element === HorizVarSizeGlyphs.Stem) {
-            ctx.strokeStyle = '#222222';
+            renderer.strokeStyle = '#222222';
 
-            draw(ctx, [
+            renderer.draw([
                 { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
                 { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
                 { type: DrawOperationType.Stroke, points: []}
             ]);
 
         } else if ((elem as any).element === HorizVarSizeGlyphs.Bar) {
-            ctx.strokeStyle = '#555555';
+            renderer.strokeStyle = '#555555';
 
-            draw(ctx, [
+            renderer.draw([
                 { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
                 { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
                 { type: DrawOperationType.Stroke, points: []}
             ]);
         } else if ((elem as any).element === HorizVarSizeGlyphs.Cursor) {
-            ctx.strokeStyle = '#ff5555';
+            renderer.strokeStyle = '#ff5555';
 
-            draw(ctx, [
+            renderer.draw([
                 { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y - (elem as PhysicalHorizVarSizeElement).height)}]},
                 { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
                 { type: DrawOperationType.Stroke, points: []},
@@ -192,9 +145,9 @@ export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasE
             ]);
         } else if ((elem as any).glyph) {
             const scale = (elem as any).scale ? (elem as any).scale : 1;
-            ctx.font = Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler';
+            renderer.font = Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler';
             const glyph = emmentalerCodes[(elem as PhysicalFixedSizeElement).glyph as GlyphCode] as string;
-            ctx.fillText(glyph, convertX(elem.position.x), convertY(elem.position.y));
+            renderer.fillText(glyph, convertX(elem.position.x), convertY(elem.position.y));
         }
     });
 }
