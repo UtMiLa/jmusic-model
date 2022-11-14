@@ -1,3 +1,4 @@
+import { ScopedTimeKey } from './state-map';
 import { Rational, RationalDef } from './../../model/rationals/rational';
 import { StateChange } from './../../model/states/state';
 import { TimeMap, IndexedMap } from './../../tools/time-map';
@@ -19,12 +20,8 @@ import { calcBeamGroups } from '../../model';
 import { noteToView } from './convert-note';
 import { TimeSlotViewModel, ScoreViewModel, StaffViewModel, AccidentalViewModel, TieViewModel } from './score-view-model';
 import { VoiceDef } from '../../model/score/voice';
+import { createIdPrefix, createStateMap } from './state-map';
 
-
-interface ScopedTimeKey {
-    absTime: AbsoluteTime;
-    scope?: number;
-}
 
 class State {
     constructor (
@@ -152,67 +149,10 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
     return res;
 }
 
-export function createScopedTimeMap(): IndexedMap<StateChange, ScopedTimeKey> {
-    return new IndexedMap<StateChange, ScopedTimeKey>((key1: ScopedTimeKey, key2: ScopedTimeKey) => {
-        const cmpTime = Time.sortComparison(key1.absTime, key2.absTime);
-        if (cmpTime !== 0) return cmpTime;
-        if (key1.scope === key2.scope) {
-            return 0;
-        }
-        return -1;
-    });
-}
-
-function createIdPrefix(staffNo: number, voiceNo: number): string {
-    return `${staffNo}-${voiceNo}`;
-}
 
 export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
-    const stateMap = createScopedTimeMap();
+    const stateMap = createStateMap(def);//createScopedTimeMap();
     //console.log('scoreModelToViewModel', def);    
-
-    def.staves.forEach((staff, staffNo) => {
-        staff.voices.forEach((voice, voiceNo) => {
-            const voiceSequence = voice.content;            
-            const voiceTimeSlots = voiceSequence.groupByTimeSlots(createIdPrefix(staffNo, voiceNo));
-            //console.log(voiceTimeSlots);
-            
-            voiceTimeSlots.forEach(vts => {
-                if (vts.states.length) {
-                    const scopedStateChange = stateMap.get({absTime: vts.time, scope: staffNo});
-                    //console.log('stateChg', stateChange);
-                    
-                    vts.states.forEach(st => {
-                        if (st.clef) {
-                            if (scopedStateChange.clef && !scopedStateChange.clef.equals(st.clef)) throw 'Two clef changes in the same staff';
-                            scopedStateChange.clef = st.clef;
-                            //stateChange.scope = [staffNo];
-                        }
-                    });
-
-                    const stateChange = stateMap.get({absTime: vts.time, scope: undefined});
-                    //console.log('stateChg', stateChange);
-                    
-                    vts.states.forEach(st => {
-
-                        if (st.key) {
-                            //console.log('key ch', st.key);
-                            if (stateChange.key && !stateChange.key.equals(st.key)) throw 'Two key changes in the same staff';
-                            stateChange.key = st.key;
-                        }
-                        if (st.meter) {
-                            //console.log('key ch', st.key);
-                            if (stateChange.meter && !stateChange.meter.equals(st.meter)) throw 'Two meter changes in the same staff';
-                            stateChange.meter = st.meter;
-                        }
-                    });
-
-                }
-            });
-        });
-    
-    });
-
 
     return { staves: def.staves.map((staff, staffNo) => staffModelToViewModel(staff, stateMap.clone((key: ScopedTimeKey, value: StateChange) => {
         return key.scope === undefined || key.scope === staffNo;

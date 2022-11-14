@@ -4,12 +4,13 @@ import { Time } from './../../model/rationals/time';
 import { expect } from 'chai';
 import { ClefType } from './../../model/states/clef';
 import { StaffDef } from './../../model/score/staff';
-import { createScopedTimeMap, __internal } from './../../logical-view/view-model/convert-model';
+import { __internal } from './../../logical-view/view-model/convert-model';
 import { Metrics, StandardMetrics } from './metrics';
 import { generateMeasureMap, MeasureMap, MeasureMapItem, MeasureMapXValueItem } from './measure-map';
 import { StaffViewModel } from '../../logical-view/view-model/score-view-model';
 import { TimeMap } from '../../tools/time-map';
 import { createTestScoreVM } from '../../tools/test-tools';
+import { createScopedTimeMap } from '../../logical-view/view-model/state-map';
 
 describe('Physical model, measure map', () => {
     let defaultMetrics: Metrics;

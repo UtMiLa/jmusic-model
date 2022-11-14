@@ -607,6 +607,9 @@ describe('State change view model', () => {
                     ]
                 }]
             });
+
+            expect(score.staves[1].timeSlots.find(ts => Time.equals(ts.absTime, Time.newAbsolute(7, 8)))).to.exist;
+            expect(score.staves[1].timeSlots.find(ts => Time.equals(ts.absTime, Time.newAbsolute(7, 8)))).to.deep.include({ meter: { meterText: ['4', '4']}});
     
         });
 

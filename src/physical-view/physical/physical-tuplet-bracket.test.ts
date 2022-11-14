@@ -198,7 +198,7 @@ describe('Physical model, tuplet brackets', () => {
 
         expect(physicalModel.elements).to.have.length(11 + 1);
 
-        console.log(physicalModel.elements);
+        //console.log(physicalModel.elements);
 
         expect(physicalModel.elements[11]).to.deep.include({
             element: VertVarSizeGlyphs.TupletBracket,
@@ -215,7 +215,7 @@ describe('Physical model, tuplet brackets', () => {
 
         expect(physicalModel.elements).to.have.length(15 + 1);
 
-        console.log(physicalModel.elements);
+        //console.log(physicalModel.elements);
         
         expect(physicalModel.elements[15]).to.deep.include({
             element: VertVarSizeGlyphs.TupletBracket,

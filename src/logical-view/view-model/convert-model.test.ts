@@ -4,8 +4,9 @@ import { expect } from 'chai';
 import { Time } from './../../model';
 import { ClefType, StaffDef } from './../../model';
 import { Clef } from './../../model';
-import { createScopedTimeMap, __internal } from './convert-model';
+import { __internal } from './convert-model';
 import { createTestStaff } from '../../tools/test-tools';
+import { createScopedTimeMap } from './state-map';
 /* eslint-disable comma-dangle */
 
 describe('View model', () => {

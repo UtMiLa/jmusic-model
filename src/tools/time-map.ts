@@ -2,7 +2,6 @@ import { AbsoluteTime, Time } from './../model/rationals/time';
 
 
 export class IndexedMap<T, Index> {
-
     constructor(private compareIndex: (index1: Index, index2: Index) => number, private creator?: (time: Index) => T) {}
 
     items: { index: Index, value: T }[] = [];
@@ -53,6 +52,14 @@ export class IndexedMap<T, Index> {
     forEach(callBack: (index: Index, value: T) => void): void {
         this.items.forEach(item => callBack(item.index, item.value));
     }
+
+    filter(func: (index: Index, value: T) => boolean): IndexedMap<T, Index> {
+        const res = new IndexedMap<T, Index>(this.compareIndex, this.creator);
+        res.items = this.items.filter(item => func(item.index, item.value));
+        return res;
+    }
+
+
 }
 
 

@@ -6,10 +6,11 @@ import { Time } from '../../model/rationals/time';
 import { expect } from 'chai';
 import { ClefType } from '../../model/states/clef';
 import { StaffDef } from '../../model/score/staff';
-import { createScopedTimeMap, __internal } from '../../logical-view/view-model/convert-model';
+import { __internal } from '../../logical-view/view-model/convert-model';
 import { Metrics, StandardMetrics } from './metrics';
-import { StaffViewModel } from '~/logical-view/view-model/score-view-model';
+import { StaffViewModel } from '../../logical-view/view-model/score-view-model';
 import { viewModelToPhysical } from './viewmodel-to-physical';
+import { createScopedTimeMap } from '../../logical-view/view-model/state-map';
 
 describe('Physical model, cursor', () => {
     let defaultMetrics: Metrics;
