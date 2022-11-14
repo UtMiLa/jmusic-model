@@ -70,6 +70,20 @@ export function createStateMap(score: ScoreDef):  IndexedMap<StateChange, Scoped
     
     });
 
+    stateMap.items.sort((item1, item2) => Time.sortComparison(item1.index.absTime, item2.index.absTime));
 
-    return stateMap.filter((index, value) => !!(value.meter || value.clef || value.key));
+    return stateMap
+        .filter((index, value) => !!(value.meter || value.clef || value.key));
+        
+}
+
+export function getStateAt(stateMap: IndexedMap<StateChange, ScopedTimeKey>, time: AbsoluteTime, staff: number): StateChange {
+    let res = { meter: undefined, clef: undefined, key: undefined, duration: Time.NoTime, isState: true } as StateChange;
+    for (let i = 0; i < stateMap.length; i++) {
+        if (Time.sortComparison(time, stateMap.items[i].index.absTime) < 0) break;
+        if (stateMap.items[i].index.scope === undefined || stateMap.items[i].index.scope === staff) {
+            res = {...res, ...stateMap.items[i].value};
+        }
+    }
+    return res;
 }
