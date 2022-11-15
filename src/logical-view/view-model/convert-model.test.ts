@@ -1,11 +1,12 @@
+import { FlagType } from './note-view-model';
 import { RetrogradeSequence, TupletSequence } from './../../model/score/transformations';
 import { SimpleSequence, CompositeSequence } from './../../model/score/sequence';
 import { expect } from 'chai';
-import { Time } from './../../model';
+import { NoteDirection, NoteType, Time } from './../../model';
 import { ClefType, StaffDef } from './../../model';
 import { Clef } from './../../model';
-import { __internal } from './convert-model';
-import { createTestStaff } from '../../tools/test-tools';
+import { scoreModelToViewModel, __internal } from './convert-model';
+import { createTestScore, createTestStaff } from '../../tools/test-tools';
 import { createScopedTimeMap } from './state-map';
 /* eslint-disable comma-dangle */
 
@@ -332,4 +333,31 @@ describe('View model', () => {
 
     });
 
+    it('should convert a time-restricted subset', () => {
+        const score = createTestScore([['c\'\'1 d\'\'1 e\'\'1'], ['c\'1 d\'1 e\'1']], [4, 4], [0, 0]);
+
+        const log1 = scoreModelToViewModel(score);
+        expect(log1.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [1], uniq: '0-0-0' });
+
+        const log2 = scoreModelToViewModel(score, { startTime: Time.newAbsolute(1, 1), endTime: Time.EternityTime });
+        expect(log2.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [2], uniq: '0-0-1' });
+    });
+
+
+    
+    it('should set correct initial states for a time-restricted subset', () => {
+        const score = createTestScore([['c\'\'1 \\key e \\major d\'\'1 e\'\'1'], ['c\'1 \\meter 2/2 d\'1 e\'1']], [4, 4], [0, 0]);
+
+        const log1 = scoreModelToViewModel(score);
+        expect(log1.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [1], uniq: '0-0-0' });
+        expect(log1.staves[0].timeSlots[0].clef).to.deep.eq({ clefType: ClefType.G, line: -2, position: 1});
+        expect(log1.staves[0].timeSlots[0].meter).to.deep.eq({ meterText: ['4', '4'] });
+        expect(log1.staves[0].timeSlots[0].key).to.deep.eq({ keyPositions: [] });
+
+        const log2 = scoreModelToViewModel(score, { startTime: Time.newAbsolute(2, 1), endTime: Time.EternityTime });
+        expect(log2.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [3], uniq: '0-0-3' });
+        //expect(log2.staves[0].timeSlots[0].clef).to.deep.eq({ clefType: ClefType.G, line: -2, position: 1});
+        //expect(log2.staves[0].timeSlots[0].meter).to.deep.eq({ meterText: ['2', '2'] });
+        expect(log2.staves[0].timeSlots[0].key).to.deep.eq({ keyPositions: [{ alteration: 1, position: 4}, { alteration: 1, position: 1}, { alteration: 1, position: 5}, { alteration: 1, position: 2}] });
+    });
 });

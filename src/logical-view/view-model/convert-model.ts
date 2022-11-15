@@ -1,4 +1,4 @@
-import { ScopedTimeKey } from './state-map';
+import { getStateAt, ScopedTimeKey } from './state-map';
 import { Rational, RationalDef } from './../../model/rationals/rational';
 import { StateChange } from './../../model/states/state';
 import { TimeMap, IndexedMap } from './../../tools/time-map';
@@ -21,7 +21,12 @@ import { noteToView } from './convert-note';
 import { TimeSlotViewModel, ScoreViewModel, StaffViewModel, AccidentalViewModel, TieViewModel } from './score-view-model';
 import { VoiceDef } from '../../model/score/voice';
 import { createIdPrefix, createStateMap } from './state-map';
+import { convertKey } from '~/physical-view/physical/physical-key';
 
+export interface SubsetDef {
+    startTime: AbsoluteTime;
+    endTime: AbsoluteTime;
+}
 
 class State {
     constructor (
@@ -150,16 +155,16 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
 }
 
 
-export function scoreModelToViewModel(def: ScoreDef): ScoreViewModel {
-    const stateMap = createStateMap(def);//createScopedTimeMap();
+export function scoreModelToViewModel(def: ScoreDef, restrictions: SubsetDef = { startTime: Time.StartTime, endTime: Time.EternityTime }): ScoreViewModel {
+    const stateMap = createStateMap(def);
     //console.log('scoreModelToViewModel', def);    
 
     return { staves: def.staves.map((staff, staffNo) => staffModelToViewModel(staff, stateMap.clone((key: ScopedTimeKey, value: StateChange) => {
         return key.scope === undefined || key.scope === staffNo;
-    }), staffNo)) };
+    }), staffNo, restrictions)) };
 }
 
-function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0): StaffViewModel {
+function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef): StaffViewModel {
 
     //console.log(def, stateMap, staffNo);
 
@@ -214,9 +219,27 @@ function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, 
     if (meter) {
         addBarLines(meterMap, staffEndTime, timeSlots);
     }
-    return { 
-        timeSlots: timeSlots.sort((ts1, ts2) => Time.sortComparison(ts1.absTime, ts2.absTime))
+
+    const initialStates = getStateAt(stateMap, restrictions.startTime, staffNo);
+    if (!initialStates.clef) initialStates.clef = new Clef(def.initialClef);
+    if (!initialStates.meter && def.initialMeter) initialStates.meter = MeterFactory.createRegularMeter(def.initialMeter);
+    if (!initialStates.key) initialStates.key = new Key(def.initialKey);
+
+    const res = { 
+        timeSlots: timeSlots.filter(ts => Time.sortComparison(ts.absTime, restrictions.startTime) >= 0).sort((ts1, ts2) => Time.sortComparison(ts1.absTime, ts2.absTime))
     };
+
+    if (restrictions.startTime.numerator) {
+        res.timeSlots[0].key = keyToView(initialStates.key, initialStates.clef);
+        res.timeSlots[0].clef = {
+            position: 1,
+            clefType: initialStates.clef.def.clefType,
+            line: initialStates.clef.def.line
+        };
+        res.timeSlots[0].meter = initialStates.meter ? meterToView(initialStates.meter) : undefined;
+    }
+
+    return res;
 }
 
 
@@ -381,4 +404,5 @@ function createNoteViewModels(state: State): NoteViewModel[] {
     });
 }
 
-export const __internal = { staffModelToViewModel, createNoteViewModels, State };
+export const __internal = { 
+    staffModelToViewModel: (def: StaffDef, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef = { startTime: Time.StartTime, endTime: Time.EternityTime }) => staffModelToViewModel(def, stateMap, staffNo, restrictions), createNoteViewModels, State };

@@ -50,7 +50,7 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
         } else if ((elem as any).element === VertVarSizeGlyphs.Beam) {
             const elmBeam = elem as PhysicalBeamElement;
 
-            renderer.draw('#888888', '#888888', [
+            renderer.draw('#000000', '#000000', [
                 { type: DrawOperationType.MoveTo, points: [convertXY(elmBeam.position)]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height })]},
                 { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height - 3})]},

@@ -84,8 +84,8 @@ describe('Render', () => {
 
         // beam
         expect(spyObj.calledWith(
-            '#888888',
-            '#888888',
+            '#000000',
+            '#000000',
             [
                 {
                     type: 0,
