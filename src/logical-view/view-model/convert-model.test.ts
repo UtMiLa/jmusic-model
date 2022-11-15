@@ -356,8 +356,20 @@ describe('View model', () => {
 
         const log2 = scoreModelToViewModel(score, { startTime: Time.newAbsolute(2, 1), endTime: Time.EternityTime });
         expect(log2.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [3], uniq: '0-0-3' });
-        //expect(log2.staves[0].timeSlots[0].clef).to.deep.eq({ clefType: ClefType.G, line: -2, position: 1});
-        //expect(log2.staves[0].timeSlots[0].meter).to.deep.eq({ meterText: ['2', '2'] });
+        expect(log2.staves[0].timeSlots[0].clef).to.deep.eq({ clefType: ClefType.G, line: -2, position: 1});
+        expect(log2.staves[0].timeSlots[0].meter).to.be.undefined;
         expect(log2.staves[0].timeSlots[0].key).to.deep.eq({ keyPositions: [{ alteration: 1, position: 4}, { alteration: 1, position: 1}, { alteration: 1, position: 5}, { alteration: 1, position: 2}] });
     });
+    
+    it('should time-restrict endpoint', () => {
+        const score = createTestScore([['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], [4, 4], [0, 0]);
+
+        const log2 = scoreModelToViewModel(score, { startTime: Time.newAbsolute(1, 1), endTime: Time.newAbsolute(2, 1) });
+        expect(log2.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [2], uniq: '0-0-1' });
+        expect(log2.staves[0].timeSlots[1].notes).to.deep.eq([]);
+        expect(log2.staves[0].timeSlots[1].accidentals).to.deep.eq([]);
+        expect(log2.staves[0].timeSlots[1].bar).to.deep.eq(true);
+    });
+
+
 });

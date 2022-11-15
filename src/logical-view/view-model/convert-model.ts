@@ -226,17 +226,26 @@ function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, 
     if (!initialStates.key) initialStates.key = new Key(def.initialKey);
 
     const res = { 
-        timeSlots: timeSlots.filter(ts => Time.sortComparison(ts.absTime, restrictions.startTime) >= 0).sort((ts1, ts2) => Time.sortComparison(ts1.absTime, ts2.absTime))
+        timeSlots: timeSlots
+            .filter(ts => Time.sortComparison(ts.absTime, restrictions.startTime) >= 0 && Time.sortComparison(ts.absTime, restrictions.endTime) <= 0)
+            .map(ts => {
+                if(Time.sortComparison(ts.absTime, restrictions.endTime) === 0) { 
+                    return {...ts, notes: [], accidentals: [], ties: [], tuplets: [], beamings: []}; 
+                } else { 
+                    return ts; 
+                }
+            })
+            .sort((ts1, ts2) => Time.sortComparison(ts1.absTime, ts2.absTime))
     };
 
-    if (restrictions.startTime.numerator) {
+    if ((restrictions.startTime.numerator || restrictions.endTime.denominator) && res.timeSlots[0]) {
         res.timeSlots[0].key = keyToView(initialStates.key, initialStates.clef);
         res.timeSlots[0].clef = {
             position: 1,
             clefType: initialStates.clef.def.clefType,
             line: initialStates.clef.def.line
         };
-        res.timeSlots[0].meter = initialStates.meter ? meterToView(initialStates.meter) : undefined;
+        //res.timeSlots[0].meter = initialStates.meter ? meterToView(initialStates.meter) : undefined;
     }
 
     return res;
