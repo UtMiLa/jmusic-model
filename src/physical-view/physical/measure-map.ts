@@ -156,6 +156,7 @@ export class MeasureMap {
 
         const setItemType = (field: XValueKey): XValueKey | undefined => {
             if (mapItem.widths[field] && x >= offsetItem[field] && x < offsetItem[field] + mapItem.widths[field]) { return field; }    
+            return undefined;
         };
 
         /*if (mapItem.widths.clef && diff >= offsetItem.clef && diff < offsetItem.clef + mapItem.widths.clef) {itemType = 'clef';}

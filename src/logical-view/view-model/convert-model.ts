@@ -21,7 +21,7 @@ import { noteToView } from './convert-note';
 import { TimeSlotViewModel, ScoreViewModel, StaffViewModel, AccidentalViewModel, TieViewModel, BarType } from './score-view-model';
 import { VoiceDef } from '../../model/score/voice';
 import { createIdPrefix, createStateMap } from './state-map';
-import { convertKey } from '~/physical-view/physical/physical-key';
+import { convertKey } from '../../physical-view/physical/physical-key';
 
 export interface SubsetDef {
     startTime: AbsoluteTime;
