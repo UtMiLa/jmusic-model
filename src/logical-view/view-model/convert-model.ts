@@ -18,7 +18,7 @@ import { StaffDef } from '../../model';
 import { Key } from '../../model';
 import { calcBeamGroups } from '../../model';
 import { noteToView } from './convert-note';
-import { TimeSlotViewModel, ScoreViewModel, StaffViewModel, AccidentalViewModel, TieViewModel } from './score-view-model';
+import { TimeSlotViewModel, ScoreViewModel, StaffViewModel, AccidentalViewModel, TieViewModel, BarType } from './score-view-model';
 import { VoiceDef } from '../../model/score/voice';
 import { createIdPrefix, createStateMap } from './state-map';
 import { convertKey } from '~/physical-view/physical/physical-key';
@@ -318,7 +318,7 @@ function addBarLines(meterMap: MeterMap, staffEndTime: AbsoluteTime, timeSlots: 
     while (Time.sortComparison(barTime, staffEndTime) <= 0) {
         if (barTime.numerator > 0) {
             const slot = getTimeSlot(timeSlots, barTime);
-            slot.bar = true;
+            slot.bar = { barType: BarType.Simple };
         }
         //barTime = Time.addTime(barTime, measureTime);
         barTime = barIterator.next().value;

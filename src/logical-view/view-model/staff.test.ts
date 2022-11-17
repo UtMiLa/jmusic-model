@@ -1,3 +1,4 @@
+import { BarType } from './score-view-model';
 import { SimpleSequence } from './../../model/score/sequence';
 import { IndexedMap } from './../../tools/time-map';
 import { StateChange } from './../../model/states/state';
@@ -278,7 +279,7 @@ describe('Staff view model', () => {
 
         for (let i = 0; i < 5; i++) {
             if (i === 3 || i === 4){
-                expect(vm.timeSlots[i].bar).to.equal(true);
+                expect(vm.timeSlots[i].bar).to.deep.equal({ barType: BarType.Simple });
             } else {
                 expect(vm.timeSlots[i].bar).to.be.undefined;
             }
@@ -299,7 +300,7 @@ describe('Staff view model', () => {
             if (i === 0) {
                 expect(vm.timeSlots[i].bar).to.be.undefined;
             } else
-                expect(vm.timeSlots[i].bar).to.equal(true);
+                expect(vm.timeSlots[i].bar).to.deep.equal({ barType: BarType.Simple });
         }
         
     });
@@ -316,7 +317,7 @@ describe('Staff view model', () => {
 
         for (let i = 0; i < 8; i++) {
             if (i === 1 || i === 4 || i === 7){
-                expect(vm.timeSlots[i].bar).to.equal(true);
+                expect(vm.timeSlots[i].bar).to.deep.equal({ barType: BarType.Simple });
             } else {
                 expect(vm.timeSlots[i].bar).to.be.undefined;
             }

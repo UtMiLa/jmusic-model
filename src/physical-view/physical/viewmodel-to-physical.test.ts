@@ -1,7 +1,7 @@
 import { KeyViewModel } from './../../logical-view/view-model/convert-key';
 import { MeterViewModel } from './../../logical-view/view-model/convert-meter';
 import { Clef } from './../../model/states/clef';
-import { TimeSlotViewModel, ClefViewModel } from './../../logical-view';
+import { TimeSlotViewModel, ClefViewModel, BarType } from './../../logical-view';
 import { TimeSlot } from './../../model/score/sequence';
 import { Accidental } from './../../model/pitches/pitch';
 import { Time } from './../../model/rationals/time';
@@ -1055,7 +1055,7 @@ describe('Physical model', () => {
                         },
                         { 
                             absTime: Time.newAbsolute(1, 1), 
-                            bar: true,
+                            bar: { barType: BarType.Simple },
                             notes: [] 
                         } 
                     ]
@@ -1201,7 +1201,7 @@ describe('Physical model', () => {
         it('should calculate the width of a bar', () => {
             const timeSlot: TimeSlotViewModel = {
                 absTime: Time.newAbsolute(1,1),
-                bar: true,
+                bar: { barType: BarType.Simple },
                 notes: []
             };
             const res = getTimeSlotWidth(timeSlot, defaultMetrics);
@@ -1236,7 +1236,7 @@ describe('Physical model', () => {
             const timeSlot: TimeSlotViewModel = {
                 absTime: Time.newAbsolute(1,1),
                 clef: { clefType: ClefType.G, line: 2 } as ClefViewModel,
-                bar: true,
+                bar: { barType: BarType.Simple },
                 key: { keyPositions: [{ alteration: -1, position: 1 }] } as KeyViewModel,
                 meter: { meterText: ['3', '4'] } as MeterViewModel,
                 notes: [{noteType: NoteType.NWhole, positions: [1], direction: NoteDirection.Undefined }]

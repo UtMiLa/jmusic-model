@@ -25,12 +25,21 @@ export interface AccidentalViewModel {
     alteration: Alteration;
     displacement: number;
 }
+
+export enum BarType {
+    None, Simple, Double, End, Dotted
+}
+export interface BarViewModel {
+    repeatEnd?: boolean;
+    repeatStart?: boolean;
+    barType: BarType;
+}
 export interface TimeSlotViewModel {
     absTime: AbsoluteTime; 
     clef?: ClefViewModel;
     key?: KeyViewModel;
     meter?: MeterViewModel;
-    bar?: boolean;
+    bar?: BarViewModel;
     ties?: TieViewModel[];
     accidentals?: AccidentalViewModel[];
     notes: NoteViewModel[];

@@ -1,3 +1,4 @@
+import { BarType } from './score-view-model';
 import { FlagType } from './note-view-model';
 import { RetrogradeSequence, TupletSequence } from './../../model/score/transformations';
 import { SimpleSequence, CompositeSequence } from './../../model/score/sequence';
@@ -368,7 +369,7 @@ describe('View model', () => {
         expect(log2.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [2], uniq: '0-0-1' });
         expect(log2.staves[0].timeSlots[1].notes).to.deep.eq([]);
         expect(log2.staves[0].timeSlots[1].accidentals).to.deep.eq([]);
-        expect(log2.staves[0].timeSlots[1].bar).to.deep.eq(true);
+        expect(log2.staves[0].timeSlots[1].bar).to.deep.eq({ barType: BarType.Simple });
     });
 
 
