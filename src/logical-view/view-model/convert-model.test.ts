@@ -372,5 +372,16 @@ describe('View model', () => {
         expect(log2.staves[0].timeSlots[1].bar).to.deep.eq({ barType: BarType.Simple });
     });
 
+    it('should add repeats', () => {
+        const score = createTestScore([['c\'\'1 d\'\'1 ees\'\'1']], [4, 4], [0, 0]);
+        score.repeats = [{from: Time.newAbsolute(1,1), to: Time.newAbsolute(2,1)}];
+
+        
+        const log2 = scoreModelToViewModel(score);
+        console.log(log2.staves[0].timeSlots);
+        expect(log2.staves[0].timeSlots[1].bar).to.deep.eq({ barType: BarType.Simple, repeatStart: true });
+        expect(log2.staves[0].timeSlots[2].bar).to.deep.eq({ barType: BarType.Simple, repeatEnd: true });
+    });
+
 
 });

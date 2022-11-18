@@ -1079,6 +1079,54 @@ describe('Physical model', () => {
 
     });
     
+    it('should render a repeat view model', () => {
+        const viewModel: ScoreViewModel = { 
+            staves: [
+                { 
+                    timeSlots: [
+                        { 
+                            absTime: Time.newAbsolute(0, 1), 
+                            notes: [] 
+                        },
+                        { 
+                            absTime: Time.newAbsolute(1, 1), 
+                            bar: { barType: BarType.Simple, repeatEnd: true, repeatStart: true },
+                            notes: [] 
+                        },
+                        { 
+                            absTime: Time.newAbsolute(2, 1), 
+                            bar: { barType: BarType.Simple, repeatEnd: true },
+                            notes: [] 
+                        },
+                    ]
+                }
+            ]
+        };
+
+        const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
+
+        const lineWidth = defaultMetrics.scaleDegreeUnit*2;
+
+        expect(physicalModel.elements.length).to.eq(7);
+
+        expect(physicalModel.elements[5]).to.deep.equal(
+            { 
+                element: HorizVarSizeGlyphs.RepeatEndStart,
+                position: { x: 10 + defaultMetrics.repeatEndOffset, y: -defaultMetrics.staffTopMargin },
+                height: 4 * lineWidth
+            }
+        );
+
+        expect(physicalModel.elements[6]).to.deep.equal(
+            { 
+                element: HorizVarSizeGlyphs.RepeatEnd,
+                position: { x: 10 + 2*defaultMetrics.afterBarSpacing + defaultMetrics.beforeRepeatSpacing + defaultMetrics.repeatEndOffset, y: -defaultMetrics.staffTopMargin },
+                height: 4 * lineWidth
+            }
+        );
+
+    });
+    
     
 
     it('should render a tie', () => {

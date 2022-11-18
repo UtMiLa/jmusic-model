@@ -93,8 +93,14 @@ function convertStaff(
         resultElements.push(convertClef(timeSlot.clef, mapItem.clef as number, settings));
     }
     if (timeSlot.bar) {
+        let element = HorizVarSizeGlyphs.Bar;
+        if (timeSlot.bar.repeatEnd) {
+            element = timeSlot.bar.repeatStart ?  HorizVarSizeGlyphs.RepeatEndStart : HorizVarSizeGlyphs.RepeatEnd;
+        } else if (timeSlot.bar.repeatStart) {
+            element = HorizVarSizeGlyphs.RepeatStart;
+        }
         resultElements.push({
-            element: HorizVarSizeGlyphs.Bar,
+            element,
             position: { x: mapItem.bar as number, y: 0 },
             height: 4 * settings.scaleDegreeUnit * 2
         } as PhysicalHorizVarSizeElement);

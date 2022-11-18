@@ -1,3 +1,4 @@
+import { RepeatDef } from './../../model/score/repeats';
 import { getStateAt, ScopedTimeKey } from './state-map';
 import { Rational, RationalDef } from './../../model/rationals/rational';
 import { StateChange } from './../../model/states/state';
@@ -22,6 +23,7 @@ import { TimeSlotViewModel, ScoreViewModel, StaffViewModel, AccidentalViewModel,
 import { VoiceDef } from '../../model/score/voice';
 import { createIdPrefix, createStateMap } from './state-map';
 import { convertKey } from '../../physical-view/physical/physical-key';
+import { repeatsToView } from './convert-repeat';
 
 export interface SubsetDef {
     startTime: AbsoluteTime;
@@ -161,10 +163,10 @@ export function scoreModelToViewModel(def: ScoreDef, restrictions: SubsetDef = {
 
     return { staves: def.staves.map((staff, staffNo) => staffModelToViewModel(staff, stateMap.clone((key: ScopedTimeKey, value: StateChange) => {
         return key.scope === undefined || key.scope === staffNo;
-    }), staffNo, restrictions)) };
+    }), staffNo, restrictions, def.repeats)) };
 }
 
-function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef): StaffViewModel {
+function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef, repeats: RepeatDef[] | undefined = undefined): StaffViewModel {
 
     //console.log(def, stateMap, staffNo);
 
@@ -218,6 +220,19 @@ function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, 
 
     if (meter) {
         addBarLines(meterMap, staffEndTime, timeSlots);
+    }
+
+    if (repeats) {
+        const repeatElements = repeatsToView(repeats);
+        repeatElements.forEach(repeatElm => {
+            //console.log('repeat', repeatElm);
+            const slot = getTimeSlot(timeSlots, repeatElm.time);
+            if (!slot.bar) {
+                slot.bar = { barType: BarType.None };
+            }
+            if (repeatElm.repeatEnd) slot.bar.repeatEnd = true;
+            if (repeatElm.repeatStart) slot.bar.repeatStart = true;
+        });
     }
 
     const initialStates = getStateAt(stateMap, restrictions.startTime, staffNo);

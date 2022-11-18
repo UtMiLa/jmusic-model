@@ -160,6 +160,9 @@ export enum FixedSizeGlyphs {
 export enum HorizVarSizeGlyphs {
     Stem = 101,
     Bar,
+    RepeatStart,
+    RepeatEnd,
+    RepeatEndStart,
     Cursor
 }
 

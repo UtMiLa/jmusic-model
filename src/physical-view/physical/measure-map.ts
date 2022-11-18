@@ -229,6 +229,14 @@ export function getTimeSlotSpacing(slot: TimeSlotViewModel, settings: Metrics): 
     if (slot.bar) {
         res.widths.bar = settings.afterBarSpacing;
         res.offsets.bar = 0;
+        if (slot.bar.repeatEnd) {
+            res.widths.bar += settings.beforeRepeatSpacing;
+            res.offsets.bar += settings.repeatEndOffset;
+        }
+        if (slot.bar.repeatStart) {
+            res.widths.bar += settings.afterRepeatSpacing;
+            //res.offsets.bar += 5;
+        }
         res.width += res.widths.bar;
     }
     if (slot.accidentals) {

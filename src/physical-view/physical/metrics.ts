@@ -20,6 +20,9 @@ export interface Metrics {
 
     defaultSpacing: number;
     afterBarSpacing: number;
+    beforeRepeatSpacing: number;
+    afterRepeatSpacing: number;
+    repeatEndOffset: number;
 
     keySigSpacing: number;
 
@@ -64,6 +67,9 @@ export class StandardMetrics implements Metrics {
 
     defaultSpacing = 20;
     afterBarSpacing = 8;
+    beforeRepeatSpacing = 8;
+    afterRepeatSpacing = 8;
+    repeatEndOffset = 5;
 
     keySigSpacing = 6;
 
