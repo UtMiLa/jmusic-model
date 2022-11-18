@@ -51,8 +51,6 @@ Additionally, it is intended to be the simplest open source component as a basis
 # Todos
 ## Important
 Model and draw:
-* simple repeats
-* tuplets
 * lyrics
 * note expressions (staccato, fermata, breath, arpeggio...)
 * staff expressions (textual, including M.M.)
@@ -62,7 +60,6 @@ Model and draw:
 Functionality:
 * Point and click to set cursor
 * Show selected notes, and select using mouse
-* Show excerpt of score (remembering key, clef etc)
 
 Import/export:
 * Lilypond (don't expect a full implementation, though)
@@ -86,9 +83,12 @@ Transformations on sequences:
 * split chords to voices
 * join voices to form chords
 * keep notes on strong beats only
+* merge two sequences (rhythm from one and pitches from other)
+* arpeggiate chords
 
 Controls in Angular/React (probably in a sub-project):
 * Score display
+* Score overview (measure map)
 * Meter entry
 * Key entry
 * Clef entry
