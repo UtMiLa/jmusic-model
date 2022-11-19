@@ -1,5 +1,5 @@
 import { DrawOperationType, DrawOperation, RenderPosition } from './render-types';
-import { PhysicalTupletBracketElement } from './../physical/physical-elements';
+import { PhysicalElementBase, PhysicalTupletBracketElement } from './../physical/physical-elements';
 import { NoteDirection } from './../../model';
 import { Point, PhysicalBeamElement, PhysicalVertVarSizeElement } from '../physical/physical-elements';
 import { GlyphCode } from '../physical/glyphs';
@@ -10,6 +10,7 @@ import { PhysicalHorizVarSizeElement, PhysicalModel } from '../physical/physical
 import { HorizVarSizeGlyphs } from '../physical/glyphs';
 import { Renderer } from './base-renderer';
 import { CanvasRenderer } from './canvas-renderer';
+import { renderBar } from './render-elements';
 
 
 
@@ -114,88 +115,20 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
 
         } else if ((elem as any).element === HorizVarSizeGlyphs.Bar) {
 
-            renderer.draw('#555555', '#555555', [
-                { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
-                { type: DrawOperationType.Stroke, points: []}
-            ]);
+            renderBar(elem, position, renderer, convertX, convertY);
+
         } else if ((elem as any).element === HorizVarSizeGlyphs.RepeatEnd) {
 
-            const scale = (elem as any).scale ? (elem as any).scale : 1;
-            const font = Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler';
-
-            renderer.draw('#000000', '#000000', [
-                { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
-                { type: DrawOperationType.Stroke, points: []},
-
-                { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x+3), y: convertY(elem.position.y)}]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x+3), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x+5), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x+5), y: convertY(elem.position.y)}]},
-                { type: DrawOperationType.Fill, points: []},
-
-                { type: DrawOperationType.Text, points: [
-                    { x: convertX(elem.position.x-6), y: convertY(elem.position.y + 9)}
-                ], text: emmentalerCodes['dots.dot'], font: font },
-                { type: DrawOperationType.Text, points: [
-                    { x: convertX(elem.position.x-6), y: convertY(elem.position.y + 15)}
-                ], text: emmentalerCodes['dots.dot'], font: font }
-            ]);
+            renderBar(elem, position, renderer, convertX, convertY);
+            
         } else if ((elem as any).element === HorizVarSizeGlyphs.RepeatEndStart) {
 
-            const scale = (elem as any).scale ? (elem as any).scale : 1;
-            const font = Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler';
-            renderer.draw('#000000', '#000000', [
-                { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x-2), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x-2), y: convertY(elem.position.y)}]},
-                { type: DrawOperationType.Fill, points: []},
-
-                { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x+2), y: convertY(elem.position.y)}]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x+2), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x+4), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x+4), y: convertY(elem.position.y)}]},
-                { type: DrawOperationType.Fill, points: []},
-
-                { type: DrawOperationType.Text, points: [
-                    { x: convertX(elem.position.x+5), y: convertY(elem.position.y + 9)}
-                ], text: emmentalerCodes['dots.dot'], font: font },
-                { type: DrawOperationType.Text, points: [
-                    { x: convertX(elem.position.x+5), y: convertY(elem.position.y + 15)}
-                ], text: emmentalerCodes['dots.dot'], font: font },
-
-                { type: DrawOperationType.Text, points: [
-                    { x: convertX(elem.position.x-6), y: convertY(elem.position.y + 9)}
-                ], text: emmentalerCodes['dots.dot'], font: font },
-                { type: DrawOperationType.Text, points: [
-                    { x: convertX(elem.position.x-6), y: convertY(elem.position.y + 15)}
-                ], text: emmentalerCodes['dots.dot'], font: font }
-            ]);
+            renderBar(elem, position, renderer, convertX, convertY);
+            
         } else if ((elem as any).element === HorizVarSizeGlyphs.RepeatStart) {
+            
+            renderBar(elem, position, renderer, convertX, convertY);
 
-            const scale = (elem as any).scale ? (elem as any).scale : 1;
-            const font = Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler';
-            renderer.draw('#000000', '#000000', [
-                { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x-2), y: convertY(elem.position.y)}]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x-2), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x-1), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x-1), y: convertY(elem.position.y)}]},
-                { type: DrawOperationType.Fill, points: []},
-
-                { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x+2), y: convertY(elem.position.y)}]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x+2), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
-                { type: DrawOperationType.Stroke, points: []},
-
-                { type: DrawOperationType.Text, points: [
-                    { x: convertX(elem.position.x+5), y: convertY(elem.position.y + 9)}
-                ], text: emmentalerCodes['dots.dot'], font: font },
-                { type: DrawOperationType.Text, points: [
-                    { x: convertX(elem.position.x+5), y: convertY(elem.position.y + 15)}
-                ], text: emmentalerCodes['dots.dot'], font: font }
-
-            ]);
         } else if ((elem as any).element === HorizVarSizeGlyphs.Cursor) {
 
             renderer.draw('#ff5555', '#ff5555', [
@@ -217,3 +150,5 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
         }
     });
 }
+
+
