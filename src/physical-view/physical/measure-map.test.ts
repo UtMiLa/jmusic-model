@@ -6,7 +6,7 @@ import { ClefType } from './../../model/states/clef';
 import { StaffDef } from './../../model/score/staff';
 import { __internal } from './../../logical-view/view-model/convert-model';
 import { Metrics, StandardMetrics } from './metrics';
-import { generateMeasureMap, MeasureMap, MeasureMapItem, MeasureMapXValueItem } from './measure-map';
+import { findSystemSplits, generateMeasureMap, MeasureMap, MeasureMapItem, MeasureMapXValueItem } from './measure-map';
 import { StaffViewModel } from '../../logical-view/view-model/score-view-model';
 import { TimeMap } from '../../tools/time-map';
 import { createTestScoreVM } from '../../tools/test-tools';
@@ -337,7 +337,7 @@ describe('Physical model, measure map', () => {
         });
     });
 
-    xit('should convert x,y coordinates to objects', () => {
+    it('should convert x,y coordinates to objects', () => {
         const score = createTestScoreVM([[
             'c\'\'4 c\'\'4 cis\'\'4 c\'\'4',
             'c\'8 c\'4 c\'4 c\'4 c\'8'
@@ -436,38 +436,69 @@ describe('Physical model, measure map', () => {
             time: Time.newAbsolute(0, 1),
             staff: 0,
             item: 'clef',
-            pitch: 3
+            pitch: -0
         });
 
         expect(mm.localize(46, 10, defaultMetrics)).to.deep.eq({
             time: Time.newAbsolute(0, 1),
             staff: 0,
             item: 'key',
-            pitch: 3
+            pitch: -0
         });
 
         expect(mm.localize(120, 10, defaultMetrics)).to.deep.eq({
             time: Time.newAbsolute(1, 8),
             staff: 0,
             item: 'note',
-            pitch: 3
+            pitch: -0
         });
 
         expect(mm.localize(170, 10, defaultMetrics)).to.deep.eq({
             time: Time.newAbsolute(1, 2),
             staff: 0,
             item: 'accidentals',
-            pitch: 3
+            pitch: -0
         });
 
         expect(mm.localize(178, 10, defaultMetrics)).to.deep.eq({
             time: Time.newAbsolute(1, 2),
             staff: 0,
             item: 'note',
-            pitch: 3
+            pitch: -0
         });
 
 
+    });
+
+    describe('System breaks', () => {
+        it('should calculate system breaks from a width', () => {
+            const mm = new MeasureMap([
+                {absTime: Time.StartTime, startPos: 0, width: 50, widths: { clef: 10, key: 20, note: 10, accidentals: 0, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newAbsolute(1, 1), startPos: 50, width: 20, widths: { clef: 0, key: 0, note: 10, accidentals: 0, bar: 10, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newAbsolute(2, 1), startPos: 70, width: 20, widths: { clef: 0, key: 0, note: 10, accidentals: 10, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newAbsolute(3, 1), startPos: 90, width: 10, widths: { clef: 0, key: 0, note: 5, accidentals: 0, bar: 5, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newAbsolute(4, 1), startPos: 100, width: 10, widths: { clef: 0, key: 0, note: 10, accidentals: 0, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newAbsolute(5, 1), startPos: 110, width: 10, widths: { clef: 0, key: 0, note: 5, accidentals: 0, bar: 5, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newAbsolute(6, 1), startPos: 120, width: 20, widths: { clef: 0, key: 0, note: 10, accidentals: 10, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newAbsolute(7, 1), startPos: 140, width: 10, widths: { clef: 0, key: 0, note: 5, accidentals: 0, bar: 5, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newAbsolute(8, 1), startPos: 150, width: 10, widths: { clef: 0, key: 0, note: 10, accidentals: 0, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }}
+            ]);
+
+            const split1 = findSystemSplits(mm, 50);
+
+            expect(split1).to.have.length(4);
+            expect(split1[0]).to.deep.eq(Time.newAbsolute(0, 1));
+            expect(split1[1]).to.deep.eq(Time.newAbsolute(1, 1));
+            expect(split1[2]).to.deep.eq(Time.newAbsolute(3, 1));
+            expect(split1[3]).to.deep.eq(Time.newAbsolute(7, 1));
+
+            
+            const split2 = findSystemSplits(mm, 100);
+
+            expect(split2).to.have.length(2);
+            expect(split2[0]).to.deep.eq(Time.newAbsolute(0, 1));
+            expect(split2[1]).to.deep.eq(Time.newAbsolute(3, 1));
+        });
     });
 
 });

@@ -35,7 +35,14 @@ export function generateMeasureMap(viewModel: ScoreViewModel, settings: Metrics)
     return measureMap;
 }
 
-
+/**
+ * A MeasureMap is generated from a logical view using generateMeasureMap().
+ * It calculates for every timed event the offset and width (in virtual pixels) of:
+ * * state changes
+ * * bar lines
+ * * accidentals
+ * * chords, notes and rests 
+ */
 export class MeasureMap {
     constructor(public measureMap: MeasureMapItem[] = []) {
     }
@@ -269,3 +276,24 @@ function deepCloneMeasureMapItem(objectToClone: MeasureMapItem): MeasureMapItem 
 }
 
 
+export function findSystemSplits(map: MeasureMap, maxWidth: number): AbsoluteTime[] {
+    if (!map.measureMap.length) return [];
+
+    let breakTime = map.measureMap[0].absTime;    
+    let breakWidth = 0;
+    const res = [breakTime];
+    let width = 0;
+    map.measureMap.forEach(mItem => {
+        if(width > maxWidth) {
+            width -= breakWidth;
+            res.push(breakTime);
+        }
+        if (mItem.widths.bar) {
+            breakTime = mItem.absTime;
+            breakWidth = width;
+        }
+        width += mItem.width;
+    });
+
+    return res;
+}
