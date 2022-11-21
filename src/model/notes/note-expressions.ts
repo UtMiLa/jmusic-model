@@ -1,4 +1,3 @@
-
 export type NoteExpression = 
     'fermata' |
     'shortfermata' |
@@ -63,6 +62,7 @@ export type NoteExpression =
 
 export interface NoteExpressionInfo {
     name: NoteExpression;
+    glyphBase: string;
     upDown?: boolean;
     lily?: string;
     shortLily?: string;
@@ -71,241 +71,300 @@ export interface NoteExpressionInfo {
 export const noteExpressions: NoteExpressionInfo[] = [
     {
         'name': 'fermata',
+        'glyphBase': 'fermata',
         'upDown': true,
-        'lily': '\\fermata'      
+        'lily': '\\fermata'
     },
     {
         'name': 'shortfermata',
+        'glyphBase': 'shortfermata',
         'upDown': true,
-        'lily': '\\shortfermata'      
+        'lily': '\\shortfermata'
     },
     {
         'name': 'longfermata',
+        'glyphBase': 'longfermata',
         'upDown': true,
-        'lily': '\\longfermata'      
+        'lily': '\\longfermata'
     },
     {
         'name': 'verylongfermata',
+        'glyphBase': 'verylongfermata',
         'upDown': true,
-        'lily': '\\verylongfermata'      
+        'lily': '\\verylongfermata'
     },
     {
         'name': 'veryshortfermata',
+        'glyphBase': 'veryshortfermata',
         'upDown': true,
-        'lily': '\\veryshortfermata'      
+        'lily': '\\veryshortfermata'
     },
     {
         'name': 'henzeshortfermata',
+        'glyphBase': 'henzeshortfermata',
         'upDown': true,
-        'lily': '\\henzeshortfermata'      
+        'lily': '\\henzeshortfermata'
     },
     {
         'name': 'henzelongfermata',
+        'glyphBase': 'henzelongfermata',
         'upDown': true,
-        'lily': '\\henzelongfermata'      
+        'lily': '\\henzelongfermata'
     },
     {
         'name': 'thumb',
-        'lily': '\\thumb'      
+        'glyphBase': 'thumb',
+        'lily': '\\thumb'
     },
     {
         'name': 'sforzato',
+        'glyphBase': 'sforzato',
         'lily': '\\accent',
         'shortLily': '->'
     },
     {
         'name': 'espr',
-        'lily': '\\espressivo'      
+        'glyphBase': 'espr',
+        'lily': '\\espressivo'
     },
     {
         'name': 'staccato',
+        'glyphBase': 'staccato',
         'lily': '\\staccato',
         'shortLily': '-.'
     },
     {
         'name': 'staccatissimo',
+        'glyphBase': 'staccatissimo',
         'upDown': true,
         'lily': '\\staccatissimo',
         'shortLily': '-!'
     },
     {
         'name': 'tenuto',
+        'glyphBase': 'tenuto',
         'lily': '\\tenuto',
         'shortLily': '--'
     },
     {
         'name': 'portato',
+        'glyphBase': 'portato',
         'upDown': true,
         'lily': '\\portato',
         'shortLily': '-_'
     },
     {
         'name': 'marcato',
+        'glyphBase': 'marcato',
         'upDown': true,
         'lily': '\\marcato',
         'shortLily': '-^'
     },
     {
         'name': 'open',
-        'lily': '\\open'      
+        'glyphBase': 'open',
+        'lily': '\\open'
     },
     {
         'name': 'halfopen',
-        'lily': '\\halfopen'      
+        'glyphBase': 'halfopen',
+        'lily': '\\halfopen'
     },
     {
-        'name': 'halfopenvertical'              
+        'name': 'halfopenvertical',
+        'glyphBase': 'halfopenvertical'
     },
     {
         'name': 'stopped',
+        'glyphBase': 'stopped',
         'lily': '\\stopped',
         'shortLily': '-+'
     },
     {
         'name': 'upbow',
-        'lily': '\\upbow'      
+        'glyphBase': 'upbow',
+        'lily': '\\upbow'
     },
     {
         'name': 'downbow',
-        'lily': '\\downbow'      
+        'glyphBase': 'downbow',
+        'lily': '\\downbow'
     },
     {
         'name': 'reverseturn',
-        'lily': '\\reverseturn'      
+        'glyphBase': 'reverseturn',
+        'lily': '\\reverseturn'
     },
     {
         'name': 'turn',
-        'lily': '\\turn'      
+        'glyphBase': 'turn',
+        'lily': '\\turn'
     },
     {
         'name': 'slashturn',
-        'lily': '\\slashturn'      
+        'glyphBase': 'slashturn',
+        'lily': '\\slashturn'
     },
     {
         'name': 'haydnturn',
-        'lily': '\\haydnturn'      
+        'glyphBase': 'haydnturn',
+        'lily': '\\haydnturn'
     },
     {
         'name': 'trill',
-        'lily': '\\trill'      
+        'glyphBase': 'trill',
+        'lily': '\\trill'
     },
     {
         'name': 'upedalheel',
-        'lily': '\\lheel'      
+        'glyphBase': 'upedalheel',
+        'lily': '\\lheel'
     },
     {
         'name': 'dpedalheel',
-        'lily': '\\rheel'      
+        'glyphBase': 'dpedalheel',
+        'lily': '\\rheel'
     },
     {
         'name': 'upedaltoe',
-        'lily': '\\ltoe'      
+        'glyphBase': 'upedaltoe',
+        'lily': '\\ltoe'
     },
     {
         'name': 'dpedaltoe',
-        'lily': '\\rtoe'      
+        'glyphBase': 'dpedaltoe',
+        'lily': '\\rtoe'
     },
     {
         'name': 'flageolet',
-        'lily': '\\flageolet'      
+        'glyphBase': 'flageolet',
+        'lily': '\\flageolet'
     },
     {
         'name': 'segno',
-        'lily': '\\segno'      
+        'glyphBase': 'segno',
+        'lily': '\\segno'
     },
     {
-        'name': 'varsegno'              
+        'name': 'varsegno',
+        'glyphBase': 'varsegno'
     },
     {
         'name': 'coda',
-        'lily': '\\coda'      
+        'glyphBase': 'coda',
+        'lily': '\\coda'
     },
     {
         'name': 'varcoda',
-        'lily': '\\varcoda'      
+        'glyphBase': 'varcoda',
+        'lily': '\\varcoda'
     },
     {
-        'name': 'rcomma'              
+        'name': 'rcomma',
+        'glyphBase': 'rcomma'
     },
     {
-        'name': 'lcomma'              
+        'name': 'lcomma',
+        'glyphBase': 'lcomma'
     },
     {
-        'name': 'rvarcomma'              
+        'name': 'rvarcomma',
+        'glyphBase': 'rvarcomma'
     },
     {
-        'name': 'lvarcomma'              
+        'name': 'lvarcomma',
+        'glyphBase': 'lvarcomma'
     },
     {
-        'name': 'arpeggio'              
+        'name': 'arpeggio',
+        'glyphBase': 'arpeggio'
     },
     {
-        'name': 'trill_element'              
+        'name': 'trill_element',
+        'glyphBase': 'trill_element'
     },
     {
-        'name': 'arpeggio.arrow.M1'              
+        'name': 'arpeggio.arrow.M1',
+        'glyphBase': 'arpeggio.arrow.M1'
     },
     {
-        'name': 'arpeggio.arrow.1'              
+        'name': 'arpeggio.arrow.1',
+        'glyphBase': 'arpeggio.arrow.1'
     },
     {
-        'name': 'trilelement'              
+        'name': 'trilelement',
+        'glyphBase': 'trilelement'
     },
     {
         'name': 'prall',
-        'lily': '\\prall'      
+        'glyphBase': 'prall',
+        'lily': '\\prall'
     },
     {
         'name': 'mordent',
-        'lily': '\\mordent'      
+        'glyphBase': 'mordent',
+        'lily': '\\mordent'
     },
     {
         'name': 'prallprall',
-        'lily': '\\prallprall'      
+        'glyphBase': 'prallprall',
+        'lily': '\\prallprall'
     },
     {
         'name': 'prallmordent',
-        'lily': '\\prallmordent'      
+        'glyphBase': 'prallmordent',
+        'lily': '\\prallmordent'
     },
     {
         'name': 'upprall',
-        'lily': '\\upprall'      
+        'glyphBase': 'upprall',
+        'lily': '\\upprall'
     },
     {
         'name': 'upmordent',
-        'lily': '\\upmordent'      
+        'glyphBase': 'upmordent',
+        'lily': '\\upmordent'
     },
     {
         'name': 'pralldown',
-        'lily': '\\pralldown'      
+        'glyphBase': 'pralldown',
+        'lily': '\\pralldown'
     },
     {
         'name': 'downprall',
-        'lily': '\\downprall'      
+        'glyphBase': 'downprall',
+        'lily': '\\downprall'
     },
     {
         'name': 'downmordent',
-        'lily': '\\downmordent'      
+        'glyphBase': 'downmordent',
+        'lily': '\\downmordent'
     },
     {
         'name': 'prallup',
-        'lily': '\\prallup'      
+        'glyphBase': 'prallup',
+        'lily': '\\prallup'
     },
     {
         'name': 'lineprall',
-        'lily': '\\lineprall'      
+        'glyphBase': 'lineprall',
+        'lily': '\\lineprall'
     },
     {
-        'name': 'caesura.curved'              
+        'name': 'caesura.curved',
+        'glyphBase': 'caesura.curved'
     },
     {
-        'name': 'caesura.straight'              
+        'name': 'caesura.straight',
+        'glyphBase': 'caesura.straight'
     },
     {
-        'name': 'tickmark'              
+        'name': 'tickmark',
+        'glyphBase': 'tickmark'
     },
     {
         'name': 'snappizzicato',
-        'lily': '\\snappizzicato'      
+        'glyphBase': 'snappizzicato',
+        'lily': '\\snappizzicato'
     }
 ];
