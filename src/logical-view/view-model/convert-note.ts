@@ -34,6 +34,7 @@ export function noteToView(note: Note, clef: Clef): NoteViewModel {
     if (note.dotNo) res.dotNo = note.dotNo;
     if (note.uniq) res.uniq = note.uniq;
     if (note.tupletFactor) res.tuplet = true;
+    if (note.expressions) res.expressions = [...note.expressions];
 
     return res;
 }

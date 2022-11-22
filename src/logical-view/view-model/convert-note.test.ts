@@ -1,3 +1,4 @@
+import { Time } from './../../model/rationals/time';
 import { TupletSequence } from './../../model/score/transformations';
 import { SimpleSequence } from './../../model/score/sequence';
 import { Clef, ClefType } from '../../model/states/clef';
@@ -7,7 +8,8 @@ import { NoteType, NoteDirection } from '../../model/notes/note';
 import { expect } from 'chai';
 import { FlagType } from './note-view-model';
 import { noteToView } from './convert-note';
-import { __internal } from './convert-model';
+import { scoreModelToViewModel, __internal } from './convert-model';
+import { createTestScore } from '../../tools/test-tools';
 
 describe('View model, note', () => {
 
@@ -172,6 +174,23 @@ describe('View model, note', () => {
             positions: [-13]
         });*/
         
+    });
+
+    
+    it('should convert a note with expressions to view model', () => {
+        const note: Note = Note.parseLily('c\'2\\staccato');
+
+        const viewModel = noteToView(note, clef);
+
+        expect(viewModel.expressions).to.deep.equal(['staccato']);        
+    });
+    
+    it('should remember note expressions when converting score', () => {
+        const score = createTestScore([['c\'\'1\\marcato']], [4, 4], [0, 0]);
+        
+        const log2 = scoreModelToViewModel(score);
+        console.log(log2.staves[0].timeSlots);
+        expect(log2.staves[0].timeSlots[0].notes[0].expressions).to.deep.eq(['marcato']);
     });
 
 });

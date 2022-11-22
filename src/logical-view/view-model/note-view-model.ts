@@ -1,3 +1,4 @@
+import { NoteExpression } from './../../model/notes/note-expressions';
 import { NoteType, NoteDirection } from '../../model';
 import { BeamDef } from '../../model/notes/beaming';
 import { AbsoluteTime } from './../../model/rationals/time';
@@ -42,5 +43,6 @@ export interface NoteViewModel {
     dotNo?: number;
     uniq?: string;
     tuplet?: boolean;
+    expressions?: NoteExpression[];
 }
 

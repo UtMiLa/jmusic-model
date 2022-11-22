@@ -1,8 +1,19 @@
+import { NoteDirection } from './note';
 export function parseLilyNoteExpression(input: string): NoteExpression {
     const res = noteExpressions.find(elem => elem.lily === input || elem.shortLily === input);
     if (!res) throw 'Unknown Lilypond expression: ' + input;
     return res.name;
 }
+
+export function getGlyphForNoteExpression(input: NoteExpression, directionUp: boolean): string {
+    const res = noteExpressions.find(elem => elem.name === input);
+    if (!res) throw 'Unknown note expression: ' + input;
+    if (res.upDown) {
+        return 'scripts.' + (directionUp ? 'd' : 'u') + res.glyphBase;
+    }
+    return 'scripts.' + res.glyphBase;
+}
+
 
 export type NoteExpression = 
     'fermata' |

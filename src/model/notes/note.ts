@@ -26,6 +26,7 @@ export class Note {
         if (note.tie) res.tie = note.tie;
         if (note.direction) res.direction = note.direction;
         if (note.tupletGroup) res.tupletGroup = note.tupletGroup;
+        if (note.expressions) res.expressions = [...note.expressions];
 
         Object.keys(changeProperties).forEach(key => (res as any)[key] = changeProperties[key]);
 
@@ -141,4 +142,5 @@ export class Note {
     tie?: boolean;
     uniq?: string;
     expressions?: NoteExpression[];
+    // remember to update clone() if you add properties!
 }

@@ -4,6 +4,7 @@ import { GlyphCode, HorizVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
 import { Metrics } from './metrics';
 import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement, PhysicalVertVarSizeElement } from './physical-elements';
 import { calcDisplacements, scaleDegreeToY } from './functions';
+import { getGlyphForNoteExpression } from '~/model/notes/note-expressions';
 
 
 /*export function testNote(viewModel: any): NoteViewModel | undefined {
@@ -69,6 +70,12 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
         addDots(note, yPos, settings, result, xPos);          
     
     });
+
+    if (note.expressions) {
+        addExpressions(note, xPos + settings.blackNoteHeadLeftXOffset/2, stemBaseY, directionUp, result, settings);
+        // todo: calculate center xPos based on notehead
+        //console.log('added expressions', note, result);        
+    }
 
     return result;
 }
@@ -205,5 +212,16 @@ function getStemAndFlag(noteType: NoteType, flagType: FlagType | undefined, sett
     }
 
 
+}
+
+function addExpressions(note: NoteViewModel, xPos: number, stemBaseY: number, directionUp: boolean, result: PhysicalElementBase[], settings: Metrics) {
+    note.expressions?.forEach((expression, index) => {
+        const yOffset = (directionUp ? -1 : 1) * (settings.scaleDegreeUnit*2 + 5 + 5 * index); //todo: make metrics
+        result.push({
+            glyph: getGlyphForNoteExpression(expression, directionUp),
+            position: {x: xPos, y: stemBaseY + yOffset }
+        } as PhysicalFixedSizeElement);
+    });
+    
 }
 

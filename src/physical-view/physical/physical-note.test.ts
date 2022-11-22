@@ -1,5 +1,5 @@
 import { PhysicalVertVarSizeElement } from './physical-elements';
-import { FlagType } from './../../logical-view/view-model/note-view-model';
+import { FlagType, NoteViewModel } from './../../logical-view/view-model/note-view-model';
 import { HorizVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */
 import { NoteType, NoteDirection } from '../../model/notes/note';
@@ -431,6 +431,69 @@ describe('Physical model, notes', () => {
         expect(physical[3].position.x).to.eq(30 + defaultMetrics.blackNoteHeadLeftXOffset);
         expect(physical[4].position.x).to.eq(30);
 
+
+    });
+
+    
+    it('should create note expressions', () => {
+        //
+        const note = {
+            positions: [3],
+            noteType: NoteType.NQuarter,
+            direction: NoteDirection.Up,
+            expressions: ['staccato']
+        } as NoteViewModel;
+
+        const physical = convertNote(note, 20, defaultMetrics);
+
+        expect(physical.length).to.eq(3);
+
+        expect(physical[2]).to.deep.eq({
+            glyph: 'scripts.staccato',
+            position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset/2, y: 5 * defaultMetrics.scaleDegreeUnit - 5 }
+        });
+
+    });
+
+
+    it('should create note expressions with up/down versions', () => {
+        //
+        const note = {
+            positions: [3],
+            noteType: NoteType.NQuarter,
+            direction: NoteDirection.Up,
+            expressions: ['staccatissimo', 'fermata']
+        } as NoteViewModel;
+
+        const physical = convertNote(note, 20, defaultMetrics);
+
+        expect(physical.length).to.eq(4);
+
+        expect(physical[2]).to.deep.eq({
+            glyph: 'scripts.dstaccatissimo',
+            position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset/2, y: 5 * defaultMetrics.scaleDegreeUnit - 5}
+        });
+
+        expect(physical[3]).to.deep.eq({
+            glyph: 'scripts.dfermata',
+            position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset/2, y: 5 * defaultMetrics.scaleDegreeUnit - 10 }
+        });
+
+        note.direction = NoteDirection.Down;
+
+        const physical1 = convertNote(note, 20, defaultMetrics);
+
+        expect(physical1.length).to.eq(4);
+
+        expect(physical1[2]).to.deep.eq({
+            glyph: 'scripts.ustaccatissimo',
+            position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset/2, y: 9 * defaultMetrics.scaleDegreeUnit + 5}
+        });
+
+        expect(physical1[3]).to.deep.eq({
+            glyph: 'scripts.ufermata',
+            position: { x: 20 + defaultMetrics.blackNoteHeadLeftXOffset/2, y: 9 * defaultMetrics.scaleDegreeUnit + 10 }
+        });
 
     });
 
