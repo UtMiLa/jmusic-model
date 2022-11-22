@@ -12,6 +12,7 @@ export interface PitchDef {
     data: [number, number, number];
 }
 export class Pitch {
+
     /**
      * Internal values to define a pitch. Should not be used outside this class, since implementation may change.
      * @param _pitchClass c = 0, d = 1 ... b = 7
@@ -22,6 +23,16 @@ export class Pitch {
 
     static fromScientific(note: string, octave: number): Pitch {
         return new Pitch(pitchNames.indexOf(note), octave, 0);
+    }
+
+    public static fromMidi(midiNo: number): Pitch {
+        const pitch = Math.floor(7 * (midiNo - 56) / 12) - 2;        
+        const alterationNo = midiNo - Math.floor(12 * (pitch + 1) / 7) - 59;
+        return new Pitch((pitch + 700) % 7, Math.trunc((midiNo) / 12) - 1, alterationNo as Alteration);
+    }
+
+    public get midi(): number {
+        return 12 * this._octave + Math.floor(12 * (this._pitchClass + 1) / 7) + 11 + this.alteration;
     }
 
     static parseScientific(input: string): Pitch {
@@ -55,6 +66,17 @@ export class Pitch {
         const res = Pitch.fromScientific(parsed[1], octave);
         res._accidental = alteration;
         return res;
+    }
+
+    get lilypond(): string {
+        const scaleDegree = this.pitchClassName;
+        const alteration = ['eses', 'es', '', 'is', 'isis'][this._accidental + 2];
+        let octave = '';
+        if (this.octave > 3)
+            octave = Array(this.octave - 3).fill('\'').join('');
+        else if (this.octave < 3)
+            octave = Array(3 - this.octave).fill(',').join('');
+        return scaleDegree + alteration + octave;
     }
 
     get scientific(): string {
