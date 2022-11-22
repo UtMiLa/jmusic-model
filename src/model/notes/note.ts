@@ -1,3 +1,4 @@
+import { NoteExpression, parseLilyNoteExpression } from './note-expressions';
 import { RationalDef } from '../../model/rationals/rational';
 import { Rational } from '../rationals/rational';
 import { TimeSpan, Time } from '../rationals/time';
@@ -36,19 +37,23 @@ export class Note {
     }
 
     static parseLily(input: string): Note {
-        const matcher = /([a-gr](es|is)*[',]*)(\d+\.*)(~?)/i;
-        const matcherChord = /<([a-z,' ]+)>(\d+\.*)(~?)/i;
+        const matcher = /^([a-gr](es|is)*[',]*)(\d+\.*)((\\[a-z]+)*)(~?)$/i;
+        const matcherChord = /^<([a-z,' ]+)>(\d+\.*)((\\[a-z]+)*)(~?)$/i;
         const matchChord = matcherChord.exec(input);
 
         let pitches = [] as string[];
         let durationString = '';
+        let expressions = [] as string[];
         let tie = false;
 
         if (matchChord) {
             //console.log(matchChord);
             pitches = matchChord[1].split(' ');
             durationString = matchChord[2];
-            if (matchChord[3] === '~') {
+            if (matchChord[3]) {
+                expressions = matchChord[3].split(/(?=\\)/);
+            }
+            if (matchChord[5] === '~') {
                 tie = true;
             }
         } else {
@@ -56,13 +61,17 @@ export class Note {
             if (!match || match.length < 4) throw 'Illegal note: ' + input;
             pitches = (match[1] === 'r') ? [] : [match[1]];
             durationString = match[3];    
-            if (match[4] === '~') {
+            if (match[4]) {
+                expressions = (match[4]).split(/(?=\\)/);
+            }
+            if (match[6] === '~') {
                 tie = true;
             }
         }
         //console.log(match);
         const res = new Note(pitches.map(pitch => Pitch.parseLilypond(pitch)), Time.fromLilypond(durationString));
         if (tie) res.tie = tie;        
+        if (expressions.length) res.expressions = expressions.map(expression => parseLilyNoteExpression(expression));
         return res;
     }
 
@@ -131,4 +140,5 @@ export class Note {
     direction: NoteDirection = NoteDirection.Undefined;
     tie?: boolean;
     uniq?: string;
+    expressions?: NoteExpression[];
 }

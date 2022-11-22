@@ -1,3 +1,9 @@
+export function parseLilyNoteExpression(input: string): NoteExpression {
+    const res = noteExpressions.find(elem => elem.lily === input || elem.shortLily === input);
+    if (!res) throw 'Unknown Lilypond expression: ' + input;
+    return res.name;
+}
+
 export type NoteExpression = 
     'fermata' |
     'shortfermata' |

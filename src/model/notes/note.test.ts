@@ -125,5 +125,20 @@ describe('Note', () => {
         expect(note.nominalDuration).to.deep.equal(Time.newSpan(1, 4));
     });
 
+    it('should create a staccato note', ()=> {
+        const note = Note.parseLily('c4\\staccato');
+        expect(note.expressions).to.deep.eq(['staccato']);
+    });
+
+    it('should fail on non-existent expression', ()=> {
+        expect(() => {
+            const note = Note.parseLily('c4\\nonexistent');
+        }).to.throw();
+    });
+
+    it('should create a note with two expressions', ()=> {
+        const note = Note.parseLily('c4\\fermata\\marcato');
+        expect(note.expressions).to.deep.eq(['fermata', 'marcato']);
+    });
 
 });
