@@ -189,7 +189,7 @@ describe('View model, note', () => {
         const score = createTestScore([['c\'\'1\\marcato']], [4, 4], [0, 0]);
         
         const log2 = scoreModelToViewModel(score);
-        console.log(log2.staves[0].timeSlots);
+        //console.log(log2.staves[0].timeSlots);
         expect(log2.staves[0].timeSlots[0].notes[0].expressions).to.deep.eq(['marcato']);
     });
 

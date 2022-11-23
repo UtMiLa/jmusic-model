@@ -378,7 +378,7 @@ describe('View model', () => {
 
         
         const log2 = scoreModelToViewModel(score);
-        console.log(log2.staves[0].timeSlots);
+        //console.log(log2.staves[0].timeSlots);
         expect(log2.staves[0].timeSlots[1].bar).to.deep.eq({ barType: BarType.Simple, repeatStart: true });
         expect(log2.staves[0].timeSlots[2].bar).to.deep.eq({ barType: BarType.Simple, repeatEnd: true });
     });
