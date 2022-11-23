@@ -10,7 +10,7 @@ import { PhysicalHorizVarSizeElement, PhysicalModel } from '../physical/physical
 import { HorizVarSizeGlyphs } from '../physical/glyphs';
 import { Renderer } from './base-renderer';
 import { CanvasRenderer } from './canvas-renderer';
-import { renderBar } from './render-elements';
+import { renderBar, renderStem } from './render-elements';
 
 
 
@@ -37,9 +37,22 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
         };
     }
 
+    const renderFunctions = {} as any;
+    renderFunctions[HorizVarSizeGlyphs.Stem] = renderStem;
+    renderFunctions[HorizVarSizeGlyphs.Bar] = renderBar;
+    renderFunctions[HorizVarSizeGlyphs.RepeatEnd] = renderBar;
+    renderFunctions[HorizVarSizeGlyphs.RepeatEndStart] = renderBar;
+    renderFunctions[HorizVarSizeGlyphs.RepeatStart] = renderBar;
+
 
     physicalModel.elements.forEach(elem => {
-        if ((elem as any).element === VertVarSizeGlyphs.Line || (elem as any).element === VertVarSizeGlyphs.LedgerLine) {
+
+        if (elem.element && renderFunctions[elem.element]) {
+
+            renderFunctions[elem.element](elem, position, renderer, convertX, convertY);
+
+            // todo: the rest of this ifelse should be converted to renderFunctions
+        } else if ((elem as any).element === VertVarSizeGlyphs.Line || (elem as any).element === VertVarSizeGlyphs.LedgerLine) {
             renderer.lineWidth = 1.3;
 
             renderer.draw('#888888', '#888888', [
@@ -104,30 +117,6 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
             ];
 
             renderer.draw('#000000', '#000000', path);
-
-        } else if ((elem as any).element === HorizVarSizeGlyphs.Stem) {
-
-            renderer.draw('#222222', '#222222', [
-                { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
-                { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
-                { type: DrawOperationType.Stroke, points: []}
-            ]);
-
-        } else if ((elem as any).element === HorizVarSizeGlyphs.Bar) {
-
-            renderBar(elem, position, renderer, convertX, convertY);
-
-        } else if ((elem as any).element === HorizVarSizeGlyphs.RepeatEnd) {
-
-            renderBar(elem, position, renderer, convertX, convertY);
-            
-        } else if ((elem as any).element === HorizVarSizeGlyphs.RepeatEndStart) {
-
-            renderBar(elem, position, renderer, convertX, convertY);
-            
-        } else if ((elem as any).element === HorizVarSizeGlyphs.RepeatStart) {
-            
-            renderBar(elem, position, renderer, convertX, convertY);
 
         } else if ((elem as any).element === HorizVarSizeGlyphs.Cursor) {
 

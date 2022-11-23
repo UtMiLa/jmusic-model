@@ -5,7 +5,7 @@ import { Renderer } from './base-renderer';
 import { RenderPosition, DrawOperationType, DrawOperation } from './render-types';
 
 
-export function renderBar(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertX: (x: number) => number, convertY: (y: number) => number) {
+export function renderBar(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertX: (x: number) => number, convertY: (y: number) => number): void {
     
 
     function convertXY(p: Point): Point {
@@ -93,4 +93,29 @@ export function renderBar(elem: PhysicalElementBase, position: RenderPosition, r
 
 
     renderer.draw('#000000', '#000000', drawOp);
+}
+
+
+export function renderStem(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertX: (x: number) => number, convertY: (y: number) => number): void {
+
+    function convertXY(p: Point): Point {
+        return {
+            x: convertX(p.x),
+            y: convertY(p.y)
+        };
+    }
+
+    //const scale = (elem as any).scale ? (elem as any).scale : 1;
+    //const font = Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler';
+
+    const drawOp: DrawOperation[] = [
+        { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
+        { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
+        { type: DrawOperationType.Stroke, points: []}
+    ];
+
+
+
+    renderer.draw('#222222', '#222222', drawOp);
+
 }
