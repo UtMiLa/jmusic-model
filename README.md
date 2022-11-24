@@ -97,6 +97,21 @@ Controls in Angular/React (probably in a sub-project):
 ## Nice to have
 * staff groups and accolades/brackets
 * time-based horizontal spacing
+* polymeters
 * music playback
 * midi-assisted entry
 * Finale/Sibelius emulation
+
+## Some thoughts about future development
+(maybe in another project)
+
+It would be nice to give user a way (could be a scripting language) to do for example the following tasks:
+* Search in score for a pattern, and convert all found instances to instances of a variable
+  * Searching can ignore transpositions, rhythm, or maybe allow for augmentations/diminutions
+* Find places (time, transposition) where a sequence can coexist with the rest of the music, according to specified rules
+* Mark places in the music where specified rules are broken (forbidden parallels, unresolved dissonances)
+* Show harmonic analysis (e.g. by colours representing the circle of fifths)
+* Flatten a variable instance (make its notes a part of the normal sequence with no link to the variable)
+* Interactively create an n-voice canon by showing help staves with existing notes
+* Changing meter: let user write the music and the bar lines, and then calculate the changing meters from that
+* Composing overall layout first, then interactively assigning sequences to actual voices
