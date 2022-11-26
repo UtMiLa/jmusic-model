@@ -9,6 +9,7 @@ export interface Meter {
     text: string[];
     firstBarTime: AbsoluteTime;
     upbeat: TimeSpan;
+    def: RegularMeterDef | CompositeMeterDef;
 }
 
 export interface RegularMeterDef {
@@ -32,7 +33,7 @@ export class MeterFactory {
 }
 
 class RegularMeter implements Meter {
-    private def: RegularMeterDef;
+    public def: RegularMeterDef;
     constructor(def: RegularMeterDef) {
         this.def = {...def};
     }
