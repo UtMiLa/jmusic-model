@@ -38,6 +38,8 @@ export interface Metrics {
     accidentalSpacing: number;
     accidentalDisplacement: number;
 
+    noteExpressionOffset: number;
+    noteExpressionSpacing: number;
 }
 
 export class StandardMetrics implements Metrics {
@@ -84,4 +86,8 @@ export class StandardMetrics implements Metrics {
 
     accidentalSpacing = 9;
     accidentalDisplacement = 8
+
+    noteExpressionOffset = 5;
+    noteExpressionSpacing = 5;
+
 }

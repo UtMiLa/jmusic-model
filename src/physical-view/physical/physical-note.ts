@@ -73,7 +73,7 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
 
     if (note.expressions) {
         addExpressions(note, xPos + settings.blackNoteHeadLeftXOffset/2, stemBaseY, directionUp, result, settings);
-        // todo: calculate center xPos based on notehead
+        // todo: calculate center xPos based on notehead (use it for expression and cursor placement)
         //console.log('added expressions', note, result);        
     }
 
@@ -216,7 +216,7 @@ function getStemAndFlag(noteType: NoteType, flagType: FlagType | undefined, sett
 
 function addExpressions(note: NoteViewModel, xPos: number, stemBaseY: number, directionUp: boolean, result: PhysicalElementBase[], settings: Metrics) {
     note.expressions?.forEach((expression, index) => {
-        const yOffset = (directionUp ? -1 : 1) * (settings.scaleDegreeUnit*2 + 5 + 5 * index); //todo: make metrics
+        const yOffset = (directionUp ? -1 : 1) * (settings.scaleDegreeUnit*2 + settings.noteExpressionOffset + settings.noteExpressionSpacing * index);
         result.push({
             glyph: getGlyphForNoteExpression(expression, directionUp),
             position: {x: xPos, y: stemBaseY + yOffset }

@@ -48,17 +48,35 @@ Additionally, it is intended to be the simplest open source component as a basis
 * user-friendly entry of music for processing by LilyPond
 * tools for composing or music analysis
 
+# Features
+
+Model and draw:
+* note expressions (staccato, fermata, breath, arpeggio...)
+
+Functionality:
+* Point and click to set cursor
+
+Import/export:
+
+Model operations:
+* Create score from settings
+
+Transformations on sequences:
+* retrograde
+* add lyrics
+
+Controls in Angular/React (probably in a sub-project):
+* Score display
+
 # Todos
 ## Important
 Model and draw:
 * lyrics
-* note expressions (staccato, fermata, breath, arpeggio...)
 * staff expressions (textual, including M.M.)
 * long expressions (hairpins, trill extensions, ottavas)
 * manual override note direction, accidentals
 
 Functionality:
-* Point and click to set cursor
 * Show selected notes, and select using mouse
 
 Import/export:
@@ -79,7 +97,6 @@ Model operations:
 Transformations on sequences:
 * transpose chromatically/diatonically
 * invert chromatically/diatonically
-* retrograde
 * split chords to voices
 * join voices to form chords
 * keep notes on strong beats only
@@ -87,7 +104,6 @@ Transformations on sequences:
 * arpeggiate chords
 
 Controls in Angular/React (probably in a sub-project):
-* Score display
 * Score overview (measure map)
 * Meter entry
 * Key entry

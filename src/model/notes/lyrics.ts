@@ -1,0 +1,31 @@
+import { Time } from './../rationals/time';
+import { TimeSpan } from '../rationals/time';
+import { BaseSequence, ISequence } from '../score/sequence';
+import { StateChange } from '../states/state';
+import { Note } from './note';
+
+export class LyricsSequence extends BaseSequence {
+
+    /**
+     * @param seq Sequence to bind lyrics to
+     * @param lyricsText string of syllables, separated by spaces; syllables can end with minus to indicate hyphenation. Syllables can be minuses to indicate melismas.
+     * Todo: how to indicate extensions with underscores?
+     */
+    constructor(private seq: ISequence, private lyricsText: string) {
+        super();
+    }
+
+    get elements(): (Note | StateChange)[] {
+        const lyricsSplit = this.lyricsText.split(' ');
+        let i = 0;
+        return this.seq.elements.map(elm => { 
+            const note = elm as Note;
+            if (note.pitches && note.pitches.length) {
+                return Note.clone(note, {text: lyricsSplit[i++] });
+            }
+            return elm;            
+        });
+    }
+
+    duration: TimeSpan = this.seq.duration;
+}
