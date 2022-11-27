@@ -96,7 +96,7 @@ export class StandardMetrics implements Metrics {
     noteExpressionSpacing = 5;
 
     lyricsVerse1Y = 30;
-    lyricsVerseSpacing = 8;
+    lyricsVerseSpacing = 12;
     lyricsFont = 'Sans';
     lyricsFontSize = 11;
 }

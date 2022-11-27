@@ -29,4 +29,16 @@ describe('Lyrics', () => {
         expect(lyrSeq.elements[9]).to.deep.include({ text: ['del-']});
     });
 
+    it('should ignore rests and state changes when spreading syllables to notes', () => {
+        const seq = new SimpleSequence( 'c8 c16 c16 c8. c16 c16 c8 c16');
+
+        const lyrSeq = new LyricsSequence(seq, 'al- fa be- ta gam- ma del- ta');
+        const lyrSeq2 = new LyricsSequence(lyrSeq, 'e- psi- lon the- ta e- - ta');
+        
+        expect(lyrSeq2.elements).to.have.length(8);
+        expect(lyrSeq2.elements[0]).to.deep.include({ text: ['al-', 'e-']});
+        expect(lyrSeq2.elements[3]).to.deep.include({ text: ['ta', 'the-']});
+        expect(lyrSeq2.elements[6]).to.deep.include({ text: ['del-', '-']});
+    });
+
 });

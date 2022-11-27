@@ -51,7 +51,14 @@ Additionally, it is intended to be the simplest open source component as a basis
 # Features
 
 Model and draw:
+* notes and rests
+* beams
+* ties
+* tuplets
+* time/clef/key changes
+* repeats
 * note expressions (staccato, fermata, breath, arpeggio...)
+* lyrics
 
 Functionality:
 * Point and click to set cursor
@@ -71,7 +78,6 @@ Controls in Angular/React (probably in a sub-project):
 # Todos
 ## Important
 Model and draw:
-* lyrics
 * staff expressions (textual, including M.M.)
 * long expressions (hairpins, trill extensions, ottavas)
 * manual override note direction, accidentals

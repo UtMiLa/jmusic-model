@@ -21,7 +21,8 @@ export class LyricsSequence extends BaseSequence {
         return this.sequence.elements.map(elm => { 
             const note = elm as Note;
             if (note.pitches && note.pitches.length) {
-                return Note.clone(note, {text: [lyricsSplit[i++]] });
+                const theText = note.text ? [...note.text, lyricsSplit[i++]] :  [lyricsSplit[i++]];
+                return Note.clone(note, { text: theText });
             }
             return elm;            
         });
