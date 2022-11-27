@@ -14,8 +14,8 @@ describe('Lyrics', () => {
         const lyrSeq = new LyricsSequence(seq, 'al- fa be- ta gam- ma del- ta');
         
         expect(lyrSeq.elements).to.have.length(8);
-        expect(lyrSeq.elements[0]).to.deep.include({ text: 'al-'});
-        expect(lyrSeq.elements[5]).to.deep.include({ text: 'ma'});
+        expect(lyrSeq.elements[0]).to.deep.include({ text: ['al-']});
+        expect(lyrSeq.elements[5]).to.deep.include({ text: ['ma']});
     });
 
     it('should ignore rests and state changes when spreading syllables to notes', () => {
@@ -24,9 +24,9 @@ describe('Lyrics', () => {
         const lyrSeq = new LyricsSequence(seq, 'al- fa be- ta gam- ma del- ta');
         
         expect(lyrSeq.elements).to.have.length(10);
-        expect(lyrSeq.elements[0]).to.deep.include({ text: 'al-'});
-        expect(lyrSeq.elements[5]).to.deep.include({ text: 'ta'});
-        expect(lyrSeq.elements[9]).to.deep.include({ text: 'del-'});
+        expect(lyrSeq.elements[0]).to.deep.include({ text: ['al-']});
+        expect(lyrSeq.elements[5]).to.deep.include({ text: ['ta']});
+        expect(lyrSeq.elements[9]).to.deep.include({ text: ['del-']});
     });
 
 });

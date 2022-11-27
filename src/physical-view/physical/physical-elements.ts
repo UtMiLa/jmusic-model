@@ -18,6 +18,12 @@ export interface PhysicalFixedSizeElement extends PhysicalElementBase {
     scale?: number;
 }
 
+export interface PhysicalTextElement extends PhysicalElementBase {
+    text: GlyphCode;
+    font: string;
+    fontSize: number;
+}
+
 export interface PhysicalVertVarSizeElement extends PhysicalElementBase {
     element: VertVarSizeGlyphs;    
     length: number

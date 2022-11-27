@@ -64,6 +64,12 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
             renderer.draw('#330000', '#330000', [
                 { type: DrawOperationType.Text, points: [convertXY(elem.position)], text: glyph, font: Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler' }
             ], false);
+        } else if ((elem as any).text) {
+            const scale = (elem as any).scale ? (elem as any).scale : 1;
+            
+            renderer.draw('#330000', '#330000', [
+                { type: DrawOperationType.Text, points: [convertXY(elem.position)], text: (elem as any).text, font: Math.trunc((elem as any).fontSize * position.scaleY * scale) + 'px ' + (elem as any).font }
+            ], false);
         }
     });
 }

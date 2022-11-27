@@ -11,21 +11,21 @@ export class LyricsSequence extends BaseSequence {
      * @param lyricsText string of syllables, separated by spaces; syllables can end with minus to indicate hyphenation. Syllables can be minuses to indicate melismas.
      * Todo: how to indicate extensions with underscores?
      */
-    constructor(private seq: ISequence, private lyricsText: string) {
+    constructor(private sequence: ISequence, private lyricsText: string) {
         super();
     }
 
     get elements(): (Note | StateChange)[] {
         const lyricsSplit = this.lyricsText.split(' ');
         let i = 0;
-        return this.seq.elements.map(elm => { 
+        return this.sequence.elements.map(elm => { 
             const note = elm as Note;
             if (note.pitches && note.pitches.length) {
-                return Note.clone(note, {text: lyricsSplit[i++] });
+                return Note.clone(note, {text: [lyricsSplit[i++]] });
             }
             return elm;            
         });
     }
 
-    duration: TimeSpan = this.seq.duration;
+    duration: TimeSpan = this.sequence.duration;
 }

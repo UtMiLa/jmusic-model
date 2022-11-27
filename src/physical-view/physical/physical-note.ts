@@ -1,8 +1,8 @@
 import { FlagType, NoteViewModel } from '../../logical-view';
-import { NoteDirection, NoteType } from '../../model';
+import { Note, NoteDirection, NoteType } from '../../model';
 import { GlyphCode, HorizVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
 import { Metrics } from './metrics';
-import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement, PhysicalVertVarSizeElement } from './physical-elements';
+import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement, PhysicalVertVarSizeElement, PhysicalTextElement } from './physical-elements';
 import { calcDisplacements, scaleDegreeToY } from './functions';
 import { getGlyphForNoteExpression } from '~/model/notes/note-expressions';
 
@@ -76,6 +76,12 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
         // todo: calculate center xPos based on notehead (use it for expression and cursor placement)
         //console.log('added expressions', note, result);        
     }
+
+    if (note.text) {
+        addText(note, xPos, stemBaseY, directionUp, result, settings);
+        //console.log('added expressions', note, result);        
+    }
+
 
     return result;
 }
@@ -221,6 +227,19 @@ function addExpressions(note: NoteViewModel, xPos: number, stemBaseY: number, di
             glyph: getGlyphForNoteExpression(expression, directionUp),
             position: {x: xPos, y: stemBaseY + yOffset }
         } as PhysicalFixedSizeElement);
+    });
+    
+}
+
+function addText(note: NoteViewModel, xPos: number, stemBaseY: number, directionUp: boolean, result: PhysicalElementBase[], settings: Metrics) {
+    note.text?.forEach((syllable, index) => {
+        const yOffset = -settings.lyricsVerse1Y - settings.lyricsVerseSpacing * index;
+        result.push({
+            text: syllable,
+            font: settings.lyricsFont,
+            fontSize: settings.lyricsFontSize,
+            position: {x: xPos, y: yOffset }
+        } as PhysicalTextElement);
     });
     
 }

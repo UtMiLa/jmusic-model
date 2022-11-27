@@ -11,3 +11,5 @@ export * from './score/staff';
 export * from './score/voice';
 export * from './score/transformations';
 export * from './notes/beaming';
+export * from './notes/lyrics';
+export * from './facade/jmusic';

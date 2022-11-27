@@ -497,4 +497,39 @@ describe('Physical model, notes', () => {
 
     });
 
+
+
+  
+    it('should create lyrics', () => {
+        //
+        const note = {
+            positions: [3],
+            noteType: NoteType.NQuarter,
+            direction: NoteDirection.Up,
+            text: ['Syll', 'ab-', '-']
+        } as NoteViewModel;
+
+        const physical = convertNote(note, 20, defaultMetrics);
+
+        expect(physical.length).to.eq(5);
+
+        expect(physical[2]).to.deep.include({
+            text: 'Syll',
+            position: { x: 20, y: -defaultMetrics.lyricsVerse1Y }
+        });
+
+        expect(physical[3]).to.deep.include({
+            text: 'ab-',
+            position: { x: 20, y: -defaultMetrics.lyricsVerse1Y - defaultMetrics.lyricsVerseSpacing }
+        });
+
+        expect(physical[4]).to.deep.include({
+            text: '-',
+            position: { x: 20, y: -defaultMetrics.lyricsVerse1Y - 2 * defaultMetrics.lyricsVerseSpacing }
+        });
+
+    });
+
+
+
 });

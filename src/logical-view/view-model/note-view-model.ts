@@ -44,5 +44,6 @@ export interface NoteViewModel {
     uniq?: string;
     tuplet?: boolean;
     expressions?: NoteExpression[];
+    text?: string[];
 }
 

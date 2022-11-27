@@ -193,4 +193,13 @@ describe('View model, note', () => {
         expect(log2.staves[0].timeSlots[0].notes[0].expressions).to.deep.eq(['marcato']);
     });
 
+    it('should convert a note with lyrics to view model', () => {
+        const note: Note = Note.parseLily('c\'2');
+        note.text = ['ghjk', 'ery'];
+
+        const viewModel = noteToView(note, clef);
+
+        expect(viewModel.text).to.deep.equal(['ghjk', 'ery']);
+    });
+    
 });

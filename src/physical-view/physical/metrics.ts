@@ -40,6 +40,11 @@ export interface Metrics {
 
     noteExpressionOffset: number;
     noteExpressionSpacing: number;
+
+    lyricsVerse1Y: number;
+    lyricsVerseSpacing: number;
+    lyricsFont: string;
+    lyricsFontSize: number;
 }
 
 export class StandardMetrics implements Metrics {
@@ -90,4 +95,8 @@ export class StandardMetrics implements Metrics {
     noteExpressionOffset = 5;
     noteExpressionSpacing = 5;
 
+    lyricsVerse1Y = 30;
+    lyricsVerseSpacing = 8;
+    lyricsFont = 'Sans';
+    lyricsFontSize = 11;
 }
