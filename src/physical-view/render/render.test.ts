@@ -1,8 +1,8 @@
-import { emmentalerCodes } from './../../font/emmentaler-codes';
+import { emmentalerCodes } from '../../font/emmentaler-codes';
 import { expect } from 'chai';
-import { PhysicalModel, PhysicalFixedSizeElement, PhysicalHorizVarSizeElement } from './../physical/physical-elements';
+import { PhysicalModel, PhysicalFixedSizeElement, PhysicalHorizVarSizeElement } from '../physical/physical-elements';
 import { Renderer } from './base-renderer';
-import { renderOnRenderer } from './render-canvas';
+import { renderOnRenderer } from './render';
 import { DrawOperation, DrawOperationType } from './render-types';
 import * as sinon from 'sinon';
 import { StandardMetrics } from '../physical/metrics';

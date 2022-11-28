@@ -1,5 +1,5 @@
 import { RenderPosition } from './render-types';
-import { PhysicalElementBase } from './../physical/physical-elements';
+import { PhysicalElementBase } from '../physical/physical-elements';
 import { Point } from '../physical/physical-elements';
 import { VertVarSizeGlyphs } from '../physical/glyphs';
 import { PhysicalModel } from '../physical/physical-elements';
