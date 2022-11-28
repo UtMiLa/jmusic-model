@@ -1,20 +1,15 @@
+import { PhysicalFixedSizeElement } from './../physical/physical-elements';
 import { NoteDirection } from '~/model';
 import { emmentalerCodes } from '../../font/emmentaler-codes';
-import { HorizVarSizeGlyphs } from '../physical/glyphs';
+import { GlyphCode, HorizVarSizeGlyphs } from '../physical/glyphs';
 import { PhysicalBeamElement, PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalTupletBracketElement, PhysicalVertVarSizeElement, Point } from '../physical/physical-elements';
 import { Renderer } from './base-renderer';
 import { RenderPosition, DrawOperationType, DrawOperation } from './render-types';
 
 
-export function renderBar(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertX: (x: number) => number, convertY: (y: number) => number): void {
-    
-
-    function convertXY(p: Point): Point {
-        return {
-            x: convertX(p.x),
-            y: convertY(p.y)
-        };
-    }
+export function renderBar(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point): void {
+    const convertX = (x: number) => convertXY({x, y:0}).x;
+    const convertY = (y: number) => convertXY({x:0, y}).y;
 
     const scale = (elem as any).scale ? (elem as any).scale : 1;
     const font = Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler';
@@ -97,40 +92,21 @@ export function renderBar(elem: PhysicalElementBase, position: RenderPosition, r
 }
 
 
-export function renderStem(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertX: (x: number) => number, convertY: (y: number) => number): void {
-
-    function convertXY(p: Point): Point {
-        return {
-            x: convertX(p.x),
-            y: convertY(p.y)
-        };
-    }
-
-    //const scale = (elem as any).scale ? (elem as any).scale : 1;
-    //const font = Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler';
+export function renderStem(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point): void {
 
     const drawOp: DrawOperation[] = [
         { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
-        { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
+        { type: DrawOperationType.LineTo, points: [convertXY(elem.position, {x: 0, y: (elem as PhysicalHorizVarSizeElement).height})]},
         { type: DrawOperationType.Stroke, points: []}
     ];
 
-
-
     renderer.draw('#222222', '#222222', drawOp);
-
 }
 
 
 
-export function renderStaffLine(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertX: (x: number) => number, convertY: (y: number) => number): void {
+export function renderStaffLine(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point): void {
 
-    function convertXY(p: Point): Point {
-        return {
-            x: convertX(p.x),
-            y: convertY(p.y)
-        };
-    }
     renderer.lineWidth = 1.3;
 
     const drawOp = [
@@ -149,14 +125,8 @@ export function renderStaffLine(elem: PhysicalElementBase, position: RenderPosit
 
 
 
-export function renderBeam(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertX: (x: number) => number, convertY: (y: number) => number): void {
+export function renderBeam(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point): void {
 
-    function convertXY(p: Point): Point {
-        return {
-            x: convertX(p.x),
-            y: convertY(p.y)
-        };
-    }
     const elmBeam = elem as PhysicalBeamElement;
 
     renderer.draw('#000000', '#000000', [
@@ -169,14 +139,8 @@ export function renderBeam(elem: PhysicalElementBase, position: RenderPosition, 
 }
 
 
-export function renderTie(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertX: (x: number) => number, convertY: (y: number) => number): void {
+export function renderTie(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point): void {
 
-    function convertXY(p: Point): Point {
-        return {
-            x: convertX(p.x),
-            y: convertY(p.y)
-        };
-    }
     const tieDir = (elem as any).direction === NoteDirection.Up ? 1 : -1;
     const tieStart = convertXY({ x: elem.position.x, y: elem.position.y });
     const tieEnd = convertXY({ x: elem.position.x + (elem as PhysicalVertVarSizeElement).length, y: elem.position.y });
@@ -206,14 +170,8 @@ export function renderTie(elem: PhysicalElementBase, position: RenderPosition, r
 }
 
 
-export function renderTupletBracket(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertX: (x: number) => number, convertY: (y: number) => number): void {
+export function renderTupletBracket(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point): void {
 
-    function convertXY(p: Point): Point {
-        return {
-            x: convertX(p.x),
-            y: convertY(p.y)
-        };
-    }
     const elmBeam = elem as PhysicalTupletBracketElement;
     const scale = (elem as any).scale ? (elem as any).scale : 1;
     
@@ -235,20 +193,40 @@ export function renderTupletBracket(elem: PhysicalElementBase, position: RenderP
 
 
 
-export function renderCursor(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertX: (x: number) => number, convertY: (y: number) => number): void {
+export function renderCursor(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point): void {
 
-    /*function convertXY(p: Point): Point {
-        return {
-            x: convertX(p.x),
-            y: convertY(p.y)
-        };
-    }*/
     renderer.draw('#ff5555', '#ff5555', [
-        { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y - (elem as PhysicalHorizVarSizeElement).height)}]},
-        { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
+        { type: DrawOperationType.MoveTo, points: [convertXY(elem.position, {x: 0, y: -(elem as PhysicalHorizVarSizeElement).height})]},
+        { type: DrawOperationType.LineTo, points: [convertXY(elem.position, {x: 0, y:  (elem as PhysicalHorizVarSizeElement).height})]},
         { type: DrawOperationType.Stroke, points: []},
-        { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x - 5), y: convertY(elem.position.y)}]},
-        { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x + 5), y: convertY(elem.position.y)}]},
+        { type: DrawOperationType.MoveTo, points: [convertXY(elem.position, {x: -5, y: 0})]},
+        { type: DrawOperationType.LineTo, points: [convertXY(elem.position, {x: 5, y: 0})]},
         { type: DrawOperationType.Stroke, points: []}
     ]);
 }
+
+
+
+
+
+export function renderText(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point): void {
+
+    if ((elem as any).glyph) {
+        const scale = (elem as any).scale ? (elem as any).scale : 1;
+        const glyph = emmentalerCodes[(elem as PhysicalFixedSizeElement).glyph as GlyphCode] as string;
+    
+    
+        renderer.draw('#330000', '#330000', [
+            { type: DrawOperationType.Text, points: [convertXY(elem.position)], text: glyph, font: Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler' }
+        ], false);
+    } else if ((elem as any).text) {
+        const scale = (elem as any).scale ? (elem as any).scale : 1;
+        
+        renderer.draw('#330000', '#330000', [
+            { type: DrawOperationType.Text, points: [convertXY(elem.position)], text: (elem as any).text, font: Math.trunc((elem as any).fontSize * position.scaleY * scale) + 'px ' + (elem as any).font }
+        ], false);
+    }
+}
+
+
+

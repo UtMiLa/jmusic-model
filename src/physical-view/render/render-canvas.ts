@@ -1,15 +1,12 @@
-import { DrawOperationType, RenderPosition } from './render-types';
+import { RenderPosition } from './render-types';
 import { PhysicalElementBase } from './../physical/physical-elements';
 import { Point } from '../physical/physical-elements';
-import { GlyphCode } from '../physical/glyphs';
-import { PhysicalFixedSizeElement } from '../physical/physical-elements';
-import { emmentalerCodes } from '../../font/emmentaler-codes';
 import { VertVarSizeGlyphs } from '../physical/glyphs';
 import { PhysicalModel } from '../physical/physical-elements';
 import { HorizVarSizeGlyphs } from '../physical/glyphs';
 import { Renderer } from './base-renderer';
 import { CanvasRenderer } from './canvas-renderer';
-import { renderBar, renderBeam, renderCursor, renderStaffLine, renderStem, renderTie, renderTupletBracket } from './render-elements';
+import { renderBar, renderBeam, renderCursor, renderStaffLine, renderStem, renderText, renderTie, renderTupletBracket } from './render-elements';
 
 
 
@@ -29,14 +26,14 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
         return (position.offsetY - y) * position.scaleY;
     }
 
-    function convertXY(p: Point): Point {
+    function convertXY(p: Point, addVector: Point = { x: 0, y: 0 }): Point {
         return {
-            x: convertX(p.x),
-            y: convertY(p.y)
+            x: convertX(p.x + addVector.x),
+            y: convertY(p.y + addVector.y)
         };
     }
 
-    const renderFunctions = {} as { [key: number]: (elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertX: (x: number) => number, convertY: (y: number) => number) => void };
+    const renderFunctions = {} as { [key: number]: (elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point) => void };
     renderFunctions[HorizVarSizeGlyphs.Stem] = renderStem;
     renderFunctions[HorizVarSizeGlyphs.Bar] = renderBar;
     renderFunctions[HorizVarSizeGlyphs.RepeatEnd] = renderBar;
@@ -54,22 +51,13 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
 
         if (elem.element && renderFunctions[elem.element]) {
 
-            renderFunctions[elem.element](elem, position, renderer, convertX, convertY);
+            renderFunctions[elem.element](elem, position, renderer, convertXY);
 
-        } else if ((elem as any).glyph) {
-            const scale = (elem as any).scale ? (elem as any).scale : 1;
-            const glyph = emmentalerCodes[(elem as PhysicalFixedSizeElement).glyph as GlyphCode] as string;
+        } else {
 
+            renderText(elem, position, renderer, convertXY);
 
-            renderer.draw('#330000', '#330000', [
-                { type: DrawOperationType.Text, points: [convertXY(elem.position)], text: glyph, font: Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler' }
-            ], false);
-        } else if ((elem as any).text) {
-            const scale = (elem as any).scale ? (elem as any).scale : 1;
-            
-            renderer.draw('#330000', '#330000', [
-                { type: DrawOperationType.Text, points: [convertXY(elem.position)], text: (elem as any).text, font: Math.trunc((elem as any).fontSize * position.scaleY * scale) + 'px ' + (elem as any).font }
-            ], false);
         }
+
     });
 }
