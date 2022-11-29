@@ -1,3 +1,5 @@
+import { ISequence } from './../score/sequence';
+import { InsertionPoint } from './../../editor/insertion-point';
 import { RegularMeterDef } from './../states/meter';
 import { Key, KeyDef } from './../states/key';
 import { Clef, ClefDef } from './../states/clef';
@@ -6,6 +8,9 @@ import { parseLilyClef, parseLilyKey, parseLilyMeter, SimpleSequence } from '../
 import { StaffDef } from '../score/staff';
 import { ScoreDef } from './../score/score';
 import { Meter } from '../states/meter';
+import { Note } from '../notes/note';
+import { Pitch } from '../pitches/pitch';
+import { Time } from '../rationals/time';
 
 export interface JMusicSettings {
     content: string[][];
@@ -14,6 +19,22 @@ export interface JMusicSettings {
     key?: Key | string;
 }
 
+/** Tolerant input type for notes: a Note object, or a string in Lilypond format */
+export type NoteFlex = Note | string;
+
+/** Tolerant input type for meters: a Meter object, a RegularMeterDef definition, or a string in Lilypond format */
+export type MeterFlex = Meter | RegularMeterDef | string;
+
+/** Tolerant input type for clefs: a Clef object, a ClefDef definition, or a string in Lilypond format */
+export type ClefFlex = Clef | ClefDef | string;
+
+/** Tolerant input type for key: a Key object, a KeyDef definition, or a string in Lilypond format */
+export type KeyFlex = Key | KeyDef | string;
+
+/** Tolerant input type for sequences: a ISequence object, or a string in Lilypond format */
+export type SequenceFlex = ISequence | string;
+
+/** Facade object for music scores */
 export class JMusic implements ScoreDef {
 
     constructor(voice?: string | JMusicSettings) {
@@ -36,9 +57,9 @@ export class JMusic implements ScoreDef {
                     clef = Clef.clefTreble.def;
                 }                
 
-                const key = settings.key ? JMusic.makeKey('\\key ' + settings.key) : { count: 0, accidental: 0 } as KeyDef;
+                const key = settings.key ? JMusic.makeKey(settings.key) : { count: 0, accidental: 0 } as KeyDef;
 
-                const meter = settings.meter ? JMusic.makeMeter('\\meter ' + settings.meter) : undefined;
+                const meter = settings.meter ? JMusic.makeMeter(settings.meter) : undefined;
 
                 this.staves.push({ 
                     initialClef: clef,
@@ -53,7 +74,7 @@ export class JMusic implements ScoreDef {
     staves: StaffDef[] = [];
     repeats?: RepeatDef[] | undefined;
 
-    static makeClef(input: string | Clef | ClefDef): ClefDef {
+    static makeClef(input: ClefFlex): ClefDef {
         if (typeof (input) === 'string') {
             return parseLilyClef(input).def;
         }
@@ -64,9 +85,9 @@ export class JMusic implements ScoreDef {
         return (input as Clef).def;
     }
 
-    static makeKey(input: string | Key | KeyDef): KeyDef {
+    static makeKey(input: KeyFlex): KeyDef {
         if (typeof (input) === 'string') {
-            return parseLilyKey(input).def;
+            return parseLilyKey('\\key ' + input).def;
         }
         const cd = input as KeyDef;
         if (cd.accidental !== undefined && cd.count !== undefined ) {
@@ -75,10 +96,10 @@ export class JMusic implements ScoreDef {
         return (input as Key).def;
     }
 
-    static makeMeter(input: string | Meter | RegularMeterDef): RegularMeterDef {
+    static makeMeter(input: MeterFlex): RegularMeterDef {
 
         if (typeof (input) === 'string') {
-            return parseLilyMeter(input).def as RegularMeterDef;
+            return parseLilyMeter('\\meter ' + input).def as RegularMeterDef;
         }
         const cd = input as RegularMeterDef;
         if (cd.value !== undefined && cd.count !== undefined ) {
@@ -87,4 +108,31 @@ export class JMusic implements ScoreDef {
         return (input as Meter).def as RegularMeterDef;
     }
 
+    static makeNote(input: NoteFlex): Note {
+
+        if (typeof (input) === 'string') {
+            return Note.parseLily(input);
+        }
+        return input as Note;
+    }
+
+    sequenceFromInsertionPoint(ins: InsertionPoint): ISequence {
+        return this.staves[ins.staffNo].voices[ins.voiceNo].content;
+    }
+
+    noteFromInsertionPoint(ins: InsertionPoint): Note {
+        return this.staves[ins.staffNo].voices[ins.voiceNo].content.groupByTimeSlots('0').filter(ts => Time.equals(ts.time, ins.time))[0].elements[0];
+    }
+
+    appendNote(ins: InsertionPoint, noteInput: NoteFlex): void {
+        const note = JMusic.makeNote(noteInput);
+        const seq = this.sequenceFromInsertionPoint(ins);
+        seq.elements.push(note);
+    }
+
+    addPitch(ins: InsertionPoint, pitch: Pitch): void {
+        const seq = this.sequenceFromInsertionPoint(ins);
+        const note = this.noteFromInsertionPoint(ins);
+        note.pitches.push(pitch);
+    }
 }
