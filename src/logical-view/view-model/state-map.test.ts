@@ -1,6 +1,6 @@
+import { JMusic } from './../../model/facade/jmusic';
 import { Clef } from './../../model/states/clef';
 import { Key } from './../../model/states/key';
-import { createTestScore } from '../../tools/test-tools';
 import { MeterFactory } from './../../model/states/meter';
 import { Time } from './../../model/rationals/time';
 import { expect } from 'chai';
@@ -14,7 +14,7 @@ describe('State change map', () => {
     });
 
     it('should create a state map from a score', () => {
-        const score = createTestScore([['c\'\'1 \\meter 3/4 c\'\'2. c\'\'2.', 'c\'1 c\'2. \\key c \\minor c\'2.'], ['c1 \\clef tenor c2. c2.']], [4, 4], [0, 0]);
+        const score = new JMusic({ content: [['c\'\'1 \\meter 3/4 c\'\'2. c\'\'2.', 'c\'1 c\'2. \\key c \\minor c\'2.'], ['c1 \\clef tenor c2. c2.']] });
 
         const stateMap = createStateMap(score);
 
@@ -31,7 +31,7 @@ describe('State change map', () => {
 
 
     it('should get state from a state map', () => {
-        const score = createTestScore([['c\'\'1 \\meter 3/4 c\'\'2. c\'\'2.', 'c\'1 c\'2. \\key c \\minor c\'2.'], ['c1 \\clef tenor c2. c2.']], [4, 4], [0, 0]);
+        const score = new JMusic({ content: [['c\'\'1 \\meter 3/4 c\'\'2. c\'\'2.', 'c\'1 c\'2. \\key c \\minor c\'2.'], ['c1 \\clef tenor c2. c2.']] });
 
         const stateMap = createStateMap(score);
 

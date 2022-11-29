@@ -1,3 +1,4 @@
+import { JMusic } from './../../model/facade/jmusic';
 import { Time } from './../../model/rationals/time';
 import { TupletSequence } from './../../model/score/transformations';
 import { SimpleSequence } from './../../model/score/sequence';
@@ -9,7 +10,6 @@ import { expect } from 'chai';
 import { FlagType } from './note-view-model';
 import { noteToView } from './convert-note';
 import { scoreModelToViewModel, __internal } from './convert-model';
-import { createTestScore } from '../../tools/test-tools';
 
 describe('View model, note', () => {
 
@@ -186,7 +186,7 @@ describe('View model, note', () => {
     });
     
     it('should remember note expressions when converting score', () => {
-        const score = createTestScore([['c\'\'1\\marcato']], [4, 4], [0, 0]);
+        const score = new JMusic('c\'\'1\\marcato');
         
         const log2 = scoreModelToViewModel(score);
         //console.log(log2.staves[0].timeSlots);

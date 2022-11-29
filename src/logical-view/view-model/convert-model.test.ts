@@ -3,11 +3,11 @@ import { FlagType } from './note-view-model';
 import { RetrogradeSequence, TupletSequence } from './../../model/score/transformations';
 import { SimpleSequence, CompositeSequence } from './../../model/score/sequence';
 import { expect } from 'chai';
-import { NoteDirection, NoteType, Time } from './../../model';
+import { JMusic, NoteDirection, NoteType, Time } from './../../model';
 import { ClefType, StaffDef } from './../../model';
 import { Clef } from './../../model';
 import { scoreModelToViewModel, __internal } from './convert-model';
-import { createTestScore, createTestStaff } from '../../tools/test-tools';
+import { createTestStaff } from '../../tools/test-tools';
 import { createScopedTimeMap } from './state-map';
 /* eslint-disable comma-dangle */
 
@@ -335,7 +335,7 @@ describe('View model', () => {
     });
 
     it('should convert a time-restricted subset', () => {
-        const score = createTestScore([['c\'\'1 d\'\'1 e\'\'1'], ['c\'1 d\'1 e\'1']], [4, 4], [0, 0]);
+        const score = new JMusic({ content: [['c\'\'1 d\'\'1 e\'\'1'], ['c\'1 d\'1 e\'1']] });
 
         const log1 = scoreModelToViewModel(score);
         expect(log1.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [1], uniq: '0-0-0' });
@@ -347,7 +347,7 @@ describe('View model', () => {
 
     
     it('should set correct initial states for a time-restricted subset', () => {
-        const score = createTestScore([['c\'\'1 \\key e \\major d\'\'1 e\'\'1'], ['c\'1 \\meter 2/2 d\'1 e\'1']], [4, 4], [0, 0]);
+        const score = new JMusic({ content: [['c\'\'1 \\key e \\major d\'\'1 e\'\'1'], ['c\'1 \\meter 2/2 d\'1 e\'1']], meter: '4/4' });
 
         const log1 = scoreModelToViewModel(score);
         expect(log1.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [1], uniq: '0-0-0' });
@@ -363,7 +363,7 @@ describe('View model', () => {
     });
     
     it('should time-restrict endpoint', () => {
-        const score = createTestScore([['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], [4, 4], [0, 0]);
+        const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], meter: '4/4' });
 
         const log2 = scoreModelToViewModel(score, { startTime: Time.newAbsolute(1, 1), endTime: Time.newAbsolute(2, 1) });
         expect(log2.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [2], uniq: '0-0-1' });
@@ -373,7 +373,7 @@ describe('View model', () => {
     });
 
     it('should add repeats', () => {
-        const score = createTestScore([['c\'\'1 d\'\'1 ees\'\'1']], [4, 4], [0, 0]);
+        const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1']], meter: '4/4' });
         score.repeats = [{from: Time.newAbsolute(1,1), to: Time.newAbsolute(2,1)}];
 
         
