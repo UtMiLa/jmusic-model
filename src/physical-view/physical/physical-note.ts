@@ -64,6 +64,7 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
         result.push({
             position: { x: xPos + displacement, y: yPos },
             glyph
+            //, color: note.colors ? note.colors[idx] : undefined
         } as PhysicalFixedSizeElement);    
 
         

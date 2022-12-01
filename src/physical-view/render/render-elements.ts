@@ -211,18 +211,19 @@ export function renderCursor(elem: PhysicalElementBase, position: RenderPosition
 
 export function renderText(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point): void {
 
+    const color = (elem as any).color ?? '#330000';
     if ((elem as any).glyph) {
         const scale = (elem as any).scale ? (elem as any).scale : 1;
         const glyph = emmentalerCodes[(elem as PhysicalFixedSizeElement).glyph as GlyphCode] as string;
     
     
-        renderer.draw('#330000', '#330000', [
+        renderer.draw(color, color, [
             { type: DrawOperationType.Text, points: [convertXY(elem.position)], text: glyph, font: Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler' }
         ], false);
     } else if ((elem as any).text) {
         const scale = (elem as any).scale ? (elem as any).scale : 1;
         
-        renderer.draw('#330000', '#330000', [
+        renderer.draw(color, color, [
             { type: DrawOperationType.Text, points: [convertXY(elem.position)], text: (elem as any).text, font: Math.trunc((elem as any).fontSize * position.scaleY * scale) + 'px ' + (elem as any).font }
         ], false);
     }
