@@ -1,6 +1,7 @@
 import { NoteDirection } from '../../model';
 import { NoteViewModel } from './../../logical-view';
 import { Metrics } from './metrics';
+import * as eql from 'deep-eql';
 
 export function scaleDegreeToY(scaleDegree: number, settings: Metrics): number {
     return settings.scaleDegreeUnit*2 - (-2 - scaleDegree) * settings.scaleDegreeUnit;
@@ -46,4 +47,8 @@ export function calcDisplacements(note: NoteViewModel): number[] {
     });
 
     return delta === 1 ? res.reverse() : res;
+}
+
+export function deepEquals<T>(a: T, b: T): boolean {
+    return eql(a, b);
 }
