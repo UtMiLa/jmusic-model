@@ -27,6 +27,22 @@ import { FlagType, NoteViewModel } from './note-view-model';
         Math.round(b * 255).toString(16).padStart(2, '0')
     ].join('');
 }*/
+/*
+function HSVtoRGB(h: number, s: number, v: number) {
+    
+    const r = v * (Math.sin(h * Math.PI * 2) + 1);
+    const g = v * (Math.sin((h + 1/3) * Math.PI * 2) + 1);
+    const b = v * (Math.sin((h - 1/3) * Math.PI * 2) + 1);
+
+    console.log(r,g,b);
+    
+    return [
+        Math.round(r * 127).toString(16).padStart(2, '0'),
+        Math.round(g * 127).toString(16).padStart(2, '0'),
+        Math.round(b * 127).toString(16).padStart(2, '0')
+    ].join('');
+}
+*/
 
 
 
@@ -57,7 +73,7 @@ export function noteToView(note: Note, clef: Clef): NoteViewModel {
         noteType: note.type,
         direction,
         flagType
-        //,colors: note.pitches.map(p => '#' + HSVtoRGB(((p.pitchClass.circleOf5Number + 50) % 12)/12, 1, .7))
+        //,colors: note.pitches.map(p => '#' + HSVtoRGB(((p.pitchClass.circleOf5Number + 56) % 12)/12, 1, .7))
     };
 
     if (note.dotNo) res.dotNo = note.dotNo;

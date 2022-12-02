@@ -16,6 +16,7 @@ export interface PhysicalElementBase {
 export interface PhysicalFixedSizeElement extends PhysicalElementBase {
     glyph: GlyphCode;
     scale?: number;
+    color?: string;
 }
 
 export interface PhysicalTextElement extends PhysicalElementBase {
