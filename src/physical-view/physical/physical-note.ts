@@ -61,10 +61,14 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
     
     yPositions.forEach((yPos, idx) => {
         const displacement = displacements[idx] * settings.blackNoteHeadLeftXOffset;
-        result.push({
+        const elm = {
             position: { x: xPos + displacement, y: yPos },
-            glyph
-        } as PhysicalFixedSizeElement);    
+            glyph            
+        } as PhysicalFixedSizeElement;
+        if (note.colors) {
+            elm.color = note.colors[idx];
+        }
+        result.push(elm);    
 
         
         addDots(note, yPos, settings, result, xPos);          

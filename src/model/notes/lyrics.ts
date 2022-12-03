@@ -11,7 +11,7 @@ export class LyricsSequence extends BaseSequence {
      * @param lyricsText string of syllables, separated by spaces; syllables can end with minus to indicate hyphenation. Syllables can be minuses to indicate melismas.
      * Todo: how to indicate extensions with underscores?
      */
-    constructor(private sequence: ISequence, private lyricsText: string) {
+    constructor(private sequence: ISequence, public lyricsText: string) {
         super();
     }
 
