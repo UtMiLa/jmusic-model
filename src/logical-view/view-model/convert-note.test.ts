@@ -154,6 +154,31 @@ describe('View model, note', () => {
         expect(viewModel2.noteType).to.equal(NoteType.NHalf);
         expect(viewModel2.dotNo).to.be.undefined;
     });
+
+    
+    it('should convert a dotted, beamed notes to view model', () => {
+        const seq = new JMusic('d\'8 c\'16. c\'32 b8. b16 b8 r8 b8.. b32 b16 b8 b16 b16. b32');
+
+        const viewModel = scoreModelToViewModel(seq);
+
+        expect(viewModel.staves[0].timeSlots[0].beamings).to.have.length(1);
+        expect((viewModel.staves[0].timeSlots[0].beamings as any)[0].beams).to.deep.eq([
+            { fromIdx: 0, toIndex: 2, level: 0 },
+            { fromIdx: 1, toIndex: 2, level: 1 },
+            { fromIdx: undefined, toIndex: 2, level: 2 },
+        ]);
+        expect((viewModel.staves[0].timeSlots[3].beamings as any)[0].beams).to.deep.eq([
+            { fromIdx: 0, toIndex: 1, level: 0 },
+            { fromIdx: undefined, toIndex: 1, level: 1 },
+        ]);
+        expect((viewModel.staves[0].timeSlots[9].beamings as any)[0].beams).to.deep.eq([
+            { fromIdx: 0, toIndex: 2, level: 0 },
+            { fromIdx: 0, toIndex: undefined, level: 1 },
+            { fromIdx: undefined, toIndex: 2, level: 1 },
+        ]);
+        //expect(viewModel.dotNo).to.equal(2);
+    });
+    
     
     it('should create a tuplet group from a tuplet sequence', () => {
         const seq1Text = 'c8 d8 e8';

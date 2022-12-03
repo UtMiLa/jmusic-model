@@ -1,3 +1,4 @@
+import { PhysicalLongElement } from './physical-long-element';
 import { Metrics } from './metrics';
 import { PhysicalHorizVarSizeElement, Point, PhysicalBeamElement, PhysicalVertVarSizeElement, PhysicalElementBase, PhysicalTupletBracketElement } from './physical-elements';
 import { VertVarSizeGlyphs } from './glyphs';
@@ -15,7 +16,7 @@ import { ScoreViewModel } from '../../logical-view';
     }
 }*/
 
-export class PhysicalTupletBracket {
+export class PhysicalTupletBracket implements PhysicalLongElement {
     constructor(private tvm: TupletViewModel, private settings: Metrics) {}
 
     private registeredNotes: { [key: string]: PhysicalHorizVarSizeElement } = {};

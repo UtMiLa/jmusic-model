@@ -4,7 +4,7 @@ import { Rational, RationalDef } from './../../model/rationals/rational';
 import { StateChange } from './../../model/states/state';
 import { TimeMap, IndexedMap } from './../../tools/time-map';
 import { Meter, MeterMap } from './../../model/states/meter';
-import { BeamGroup } from './../../model/notes/beaming';
+import { BeamGroup, BeamDef } from './../../model/notes/beaming';
 import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
 import { getAllBars, ScoreDef, TimeSlot, TupletState } from './../../model';
 import { MeterFactory } from './../../model';
@@ -404,8 +404,9 @@ function createNoteViewModels(state: State): NoteViewModel[] {
                     return res;
                 }
                 ),
-                beams: bg.beams
+                beams: bg.beams.sort((a: BeamDef, b: BeamDef) => a.level - b.level)
             };
+                            
             if (state.slot.beamings) {
                 state.slot.beamings.push(beaming);
             } else {

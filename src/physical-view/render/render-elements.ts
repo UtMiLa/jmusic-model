@@ -129,6 +129,8 @@ export function renderBeam(elem: PhysicalElementBase, position: RenderPosition, 
 
     const elmBeam = elem as PhysicalBeamElement;
 
+    //console.log('render beam', elem);
+
     renderer.draw('#000000', '#000000', [
         { type: DrawOperationType.MoveTo, points: [convertXY(elmBeam.position)]},
         { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height })]},

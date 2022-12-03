@@ -51,7 +51,7 @@ describe('Facade', () => {
             expect(sc.staves).to.have.length(1);
             expect(sc.staves[0].initialClef).to.deep.eq({ clefType: ClefType.G, line: -2 });
             expect(sc.staves[0].initialKey).to.deep.eq({ count: 0, accidental: 0 });
-            expect(sc.staves[0].initialMeter).to.be.undefined;
+            expect(sc.staves[0].initialMeter).to.deep.eq({ count: 4, value: 4 });
             expect(sc.staves[0].voices).to.have.length(1);
             expect(sc.staves[0].voices[0].content.duration).to.deep.eq(Time.WholeTime);
             expect(sc.staves[0].voices[0].content.elements).to.have.length(4);

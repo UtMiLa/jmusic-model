@@ -1,3 +1,4 @@
+import { PhysicalLongElement } from './physical-long-element';
 import { Metrics } from './metrics';
 import { PhysicalHorizVarSizeElement, Point, PhysicalBeamElement, PhysicalVertVarSizeElement, PhysicalElementBase } from './physical-elements';
 import { VertVarSizeGlyphs } from './glyphs';
@@ -20,7 +21,7 @@ export function findNoteInViewModel(noteRef: NoteRef, viewModel: ScoreViewModel)
     return undefined;
 }
 
-export class PhysicalBeamGroup {
+export class PhysicalBeamGroup implements PhysicalLongElement {
     constructor(private bvm: BeamingViewModel, private settings: Metrics) {}
 
     private registeredNotes: { [key: string]: PhysicalHorizVarSizeElement } = {};
@@ -70,13 +71,17 @@ export class PhysicalBeamGroup {
                 this.bvm.beams.forEach((beam, index) => {
                     let sign = 1;
                     let firstXPos: number, lastXPos: number;
-                    if (beam.fromIdx === undefined) { 
+                    let fromIdx = beam.fromIdx;
+                    if (fromIdx === undefined) { 
+                        //console.log('undefined', beam);
+                        
                         if (beam.toIndex === undefined) throw 'Beam can not have undefined from and to index';
-                        beam.fromIdx = beam.toIndex - 1;
+                        fromIdx = beam.toIndex - 1;
                         const lastNote = this.getNotestem(beam.toIndex);
                         firstXPos = lastNote.position.x - this.settings.brokenBeamLength;
                     } else {
-                        const firstNote = this.getNotestem(beam.fromIdx);
+                        //console.log('defined', beam);
+                        const firstNote = this.getNotestem(fromIdx);
                         sign = Math.sign(firstNote.height);
                         firstXPos = firstNote.position.x;
                     }
@@ -98,6 +103,13 @@ export class PhysicalBeamGroup {
                         length,
                         height
                     });
+
+                    /*console.log('ph beam', {                     
+                        position: { x: firstXPos, y: yStart - this.settings.beamSpacing * beam.level * sign },
+                        length,
+                        height
+                    });*/
+                    
     
                 });
 

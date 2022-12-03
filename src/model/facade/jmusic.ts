@@ -42,6 +42,7 @@ export class JMusic implements ScoreDef {
             this.staves.push({ 
                 initialClef: Clef.clefTreble.def,
                 initialKey: { count: 0, accidental: 0 },
+                initialMeter: { count: 4, value: 4 },
                 voices: [{ content: new SimpleSequence(voice) }]
             });
         } else if (typeof(voice) === 'object') {

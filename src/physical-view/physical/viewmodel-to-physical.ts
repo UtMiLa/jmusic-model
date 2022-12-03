@@ -28,6 +28,8 @@ import { generateMeasureMap, MeasureMap, MeasureMapXValueItem } from './measure-
 
 export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics, cursor?: Cursor): PhysicalModel {
 
+    //console.log('viewModelToPhysical', viewModel, settings, cursor);
+    
     const measureMap = generateMeasureMap(viewModel, settings);
 
     const width = measureMap.totalWidth();
@@ -44,6 +46,8 @@ export function viewModelToPhysical(viewModel: ScoreViewModel, settings: Metrics
             staffResultElements = convertStaff(measureMap, ts, beamings, settings, staffResultElements, 
                 cursor && cursor.staff === idx ? cursor : undefined);
         });
+
+        //console.log('staffResultElements', staffResultElements);        
 
         staffResultElements.forEach(re => re.position.y += y0);
 
@@ -140,6 +144,8 @@ function convertStaff(
 
     if (cursorElement) resultElements.push(cursorElement);
      
+    //console.log('resultElements', resultElements);
+    
     return resultElements;
 }
 

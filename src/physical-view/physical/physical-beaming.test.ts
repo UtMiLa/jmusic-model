@@ -1,3 +1,4 @@
+import { JMusic } from './../../model/facade/jmusic';
 import { BeamingViewModel } from './../../logical-view/view-model/note-view-model';
 import { Time } from './../../model/rationals/time';
 import { ScoreViewModel } from './../../logical-view/view-model/score-view-model';
@@ -9,6 +10,7 @@ import { Metrics, StandardMetrics } from './metrics';
 import { expect } from 'chai';
 import { viewModelToPhysical } from './viewmodel-to-physical';
 import { findNoteInViewModel, PhysicalBeamGroup } from './physical-beaming';
+import { scoreModelToViewModel } from '../../logical-view';
 
 describe('Physical model, note beaming', () => {
     let defaultMetrics: Metrics;
@@ -347,7 +349,29 @@ describe('Physical model, note beaming', () => {
         expect(output[1].length).to.eq(defaultMetrics.brokenBeamLength);
         expect(output[1].height).to.eq(defaultMetrics.brokenBeamLength * (6 * defaultMetrics.scaleDegreeUnit)/(110-70) );
 
+        expect(output[2].element).to.eq(VertVarSizeGlyphs.Beam);
+        expect(output[2].position.x).to.eq(notestem3.position.x - defaultMetrics.brokenBeamLength);
+        expect(output[2].position.y + output[2].height).to.approximately(notestem3.position.y + notestem3.height - defaultMetrics.beamSpacing, 1e-10);
+        expect(output[2].length).to.eq(defaultMetrics.brokenBeamLength);
+        expect(output[2].height).to.eq(defaultMetrics.brokenBeamLength * (6 * defaultMetrics.scaleDegreeUnit)/(110-70) );
+
         expect(notestem2.height).to.eq(24 - defaultMetrics.scaleDegreeUnit);
+    });
+
+
+    it('should render broken secondary beams correctly even if called twice', () => {
+        const model = new JMusic('d\'8 c\'16. c\'32 b8. b16 b8 r8 b8.. b32 b16 b8 b16 b16. b32');
+
+        const viewModel = scoreModelToViewModel(model);
+
+        const vmJ1 = JSON.stringify(viewModel);
+
+        const phM1 = viewModelToPhysical(viewModel, defaultMetrics);
+        const vmJ2 = JSON.stringify(viewModel);
+        const phM2 = viewModelToPhysical(viewModel, defaultMetrics);
+
+        expect(vmJ1).to.eq(vmJ2);
+        expect(JSON.stringify(phM1)).to.eq(JSON.stringify(phM2));
     });
 
 
