@@ -1,3 +1,4 @@
+import { LongDecorationElement } from './../decorations/decoration-type';
 //import { generateUniqueId } from '../../tools/unique-id';
 import { Meter, MeterFactory } from './../states/meter';
 import { Pitch } from './../pitches/pitch';
@@ -9,11 +10,12 @@ import { Note } from '../notes/note';
 import { Time, TimeSpan } from '../rationals/time';
 import { Clef } from '../states/clef';
 
-
+export type MusicEvent = Note | StateChange | LongDecorationElement;
 export interface ISequence {
-    elements: (Note | StateChange)[];
+    elements: MusicEvent[];
     duration: TimeSpan;
     groupByTimeSlots(keyPrefix: string): TimeSlot[];
+    insertElement(time: AbsoluteTime, elm: MusicEvent): void;
 }
 
 export interface SequenceDef {
@@ -78,18 +80,12 @@ function parseLilyElement(ly: string): Note | StateChange {
 }
 
 export abstract class BaseSequence implements ISequence {
-    abstract elements: (StateChange | Note)[];
+    abstract elements: MusicEvent[];
     abstract duration: TimeSpan;
 
-    /*protected uniqueId = generateUniqueId();
+    /*protected uniqueId = generateUniqueId();*/
 
-    /*transferElement(element: (StateChange | Note), index: number): (StateChange | Note) {
-        if ((element as StateChange).isState) {
-            return element;    
-        }
-        const note = element as Note;
-        return note;// Note.clone(note, { uniq: this.uniqueId + '/' + index });
-    }*/
+    abstract insertElement(time: AbsoluteTime, elm: MusicEvent): void;
 
     getTimeSlots(): AbsoluteTime[] {
         let time = Time.newAbsolute(0, 1);
@@ -103,6 +99,15 @@ export abstract class BaseSequence implements ISequence {
         });
 
         return res;
+    }
+
+    indexOfTime(time: AbsoluteTime): number {
+        let timeR = Time.StartTime;
+        return this.elements.findIndex(elem => {
+            if (Time.equals(time, timeR)) return true;
+            timeR = Time.addTime(timeR, elem.duration);
+            return false;
+        });
     }
 
     groupByTimeSlots(keyPrefix: string): TimeSlot[] {
@@ -145,13 +150,18 @@ export class SimpleSequence extends BaseSequence {
         this._elements = value ? SimpleSequence.splitByNotes(value).map(str => parseLilyElement(str)) : [];
     }
 
-    private _elements: (Note | StateChange)[] = [];
-    public get elements(): (Note | StateChange)[] {
+    private _elements: MusicEvent[] = [];
+    public get elements(): MusicEvent[] {
         return this._elements;
     }
 
-    public addElement(element: (Note | StateChange)): void {
+    public addElement(element: MusicEvent): void {
         this._elements.push(element);
+    }
+
+    public insertElement(time: AbsoluteTime, element: MusicEvent): void {
+        const i = this.indexOfTime(time);
+        this._elements.splice(i, 0, element);
     }
 
     static createFromString(def: string): SimpleSequence {
@@ -198,9 +208,13 @@ export class CompositeSequence extends BaseSequence {
 
     private _sequences: ISequence[];
 
-    public get elements(): (Note | StateChange)[] {
+    public get elements(): MusicEvent[] {
         return this._sequences
-            .reduce((prev: (Note | StateChange)[], curr: ISequence) => prev.concat(curr.elements), []);
+            .reduce((prev: MusicEvent[], curr: ISequence) => prev.concat(curr.elements), []);
+    }
+
+    public insertElement(time: AbsoluteTime, element: MusicEvent): void {
+        throw 'CompositeSequence does not support insertElement';
     }
 
     public get duration(): TimeSpan {

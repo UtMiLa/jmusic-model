@@ -1,3 +1,5 @@
+import { LongDecorationType } from './../decorations/decoration-type';
+import { TimeSpan } from './../rationals/time';
 import { ISequence } from './../score/sequence';
 import { InsertionPoint } from './../../editor/insertion-point';
 import { RegularMeterDef } from './../states/meter';
@@ -136,4 +138,12 @@ export class JMusic implements ScoreDef {
         const note = this.noteFromInsertionPoint(ins);
         note.pitches.push(pitch);
     }
+
+
+    addLongDecoration(decorationType: LongDecorationType, ins: InsertionPoint, length: TimeSpan) {
+        const seq = this.sequenceFromInsertionPoint(ins);
+
+        seq.insertElement(ins.time, { longDeco: decorationType, length, duration: Time.NoTime });
+    }
+
 }

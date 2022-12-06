@@ -12,4 +12,5 @@ export * from './score/voice';
 export * from './score/transformations';
 export * from './notes/beaming';
 export * from './notes/lyrics';
+export * from './decorations/decoration-type';
 export * from './facade/jmusic';

@@ -1,8 +1,9 @@
+import { AbsoluteTime } from './../rationals/time';
 import { Rational, RationalDef } from '../../model/rationals/rational';
 import { Note, TupletState } from '../notes/note';
 import { TimeSpan } from '../rationals/time';
 import { StateChange } from '../states/state';
-import { BaseSequence, ISequence, TimeSlot } from './sequence';
+import { BaseSequence, ISequence, MusicEvent, TimeSlot } from './sequence';
 
 
 export class RetrogradeSequence extends BaseSequence {
@@ -10,7 +11,7 @@ export class RetrogradeSequence extends BaseSequence {
         super();
     }
     
-    public get elements(): (Note | StateChange)[] {
+    public get elements(): MusicEvent[] {
         const res = this.sequence.elements.map(n => {
             if ((n as StateChange).isState) return n;
             const note = Note.clone(n as Note);
@@ -24,6 +25,10 @@ export class RetrogradeSequence extends BaseSequence {
         return res;
     }
     
+    public insertElement(time: AbsoluteTime, element: MusicEvent): void {
+        throw 'RetrogradeSequence does not support insertElement';
+    }
+
     public get duration(): TimeSpan {
         return this.sequence.duration;
     }
@@ -36,7 +41,7 @@ export class TupletSequence extends BaseSequence {
         super();
     }
     
-    public get elements(): (Note | StateChange)[] {
+    public get elements(): MusicEvent[] {
         return this.sequence.elements.map((ele, i, arr) => {
             if ((ele as StateChange).isState) {
                 return ele;
@@ -45,6 +50,10 @@ export class TupletSequence extends BaseSequence {
                 return Note.clone(ele as Note, { tupletFactor : this.fraction, tupletGroup });
             }
         });
+    }
+
+    public insertElement(time: AbsoluteTime, element: MusicEvent): void {
+        throw 'TupletSequence does not support insertElement';
     }
     
     public get duration(): TimeSpan {

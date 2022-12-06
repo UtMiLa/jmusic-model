@@ -1,3 +1,4 @@
+import { LongDecorationType } from './../decorations/decoration-type';
 import { InsertionPoint } from './../../editor/insertion-point';
 import { MeterFactory } from './../states/meter';
 import { Time } from './../rationals/time';
@@ -169,4 +170,35 @@ describe('Facade', () => {
         xit('should update references when a variable is changed', () => {});
     });
 
+    describe('Decorations', () => {
+        let score: JMusic;
+
+        beforeEach(() => {
+            score = new JMusic({ 
+                content: [['g4 g4 g4 g4 \\key a \\major g4 g4 g4 g4', 'c4 c4 c4 c4 c4 c4 c4 c4'], ['c,4 c,4 c,4 c,4 \\clef tenor c,4 c,4 c,4 c,4']],
+                meter: '4/4',
+                clefs: [ 'treble', 'bass' ],
+                key: 'g \\minor'
+            });
+        });
+
+        it('should add a crescendo to a voice', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 1;
+            ins.time = Time.newAbsolute(3, 4);
+
+            score.addLongDecoration(LongDecorationType.Crescendo, ins, Time.WholeTime);
+
+            let voice = score.staves[0].voices[1];
+            expect(voice.content.elements[3]).to.deep.equal({ longDeco: LongDecorationType.Crescendo, length: Time.WholeTime, duration: Time.NoTime });
+
+            ins.time = Time.newAbsolute(5, 4);
+            score.addLongDecoration(LongDecorationType.Decrescendo, ins, Time.HalfTime);
+
+            voice = score.staves[0].voices[1];
+            expect(voice.content.elements[6]).to.deep.equal({ longDeco: LongDecorationType.Decrescendo, length: Time.HalfTime, duration: Time.NoTime });
+
+        });
+    });
 });

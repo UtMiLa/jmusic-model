@@ -1,11 +1,11 @@
-import { Time } from './../rationals/time';
+import { MusicEvent } from './../score/sequence';
+import { Time, AbsoluteTime } from './../rationals/time';
 import { TimeSpan } from '../rationals/time';
 import { BaseSequence, ISequence } from '../score/sequence';
 import { StateChange } from '../states/state';
 import { Note } from './note';
 
 export class LyricsSequence extends BaseSequence {
-
     /**
      * @param seq Sequence to bind lyrics to
      * @param lyricsText string of syllables, separated by spaces; syllables can end with minus to indicate hyphenation. Syllables can be minuses to indicate melismas.
@@ -15,7 +15,7 @@ export class LyricsSequence extends BaseSequence {
         super();
     }
 
-    get elements(): (Note | StateChange)[] {
+    get elements(): MusicEvent[] {
         const lyricsSplit = this.lyricsText.split(' ');
         let i = 0;
         return this.sequence.elements.map(elm => { 
@@ -29,4 +29,8 @@ export class LyricsSequence extends BaseSequence {
     }
 
     duration: TimeSpan = this.sequence.duration;
+
+    insertElement(time: AbsoluteTime, elm: MusicEvent): void {
+        throw new Error('Method not implemented.');    }
+
 }
