@@ -1,9 +1,10 @@
+import { InsertionPoint } from './../../editor/insertion-point';
 import { BarType } from './score-view-model';
 import { FlagType } from './note-view-model';
 import { RetrogradeSequence, TupletSequence } from './../../model/score/transformations';
 import { SimpleSequence, CompositeSequence } from './../../model/score/sequence';
 import { expect } from 'chai';
-import { JMusic, NoteDirection, NoteType, Time } from './../../model';
+import { JMusic, LongDecorationType, NoteDirection, NoteType, Time } from './../../model';
 import { ClefType, StaffDef } from './../../model';
 import { Clef } from './../../model';
 import { scoreModelToViewModel, __internal } from './convert-model';
@@ -383,5 +384,27 @@ describe('View model', () => {
         expect(log2.staves[0].timeSlots[2].bar).to.deep.eq({ barType: BarType.Simple, repeatEnd: true });
     });
 
+    describe('Expressions', () => {
+        it('should convert a hairpin crescendo', () => {
+            const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], meter: '4/4' });
+            const ins1 = new InsertionPoint(score);
+            ins1.staffNo = 0;
+            ins1.voiceNo = 0;
+            ins1.time = Time.StartTime;
+            score.addLongDecoration(LongDecorationType.Crescendo, ins1, Time.newSpan(2, 1));
+    
+            const log2 = scoreModelToViewModel(score);
+            expect(log2.staves[0].timeSlots[0].decorations).to.deep.eq([
+                { 
+                    type: LongDecorationType.Crescendo, 
+                    noteRefs: [
+                        { uniq: '0-0-1', absTime: Time.newAbsolute(0, 1) },
+                        { uniq: '0-0-3', absTime: Time.newAbsolute(2, 1) }
+                    ] // todo: maybe uniq should number the actual notes or the time slots instead of the elements (including decorations and state changes)
+                }
+            ]);
+        });
+    
+    });
 
 });

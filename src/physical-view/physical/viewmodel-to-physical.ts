@@ -74,7 +74,7 @@ function addStaffLines(settings: Metrics, width: number): PhysicalElementBase[] 
 function convertStaff(
     measureMap: MeasureMap, 
     timeSlot: TimeSlotViewModel, 
-    beamings: PhysicalLongElement[], 
+    longElements: PhysicalLongElement[], 
     settings: Metrics, 
     resultElements: PhysicalElementBase[], 
     cursor?: Cursor
@@ -85,12 +85,12 @@ function convertStaff(
 
     if (timeSlot.beamings) {
         timeSlot.beamings.forEach(beaming => {
-            beamings.push(new PhysicalBeamGroup(beaming, settings));
+            longElements.push(new PhysicalBeamGroup(beaming, settings));
         });
     }
 
     if (timeSlot.tuplets) {
-        timeSlot.tuplets.forEach(tuplet => beamings.push(new PhysicalTupletBracket(tuplet, settings)));
+        timeSlot.tuplets.forEach(tuplet => longElements.push(new PhysicalTupletBracket(tuplet, settings)));
     }
 
     if (timeSlot.clef) {
@@ -125,10 +125,10 @@ function convertStaff(
         const notestem = addItems.find(elm => elm.element === HorizVarSizeGlyphs.Stem) as PhysicalHorizVarSizeElement;
         if (note.flagType === FlagType.Beam && notestem) {
             //console.log('adding beam');
-            beamings.forEach(beaming => beaming.addNote({ absTime: timeSlot.absTime, uniq: note.uniq + '' }, notestem, resultElements));
+            longElements.forEach(beaming => beaming.addNote({ absTime: timeSlot.absTime, uniq: note.uniq + '' }, notestem, resultElements));
         }
         if (note.tuplet) {
-            beamings.forEach(beaming => beaming.addNote({ absTime: timeSlot.absTime, uniq: note.uniq + '' }, notestem, resultElements));
+            longElements.forEach(beaming => beaming.addNote({ absTime: timeSlot.absTime, uniq: note.uniq + '' }, notestem, resultElements));
         }
     });
     if (timeSlot.ties) {

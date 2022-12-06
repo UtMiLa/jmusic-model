@@ -26,6 +26,7 @@ export interface TimeSlot {
     time: AbsoluteTime;
     elements: Note[];
     states: StateChange[];
+    decorations?: LongDecorationElement[];
 }
 
 export function parseLilyKey(ly: string): Key {
@@ -118,12 +119,18 @@ export abstract class BaseSequence implements ISequence {
         this.elements.forEach((elem, index) => {
             const slot = res.get(time);
             if ((elem as StateChange).isState) {
-                //console.log('statechg', elem);
-                
+
                 slot.states.push(elem as StateChange);
                 
+            } else if ((elem as LongDecorationElement).longDeco !== undefined) {
+
+                if (!slot.decorations) slot.decorations = [];
+                slot.decorations.push(elem as LongDecorationElement);
+
             } else {
+
                 slot.elements.push(Note.clone(elem as Note, { uniq: `${keyPrefix}-${index}` }));
+                
             }
             time  = Time.addTime(time, elem.duration);
         });

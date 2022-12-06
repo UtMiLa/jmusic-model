@@ -1,3 +1,4 @@
+import { LongDecorationElement } from './../decorations/decoration-type';
 import { StateChange } from './../states/state';
 import { Time, AbsoluteTime } from './../rationals/time';
 import { ISequence } from './../score/sequence';
@@ -77,6 +78,9 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
         if ((element as StateChange).isState) {
             // state change
             const stC = element as StateChange;
+        } else if ((element as LongDecorationElement).longDeco !== undefined) {
+            // decoration
+            const deco = element as LongDecorationElement;
         } else {
             const note = element as Note;
             const currBeamCnt = beamCount(note.undottedDuration.denominator);

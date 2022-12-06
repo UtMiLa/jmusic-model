@@ -1,6 +1,6 @@
 import { PhysicalLongElement } from './physical-long-element';
 import { Metrics } from './metrics';
-import { PhysicalHorizVarSizeElement, Point, PhysicalBeamElement, PhysicalVertVarSizeElement, PhysicalElementBase } from './physical-elements';
+import { PhysicalHorizVarSizeElement, Point, PhysicalElementBase } from './physical-elements';
 import { VertVarSizeGlyphs } from './glyphs';
 import { Time } from './../../model/rationals/time';
 import { NoteViewModel } from './../../logical-view/view-model/note-view-model';
@@ -15,9 +15,6 @@ export function findNoteInViewModel(noteRef: NoteRef, viewModel: ScoreViewModel)
         if (note) return note;
     }
 
-    /*const f = viewModel.staves[noteRef.staff].timeSlots.find(ts => Time.equals(ts.absTime, noteRef.absTime));
-    
-    return f ? f.notes[noteRef.voice] : undefined;*/
     return undefined;
 }
 

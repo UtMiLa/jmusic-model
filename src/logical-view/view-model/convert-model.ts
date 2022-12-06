@@ -24,6 +24,7 @@ import { VoiceDef } from '../../model/score/voice';
 import { createIdPrefix, createStateMap } from './state-map';
 import { convertKey } from '../../physical-view/physical/physical-key';
 import { repeatsToView } from './convert-repeat';
+import { LongDecoToView } from './convert-decoration';
 
 export interface SubsetDef {
     startTime: AbsoluteTime;
@@ -292,6 +293,15 @@ function createViewModelsForVoice(def: StaffDef, staffNo: number, meter: Meter |
             state.voiceTimeSlot = voiceTimeSlot;
             state.slotNo = slotNo;
             state.updateTupletViewModel();
+
+            if (voiceTimeSlot.decorations) {
+                if (!state.slot.decorations) state.slot.decorations = [];
+                voiceTimeSlot.decorations.forEach(vc => {
+                    const decoVM = LongDecoToView(vc, voiceTimeSlot.time, voiceTimeSlots);
+                    if (!decoVM) throw 'Error converting long decoration';
+                    state.slot.decorations?.push(decoVM);
+                });
+            }
 
             createTimeSlotViewModels(state, voiceTimeSlot, stateMap, staffNo);
         });

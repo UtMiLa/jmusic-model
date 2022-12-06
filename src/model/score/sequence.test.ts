@@ -3,6 +3,7 @@ import { Note, NoteDirection } from './../notes/note';
 import { Time } from '../rationals/time';
 import { SimpleSequence, CompositeSequence } from './sequence';
 import { expect } from 'chai';
+import { LongDecorationType } from '../decorations/decoration-type';
 describe('Sequence', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';
@@ -59,11 +60,6 @@ describe('Sequence', () => {
                     '_duration': Time.newSpan(1, 4),
                     '_pitches': [
                         new Pitch(0, 3, 0)
-                        /*{
-                            '_accidental': 0,
-                            '_octave': 3,
-                            '_pitchClass': 0
-                        }*/
                     ],
                     'direction': NoteDirection.Undefined,
                     uniq: 'x-0'
@@ -78,11 +74,6 @@ describe('Sequence', () => {
                     '_duration': Time.newSpan(1, 4),
                     '_pitches': [
                         new Pitch(0, 3, 0)
-                        /*{
-                            '_accidental': 0,
-                            '_octave': 3,
-                            '_pitchClass': 0
-                        }*/
                     ],
                     'direction': NoteDirection.Undefined,
                     uniq: 'x-0'
@@ -93,11 +84,6 @@ describe('Sequence', () => {
                     '_duration': Time.newSpan(1, 8),
                     '_pitches': [
                         new Pitch(1, 3, 0)
-                        /*{
-                            '_accidental': 0,
-                            '_octave': 3,
-                            '_pitchClass': 1
-                        }*/
                     ],
                     'direction': NoteDirection.Undefined,
                     uniq: 'x-1'
@@ -108,11 +94,6 @@ describe('Sequence', () => {
                     '_duration': Time.newSpan(1, 8),
                     '_pitches': [
                         new Pitch(2, 3, 0)
-                        /*{
-                            '_accidental': 0,
-                            '_octave': 3,
-                            '_pitchClass': 2
-                        }*/
                     ],
                     'direction': NoteDirection.Undefined,
                     uniq: 'x-2'
@@ -128,6 +109,23 @@ describe('Sequence', () => {
             Time.newAbsolute(5, 8),
             Time.newAbsolute(3, 4)
         ]);
+    });
+
+
+
+    it('should assign decorations to the time slots of a sequence', () => {
+        const seq1 = SimpleSequence.createFromString(seq1Text);
+        
+        seq1.insertElement(Time.newAbsolute(1, 4), { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime, duration: Time.NoTime });
+
+        const slots = seq1.groupByTimeSlots('x');
+        expect(slots).to.have.length(3);
+
+        expect(slots[1]).to.deep.include(
+            { time: Time.newAbsolute(1, 4), states: [], decorations: [
+                { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime, duration: Time.NoTime }
+            ]}
+        );
     });
 
     describe('CompositeSequence', () => {

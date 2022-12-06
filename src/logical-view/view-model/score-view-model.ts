@@ -1,3 +1,4 @@
+import { LongDecorationView } from './convert-decoration';
 import { BeamingViewModel, TupletViewModel } from './note-view-model';
 import { Alteration } from './../../model/pitches/pitch';
 import { MeterViewModel } from './convert-meter';
@@ -45,6 +46,7 @@ export interface TimeSlotViewModel {
     notes: NoteViewModel[];
     beamings?: BeamingViewModel[];
     tuplets?: TupletViewModel[];
+    decorations?: LongDecorationView[];
 }
 export interface StaffViewModel {
     timeSlots: TimeSlotViewModel[]
