@@ -1,7 +1,7 @@
 import { PhysicalFixedSizeElement } from './../physical/physical-elements';
 import { NoteDirection } from '~/model';
 import { emmentalerCodes } from '../../font/emmentaler-codes';
-import { GlyphCode, HorizVarSizeGlyphs } from '../physical/glyphs';
+import { GlyphCode, HorizVarSizeGlyphs, VertVarSizeGlyphs } from '../physical/glyphs';
 import { PhysicalBeamElement, PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalTupletBracketElement, PhysicalVertVarSizeElement, Point } from '../physical/physical-elements';
 import { Renderer } from './base-renderer';
 import { RenderPosition, DrawOperationType, DrawOperation } from './render-types';
@@ -191,6 +191,32 @@ export function renderTupletBracket(elem: PhysicalElementBase, position: RenderP
         }
     ]);
 
+}
+
+
+export function renderLongElement(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point): void {
+
+    //const elmBeam = elem as PhysicalElement;
+    //const scale = (elem as any).scale ? (elem as any).scale : 1;
+    
+
+    if (elem.element === VertVarSizeGlyphs.Crescendo) {
+        renderer.draw('#606060', '#000000', [
+            { type: DrawOperationType.MoveTo, points: [convertXY(elem.position, { x: elem.length as number, y: 4 })]},
+            { type: DrawOperationType.LineTo, points: [convertXY(elem.position)]},
+            { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: elem.length as number, y: -4 })]},
+            { type: DrawOperationType.Stroke, points: []}
+        ]);
+
+    } else if (elem.element === VertVarSizeGlyphs.Decrescendo) {
+        renderer.draw('#606060', '#000000', [
+            { type: DrawOperationType.MoveTo, points: [convertXY(elem.position, { x: 0, y: 4 })]},
+            { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: elem.length as number, y: 0 })]},
+            { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: 0, y: -4 })]},
+            { type: DrawOperationType.Stroke, points: []}
+        ]);
+
+    }
 }
 
 

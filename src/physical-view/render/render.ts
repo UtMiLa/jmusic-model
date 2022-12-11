@@ -6,7 +6,7 @@ import { PhysicalModel } from '../physical/physical-elements';
 import { HorizVarSizeGlyphs } from '../physical/glyphs';
 import { Renderer } from './base-renderer';
 import { CanvasRenderer } from './canvas-renderer';
-import { renderBar, renderBeam, renderCursor, renderStaffLine, renderStem, renderText, renderTie, renderTupletBracket } from './render-elements';
+import { renderBar, renderBeam, renderCursor, renderLongElement, renderStaffLine, renderStem, renderText, renderTie, renderTupletBracket } from './render-elements';
 
 
 
@@ -43,6 +43,9 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
     renderFunctions[VertVarSizeGlyphs.LedgerLine] = renderStaffLine;
     renderFunctions[VertVarSizeGlyphs.Beam] = renderBeam;
     renderFunctions[VertVarSizeGlyphs.TupletBracket] = renderTupletBracket;
+    renderFunctions[VertVarSizeGlyphs.Crescendo] = renderLongElement;
+    renderFunctions[VertVarSizeGlyphs.Decrescendo] = renderLongElement;
+    //renderFunctions[VertVarSizeGlyphs.Slur] = renderTupletBracket;
     renderFunctions[VertVarSizeGlyphs.Tie] = renderTie;
     renderFunctions[HorizVarSizeGlyphs.Cursor] = renderCursor;
 

@@ -3,13 +3,13 @@ import { Time, AbsoluteTime } from './../../model/rationals/time';
 import { NoteRef } from './note-view-model';
 import { LongDecorationElement, LongDecorationType } from './../../model/decorations/decoration-type';
 
-export interface LongDecorationView {
+export interface LongDecorationViewModel {
     noteRefs: NoteRef[];
     type: LongDecorationType;
 }
 
 
-export function LongDecoToView(longDeco: LongDecorationElement, fromTime: AbsoluteTime, timeSlot: TimeSlot[]): LongDecorationView {
+export function LongDecoToView(longDeco: LongDecorationElement, fromTime: AbsoluteTime, timeSlot: TimeSlot[]): LongDecorationViewModel {
     
     const toTime = Time.addTime(fromTime, longDeco.length);
     const note1 = timeSlot.find(t => Time.equals(t.time, fromTime));

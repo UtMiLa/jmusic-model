@@ -1,4 +1,4 @@
-import { PhysicalLongElement } from './physical-long-element';
+import { PhysicalLongElement, PhysicalLongDecoration } from './physical-long-element';
 import { PhysicalTupletBracket } from './physical-tuplet-bracket';
 import { Time } from './../../model/rationals/time';
 import { Cursor } from './cursor';
@@ -93,6 +93,11 @@ function convertStaff(
         timeSlot.tuplets.forEach(tuplet => longElements.push(new PhysicalTupletBracket(tuplet, settings)));
     }
 
+    if (timeSlot.decorations) {
+        timeSlot.decorations.forEach(decoration => longElements.push(new PhysicalLongDecoration(decoration, settings)));
+    }
+
+
     if (timeSlot.clef) {
         resultElements.push(convertClef(timeSlot.clef, mapItem.clef as number, settings));
     }
@@ -123,13 +128,13 @@ function convertStaff(
         const addItems = convertNote(note, mapItem.note, settings);
         resultElements = resultElements.concat(addItems);
         const notestem = addItems.find(elm => elm.element === HorizVarSizeGlyphs.Stem) as PhysicalHorizVarSizeElement;
-        if (note.flagType === FlagType.Beam && notestem) {
+        /*if (note.flagType === FlagType.Beam && notestem) {
             //console.log('adding beam');
             longElements.forEach(beaming => beaming.addNote({ absTime: timeSlot.absTime, uniq: note.uniq + '' }, notestem, resultElements));
         }
-        if (note.tuplet) {
-            longElements.forEach(beaming => beaming.addNote({ absTime: timeSlot.absTime, uniq: note.uniq + '' }, notestem, resultElements));
-        }
+        if (note.tuplet) {*/
+        longElements.forEach(longElement => longElement.addNote({ absTime: timeSlot.absTime, uniq: note.uniq + '' }, notestem, resultElements));
+        //}
     });
     if (timeSlot.ties) {
         resultElements = resultElements.concat(convertTies(timeSlot.ties, measureMap, mapItem, settings));
