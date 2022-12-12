@@ -11,28 +11,24 @@ export interface PhysicalLongElement {
     addNote(noteRef: NoteRef, notestem: PhysicalHorizVarSizeElement, output: PhysicalElementBase[]): boolean;
 }
 
+export abstract class PhysicalLongElementBase {
+    constructor(protected noteRefs: NoteRef[], protected settings: Metrics) {
 
-export class PhysicalLongDecoration implements PhysicalLongElement {
-    constructor(private element: LongDecorationViewModel, private settings: Metrics) {
-        //
     }
 
-    private registeredNotes: { [key: string]: PhysicalHorizVarSizeElement } = {};
+    protected registeredNotes: { [key: string]: PhysicalHorizVarSizeElement } = {};
 
     testNote(noteRef: NoteRef): boolean {
-        const found = this.element.noteRefs.find(ref => Time.equals(ref.absTime, noteRef.absTime) && ref.uniq === noteRef.uniq);        
+        const found = this.noteRefs.find(ref => Time.equals(ref.absTime, noteRef.absTime) && ref.uniq === noteRef.uniq);        
         
         return !!found;
     }
 
-    glyphFromElement(): VertVarSizeGlyphs {
-        switch(this.element.type) {
-            case LongDecorationType.Crescendo: return VertVarSizeGlyphs.Crescendo;
-            case LongDecorationType.Decrescendo: return VertVarSizeGlyphs.Decrescendo;
-            case LongDecorationType.Slur: return VertVarSizeGlyphs.Slur;   
-        }
-        throw 'Unknown long decoration type: ' + this.element.type;
+    getNotestem(idx: number): PhysicalHorizVarSizeElement {
+        return this.registeredNotes[this.noteRefs[idx].uniq];
     }
+
+    abstract finishObject(output: PhysicalElementBase[]): void;
 
     addNote(noteRef: NoteRef, notestem: PhysicalHorizVarSizeElement, output: PhysicalElementBase[]): boolean {
         if (this.testNote(noteRef)) {
@@ -40,28 +36,51 @@ export class PhysicalLongDecoration implements PhysicalLongElement {
 
             //console.log('adding note, testnote ok', noteRef, this.bvm, this.registeredNotes);    
         
-            if (Object.keys(this.registeredNotes).length === this.element.noteRefs.length) {
+            if (Object.keys(this.registeredNotes).length === this.noteRefs.length) {
 
-                const firstNote = this.getNotestem(0);
-                //sign = Math.sign(firstNote.height);
-                const firstXPos = firstNote.position.x;
+                this.finishObject(output);
 
-                const lastNote = this.getNotestem(1);
-                const lastXPos = lastNote.position.x;
-
-                //console.log('this.glyphFromElement(),', this.glyphFromElement());
-                output.push({
-                    element: this.glyphFromElement(),
-                    position: { x: firstXPos, y: this.settings.dynamicY },
-                    length: lastXPos - firstXPos,
-                    height: 0
-                } as PhysicalElementBase);
+                return true;
             }
         }
         return false;
     }
     
-    getNotestem(idx: number): PhysicalHorizVarSizeElement {
-        return this.registeredNotes[this.element.noteRefs[idx].uniq];
+
+}
+
+export class PhysicalLongDecoration extends PhysicalLongElementBase {
+    constructor(element: LongDecorationViewModel, settings: Metrics) {
+        super(element.noteRefs, settings);
+        this.glyphType = this.glyphFromElement(element);
+    }
+
+    private glyphType: VertVarSizeGlyphs;
+
+    glyphFromElement(element: LongDecorationViewModel): VertVarSizeGlyphs {
+        switch(element.type) {
+            case LongDecorationType.Crescendo: return VertVarSizeGlyphs.Crescendo;
+            case LongDecorationType.Decrescendo: return VertVarSizeGlyphs.Decrescendo;
+            case LongDecorationType.Slur: return VertVarSizeGlyphs.Slur;   
+        }
+        throw 'Unknown long decoration type: ' + element.type;
+    }
+
+
+    finishObject(output: PhysicalElementBase[]): void {
+        const firstNote = this.getNotestem(0);
+        //sign = Math.sign(firstNote.height);
+        const firstXPos = firstNote.position.x;
+
+        const lastNote = this.getNotestem(1);
+        const lastXPos = lastNote.position.x;
+
+        //console.log('this.glyphFromElement(),', this.glyphFromElement());
+        output.push({
+            element: this.glyphType,
+            position: { x: firstXPos, y: this.settings.dynamicY },
+            length: lastXPos - firstXPos,
+            height: 0
+        } as PhysicalElementBase);
     }
 }

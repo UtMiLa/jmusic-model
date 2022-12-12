@@ -1,4 +1,5 @@
-import { PhysicalLongElement } from './physical-long-element';
+import { BeamDef } from './../../model/notes/beaming';
+import { PhysicalLongElement, PhysicalLongElementBase } from './physical-long-element';
 import { Metrics } from './metrics';
 import { PhysicalHorizVarSizeElement, Point, PhysicalElementBase } from './physical-elements';
 import { VertVarSizeGlyphs } from './glyphs';
@@ -18,105 +19,78 @@ export function findNoteInViewModel(noteRef: NoteRef, viewModel: ScoreViewModel)
     return undefined;
 }
 
-export class PhysicalBeamGroup implements PhysicalLongElement {
-    constructor(private bvm: BeamingViewModel, private settings: Metrics) {}
+export class PhysicalBeamGroup extends PhysicalLongElementBase {
+    constructor(bvm: BeamingViewModel, settings: Metrics) {
+        super(bvm.noteRefs, settings);
 
-    private registeredNotes: { [key: string]: PhysicalHorizVarSizeElement } = {};
-
-    testNote(noteRef: NoteRef): boolean {
-        const found = this.bvm.noteRefs.find(ref => Time.equals(ref.absTime, noteRef.absTime) && ref.uniq === noteRef.uniq);
-        //console.log('testing', noteRef, this.bvm, this.registeredNotes);
-        
-        return !!found;
+        this.beams = bvm.beams;
     }
+
+    beams: BeamDef[];
 
     calcSlope(): number {
         const firstNote = this.getNotestem(0);
-        const lastNote = this.getNotestem(this.bvm.noteRefs.length - 1);
+        const lastNote = this.getNotestem(this.noteRefs.length - 1);
 
         return (lastNote.position.y - firstNote.position.y)/(lastNote.position.x - firstNote.position.x);
     }
 
     startPoint(): Point {
         const firstNote = this.getNotestem(0);
-        const maxLevel = this.bvm.beams.reduce((prev, curr) => curr.level > prev ? curr.level : prev, 0);
+        const maxLevel = this.beams.reduce((prev, curr) => curr.level > prev ? curr.level : prev, 0);
         const extraHeight = maxLevel > 1 ? (maxLevel - 1) * this.settings.beamSpacing * Math.sign(firstNote.height) : 0;
 
         return { x: firstNote.position.x, y: firstNote.position.y + firstNote.height + extraHeight };
     }
 
-    addNote(noteRef: NoteRef, notestem: PhysicalHorizVarSizeElement, output: PhysicalElementBase[]): boolean {
-        //console.log('adding note');
-        if (this.testNote(noteRef)) {
-            this.registeredNotes[noteRef.uniq] = notestem;
 
-            //console.log('adding note, testnote ok', noteRef, this.bvm, this.registeredNotes);    
-        
-            if (Object.keys(this.registeredNotes).length === this.bvm.noteRefs.length) {
-                //console.log('beam is full');                
-                //console.log('beam is full', noteRef, this.bvm, this.registeredNotes);
+    finishObject(output: PhysicalElementBase[]): void {
+        const slope = this.calcSlope();
+        const startPoint = this.startPoint();
 
-                const slope = this.calcSlope();
-                const startPoint = this.startPoint();
+        this.noteRefs.forEach(nr => {
+            const notestem = this.registeredNotes[nr.uniq];
+            notestem.height = startPoint.y + slope * (notestem.position.x - startPoint.x) - notestem.position.y;
+        });
 
-                this.bvm.noteRefs.forEach(nr => {
-                    const notestem = this.registeredNotes[nr.uniq];
-                    notestem.height = startPoint.y + slope * (notestem.position.x - startPoint.x) - notestem.position.y;
-                });
-                
 
-                this.bvm.beams.forEach((beam, index) => {
-                    let sign = 1;
-                    let firstXPos: number, lastXPos: number;
-                    let fromIdx = beam.fromIdx;
-                    if (fromIdx === undefined) { 
-                        //console.log('undefined', beam);
-                        
-                        if (beam.toIndex === undefined) throw 'Beam can not have undefined from and to index';
-                        fromIdx = beam.toIndex - 1;
-                        const lastNote = this.getNotestem(beam.toIndex);
-                        firstXPos = lastNote.position.x - this.settings.brokenBeamLength;
-                    } else {
-                        //console.log('defined', beam);
-                        const firstNote = this.getNotestem(fromIdx);
-                        sign = Math.sign(firstNote.height);
-                        firstXPos = firstNote.position.x;
-                    }
-                    
-                    if (beam.toIndex === undefined) {
-                        lastXPos = firstXPos + this.settings.brokenBeamLength;
-                    } else {
-                        const lastNote = this.getNotestem(beam.toIndex);
-                        sign = Math.sign(lastNote.height);
-                        lastXPos = lastNote.position.x;
-                    }
-               
-                    const length = lastXPos - firstXPos;
-                    const height = length * slope;
-                    const yStart = (firstXPos - startPoint.x) * slope + startPoint.y;
-                    output.push({
-                        element: VertVarSizeGlyphs.Beam,
-                        position: { x: firstXPos, y: yStart - this.settings.beamSpacing * beam.level * sign },
-                        length,
-                        height
-                    });
-
-                    /*console.log('ph beam', {                     
-                        position: { x: firstXPos, y: yStart - this.settings.beamSpacing * beam.level * sign },
-                        length,
-                        height
-                    });*/
-                    
-    
-                });
-
-                return true;
+        this.beams.forEach((beam, index) => {
+            let sign = 1;
+            let firstXPos: number, lastXPos: number;
+            let fromIdx = beam.fromIdx;
+            if (fromIdx === undefined) {
+                //console.log('undefined', beam);
+                if (beam.toIndex === undefined)
+                    throw 'Beam can not have undefined from and to index';
+                fromIdx = beam.toIndex - 1;
+                const lastNote = this.getNotestem(beam.toIndex);
+                firstXPos = lastNote.position.x - this.settings.brokenBeamLength;
+            } else {
+                //console.log('defined', beam);
+                const firstNote = this.getNotestem(fromIdx);
+                sign = Math.sign(firstNote.height);
+                firstXPos = firstNote.position.x;
             }
-        }
-        return false;
+
+            if (beam.toIndex === undefined) {
+                lastXPos = firstXPos + this.settings.brokenBeamLength;
+            } else {
+                const lastNote = this.getNotestem(beam.toIndex);
+                sign = Math.sign(lastNote.height);
+                lastXPos = lastNote.position.x;
+            }
+
+            const length = lastXPos - firstXPos;
+            const height = length * slope;
+            const yStart = (firstXPos - startPoint.x) * slope + startPoint.y;
+            output.push({
+                element: VertVarSizeGlyphs.Beam,
+                position: { x: firstXPos, y: yStart - this.settings.beamSpacing * beam.level * sign },
+                length,
+                height
+            });
+
+        });
     }
 
-    getNotestem(idx: number): PhysicalHorizVarSizeElement {
-        return this.registeredNotes[this.bvm.noteRefs[idx].uniq];
-    }
 }
