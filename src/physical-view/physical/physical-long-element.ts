@@ -46,12 +46,14 @@ export class PhysicalLongDecoration implements PhysicalLongElement {
                 //sign = Math.sign(firstNote.height);
                 const firstXPos = firstNote.position.x;
 
-                console.log('this.glyphFromElement(),', this.glyphFromElement());
+                const lastNote = this.getNotestem(1);
+                const lastXPos = lastNote.position.x;
 
+                //console.log('this.glyphFromElement(),', this.glyphFromElement());
                 output.push({
                     element: this.glyphFromElement(),
-                    position: { x: firstXPos, y: 50 },
-                    length: 30,
+                    position: { x: firstXPos, y: this.settings.dynamicY },
+                    length: lastXPos - firstXPos,
                     height: 0
                 } as PhysicalElementBase);
             }

@@ -99,8 +99,9 @@ describe('Physical model, long expressions', () => {
 
         expect(physicalModel.elements[11]).to.deep.include({
             element: VertVarSizeGlyphs.Crescendo,
-            /*height: 5 * defaultMetrics.scaleDegreeUnit,
-            text: '3'*/
+            position: { x: defaultMetrics.staffLengthOffset + defaultMetrics.blackNoteHeadLeftXOffset, y: defaultMetrics.dynamicY - defaultMetrics.staffTopMargin },
+            height: 0,
+            length: defaultMetrics.defaultSpacing * 2
         });
 
         (viewModel1.staves[0].timeSlots[0] as any).decorations[0].type = LongDecorationType.Decrescendo;
@@ -113,8 +114,8 @@ describe('Physical model, long expressions', () => {
 
         expect(physicalModel2.elements[11]).to.deep.include({
             element: VertVarSizeGlyphs.Decrescendo,
-            /*height: 5 * defaultMetrics.scaleDegreeUnit,
-            text: '3'*/
+            position: { x: defaultMetrics.staffLengthOffset + defaultMetrics.blackNoteHeadLeftXOffset, y: defaultMetrics.dynamicY - defaultMetrics.staffTopMargin },
+            height: 0,
         });
 
     });

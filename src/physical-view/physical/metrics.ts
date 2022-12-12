@@ -45,6 +45,8 @@ export interface Metrics {
     lyricsVerseSpacing: number;
     lyricsFont: string;
     lyricsFontSize: number;
+
+    dynamicY: number;
 }
 
 export class StandardMetrics implements Metrics {
@@ -99,4 +101,6 @@ export class StandardMetrics implements Metrics {
     lyricsVerseSpacing = 12;
     lyricsFont = 'Sans';
     lyricsFontSize = 11;
+
+    dynamicY = -20;
 }

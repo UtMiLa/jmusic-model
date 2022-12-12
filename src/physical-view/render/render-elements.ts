@@ -202,17 +202,17 @@ export function renderLongElement(elem: PhysicalElementBase, position: RenderPos
 
     if (elem.element === VertVarSizeGlyphs.Crescendo) {
         renderer.draw('#606060', '#000000', [
-            { type: DrawOperationType.MoveTo, points: [convertXY(elem.position, { x: elem.length as number, y: 4 })]},
-            { type: DrawOperationType.LineTo, points: [convertXY(elem.position)]},
-            { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: elem.length as number, y: -4 })]},
+            { type: DrawOperationType.MoveTo, points: [convertXY(elem.position, { x: elem.length as number - 2, y: 4 })]},
+            { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: 2, y: 0 })]},
+            { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: elem.length as number - 2, y: -4 })]},
             { type: DrawOperationType.Stroke, points: []}
         ]);
 
     } else if (elem.element === VertVarSizeGlyphs.Decrescendo) {
         renderer.draw('#606060', '#000000', [
-            { type: DrawOperationType.MoveTo, points: [convertXY(elem.position, { x: 0, y: 4 })]},
-            { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: elem.length as number, y: 0 })]},
-            { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: 0, y: -4 })]},
+            { type: DrawOperationType.MoveTo, points: [convertXY(elem.position, { x: 2, y: 4 })]},
+            { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: elem.length as number - 2, y: 0 })]},
+            { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: 2, y: -4 })]},
             { type: DrawOperationType.Stroke, points: []}
         ]);
 
