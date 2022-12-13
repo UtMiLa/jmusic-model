@@ -120,4 +120,25 @@ describe('Physical model, long expressions', () => {
 
     });
 
+    
+
+    it('should get the coordinates of a slur', () => {
+        (viewModel1.staves[0].timeSlots[0] as any).decorations[0].type = LongDecorationType.Slur;
+
+        const physicalModel = viewModelToPhysical(viewModel1, defaultMetrics);
+
+        expect(physicalModel.elements).to.have.length(11 + 1);
+
+        //console.log(physicalModel.elements);
+
+        expect(physicalModel.elements[11]).to.deep.include({
+            element: VertVarSizeGlyphs.SlurOver,
+            position: { x: defaultMetrics.staffLengthOffset + defaultMetrics.blackNoteHeadLeftXOffset, y: defaultMetrics.dynamicY - defaultMetrics.staffTopMargin },
+            height: 0,
+            length: defaultMetrics.defaultSpacing * 2
+        });
+
+    });
+
+
 });

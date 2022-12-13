@@ -175,7 +175,8 @@ export enum VertVarSizeGlyphs {
     TupletBracket = 6,
     Crescendo,
     Decrescendo,
-    Slur
+    SlurOver,
+    SlurUnder
 }
 
 

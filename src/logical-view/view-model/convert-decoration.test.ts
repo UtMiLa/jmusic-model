@@ -19,6 +19,7 @@ describe('View model: Decorations', () => {
             });
         });
 
+        
         it('should convert a crescendo to view model', () => {
             const decrescDeco = { longDeco: LongDecorationType.Decrescendo, length: Time.HalfTime, duration: Time.NoTime };
             const ts1 = score.staves[0].voices[1].content.groupByTimeSlots('0-1');
@@ -43,5 +44,19 @@ describe('View model: Decorations', () => {
             });
 
         });
+
+        it('should convert a slur to view model', () => {
+            const slurDeco = { longDeco: LongDecorationType.Slur, length: Time.HalfTime, duration: Time.NoTime };
+            const ts1 = score.staves[0].voices[1].content.groupByTimeSlots('0-1');
+            const view1 = LongDecoToView(slurDeco, Time.newAbsolute(3, 4), ts1);
+            expect(view1).to.deep.equal({ 
+                type: LongDecorationType.Slur, 
+                noteRefs: [
+                    { uniq: '0-1-3', absTime: Time.newAbsolute(3, 4) },
+                    { uniq: '0-1-5', absTime: Time.newAbsolute(5, 4) }
+                ] 
+            });
+        });
+        
     });
 });

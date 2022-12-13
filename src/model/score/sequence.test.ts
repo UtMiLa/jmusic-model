@@ -128,6 +128,21 @@ describe('Sequence', () => {
         );
     });
 
+    it('should assign slurs to the time slots of a sequence', () => {
+        const seq1 = SimpleSequence.createFromString(seq1Text);
+        
+        seq1.insertElement(Time.newAbsolute(1, 4), { longDeco: LongDecorationType.Slur, length: Time.QuarterTime, duration: Time.NoTime });
+
+        const slots = seq1.groupByTimeSlots('x');
+        expect(slots).to.have.length(3);
+
+        expect(slots[1]).to.deep.include(
+            { time: Time.newAbsolute(1, 4), states: [], decorations: [
+                { longDeco: LongDecorationType.Slur, length: Time.QuarterTime, duration: Time.NoTime }
+            ]}
+        );
+    });
+
     describe('CompositeSequence', () => {
         it('should combine the notes of several sequences', () => {
             const seq1 = SimpleSequence.createFromString(seq1Text);

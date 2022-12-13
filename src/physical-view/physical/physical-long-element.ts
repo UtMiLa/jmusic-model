@@ -61,7 +61,7 @@ export class PhysicalLongDecoration extends PhysicalLongElementBase {
         switch(element.type) {
             case LongDecorationType.Crescendo: return VertVarSizeGlyphs.Crescendo;
             case LongDecorationType.Decrescendo: return VertVarSizeGlyphs.Decrescendo;
-            case LongDecorationType.Slur: return VertVarSizeGlyphs.Slur;   
+            case LongDecorationType.Slur: return VertVarSizeGlyphs.SlurOver;   
         }
         throw 'Unknown long decoration type: ' + element.type;
     }
