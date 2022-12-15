@@ -5,12 +5,12 @@ import { VertVarSizeGlyphs } from '../physical/glyphs';
 import { PhysicalModel } from '../physical/physical-elements';
 import { HorizVarSizeGlyphs } from '../physical/glyphs';
 import { Renderer } from './base-renderer';
-import { CanvasRenderer } from './canvas-renderer';
+import { CanvasRenderer, ICanvasElement } from './canvas-renderer';
 import { renderBar, renderBeam, renderCursor, renderLongElement, renderStaffLine, renderStem, renderText, renderTie, renderTupletBracket } from './render-elements';
 
 
 
-export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition): void {
+export function renderOnCanvas(physicalModel: PhysicalModel, canvas: ICanvasElement, position: RenderPosition): void {
     renderOnRenderer(physicalModel, new CanvasRenderer(canvas), position);
 }
 

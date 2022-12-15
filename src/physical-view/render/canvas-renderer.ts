@@ -1,16 +1,39 @@
 import { Renderer } from './base-renderer';
 import { DrawOperation, DrawOperationType } from './render-types';
 
+
+export interface ICanvasContext {
+    fillStyle: string;
+    strokeStyle: string;
+    beginPath(): void;
+    moveTo(x: number, y: number): void;
+    lineTo(x: number, y: number): void;
+    bezierCurveTo(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number): void;
+    fillText(text: string, x: number, y: number): void;
+    fillRect(x1: number, y1: number, x2: number, y2: number): void;
+    fill(): void;
+    stroke(): void;
+    lineWidth: number;
+    font?: string;
+}
+export interface ICanvasElement {
+    getContext(arg: string): ICanvasContext;
+    width: number;
+    height: number;    
+}
+
+
+
 export class CanvasRenderer implements Renderer {
 
-    constructor(public canvas: HTMLCanvasElement) {
-        this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    constructor(public canvas: ICanvasElement) {
+        this.ctx = canvas.getContext('2d') as ICanvasContext;
         if (!this.ctx) throw 'Canvas context is null';
         this.width = canvas.width;
         this.height = canvas.height;
     }
 
-    ctx: CanvasRenderingContext2D;
+    ctx: ICanvasContext;
 
     draw(strokeColor: string, fillColor: string, operations: DrawOperation[], path = true): void {
         this.ctx.fillStyle = fillColor;
