@@ -1,48 +1,42 @@
-import { CanvasRenderer, ICanvasContext, ICanvasElement } from './canvas-renderer';
-import { emmentalerCodes } from '../../font/emmentaler-codes';
+import { CanvasRenderer } from './canvas-renderer';
 import { expect } from 'chai';
-import { PhysicalModel, PhysicalFixedSizeElement, PhysicalHorizVarSizeElement } from '../physical/physical-elements';
-import { Renderer } from './base-renderer';
-import { renderOnRenderer } from './render';
-import { DrawOperation, DrawOperationType } from './render-types';
+import { DrawOperationType } from './render-types';
 import * as sinon from 'sinon';
-import { StandardMetrics } from '../physical/metrics';
-import { FixedSizeGlyphs, HorizVarSizeGlyphs, VertVarSizeGlyphs } from '../physical/glyphs';
 
 
-class MockCanvasContext implements ICanvasContext {
+class MockCanvasContext {
     fillStyle = '';
     strokeStyle = '';
     beginPath(): void {
-        //throw new Error('Method not implemented.');
+        //
     }
     moveTo(x: number, y: number): void {
-        //throw new Error('Method not implemented.');
+        //
     }
     lineTo(x: number, y: number): void {
-        //throw new Error('Method not implemented.');
+        //
     }
     bezierCurveTo(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number): void {
-        //throw new Error('Method not implemented.');
+        //
     }
     fillText(text: string, x: number, y: number): void {
-        //throw new Error('Method not implemented.');
+        //
     }
     fillRect(x1: number, y1: number, x2: number, y2: number): void {
-        //throw new Error('Method not implemented.');
+        //
     }
     fill(): void {
-        //throw new Error('Method not implemented.');
+        //
     }
     stroke(): void {
-        //throw new Error('Method not implemented.');
+        //
     }
     lineWidth = NaN;
     font = undefined;
 }
 
-class MockCanvas implements ICanvasElement {
-    getContext(arg: string): ICanvasContext {
+class MockCanvas {
+    getContext(arg: '2d'): MockCanvasContext {
         return this.ctx;
     }
     width = 20;
@@ -54,13 +48,14 @@ class MockCanvas implements ICanvasElement {
 
 describe('Render canvas', () => {
 
-    let canvas: MockCanvas;
+    let canvas: HTMLCanvasElement;
     let spyObj: sinon.SinonSpiedInstance<any>;
     let renderer: CanvasRenderer;
 
     beforeEach(()=>{
-        canvas = new MockCanvas();
-        spyObj = sinon.spy(canvas.ctx);
+        const mockCanvas = new MockCanvas();
+        canvas = mockCanvas as any as HTMLCanvasElement;
+        spyObj = sinon.spy(mockCanvas.ctx);
 
         renderer = new CanvasRenderer(canvas);
     });

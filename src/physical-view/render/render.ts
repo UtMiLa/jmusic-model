@@ -5,12 +5,12 @@ import { VertVarSizeGlyphs } from '../physical/glyphs';
 import { PhysicalModel } from '../physical/physical-elements';
 import { HorizVarSizeGlyphs } from '../physical/glyphs';
 import { Renderer } from './base-renderer';
-import { CanvasRenderer, ICanvasElement } from './canvas-renderer';
+import { CanvasRenderer } from './canvas-renderer';
 import { renderBar, renderBeam, renderCursor, renderLongElement, renderStaffLine, renderStem, renderText, renderTie, renderTupletBracket } from './render-elements';
 
 
 
-export function renderOnCanvas(physicalModel: PhysicalModel, canvas: ICanvasElement, position: RenderPosition): void {
+export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition): void {
     renderOnRenderer(physicalModel, new CanvasRenderer(canvas), position);
 }
 
@@ -45,7 +45,8 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
     renderFunctions[VertVarSizeGlyphs.TupletBracket] = renderTupletBracket;
     renderFunctions[VertVarSizeGlyphs.Crescendo] = renderLongElement;
     renderFunctions[VertVarSizeGlyphs.Decrescendo] = renderLongElement;
-    //renderFunctions[VertVarSizeGlyphs.Slur] = renderTupletBracket;
+    renderFunctions[VertVarSizeGlyphs.SlurOver] = renderTie;
+    renderFunctions[VertVarSizeGlyphs.SlurUnder] = renderTie;
     renderFunctions[VertVarSizeGlyphs.Tie] = renderTie;
     renderFunctions[HorizVarSizeGlyphs.Cursor] = renderCursor;
 
