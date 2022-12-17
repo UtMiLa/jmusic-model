@@ -2,7 +2,7 @@ import { VertVarSizeGlyphs } from './glyphs';
 import { Time } from './../../model/rationals/time';
 import { Metrics } from './metrics';
 import { LongDecorationViewModel } from './../../logical-view/view-model/convert-decoration';
-import { PhysicalHorizVarSizeElement, PhysicalElementBase, PhysicalTupletBracketElement } from './physical-elements';
+import { PhysicalHorizVarSizeElement, PhysicalElementBase, PhysicalTupletBracketElement, Point } from './physical-elements';
 import { NoteRef } from './../../logical-view/view-model/note-view-model';
 import { LongDecorationType } from '~/model';
 
@@ -50,7 +50,7 @@ export abstract class PhysicalLongElementBase {
 }
 
 export class PhysicalLongDecoration extends PhysicalLongElementBase {
-    constructor(element: LongDecorationViewModel, settings: Metrics) {
+    constructor(private element: LongDecorationViewModel, settings: Metrics) {
         super(element.noteRefs, settings);
         this.glyphType = this.glyphFromElement(element);
     }
@@ -67,6 +67,16 @@ export class PhysicalLongDecoration extends PhysicalLongElementBase {
     }
 
 
+    yFromElement(element: LongDecorationViewModel, position: Point): number {
+        switch(element.type) {
+            case LongDecorationType.Crescendo: return this.settings.dynamicY;
+            case LongDecorationType.Decrescendo: return this.settings.dynamicY;
+            case LongDecorationType.Slur: return position.y;   
+        }
+        throw 'Unknown long decoration type: ' + element.type;
+    }
+
+
     finishObject(output: PhysicalElementBase[]): void {
         const firstNote = this.getNotestem(0);
         //sign = Math.sign(firstNote.height);
@@ -78,9 +88,19 @@ export class PhysicalLongDecoration extends PhysicalLongElementBase {
         //console.log('this.glyphFromElement(),', this.glyphFromElement());
         output.push({
             element: this.glyphType,
-            position: { x: firstXPos, y: this.settings.dynamicY },
+            position: { x: firstXPos, y: this.yFromElement(this.element, firstNote.position) },
             length: lastXPos - firstXPos,
-            height: 0
+            height: this.height(lastNote.position.y, firstNote.position.y)
         } as PhysicalElementBase);
+    }
+
+    height(lastY: number, firstY: number): number {
+        switch(this.element.type) {
+            case LongDecorationType.Crescendo: 
+            case LongDecorationType.Decrescendo: return 0;
+            case LongDecorationType.Slur:  return lastY - firstY;
+        }
+        throw 'Unknown long decoration type: ' + this.element.type;
+        
     }
 }

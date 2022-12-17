@@ -143,25 +143,49 @@ export function renderBeam(elem: PhysicalElementBase, position: RenderPosition, 
 
 export function renderTie(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point): void {
 
-    const tieDir = (elem as any).direction === NoteDirection.Up ? 1 : -1;
-    const tieStart = convertXY({ x: elem.position.x, y: elem.position.y });
-    const tieEnd = convertXY({ x: elem.position.x + (elem as PhysicalVertVarSizeElement).length, y: elem.position.y });
+    let height = 0;
+    let tieYOffset = 0;
+    let tieDir: number;
+    let tieBow = 1;
+    switch (elem.element) {
+        case VertVarSizeGlyphs.SlurOver:
+            tieDir = -1;
+            tieBow = 3 + (elem.length as number) / 15;
+            height = elem.height as number;
+            tieYOffset = 5;
+            break;
+        case VertVarSizeGlyphs.SlurUnder:
+            tieDir = -1;
+            tieBow = -(3 + (elem.length as number) / 15);
+            height = elem.height as number;
+            tieYOffset = -5;
+            break;
+        case VertVarSizeGlyphs.Tie:
+            tieDir = (elem as any).direction === NoteDirection.Up ? 1 : -1;
+            tieBow = 3;
+            break;
+        default:
+            throw 'Unknown tie/slur: ' + elem.element;
+    }
+    
+    const tieStart = convertXY({ x: elem.position.x, y: elem.position.y + tieYOffset });
+    const tieEnd = convertXY({ x: elem.position.x + (elem as PhysicalVertVarSizeElement).length, y: elem.position.y + tieYOffset + height });
 
     const dx = (tieEnd.x - tieStart.x)/3;
-    const dy1 = tieDir * 3;
-    const dy2 = tieDir * 4;//2.5;
+    const dy1 = tieDir * tieBow;
+    const dy2 = tieDir * (tieBow + 1);//2.5;
     const dy3 = tieDir * 0.5;
     const path =[
         { type: DrawOperationType.MoveTo, points: [tieStart] },
         { type: DrawOperationType.CurveTo, points: [
-            { x: tieStart.x + dx, y: tieStart.y + dy1 },
-            { x: tieEnd.x - dx, y: tieStart.y + dy1 },
+            { x: tieStart.x + dx, y: (2*tieStart.y + tieEnd.y)/3 + dy1 },
+            { x: tieEnd.x - dx, y: (tieStart.y + 2*tieEnd.y)/3 + dy1 },
             { x: tieEnd.x, y: tieEnd.y }
         ] },
         { type: DrawOperationType.LineTo, points: [{ x: tieEnd.x, y: tieEnd.y + dy3}] },
         { type: DrawOperationType.CurveTo, points: [
-            { x: tieEnd.x - dx, y: tieStart.y + dy2 },
-            { x: tieStart.x + dx, y: tieStart.y + dy2 },
+            { x: tieEnd.x - dx, y: (tieStart.y + 2*tieEnd.y)/3 + dy2 },
+            { x: tieStart.x + dx, y: (2*tieStart.y + tieEnd.y)/3 + dy2 },
             { x: tieStart.x, y: tieStart.y + dy3 }
         ] },
         { type: DrawOperationType.Fill, points: []}                

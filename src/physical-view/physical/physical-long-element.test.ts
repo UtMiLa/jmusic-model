@@ -133,8 +133,8 @@ describe('Physical model, long expressions', () => {
 
         expect(physicalModel.elements[11]).to.deep.include({
             element: VertVarSizeGlyphs.SlurOver,
-            position: { x: defaultMetrics.staffLengthOffset + defaultMetrics.blackNoteHeadLeftXOffset, y: defaultMetrics.dynamicY - defaultMetrics.staffTopMargin },
-            height: 0,
+            position: { x: defaultMetrics.staffLengthOffset + defaultMetrics.blackNoteHeadLeftXOffset, y: - defaultMetrics.staffTopMargin + 4 * defaultMetrics.scaleDegreeUnit },
+            height: 5 * defaultMetrics.scaleDegreeUnit,
             length: defaultMetrics.defaultSpacing * 2
         });
 
