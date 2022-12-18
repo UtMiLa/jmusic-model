@@ -59,6 +59,7 @@ Model and draw:
 * repeats
 * note expressions (staccato, fermata, breath, arpeggio...)
 * lyrics
+* long expressions (hairpins, slurs)
 
 Functionality:
 * Point and click to set cursor
@@ -79,7 +80,7 @@ Controls in Angular/React (probably in a sub-project):
 ## Important
 Model and draw:
 * staff expressions (textual, including M.M.)
-* long expressions (hairpins, trill extensions, ottavas)
+* long expressions (trill extensions, ottavas)
 * manual override note direction, accidentals
 
 Functionality:

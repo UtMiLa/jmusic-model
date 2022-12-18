@@ -313,6 +313,6 @@ describe('Render', () => {
             ]
         );
 
-        // staffline cursor text tuplet
+        // staffline cursor text tuplet slur
     });
 });

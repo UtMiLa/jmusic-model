@@ -7,6 +7,10 @@ export interface AbsoluteTime extends RationalDef {
     type: 'abs'
 }
 
+export interface ExtendedTime extends AbsoluteTime {
+    extended?: number;
+}
+
 export class Time {
 
     static StartTime = Time.newAbsolute(0, 1);
@@ -20,8 +24,22 @@ export class Time {
     static InfiniteTime = Time.newSpan(1, 0);
 
 
-    static sortComparison(time1: AbsoluteTime, time2: AbsoluteTime): number {
-        return time1.numerator * time2.denominator - time2.numerator * time1.denominator;
+    static sortComparison(time1: ExtendedTime, time2: ExtendedTime): number {
+        const res = time1.numerator * time2.denominator - time2.numerator * time1.denominator;
+        if (res !== 0) return res;
+        if (time1.extended) {
+            if (time2.extended) {
+                return time1.extended - time2.extended;
+            } else {
+                return time1.extended;
+            }
+        } else {            
+            if (time2.extended) {
+                return -time2.extended;
+            } else {
+                return 0;
+            }
+        }
     }
 
     static newSpan(numerator: number, denominator: number): TimeSpan {
@@ -30,6 +48,10 @@ export class Time {
 
     static newAbsolute(numerator: number, denominator: number): AbsoluteTime {
         return {numerator, denominator, type: 'abs'};
+    }
+
+    static newExtendedTime(numerator: number, denominator: number, extended?: number): ExtendedTime {
+        return {numerator, denominator, type: 'abs', extended };
     }
 
     static fromStart(time: TimeSpan): AbsoluteTime;
@@ -99,8 +121,12 @@ export class Time {
         return { ...Rational.shorten(t), type: t.type } as T;
     }
 
-    static equals(t1: AbsoluteTime, t2: AbsoluteTime): boolean {
-        return t1.denominator * t2.numerator === t2.denominator * t1.numerator;
+    static equals(t1: ExtendedTime, t2: ExtendedTime): boolean {
+        const res = t1.denominator * t2.numerator === t2.denominator * t1.numerator;
+        if (!res || (!t1.extended && !t2.extended)) {
+            return res;
+        }
+        return t1.extended === t2.extended;
     }
 
     static getDotNo(numerator: number): number {
