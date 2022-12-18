@@ -5,7 +5,7 @@ import { Pitch } from './../pitches/pitch';
 import { Key } from './../states/key';
 import { TimeMap } from './../../tools/time-map';
 import { StateChange } from './../states/state';
-import { AbsoluteTime } from './../rationals/time';
+import { AbsoluteTime, ExtendedTime } from './../rationals/time';
 import { Note } from '../notes/note';
 import { Time, TimeSpan } from '../rationals/time';
 import { Clef } from '../states/clef';
@@ -88,15 +88,23 @@ export abstract class BaseSequence implements ISequence {
 
     abstract insertElement(time: AbsoluteTime, elm: MusicEvent): void;
 
-    getTimeSlots(): AbsoluteTime[] {
-        let time = Time.newAbsolute(0, 1);
-        const res = [] as AbsoluteTime[];
+    getTimeSlots(): ExtendedTime[] {
+        let time: ExtendedTime = Time.newAbsolute(0, 1);
+        const res = [] as ExtendedTime[];
 
         this.elements.forEach(elem => {
             if (!res.find(item => Time.equals(item, time))) {
                 res.push(time);
             }
-            time  = Time.addTime(time, elem.duration);
+            if ((elem as Note).grace) {
+                if (time.extended) {
+                    time = {...time, extended: time.extended + 1};
+                } else {
+                    time = {...time, extended: -100};
+                }
+            } else {
+                time  = Time.addTime(time, elem.duration);
+            }
         });
 
         return res;

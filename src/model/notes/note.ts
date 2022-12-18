@@ -25,6 +25,7 @@ export class Note {
         if (note.tupletFactor) res.tupletFactor = note.tupletFactor;
         if (note.tie) res.tie = note.tie;
         if (note.direction) res.direction = note.direction;
+        if (note.grace) res.grace = note.grace;
         if (note.tupletGroup) res.tupletGroup = note.tupletGroup;
         if (note.expressions) res.expressions = [...note.expressions];
         if (note.text) res.text = [...note.text];
@@ -82,6 +83,7 @@ export class Note {
     }
 
     get duration(): TimeSpan {
+        if (this.grace) return Time.NoTime;
         if (this.tupletFactor) {
             return {...Rational.multiply(this._duration, this.tupletFactor), type: 'span'};
         } else {
@@ -144,5 +146,6 @@ export class Note {
     uniq?: string;
     expressions?: NoteExpression[];
     text?: string[];
+    grace?: boolean;
     // remember to update clone() if you add properties!
 }

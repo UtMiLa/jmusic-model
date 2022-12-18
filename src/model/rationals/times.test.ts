@@ -202,7 +202,34 @@ describe('Times', ()=> {
 
 
 
+    describe('Extended time', () => {
+        const extTime1 = Time.newExtendedTime(1, 4, -2);
+        const extTime2 = Time.newExtendedTime(1, 4, -2);
+        
+        const extTime3 = Time.newExtendedTime(1, 4, -1);
+        const extTime4 = Time.newExtendedTime(1, 4, undefined);
+        const extTime5 = Time.newExtendedTime(1, 8, -2);
+        
+        const extTime6 = Time.newExtendedTime(1, 4, 1);
 
+        expect(Time.sortComparison(extTime1, extTime2)).to.eq(0);
+        expect(Time.sortComparison(extTime1, extTime3)).to.lt(0);
+        expect(Time.sortComparison(extTime1, extTime4)).to.lt(0);
+        expect(Time.sortComparison(extTime3, extTime4)).to.lt(0);
+        expect(Time.sortComparison(extTime4, extTime2)).to.gt(0);
+        expect(Time.sortComparison(extTime1, extTime5)).to.gt(0);
+        expect(Time.sortComparison(extTime1, extTime6)).to.lt(0);
+        expect(Time.sortComparison(extTime4, extTime6)).to.lt(0);
+
+        expect(Time.equals(extTime1, extTime2)).to.be.true;
+        expect(Time.equals(extTime1, extTime3)).to.be.false;
+        expect(Time.equals(extTime1, extTime4)).to.be.false;
+        expect(Time.equals(extTime3, extTime4)).to.be.false;
+        expect(Time.equals(extTime4, extTime2)).to.be.false;
+        expect(Time.equals(extTime1, extTime5)).to.be.false;
+        expect(Time.equals(extTime1, extTime6)).to.be.false;
+        expect(Time.equals(extTime4, extTime6)).to.be.false;
+    });
 
 
 });
