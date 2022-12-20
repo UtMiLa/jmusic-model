@@ -124,7 +124,20 @@ export abstract class BaseSequence implements ISequence {
         
         const res = new TimeMap<TimeSlot>((time) => ({ time, elements: [], states: []}));
 
+        let graceGroup = 0;
         this.elements.forEach((elem, index) => {
+            // if grace note, set extended accordingly on time
+            if ((elem as Note).grace) {
+                if (graceGroup) {
+                    graceGroup++;
+                    time = {...time, extended: graceGroup};
+                } else {
+                    graceGroup = -100;
+                    time = {...time, extended: graceGroup};
+                }
+            } else {
+                graceGroup = 0;
+            }
             const slot = res.get(time);
             if ((elem as StateChange).isState) {
 
@@ -136,22 +149,16 @@ export abstract class BaseSequence implements ISequence {
                 slot.decorations.push(elem as LongDecorationElement);
 
             } else {
-
+                
                 slot.elements.push(Note.clone(elem as Note, { uniq: `${keyPrefix}-${index}` }));
                 
             }
-            if ((elem as Note).grace) {
-                if (time.extended) {
-                    time = {...time, extended: time.extended + 1};
-                } else {
-                    time = {...time, extended: -100};
-                }
-            } else {
-                time  = Time.addTime(time, elem.duration);
-            }
+
+            time  = Time.addTime(time, elem.duration);
+
         });
 
-        return res.items.map(item => item.value);
+        return res.items.sort((i1, i2) => Time.sortComparison(i1.index, i2.index)).map(item => item.value);
     }
 
 }

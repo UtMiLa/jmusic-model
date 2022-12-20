@@ -4,7 +4,7 @@ import { GlyphCode, HorizVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
 import { Metrics } from './metrics';
 import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement, PhysicalVertVarSizeElement, PhysicalTextElement } from './physical-elements';
 import { calcDisplacements, scaleDegreeToY } from './functions';
-import { getGlyphForNoteExpression } from '~/model/notes/note-expressions';
+import { getGlyphForNoteExpression } from '../../model/notes/note-expressions';
 
 
 /*export function testNote(viewModel: any): NoteViewModel | undefined {

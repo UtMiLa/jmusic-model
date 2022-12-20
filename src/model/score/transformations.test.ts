@@ -1,4 +1,4 @@
-import { RetrogradeSequence, TupletSequence } from './transformations';
+import { GraceSequence, RetrogradeSequence, TupletSequence } from './transformations';
 import { Note, NoteDirection, TupletState } from './../notes/note';
 import { Time } from '../rationals/time';
 import { SimpleSequence, CompositeSequence } from './sequence';
@@ -7,6 +7,7 @@ describe('Sequence transformations', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';
     const seq3Text = 'c,2 d,8 <e, c>4';
+    const seq4Text = 'c,16 d,16 e,16';
     beforeEach(() => { 
         //
     });
@@ -67,6 +68,58 @@ describe('Sequence transformations', () => {
         expect(slots[2].elements[0]).to.deep.include({
             tupletGroup: TupletState.End
         });
+    });
+
+    it('should create a grace note group from a sequence', () => {
+        const seq1 = SimpleSequence.createFromString(seq1Text);
+        const graceSeq = new GraceSequence(SimpleSequence.createFromString(seq4Text));        
+        
+        const slots = graceSeq.groupByTimeSlots('x');
+        expect(slots).to.have.length(3);
+        expect(slots[0].elements[0], '0-0 first').to.deep.include({
+            grace: true
+        });
+        expect(graceSeq.duration).to.deep.eq(Time.NoTime);
+        
+        const combiSeq = new CompositeSequence(graceSeq, seq1);
+        expect(combiSeq.duration).to.deep.eq(Time.HalfTime);
+        const slots1 = combiSeq.groupByTimeSlots('y');
+        expect(slots1).to.have.length(6);
+        expect(slots1[0].elements[0], '0-0 grace').to.deep.include({
+            grace: true
+        });
+        expect(slots1[1].elements[0], '1-0 grace').to.deep.include({
+            grace: true
+        });
+        expect(slots1[2].elements[0], '2-0 grace').to.deep.include({
+            grace: true
+        });
+        expect(slots1[3].elements[0], '3-0 not grace').to.not.deep.include({
+            grace: true
+        });
+
+    });
+
+
+    
+    it('should order grace notes correctly in a sequence', () => {
+        const seq1 = SimpleSequence.createFromString(seq1Text);
+        const graceSeq = new GraceSequence(SimpleSequence.createFromString(seq4Text));        
+        const combiSeq = new CompositeSequence(graceSeq, seq1);
+
+        const slots1 = combiSeq.groupByTimeSlots('y');
+        expect(slots1).to.have.length(6);
+        expect(slots1[0].time).to.deep.include({
+            extended: -100
+        });
+        expect(slots1[1].time).to.deep.include({
+            extended: -99
+        });
+        expect(slots1[2].time).to.deep.include({
+            extended: -98
+        });
+        expect(slots1[3].time).to.not.have.property('extended');
+
     });
 
 

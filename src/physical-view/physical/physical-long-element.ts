@@ -4,7 +4,7 @@ import { Metrics } from './metrics';
 import { LongDecorationViewModel } from './../../logical-view/view-model/convert-decoration';
 import { PhysicalHorizVarSizeElement, PhysicalElementBase, PhysicalTupletBracketElement, Point } from './physical-elements';
 import { NoteRef } from './../../logical-view/view-model/note-view-model';
-import { LongDecorationType } from '~/model';
+import { LongDecorationType } from '../../model';
 
 
 export interface PhysicalLongElement {

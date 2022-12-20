@@ -1,5 +1,5 @@
 import { PhysicalFixedSizeElement } from './../physical/physical-elements';
-import { NoteDirection } from '~/model';
+import { NoteDirection } from '../../model';
 import { emmentalerCodes } from '../../font/emmentaler-codes';
 import { GlyphCode, HorizVarSizeGlyphs, VertVarSizeGlyphs } from '../physical/glyphs';
 import { PhysicalBeamElement, PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalTupletBracketElement, PhysicalVertVarSizeElement, Point } from '../physical/physical-elements';

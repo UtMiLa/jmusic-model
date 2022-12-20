@@ -1,3 +1,4 @@
+import { Note } from './../../model/notes/note';
 import { SimpleSequence } from './../../model/score/sequence';
 import { StateChange } from './../../model/states/state';
 import { Time } from './../../model/rationals/time';
@@ -109,6 +110,38 @@ describe('Physical model, measure map', () => {
 
         expect(measureMap.lookup(Time.newAbsolute(2, 1))).to.deep.equal({
             bar: 7 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin + defaultMetrics.afterBarSpacing
+        });
+
+    });
+
+
+
+    it('should order and lookup extended times', () => {
+
+        const staff = {
+            initialClef: { clefType: ClefType.G, line: -2 },
+            initialMeter: { count: 4, value: 4 },
+            initialKey: { accidental: -1, count: 0 },
+            voices: [{
+                content: new SimpleSequence('c4 d8 e4 f2')
+            }]
+        } as StaffDef;
+
+        (staff.voices[0].content.elements[1] as Note).grace = true;
+
+        staffViewModel = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+
+        const measureMap = MeasureMap.generate(staffViewModel, defaultMetrics);
+
+        expect(measureMap.measureMap[1].absTime).to.deep.eq(Time.newExtendedTime(1, 4, -100));
+        expect(measureMap.measureMap[2].absTime).to.deep.eq(Time.newAbsolute(1, 4));
+
+        expect(measureMap.lookup(Time.newExtendedTime(1, 4, -100))).to.deep.equal({
+            note: 80 + defaultMetrics.leftMargin
+        });
+
+        expect(measureMap.lookup(Time.newAbsolute(1, 4))).to.deep.equal({
+            note: 100 + defaultMetrics.leftMargin
         });
 
     });

@@ -1,4 +1,4 @@
-import { AbsoluteTime } from './../rationals/time';
+import { AbsoluteTime, Time } from './../rationals/time';
 import { Rational, RationalDef } from '../../model/rationals/rational';
 import { Note, TupletState } from '../notes/note';
 import { TimeSpan } from '../rationals/time';
@@ -59,13 +59,29 @@ export class TupletSequence extends BaseSequence {
     public get duration(): TimeSpan {
         return {...Rational.multiply(this.fraction, this.sequence.duration), type: 'span' };
     }
+}
 
-    /*public groupByTimeSlots(keyPrefix: string): TimeSlot[] {
-        const res = super.groupByTimeSlots(keyPrefix);
+export class GraceSequence extends BaseSequence {
+    constructor(private sequence: ISequence) {
+        super();
+    }
+    
+    public get elements(): MusicEvent[] {
+        return this.sequence.elements.map((ele, i, arr) => {
+            if ((ele as StateChange).isState) {
+                return ele;
+            } else {
+                //const graceGroup = i ? (i === arr.length - 1 ? TupletState.End : TupletState.Inside) : TupletState.Begin;
+                return Note.clone(ele as Note, { grace: true });
+            }
+        });
+    }
 
-        res.forEach((ts, i) => ts.elements[0].tupletGroup = i ? (i === res.length - 1 ? TupletState.End : TupletState.Inside) : TupletState.Begin );
-        //res[0].elements[0]; //res.map(slot => slot.elements[0].uniq + '');
-        
-        return res;
-    }*/
+    public insertElement(time: AbsoluteTime, element: MusicEvent): void {
+        throw 'TupletSequence does not support insertElement';
+    }
+    
+    public get duration(): TimeSpan {
+        return Time.NoTime;
+    }
 }

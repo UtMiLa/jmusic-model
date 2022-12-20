@@ -1,3 +1,4 @@
+import { ExtendedTime } from './../../model/rationals/time';
 import { AbsoluteTime, Time } from './../../model';
 
 import { Metrics } from './metrics';
@@ -11,7 +12,7 @@ export type MeasureMapXValueItem = {
 export type XValueKey = 'bar' | 'clef' | 'key' | 'note' | 'meter' | 'accidentals';
 
 export interface MeasureMapItem {
-    absTime: AbsoluteTime;
+    absTime: ExtendedTime;
     width: number;
     startPos?: number;
     //xValue: MeasureMapXValueItem;
@@ -20,7 +21,7 @@ export interface MeasureMapItem {
 }
 
 export interface LocalizedObject {
-    time: AbsoluteTime;
+    time: ExtendedTime;
     staff: number;
     item: string;
     pitch: number;
@@ -88,7 +89,7 @@ export class MeasureMap {
     }
 
 
-    lookup(time: AbsoluteTime): MeasureMapXValueItem | undefined {
+    lookup(time: ExtendedTime): MeasureMapXValueItem | undefined {
         const map = this.measureMap;
         const res = map.find(mp => Time.equals(mp.absTime, time));
         if (!res) return undefined;
