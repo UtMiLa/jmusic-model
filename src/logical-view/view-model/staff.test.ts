@@ -275,10 +275,10 @@ describe('Staff view model', () => {
         staffClef.initialMeter = {count: 3, value: 4};
 
         const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
-        expect(vm.timeSlots.length).to.equal(5);
+        expect(vm.timeSlots.length).to.equal(7);
 
         for (let i = 0; i < 5; i++) {
-            if (i === 3 || i === 4){
+            if (i === 3 || i === 5){
                 expect(vm.timeSlots[i].bar).to.deep.equal({ barType: BarType.Simple });
             } else {
                 expect(vm.timeSlots[i].bar).to.be.undefined;
@@ -313,10 +313,10 @@ describe('Staff view model', () => {
         staffClef.initialMeter = {count: 3, value: 4, upBeat: Time.QuarterTime};
 
         const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
-        expect(vm.timeSlots.length).to.equal(8);
+        expect(vm.timeSlots.length).to.equal(10);
 
         for (let i = 0; i < 8; i++) {
-            if (i === 1 || i === 4 || i === 7){
+            if (i === 1 || i === 5 || i === 9){
                 expect(vm.timeSlots[i].bar).to.deep.equal({ barType: BarType.Simple });
             } else {
                 expect(vm.timeSlots[i].bar).to.be.undefined;

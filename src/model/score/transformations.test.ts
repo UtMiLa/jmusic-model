@@ -110,13 +110,13 @@ describe('Sequence transformations', () => {
         const slots1 = combiSeq.groupByTimeSlots('y');
         expect(slots1).to.have.length(6);
         expect(slots1[0].time).to.deep.include({
-            extended: -100
+            extended: -9999
         });
         expect(slots1[1].time).to.deep.include({
-            extended: -99
+            extended: -9998
         });
         expect(slots1[2].time).to.deep.include({
-            extended: -98
+            extended: -9997
         });
         expect(slots1[3].time).to.not.have.property('extended');
 

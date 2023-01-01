@@ -171,7 +171,7 @@ describe('View model, note', () => {
             { fromIdx: 0, toIndex: 1, level: 0 },
             { fromIdx: undefined, toIndex: 1, level: 1 },
         ]);
-        expect((viewModel.staves[0].timeSlots[9].beamings as any)[0].beams).to.deep.eq([
+        expect((viewModel.staves[0].timeSlots[10].beamings as any)[0].beams).to.deep.eq([
             { fromIdx: 0, toIndex: 2, level: 0 },
             { fromIdx: 0, toIndex: undefined, level: 1 },
             { fromIdx: undefined, toIndex: 2, level: 1 },

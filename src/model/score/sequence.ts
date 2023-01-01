@@ -9,6 +9,7 @@ import { AbsoluteTime, ExtendedTime } from './../rationals/time';
 import { Note } from '../notes/note';
 import { Time, TimeSpan } from '../rationals/time';
 import { Clef } from '../states/clef';
+import { EventType, getExtendedTime } from './timing-order';
 
 export type MusicEvent = Note | StateChange | LongDecorationElement;
 export interface ISequence {
@@ -130,26 +131,28 @@ export abstract class BaseSequence implements ISequence {
             if ((elem as Note).grace) {
                 if (graceGroup) {
                     graceGroup++;
-                    time = {...time, extended: graceGroup};
+                    time = getExtendedTime(time, EventType.GraceNote, graceGroup); //time = {...time, extended: graceGroup};
                 } else {
-                    graceGroup = -100;
-                    time = {...time, extended: graceGroup};
+                    graceGroup = 1;
+                    time = getExtendedTime(time, EventType.GraceNote, graceGroup); // {...time, extended: graceGroup};
                 }
             } else {
                 graceGroup = 0;
             }
-            const slot = res.get(time);
             if ((elem as StateChange).isState) {
 
+                const slot = res.get(getExtendedTime(time, EventType.Bar));
                 slot.states.push(elem as StateChange);
                 
             } else if ((elem as LongDecorationElement).longDeco !== undefined) {
 
+                const slot = res.get(getExtendedTime(time, EventType.Expression));
                 if (!slot.decorations) slot.decorations = [];
                 slot.decorations.push(elem as LongDecorationElement);
 
             } else {
                 
+                const slot = res.get(getExtendedTime(time, EventType.Note));
                 slot.elements.push(Note.clone(elem as Note, { uniq: `${keyPrefix}-${index}` }));
                 
             }

@@ -25,6 +25,7 @@ import { createIdPrefix, createStateMap } from './state-map';
 import { convertKey } from '../../physical-view/physical/physical-key';
 import { repeatsToView } from './convert-repeat';
 import { LongDecoToView } from './convert-decoration';
+import { EventType, getExtendedTime } from '~/model/score/timing-order';
 
 export interface SubsetDef {
     startTime: AbsoluteTime;
@@ -338,7 +339,7 @@ function createTimeSlotViewModels(state: State, voiceTimeSlot: TimeSlot, stateMa
 
 function addBarLines(meterMap: MeterMap, staffEndTime: AbsoluteTime, timeSlots: TimeSlotViewModel[]) {
     const barIterator = meterMap.getAllBars();
-    let barTime: AbsoluteTime = barIterator.next().value;
+    let barTime: AbsoluteTime = getExtendedTime(barIterator.next().value, EventType.Bar);
 
     while (Time.sortComparison(barTime, staffEndTime) <= 0) {
         if (barTime.numerator > 0) {
@@ -346,7 +347,7 @@ function addBarLines(meterMap: MeterMap, staffEndTime: AbsoluteTime, timeSlots: 
             slot.bar = { barType: BarType.Simple };
         }
         //barTime = Time.addTime(barTime, measureTime);
-        barTime = barIterator.next().value;
+        barTime = getExtendedTime(barIterator.next().value, EventType.Bar);
         //console.log('bar adding', slot, barTime);
     }
 }

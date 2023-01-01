@@ -1,3 +1,5 @@
+import { EventType } from './../../model/score/timing-order';
+import { getExtendedTime } from '~/model/score/timing-order';
 import { createTestScore, createTestScoreVM } from '../../tools/test-tools';
 import { SimpleSequence } from './../../model/score/sequence';
 import { MeterFactory } from './../../model/states/meter';
@@ -28,11 +30,11 @@ describe('State change view model', () => {
     
             const vm = scoreModelToViewModel({staves: [staffClef]}).staves[0];
     
-            expect(vm.timeSlots.length).to.eq(3);
+            expect(vm.timeSlots.length).to.eq(5);
             expect(vm.timeSlots[0].notes[0]).to.deep.include({ positions: [-6] });
             expect(vm.timeSlots[1].clef).to.deep.include({clefType: ClefType.C, line: 0});
-            expect(vm.timeSlots[1].notes[0]).to.deep.include({ positions: [0] });
-            expect(vm.timeSlots[2].notes[0]).to.deep.include({ positions: [6] });
+            expect(vm.timeSlots[2].notes[0]).to.deep.include({ positions: [0] });
+            expect(vm.timeSlots[4].notes[0]).to.deep.include({ positions: [6] });
         });
                
     
@@ -42,14 +44,14 @@ describe('State change view model', () => {
     
             const vm = scoreModelToViewModel({staves: [staffClef]}).staves[0];
     
-            expect(vm.timeSlots.length).to.eq(3);
+            expect(vm.timeSlots.length).to.eq(5);
             expect(vm.timeSlots[0].notes[0]).to.deep.include({ positions: [-6] });
-            expect(vm.timeSlots[1].notes[0]).to.deep.include({ positions: [0] });
-            expect(vm.timeSlots[2].notes[0]).to.deep.include({ positions: [6] });
+            expect(vm.timeSlots[2].notes[0]).to.deep.include({ positions: [0] });
+            expect(vm.timeSlots[4].notes[0]).to.deep.include({ positions: [6] });
     
             expect(vm.timeSlots[0].notes[1]).to.deep.include({ positions: [-7] });
-            expect(vm.timeSlots[1].notes[1]).to.deep.include({ positions: [-1] });
-            expect(vm.timeSlots[2].notes[1]).to.deep.include({ positions: [5] });
+            expect(vm.timeSlots[2].notes[1]).to.deep.include({ positions: [-1] });
+            expect(vm.timeSlots[4].notes[1]).to.deep.include({ positions: [5] });
     
         });
     
@@ -60,7 +62,7 @@ describe('State change view model', () => {
                 'c1 c1'
             ]], [], [-1, 3], ['bass']);
     
-            expect(score.staves[0].timeSlots).to.have.length(3);
+            expect(score.staves[0].timeSlots).to.have.length(4);
     
             expect(score.staves[0].timeSlots[0].notes.map(ts => ts.positions)).to.deep.eq(
                 [ [-1],[-1] ]
@@ -71,13 +73,13 @@ describe('State change view model', () => {
                 line: 0
             });
     
-            expect(score.staves[0].timeSlots[1].notes.map(ts => ts.positions)).to.deep.eq(
+            expect(score.staves[0].timeSlots[2].notes.map(ts => ts.positions)).to.deep.eq(
                 [[-7]]
             );
     
-            expect(score.staves[0].timeSlots[2].clef).to.be.undefined;
+            expect(score.staves[0].timeSlots[3].clef).to.be.undefined;
 
-            expect(score.staves[0].timeSlots[2].notes.map(ts => ts.positions)).to.deep.eq(
+            expect(score.staves[0].timeSlots[3].notes.map(ts => ts.positions)).to.deep.eq(
                 [[-7]]
             );
                 
@@ -90,14 +92,14 @@ describe('State change view model', () => {
 
             const vm = scoreModelToViewModel({staves: [staffClef]}).staves[0];
 
-            expect(vm.timeSlots.length).to.eq(3);
+            expect(vm.timeSlots.length).to.eq(5);
             expect(vm.timeSlots[0].notes[0]).to.deep.include({ positions: [-6] });
-            expect(vm.timeSlots[1].notes[0]).to.deep.include({ positions: [0] });
-            expect(vm.timeSlots[2].notes[0]).to.deep.include({ positions: [6] });
+            expect(vm.timeSlots[2].notes[0]).to.deep.include({ positions: [0] });
+            expect(vm.timeSlots[4].notes[0]).to.deep.include({ positions: [6] });
 
             expect(vm.timeSlots[0].notes[1]).to.deep.include({ positions: [-7] });
-            expect(vm.timeSlots[1].notes[1]).to.deep.include({ positions: [-1] });
-            expect(vm.timeSlots[2].notes[1]).to.deep.include({ positions: [5] });
+            expect(vm.timeSlots[2].notes[1]).to.deep.include({ positions: [-1] });
+            expect(vm.timeSlots[4].notes[1]).to.deep.include({ positions: [5] });
 
         });    
 
@@ -114,7 +116,7 @@ describe('State change view model', () => {
 
             const vm = scoreModelToViewModel(scoreDef);
 
-            expect(vm.staves[0].timeSlots).to.have.length(3);
+            expect(vm.staves[0].timeSlots).to.have.length(5);
 
         });
         
@@ -178,7 +180,7 @@ describe('State change view model', () => {
                 }]
             });
     
-            expect(score.staves[0].timeSlots).to.have.length(2);
+            expect(score.staves[0].timeSlots).to.have.length(3);
             expect(score.staves[0].timeSlots[1]).to.deep.include({
                 key: { keyPositions: [{alteration: 1, position: 2 }]}
             });
@@ -193,7 +195,7 @@ describe('State change view model', () => {
                 }]
             });
     
-            expect(score.staves[0].timeSlots).to.have.length(2);
+            expect(score.staves[0].timeSlots).to.have.length(3);
             expect(score.staves[0].timeSlots[0]).to.deep.include({
                 accidentals: [{
                     alteration: 0,
@@ -201,7 +203,7 @@ describe('State change view model', () => {
                     position: 1
                 }]
             });
-            expect(score.staves[0].timeSlots[1]).to.deep.include({
+            expect(score.staves[0].timeSlots[2]).to.deep.include({
                 accidentals: [{
                     alteration: 0,
                     displacement: -1,
@@ -226,7 +228,7 @@ describe('State change view model', () => {
                 }]
             });
     
-            expect(score.staves[0].timeSlots).to.have.length(3);
+            expect(score.staves[0].timeSlots).to.have.length(4);
     
             expect(score.staves[0].timeSlots[0]).to.deep.include({
                 accidentals: [{
@@ -252,7 +254,7 @@ describe('State change view model', () => {
                 ]
             });
     
-            expect(score.staves[0].timeSlots[1]).to.deep.include({
+            expect(score.staves[0].timeSlots[2]).to.deep.include({
                 accidentals: [{
                     alteration: 0,
                     displacement: -1,
@@ -264,8 +266,8 @@ describe('State change view model', () => {
                 }]
             });
     
-            expect(score.staves[0].timeSlots[2].key).to.be.undefined;
-            expect(score.staves[0].timeSlots[2]).to.deep.include({
+            expect(score.staves[0].timeSlots[3].key).to.be.undefined;
+            expect(score.staves[0].timeSlots[3]).to.deep.include({
                 accidentals: [{
                     alteration: 0,
                     displacement: -1,
@@ -276,8 +278,7 @@ describe('State change view model', () => {
                     position: -5
                 }]
             });
-    
-    
+
         });
     
         it('should change key for all staves', () => {
@@ -298,7 +299,7 @@ describe('State change view model', () => {
             });
     
             // First staff
-            expect(score.staves[0].timeSlots).to.have.length(2);
+            expect(score.staves[0].timeSlots).to.have.length(3);
     
             expect(score.staves[0].timeSlots[0]).to.deep.include({
                 accidentals: [{
@@ -320,7 +321,7 @@ describe('State change view model', () => {
                 ]
             });
     
-            expect(score.staves[0].timeSlots[1]).to.deep.include({
+            expect(score.staves[0].timeSlots[2]).to.deep.include({
                 accidentals: [{
                     alteration: 0,
                     displacement: -1,
@@ -333,7 +334,7 @@ describe('State change view model', () => {
             });
     
             // second staff
-            expect(score.staves[1].timeSlots).to.have.length(2);
+            expect(score.staves[1].timeSlots).to.have.length(3);
     
             expect(score.staves[1].timeSlots[0]).to.deep.include({
                 accidentals: [{
@@ -355,7 +356,7 @@ describe('State change view model', () => {
                 ]
             });
     
-            expect(score.staves[1].timeSlots[1]).to.deep.include({
+            expect(score.staves[1].timeSlots[2]).to.deep.include({
                 accidentals: [{
                     alteration: 0,
                     displacement: -1,
@@ -367,7 +368,6 @@ describe('State change view model', () => {
                 }]
             });
     
-
     
         });
     
@@ -389,7 +389,7 @@ describe('State change view model', () => {
             });
     
             // First staff
-            expect(score.staves[0].timeSlots).to.have.length(2);
+            expect(score.staves[0].timeSlots).to.have.length(3);
     
             expect(score.staves[0].timeSlots[0]).to.deep.include({
                 accidentals: [{
@@ -411,7 +411,7 @@ describe('State change view model', () => {
                 ]
             });
     
-            expect(score.staves[0].timeSlots[1]).to.deep.include({
+            expect(score.staves[0].timeSlots[2]).to.deep.include({
                 accidentals: [{
                     alteration: 0,
                     displacement: -1,
@@ -447,10 +447,9 @@ describe('State change view model', () => {
             });
     
             expect(score.staves[1].timeSlots[1]).to.deep.include({
-                absTime: Time.newAbsolute(1, 2)
+                absTime: getExtendedTime(Time.newAbsolute(1, 2), EventType.KeyChg)
             });
     
-
     
         });
    
@@ -519,7 +518,7 @@ describe('State change view model', () => {
 
             //expect(score.staves[0].timeSlots).to.have.length(10);
 
-            expect(score.staves[0].timeSlots[4].meter).to.deep.eq({ meterText: ['5', '8']});
+            expect(score.staves[0].timeSlots[5].meter).to.deep.eq({ meterText: ['5', '8']});
                 
         });
 
@@ -535,13 +534,13 @@ describe('State change view model', () => {
                 }]
             });
     
-            expect(score.staves[0].timeSlots).to.have.length(10);
+            expect(score.staves[0].timeSlots).to.have.length(13);
 
             const bars = score.staves[0].timeSlots
                 .map((ts, n) => ({ ts, n }))
                 .filter(item => item.ts.bar)
                 .map((item) => item.n);
-            expect(bars).to.deep.eq([1, 4, 8, 9]);
+            expect(bars).to.deep.eq([1, 5, 10, 12]);
                
         });               
     
@@ -557,13 +556,13 @@ describe('State change view model', () => {
                 }]
             });
     
-            expect(score.staves[0].timeSlots).to.have.length(13);
+            expect(score.staves[0].timeSlots).to.have.length(14);
 
             const beamingGroups = score.staves[0].timeSlots
                 .map((ts, n) => ({ ts, n }))
                 .filter(item => item.ts.beamings)
                 .map((item) => item.n);
-            expect(beamingGroups).to.deep.eq([0, 2, 4, 6, 9]);
+            expect(beamingGroups).to.deep.eq([0, 2, 4, 7, 10]);
             
         });               
     
@@ -579,13 +578,13 @@ describe('State change view model', () => {
                 }]
             });
     
-            expect(score.staves[0].timeSlots).to.have.length(8);
+            expect(score.staves[0].timeSlots).to.have.length(9);
 
             const beamingGroups = score.staves[0].timeSlots
                 .map((ts, n) => ({ ts, n }))
                 .filter(item => item.ts.beamings)
                 .map((item) => item.n);
-            expect(beamingGroups).to.deep.eq([1, 4]);
+            expect(beamingGroups).to.deep.eq([2, 5]);
             
         });               
     
@@ -608,8 +607,8 @@ describe('State change view model', () => {
                 }]
             });
 
-            expect(score.staves[1].timeSlots.find(ts => Time.equals(ts.absTime, Time.newAbsolute(7, 8)))).to.exist;
-            expect(score.staves[1].timeSlots.find(ts => Time.equals(ts.absTime, Time.newAbsolute(7, 8)))).to.deep.include({ meter: { meterText: ['4', '4']}});
+            expect(score.staves[1].timeSlots.find(ts => Time.equals(ts.absTime, getExtendedTime(Time.newAbsolute(7, 8), EventType.MeterChg)))).to.exist;
+            expect(score.staves[1].timeSlots.find(ts => Time.equals(ts.absTime, getExtendedTime(Time.newAbsolute(7, 8), EventType.MeterChg)))).to.deep.include({ meter: { meterText: ['4', '4']}});
     
         });
 

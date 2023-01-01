@@ -8,6 +8,8 @@ describe('Sequence', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';
     const seq3Text = 'c,2 d,8 <e, c>4';
+    //const seq4Text = 'c,2 d,8 <e, c>4';
+
     beforeEach(() => { 
         //
     });
@@ -111,6 +113,20 @@ describe('Sequence', () => {
         ]);
     });
 
+
+    /*it('should assign bars and state changes to an earlier time slot than the note', () => {
+        const seq1 = SimpleSequence.createFromString(seq1Text);
+        
+        expect(seq1.getTimeSlots()).to.deep.equal([
+            Time.newAbsolute(0, 1),
+            Time.newAbsolute(1, 4),
+            Time.newAbsolute(3, 8)
+        ]);
+
+        const slots = seq1.groupByTimeSlots('x');
+        expect(slots).to.have.length(3);
+
+    });*/
 
 
     it('should assign decorations to the time slots of a sequence', () => {

@@ -1,3 +1,4 @@
+import { EventType, getExtendedTime } from '~/model/score/timing-order';
 import { JMusic } from './../../model/facade/jmusic';
 import { Clef } from './../../model/states/clef';
 import { Key } from './../../model/states/key';
@@ -19,13 +20,13 @@ describe('State change map', () => {
         const stateMap = createStateMap(score);
 
         expect(stateMap.length).to.eq(3);
-        expect(stateMap.items[0].index).to.deep.eq({ absTime: Time.newAbsolute(1, 1), scope: undefined });
+        expect(stateMap.items[0].index).to.deep.eq({ absTime: getExtendedTime(Time.newAbsolute(1, 1), EventType.MeterChg), scope: undefined });
         expect(stateMap.items[0].value).to.deep.eq({ meter: MeterFactory.createRegularMeter({  count: 3, value: 4 })});
 
-        expect(stateMap.items[1].index).to.deep.eq({ absTime: Time.newAbsolute(1, 1), scope: 1 });
+        expect(stateMap.items[1].index).to.deep.eq({ absTime: getExtendedTime(Time.newAbsolute(1, 1), EventType.ClefChg), scope: 1 });
         expect(stateMap.items[1].value).to.deep.eq({ clef: Clef.clefTenorC });
 
-        expect(stateMap.items[2].index).to.deep.eq({ absTime: Time.newAbsolute(7, 4), scope: undefined });
+        expect(stateMap.items[2].index).to.deep.eq({ absTime: getExtendedTime(Time.newAbsolute(7, 4), EventType.KeyChg), scope: undefined });
         expect(stateMap.items[2].value).to.deep.eq({ key: new Key({ count: 3, accidental: -1 })});
     });
 

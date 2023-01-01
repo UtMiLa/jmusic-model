@@ -1,3 +1,5 @@
+import { EventType } from './../../model/score/timing-order';
+import { getExtendedTime } from '~/model/score/timing-order';
 import { Note } from './../../model/notes/note';
 import { SimpleSequence } from './../../model/score/sequence';
 import { StateChange } from './../../model/states/state';
@@ -38,7 +40,7 @@ describe('Physical model, measure map', () => {
     it('should generate a measure map for one voice', () => {
         const res = MeasureMap.generate(staffViewModel, defaultMetrics);
 
-        expect(res.measureMap.length).to.eq(5); // 4 notes and an extra bar line
+        expect(res.measureMap.length).to.eq(6); // 4 notes and two bar lines
 
         staffViewModel.timeSlots.forEach(ts => { // all timeslots must have a matching map
             expect(res.measureMap.find(m => Time.equals(m.absTime, ts.absTime))).to.not.be.undefined;
@@ -71,17 +73,25 @@ describe('Physical model, measure map', () => {
         });
 
         expect(res.measureMap[3]).to.deep.include({
-            absTime: Time.newAbsolute(1, 1),
-            width: defaultMetrics.afterBarSpacing + defaultMetrics.defaultSpacing,
+            absTime: getExtendedTime(Time.newAbsolute(1, 1), EventType.Bar),
+            width: defaultMetrics.afterBarSpacing,
             startPos: 6 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin,
             widths: {
-                bar: 8,
-                note: 20
+                bar: 8
             }
         });
 
         expect(res.measureMap[4]).to.deep.include({
-            absTime: Time.newAbsolute(2, 1),
+            absTime: Time.newAbsolute(1, 1),
+            width: defaultMetrics.defaultSpacing,
+            startPos: defaultMetrics.afterBarSpacing + 6 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin,
+            widths: {
+                note: 20
+            }
+        });
+
+        expect(res.measureMap[5]).to.deep.include({
+            absTime: getExtendedTime(Time.newAbsolute(2, 1), EventType.Bar),
             width: defaultMetrics.afterBarSpacing
         });
 
@@ -108,7 +118,7 @@ describe('Physical model, measure map', () => {
             note: 80 + defaultMetrics.leftMargin
         });
 
-        expect(measureMap.lookup(Time.newAbsolute(2, 1))).to.deep.equal({
+        expect(measureMap.lookup(getExtendedTime(Time.newAbsolute(2, 1), EventType.Bar))).to.deep.equal({
             bar: 7 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin + defaultMetrics.afterBarSpacing
         });
 
@@ -133,10 +143,10 @@ describe('Physical model, measure map', () => {
 
         const measureMap = MeasureMap.generate(staffViewModel, defaultMetrics);
 
-        expect(measureMap.measureMap[1].absTime).to.deep.eq(Time.newExtendedTime(1, 4, -100));
+        expect(measureMap.measureMap[1].absTime).to.deep.eq(Time.newExtendedTime(1, 4, -9999));
         expect(measureMap.measureMap[2].absTime).to.deep.eq(Time.newAbsolute(1, 4));
 
-        expect(measureMap.lookup(Time.newExtendedTime(1, 4, -100))).to.deep.equal({
+        expect(measureMap.lookup(Time.newExtendedTime(1, 4, -9999))).to.deep.equal({
             note: 80 + defaultMetrics.leftMargin
         });
 

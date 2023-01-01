@@ -1,3 +1,4 @@
+import { EventType, getExtendedTime } from '~/model/score/timing-order';
 import { BarType } from './score-view-model';
 import { Time } from './../../model/rationals/time';
 import { RepeatDef } from './../../model/score/repeats';
@@ -13,7 +14,7 @@ describe('View model: Repeats', () => {
 
         expect(answer).to.have.length(1);
         expect(answer[0].repeatEnd).to.be.true;
-        expect(answer[0]).to.deep.eq({ barType: BarType.None, repeatEnd: true, time: Time.newAbsolute(5, 1) });
+        expect(answer[0]).to.deep.eq({ barType: BarType.None, repeatEnd: true, time: getExtendedTime(Time.newAbsolute(5, 1), EventType.Bar) });
     });
 
 
@@ -23,8 +24,8 @@ describe('View model: Repeats', () => {
         const answer = repeatsToView(repeats);
 
         expect(answer).to.have.length(2);
-        expect(answer[0]).to.deep.eq({ barType: BarType.None, repeatStart: true, time: Time.newAbsolute(2, 1) });
-        expect(answer[1]).to.deep.eq({ barType: BarType.None, repeatEnd: true, time: Time.newAbsolute(6, 1) });
+        expect(answer[0]).to.deep.eq({ barType: BarType.None, repeatStart: true, time: getExtendedTime(Time.newAbsolute(2, 1), EventType.Bar) });
+        expect(answer[1]).to.deep.eq({ barType: BarType.None, repeatEnd: true, time: getExtendedTime(Time.newAbsolute(6, 1), EventType.Bar) });
     });
 
     
@@ -37,9 +38,9 @@ describe('View model: Repeats', () => {
         const answer = repeatsToView(repeats);
 
         expect(answer).to.have.length(3);
-        expect(answer[0]).to.deep.eq({ barType: BarType.None, repeatEnd: true, time: Time.newAbsolute(2, 1) });
-        expect(answer[1]).to.deep.eq({ barType: BarType.None, repeatStart: true, time: Time.newAbsolute(5, 1) });
-        expect(answer[2]).to.deep.eq({ barType: BarType.None, repeatEnd: true, time: Time.newAbsolute(6, 1) });
+        expect(answer[0]).to.deep.eq({ barType: BarType.None, repeatEnd: true, time: getExtendedTime(Time.newAbsolute(2, 1), EventType.Bar) });
+        expect(answer[1]).to.deep.eq({ barType: BarType.None, repeatStart: true, time: getExtendedTime(Time.newAbsolute(5, 1), EventType.Bar) });
+        expect(answer[2]).to.deep.eq({ barType: BarType.None, repeatEnd: true, time: getExtendedTime(Time.newAbsolute(6, 1), EventType.Bar) });
     });
 
 
@@ -53,8 +54,8 @@ describe('View model: Repeats', () => {
         const answer = repeatsToView(repeats);
 
         expect(answer).to.have.length(2);
-        expect(answer[0]).to.deep.eq({ barType: BarType.None, repeatStart: true, repeatEnd: true, time: Time.newAbsolute(5, 1) });
-        expect(answer[1]).to.deep.eq({ barType: BarType.None, repeatEnd: true, time: Time.newAbsolute(6, 1) });
+        expect(answer[0]).to.deep.eq({ barType: BarType.None, repeatStart: true, repeatEnd: true, time: getExtendedTime(Time.newAbsolute(5, 1), EventType.Bar) });
+        expect(answer[1]).to.deep.eq({ barType: BarType.None, repeatEnd: true, time: getExtendedTime(Time.newAbsolute(6, 1), EventType.Bar) });
     });
 
 
