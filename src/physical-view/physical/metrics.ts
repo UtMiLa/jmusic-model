@@ -18,6 +18,8 @@ export interface Metrics {
 
     quarterStemDefaultLength: number;
 
+    graceScale: number;
+
     defaultSpacing: number;
     afterBarSpacing: number;
     beforeRepeatSpacing: number;
@@ -73,6 +75,8 @@ export class StandardMetrics implements Metrics {
     halfNoteHeadRightXOffset = 0.5;
 
     quarterStemDefaultLength = 18;
+
+    graceScale = 0.6;
 
     defaultSpacing = 20;
     afterBarSpacing = 8;

@@ -26,10 +26,11 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
     const yPositions = note.positions.map(pos => scaleDegreeToY(pos, settings));
     //if (note.positions.length > 1) console.log('note.positions', note.positions, yPositions);
     
+    const scale = note.grace ? settings.graceScale : 1.0;
     const chordLength = yPositions[yPositions.length - 1] - yPositions[0];
     const stemBaseY = directionUp ? yPositions[0] : yPositions[yPositions.length - 1];
-    const stemBaseX = directionUp ? xPos + settings.blackNoteHeadLeftXOffset : xPos + settings.blackNoteHeadRightXOffset;
-    const stemBaseXhalf = directionUp ? xPos + settings.halfNoteHeadLeftXOffset : xPos + settings.halfNoteHeadRightXOffset;
+    const stemBaseX = directionUp ? xPos + scale*settings.blackNoteHeadLeftXOffset : xPos + scale*settings.blackNoteHeadRightXOffset;
+    const stemBaseXhalf = directionUp ? xPos + scale*settings.halfNoteHeadLeftXOffset : xPos + scale*settings.halfNoteHeadRightXOffset;
     const stemSign = directionUp ? 1 : -1;
 
     
@@ -52,7 +53,7 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
 
     const glyph = getNoteheadGlyph(note.noteType);
 
-    const stemAndFlag = getStemAndFlag(note.noteType, note.flagType, settings, stemSign, chordLength, stemBaseX, stemBaseXhalf, stemBaseY, directionUp);
+    const stemAndFlag = getStemAndFlag(note.noteType, note.flagType, settings, stemSign, chordLength, stemBaseX, stemBaseXhalf, stemBaseY, directionUp, scale);
     result = result.concat(stemAndFlag);
 
     const displacements = calcDisplacements(note);
@@ -67,6 +68,9 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
         } as PhysicalFixedSizeElement;
         if (note.colors) {
             elm.color = note.colors[idx];
+        }
+        if (note.grace) {
+            elm.scale = settings.graceScale;
         }
         result.push(elm);    
 
@@ -178,8 +182,9 @@ function getNoteheadGlyph(noteType: NoteType): GlyphCode {
 
 function getStemAndFlag(noteType: NoteType, flagType: FlagType | undefined, settings: Metrics,
     stemSign: number, chordLength: number, stemBaseX: number, stemBaseXhalf: number, stemBaseY: number, 
-    directionUp: boolean): PhysicalElementBase[] {
+    directionUp: boolean, scale: number): PhysicalElementBase[] {
     //
+    //const scale = grace ? settings.graceScale : 1.0;
     switch(noteType) {
         case NoteType.NBreve: 
             //glyph = 'noteheads.sM1'; 
@@ -192,7 +197,7 @@ function getStemAndFlag(noteType: NoteType, flagType: FlagType | undefined, sett
 
             return [{
                 element: HorizVarSizeGlyphs.Stem,
-                height: stemSign * (settings.quarterStemDefaultLength + chordLength),
+                height: stemSign * (settings.quarterStemDefaultLength*scale + chordLength),
                 position: { x: stemBaseXhalf, y: stemBaseY }
             } as PhysicalHorizVarSizeElement];
             
@@ -201,16 +206,21 @@ function getStemAndFlag(noteType: NoteType, flagType: FlagType | undefined, sett
         {
             const result: PhysicalElementBase[] = [{
                 element: HorizVarSizeGlyphs.Stem,
-                height: stemSign * (settings.quarterStemDefaultLength + chordLength),
+                height: stemSign * (settings.quarterStemDefaultLength*scale + chordLength),
                 position: { x: stemBaseX, y: stemBaseY }
             } as PhysicalHorizVarSizeElement];
 
             if (flagType && flagType !== FlagType.Beam) {
                 const glyph: GlyphCode = getFlagGlyph(flagType, directionUp);
-                result.push({
-                    position: { x: stemBaseX, y: stemBaseY + stemSign * (settings.quarterStemDefaultLength + chordLength) },
+                const elem = {
+                    position: { x: stemBaseX, y: stemBaseY + stemSign * (scale * settings.quarterStemDefaultLength + chordLength) },
                     glyph
-                } as PhysicalFixedSizeElement);    
+                } as PhysicalFixedSizeElement;
+
+                if (scale !== 1.0) {
+                    elem.scale = scale;
+                }
+                result.push(elem);    
             }
 
             return result;

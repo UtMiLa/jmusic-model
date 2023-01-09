@@ -46,5 +46,6 @@ export interface NoteViewModel {
     expressions?: NoteExpression[];
     text?: string[];
     colors?: string[];
+    grace?: boolean;
 }
 

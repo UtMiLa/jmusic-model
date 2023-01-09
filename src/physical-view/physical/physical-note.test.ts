@@ -243,7 +243,42 @@ describe('Physical model, notes', () => {
     
     });
 
-    
+    describe('grace notes', () => {
+
+        it('should create a reduced size note with a flag', () => {        
+            const note =                         {
+                positions: [3],
+                noteType: NoteType.NQuarter,
+                flagType: FlagType.F2,
+                direction: NoteDirection.Up,
+                grace: true
+            };
+
+            const physical = convertNote(note, 20, defaultMetrics);
+
+            expect(physical.length).to.eq(3);
+
+            expect(physical[0]).to.deep.eq({
+                element: HorizVarSizeGlyphs.Stem,
+                position: { x: 20 + defaultMetrics.graceScale * defaultMetrics.blackNoteHeadLeftXOffset, y: 3.5*defaultMetrics.scaleDegreeUnit*2 },
+                height: defaultMetrics.quarterStemDefaultLength * defaultMetrics.graceScale
+            });
+
+            expect(physical[1]).to.deep.eq({
+                glyph: 'flags.u4',
+                scale: defaultMetrics.graceScale,
+                position: { x: 20 + defaultMetrics.graceScale * defaultMetrics.blackNoteHeadLeftXOffset, y: 3.5*defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.quarterStemDefaultLength * defaultMetrics.graceScale }
+            });
+
+            expect(physical[2]).to.deep.eq({
+                glyph: 'noteheads.s2',
+                scale: defaultMetrics.graceScale,
+                position: { x: 20, y: 3.5*defaultMetrics.scaleDegreeUnit*2 }
+            });
+
+        });
+    });
+
     it('should render dots', () => {
         //
         const note =                         {
