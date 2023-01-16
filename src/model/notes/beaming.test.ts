@@ -1,3 +1,4 @@
+import { Note } from './note';
 import { TupletSequence } from './../score/transformations';
 import { Time } from './../rationals/time';
 import { getAllBeats, MeterFactory, MeterMap } from './../states/meter';
@@ -31,18 +32,6 @@ describe('Beaming', () => {
         expect(__internal.beamCount(64)).to.eq(4);
         expect(__internal.beamCount(128)).to.eq(5);
         expect(__internal.beamCount(256)).to.eq(6);
-        /*function beamCount(denominator: number): number {
-    switch(denominator) {
-        case 1: case 2: case 4: return 0;
-        case 8: return 1;
-        case 16: return 2;
-        case 32: return 3;
-        case 64: return 4;
-        case 128: return 5;
-        case 256: return 6;
-        default: throw 'Illegal denominator: ' + denominator;
-    }
-} */
     });
 
     it('should ignore quarters and longer', () => {
@@ -189,5 +178,41 @@ describe('Beaming', () => {
 
     });
 
+    it('should beam grace notes together', () => {
+        const seq = new SimpleSequence( 'c16 c16 c4 c16 c16 c16 c16 c4 c16 c4');
 
+        [0, 1, 3, 4, 5, 6, 8].forEach(index => {
+            (seq.elements[index] as Note).grace = true;
+        });
+        
+        const meter = MeterFactory.createRegularMeter({ count: 4, value: 4 });
+
+        const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
+
+        expect(seq.duration).to.deep.eq(Time.newSpan(3, 4));
+        expect(beamGroups).to.have.length(2);
+        expect(beamGroups[0].beams).to.deep.eq([{
+            fromIdx: 0,
+            toIndex: 1,
+            level: 0
+        }, {
+            fromIdx: 0,
+            toIndex: 1,
+            level: 1
+        }]);
+        expect(beamGroups[0].notes).to.have.length(2);
+
+        expect(beamGroups[1].beams).to.deep.eq([{    
+            fromIdx: 0,
+            toIndex: 3,
+            level: 0
+        }, {    
+            fromIdx: 0,
+            toIndex: 3,
+            level: 1
+        }]);
+        expect(beamGroups[1].notes).to.have.length(4);
+    });
+
+    
 });
