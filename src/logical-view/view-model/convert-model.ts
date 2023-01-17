@@ -1,3 +1,4 @@
+import { ExtendedTime } from './../../model/rationals/time';
 import { RepeatDef } from './../../model/score/repeats';
 import { getStateAt, ScopedTimeKey } from './state-map';
 import { Rational, RationalDef } from './../../model/rationals/rational';
@@ -159,7 +160,7 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
 }
 
 
-export function scoreModelToViewModel(def: ScoreDef, restrictions: SubsetDef = { startTime: Time.StartTime, endTime: Time.EternityTime }): ScoreViewModel {
+export function scoreModelToViewModel(def: ScoreDef, restrictions: SubsetDef = { startTime: Time.StartTimeMinus, endTime: Time.EternityTime }): ScoreViewModel {
     const stateMap = createStateMap(def);
     //console.log('scoreModelToViewModel', def);    
 
@@ -171,12 +172,13 @@ export function scoreModelToViewModel(def: ScoreDef, restrictions: SubsetDef = {
 function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef, repeats: RepeatDef[] | undefined = undefined): StaffViewModel {
 
     //console.log(def, stateMap, staffNo);
+    (restrictions.startTime as ExtendedTime).extended = -Infinity;
 
     const clef = new Clef(def.initialClef);
 
     const timeSlots: TimeSlotViewModel[] = [
         {
-            absTime: Time.newAbsolute(0,1),
+            absTime: getExtendedTime(Time.newAbsolute(0,1), EventType.Bar),
             notes: [],
             clef: { 
                 position: 1,

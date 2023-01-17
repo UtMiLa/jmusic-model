@@ -1,7 +1,8 @@
+import { GraceSequence } from './../../model/score/transformations';
 import { EventType } from './../../model/score/timing-order';
 import { getExtendedTime } from '~/model/score/timing-order';
 import { Note } from './../../model/notes/note';
-import { SimpleSequence } from './../../model/score/sequence';
+import { SimpleSequence, CompositeSequence } from './../../model/score/sequence';
 import { StateChange } from './../../model/states/state';
 import { Time } from './../../model/rationals/time';
 import { expect } from 'chai';
@@ -97,6 +98,84 @@ describe('Physical model, measure map', () => {
 
     });
 
+
+
+    it('should give grace notes less width', () => {
+        
+        const staffGrace = {
+            initialClef: { clefType: ClefType.G, line: -2 },
+            initialMeter: { count: 4, value: 4 },
+            initialKey: { accidental: -1, count: 0 },
+            voices: [{
+                content: new CompositeSequence(
+                    new GraceSequence( new SimpleSequence('d\'16')),
+                    new SimpleSequence( 'f\'4'),
+                    new GraceSequence( new SimpleSequence( 'e\'\'16')),
+                    new SimpleSequence( 'f\'\'4')
+                )
+            }]
+        } as StaffDef;
+
+
+        staffViewModel = __internal.staffModelToViewModel(staffGrace, createScopedTimeMap());
+        const res = MeasureMap.generate(staffViewModel, defaultMetrics);
+
+        expect(res.measureMap.length).to.eq(4); // 4 notes and no bar lines
+
+        /*staffViewModel.timeSlots.forEach(ts => { // all timeslots must have a matching map
+            expect(res.measureMap.find(m => Time.equals(m.absTime, ts.absTime))).to.not.be.undefined;
+        });
+
+        expect(res.measureMap[0]).to.deep.include({
+            absTime: Time.newAbsolute(0, 1),
+            width: 4 * defaultMetrics.defaultSpacing,
+            startPos: defaultMetrics.leftMargin,
+            widths: {
+                clef: 20,
+                key: 20,
+                meter: 20,
+                note: 20
+            }
+        });
+
+        expect(res.measureMap[1]).to.deep.include({
+            absTime: Time.newAbsolute(1, 4),
+            width: defaultMetrics.defaultSpacing,
+            startPos: 80 + defaultMetrics.leftMargin,
+            widths: {
+                note: 20
+            }
+        });
+
+        expect(res.measureMap[2]).to.deep.include({
+            absTime: Time.newAbsolute(3, 4),
+            width: defaultMetrics.defaultSpacing
+        });
+
+        expect(res.measureMap[3]).to.deep.include({
+            absTime: getExtendedTime(Time.newAbsolute(1, 1), EventType.Bar),
+            width: defaultMetrics.afterBarSpacing,
+            startPos: 6 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin,
+            widths: {
+                bar: 8
+            }
+        });
+
+        expect(res.measureMap[4]).to.deep.include({
+            absTime: Time.newAbsolute(1, 1),
+            width: defaultMetrics.defaultSpacing,
+            startPos: defaultMetrics.afterBarSpacing + 6 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin,
+            widths: {
+                note: 20
+            }
+        });
+
+        expect(res.measureMap[5]).to.deep.include({
+            absTime: getExtendedTime(Time.newAbsolute(2, 1), EventType.Bar),
+            width: defaultMetrics.afterBarSpacing
+        });*/
+
+    });
 
 
 

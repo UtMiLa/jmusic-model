@@ -14,6 +14,7 @@ export interface ExtendedTime extends AbsoluteTime {
 export class Time {
 
     static StartTime = Time.newAbsolute(0, 1);
+    static StartTimeMinus = Time.newExtendedTime(0, 1, -Infinity);
     static EternityTime = Time.newAbsolute(1, 0);
     
     static NoTime = Time.newSpan(0, 1);

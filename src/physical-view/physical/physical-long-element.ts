@@ -19,7 +19,7 @@ export abstract class PhysicalLongElementBase {
     protected registeredNotes: { [key: string]: PhysicalHorizVarSizeElement } = {};
 
     testNote(noteRef: NoteRef): boolean {
-        const found = this.noteRefs.find(ref => Time.equals(ref.absTime, noteRef.absTime) && ref.uniq === noteRef.uniq);        
+        const found = this.noteRefs.find(ref => /*Time.equals(ref.absTime, noteRef.absTime) &&*/ ref.uniq === noteRef.uniq);        
         
         return !!found;
     }
@@ -31,10 +31,11 @@ export abstract class PhysicalLongElementBase {
     abstract finishObject(output: PhysicalElementBase[]): void;
 
     addNote(noteRef: NoteRef, notestem: PhysicalHorizVarSizeElement, output: PhysicalElementBase[]): boolean {
+        console.log('addNote', noteRef, notestem);    
         if (this.testNote(noteRef)) {
             this.registeredNotes[noteRef.uniq] = notestem;
 
-            //console.log('adding note, testnote ok', noteRef, this.bvm, this.registeredNotes);    
+            console.log('adding note, testnote ok', noteRef, this.noteRefs, this.registeredNotes);    
         
             if (Object.keys(this.registeredNotes).length === this.noteRefs.length) {
 
