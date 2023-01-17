@@ -41,25 +41,33 @@ describe('Physical model, measure map', () => {
     it('should generate a measure map for one voice', () => {
         const res = MeasureMap.generate(staffViewModel, defaultMetrics);
 
-        expect(res.measureMap.length).to.eq(6); // 4 notes and two bar lines
+        expect(res.measureMap.length).to.eq(7); // 4 notes and three bar lines
 
         staffViewModel.timeSlots.forEach(ts => { // all timeslots must have a matching map
             expect(res.measureMap.find(m => Time.equals(m.absTime, ts.absTime))).to.not.be.undefined;
         });
 
         expect(res.measureMap[0]).to.deep.include({
-            absTime: Time.newAbsolute(0, 1),
-            width: 4 * defaultMetrics.defaultSpacing,
+            absTime: getExtendedTime(Time.newExtendedTime(0, 1), EventType.Bar),
+            width: 3 * defaultMetrics.defaultSpacing,
             startPos: defaultMetrics.leftMargin,
             widths: {
                 clef: 20,
                 key: 20,
-                meter: 20,
-                note: 20
+                meter: 20
             }
         });
 
         expect(res.measureMap[1]).to.deep.include({
+            absTime: Time.newAbsolute(0, 1),
+            width: defaultMetrics.defaultSpacing,
+            startPos: defaultMetrics.leftMargin + 3 * defaultMetrics.defaultSpacing,
+            widths: {
+                note: 20
+            }
+        });
+
+        expect(res.measureMap[2]).to.deep.include({
             absTime: Time.newAbsolute(1, 4),
             width: defaultMetrics.defaultSpacing,
             startPos: 80 + defaultMetrics.leftMargin,
@@ -68,13 +76,13 @@ describe('Physical model, measure map', () => {
             }
         });
 
-        expect(res.measureMap[2]).to.deep.include({
+        expect(res.measureMap[3]).to.deep.include({
             absTime: Time.newAbsolute(3, 4),
             width: defaultMetrics.defaultSpacing
         });
 
-        expect(res.measureMap[3]).to.deep.include({
-            absTime: getExtendedTime(Time.newAbsolute(1, 1), EventType.Bar),
+        expect(res.measureMap[4]).to.deep.include({
+            absTime: getExtendedTime(Time.newExtendedTime(1, 1), EventType.Bar),
             width: defaultMetrics.afterBarSpacing,
             startPos: 6 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin,
             widths: {
@@ -82,7 +90,7 @@ describe('Physical model, measure map', () => {
             }
         });
 
-        expect(res.measureMap[4]).to.deep.include({
+        expect(res.measureMap[5]).to.deep.include({
             absTime: Time.newAbsolute(1, 1),
             width: defaultMetrics.defaultSpacing,
             startPos: defaultMetrics.afterBarSpacing + 6 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin,
@@ -91,8 +99,8 @@ describe('Physical model, measure map', () => {
             }
         });
 
-        expect(res.measureMap[5]).to.deep.include({
-            absTime: getExtendedTime(Time.newAbsolute(2, 1), EventType.Bar),
+        expect(res.measureMap[6]).to.deep.include({
+            absTime: getExtendedTime(Time.newExtendedTime(2, 1), EventType.Bar),
             width: defaultMetrics.afterBarSpacing
         });
 
@@ -120,14 +128,14 @@ describe('Physical model, measure map', () => {
         staffViewModel = __internal.staffModelToViewModel(staffGrace, createScopedTimeMap());
         const res = MeasureMap.generate(staffViewModel, defaultMetrics);
 
-        expect(res.measureMap.length).to.eq(4); // 4 notes and no bar lines
+        expect(res.measureMap.length).to.eq(5); // 4 notes and start bar line
 
         /*staffViewModel.timeSlots.forEach(ts => { // all timeslots must have a matching map
             expect(res.measureMap.find(m => Time.equals(m.absTime, ts.absTime))).to.not.be.undefined;
         });
 
         expect(res.measureMap[0]).to.deep.include({
-            absTime: Time.newAbsolute(0, 1),
+            absTime: Time.newExtendedTime(0, 1),
             width: 4 * defaultMetrics.defaultSpacing,
             startPos: defaultMetrics.leftMargin,
             widths: {
@@ -139,7 +147,7 @@ describe('Physical model, measure map', () => {
         });
 
         expect(res.measureMap[1]).to.deep.include({
-            absTime: Time.newAbsolute(1, 4),
+            absTime: Time.newExtendedTime(1, 4),
             width: defaultMetrics.defaultSpacing,
             startPos: 80 + defaultMetrics.leftMargin,
             widths: {
@@ -148,12 +156,12 @@ describe('Physical model, measure map', () => {
         });
 
         expect(res.measureMap[2]).to.deep.include({
-            absTime: Time.newAbsolute(3, 4),
+            absTime: Time.newExtendedTime(3, 4),
             width: defaultMetrics.defaultSpacing
         });
 
         expect(res.measureMap[3]).to.deep.include({
-            absTime: getExtendedTime(Time.newAbsolute(1, 1), EventType.Bar),
+            absTime: getExtendedTime(Time.newExtendedTime(1, 1), EventType.Bar),
             width: defaultMetrics.afterBarSpacing,
             startPos: 6 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin,
             widths: {
@@ -162,7 +170,7 @@ describe('Physical model, measure map', () => {
         });
 
         expect(res.measureMap[4]).to.deep.include({
-            absTime: Time.newAbsolute(1, 1),
+            absTime: Time.newExtendedTime(1, 1),
             width: defaultMetrics.defaultSpacing,
             startPos: defaultMetrics.afterBarSpacing + 6 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin,
             widths: {
@@ -171,7 +179,7 @@ describe('Physical model, measure map', () => {
         });
 
         expect(res.measureMap[5]).to.deep.include({
-            absTime: getExtendedTime(Time.newAbsolute(2, 1), EventType.Bar),
+            absTime: getExtendedTime(Time.newExtendedTime(2, 1), EventType.Bar),
             width: defaultMetrics.afterBarSpacing
         });*/
 
@@ -186,18 +194,21 @@ describe('Physical model, measure map', () => {
         //console.log('map', map);
 
 
-        expect(measureMap.lookup(Time.newAbsolute(0, 1))).to.deep.equal({
+        expect(measureMap.lookup(Time.newExtendedTime(0, 1, -15000))).to.deep.equal({
             clef: defaultMetrics.leftMargin,
             key: 20 + defaultMetrics.leftMargin,
-            meter: 40 + defaultMetrics.leftMargin,
+            meter: 40 + defaultMetrics.leftMargin
+        });
+
+        expect(measureMap.lookup(Time.newExtendedTime(0, 1))).to.deep.equal({
             note: 60 + defaultMetrics.leftMargin
         });
 
-        expect(measureMap.lookup(Time.newAbsolute(1, 4))).to.deep.equal({
+        expect(measureMap.lookup(Time.newExtendedTime(1, 4))).to.deep.equal({
             note: 80 + defaultMetrics.leftMargin
         });
 
-        expect(measureMap.lookup(getExtendedTime(Time.newAbsolute(2, 1), EventType.Bar))).to.deep.equal({
+        expect(measureMap.lookup(getExtendedTime(Time.newExtendedTime(2, 1), EventType.Bar))).to.deep.equal({
             bar: 7 * defaultMetrics.defaultSpacing + defaultMetrics.leftMargin + defaultMetrics.afterBarSpacing
         });
 
@@ -222,14 +233,14 @@ describe('Physical model, measure map', () => {
 
         const measureMap = MeasureMap.generate(staffViewModel, defaultMetrics);
 
-        expect(measureMap.measureMap[1].absTime).to.deep.eq(Time.newExtendedTime(1, 4, -9999));
-        expect(measureMap.measureMap[2].absTime).to.deep.eq(Time.newAbsolute(1, 4));
+        expect(measureMap.measureMap[2].absTime).to.deep.eq(Time.newExtendedTime(1, 4, -9999));
+        expect(measureMap.measureMap[3].absTime).to.deep.eq(Time.newAbsolute(1, 4));
 
         expect(measureMap.lookup(Time.newExtendedTime(1, 4, -9999))).to.deep.equal({
             note: 80 + defaultMetrics.leftMargin
         });
 
-        expect(measureMap.lookup(Time.newAbsolute(1, 4))).to.deep.equal({
+        expect(measureMap.lookup(Time.newExtendedTime(1, 4))).to.deep.equal({
             note: 100 + defaultMetrics.leftMargin
         });
 
@@ -239,7 +250,7 @@ describe('Physical model, measure map', () => {
     it('should merge two measure maps', () => {
         const measureMap1: MeasureMapItem[] = [
             {
-                absTime: Time.newAbsolute(0, 1),
+                absTime: Time.newExtendedTime(0, 1),
                 width: 25,
                 startPos: 10,
                 widths: {
@@ -256,7 +267,7 @@ describe('Physical model, measure map', () => {
                 } as MeasureMapXValueItem
             },
             {
-                absTime: Time.newAbsolute(1, 4),
+                absTime: Time.newExtendedTime(1, 4),
                 width: 20,
                 startPos: 35,
                 widths: {
@@ -267,7 +278,7 @@ describe('Physical model, measure map', () => {
                 } as MeasureMapXValueItem
             },
             {
-                absTime: Time.newAbsolute(3, 4),
+                absTime: Time.newExtendedTime(3, 4),
                 width: 20,
                 startPos: 55,
                 widths: {
@@ -278,7 +289,7 @@ describe('Physical model, measure map', () => {
                 } as MeasureMapXValueItem
             },
             {
-                absTime: Time.newAbsolute(1, 1),
+                absTime: Time.newExtendedTime(1, 1),
                 width: 20,
                 startPos: 75,
                 widths: {
@@ -293,7 +304,7 @@ describe('Physical model, measure map', () => {
         ];
         const measureMap2: MeasureMapItem[] = [
             {
-                absTime: Time.newAbsolute(0, 1),
+                absTime: Time.newExtendedTime(0, 1),
                 width: 25,
                 startPos: 10,
                 widths: {
@@ -310,7 +321,7 @@ describe('Physical model, measure map', () => {
                 } as MeasureMapXValueItem
             },
             {
-                absTime: Time.newAbsolute(1, 2),
+                absTime: Time.newExtendedTime(1, 2),
                 width: 5,
                 startPos: 35,
                 widths: {
@@ -321,7 +332,7 @@ describe('Physical model, measure map', () => {
                 } as MeasureMapXValueItem
             },
             {
-                absTime: Time.newAbsolute(3, 4),
+                absTime: Time.newExtendedTime(3, 4),
                 width: 5,
                 startPos: 40,
                 widths: {
@@ -332,7 +343,7 @@ describe('Physical model, measure map', () => {
                 } as MeasureMapXValueItem
             },
             {
-                absTime: Time.newAbsolute(1, 1),
+                absTime: Time.newExtendedTime(1, 1),
                 width: 20,
                 startPos: 45,
                 widths: {
@@ -352,7 +363,7 @@ describe('Physical model, measure map', () => {
 
         expect(res.measureMap).to.deep.equal([
             {
-                absTime: Time.newAbsolute(0, 1),
+                absTime: Time.newExtendedTime(0, 1),
                 width: 25,
                 startPos: 10,
                 widths: {
@@ -369,7 +380,7 @@ describe('Physical model, measure map', () => {
                 }
             },
             {
-                absTime: Time.newAbsolute(1, 4),
+                absTime: Time.newExtendedTime(1, 4),
                 width: 20,
                 startPos: 35,
                 widths: {
@@ -380,7 +391,7 @@ describe('Physical model, measure map', () => {
                 }
             },
             {
-                absTime: Time.newAbsolute(1, 2),
+                absTime: Time.newExtendedTime(1, 2),
                 width: 5,
                 startPos: 55,
                 widths: {
@@ -391,7 +402,7 @@ describe('Physical model, measure map', () => {
                 }
             },
             {
-                absTime: Time.newAbsolute(3, 4),
+                absTime: Time.newExtendedTime(3, 4),
                 width: 20,
                 startPos: 60,
                 widths: {
@@ -402,7 +413,7 @@ describe('Physical model, measure map', () => {
                 }
             },
             {
-                absTime: Time.newAbsolute(1, 1),
+                absTime: Time.newExtendedTime(1, 1),
                 width: 20,
                 startPos: 80,
                 widths: {
@@ -433,15 +444,15 @@ describe('Physical model, measure map', () => {
 
         const staffViewModel1 = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
-        expect((staffViewModel1.timeSlots[1].accidentals as any)[0].displacement).to.eq(-3);
-        expect((staffViewModel1.timeSlots[1].accidentals as any)[1].displacement).to.eq(-2);
-        expect((staffViewModel1.timeSlots[1].accidentals as any)[2].displacement).to.eq(-1);
+        expect((staffViewModel1.timeSlots[2].accidentals as any)[0].displacement).to.eq(-3);
+        expect((staffViewModel1.timeSlots[2].accidentals as any)[1].displacement).to.eq(-2);
+        expect((staffViewModel1.timeSlots[2].accidentals as any)[2].displacement).to.eq(-1);
 
         const res = MeasureMap.generate(staffViewModel1, defaultMetrics);
 
-        expect(res.measureMap.length).to.eq(2);
+        expect(res.measureMap.length).to.eq(3);
 
-        expect(res.measureMap[1]).to.deep.include({
+        expect(res.measureMap[2]).to.deep.include({
             absTime: Time.newAbsolute(1, 4),
             width: defaultMetrics.defaultSpacing + defaultMetrics.accidentalSpacing + 3 * defaultMetrics.accidentalDisplacement,
             startPos: 80 + defaultMetrics.leftMargin,
@@ -452,7 +463,7 @@ describe('Physical model, measure map', () => {
         });
 
 
-        const xpos1 = res.lookup(Time.newAbsolute(1, 4));
+        const xpos1 = res.lookup(Time.newExtendedTime(1, 4));
 
         expect(xpos1).to.deep.include({
             accidentals: 80 + defaultMetrics.leftMargin + 3 * defaultMetrics.accidentalDisplacement
@@ -555,14 +566,14 @@ describe('Physical model, measure map', () => {
 
 
         expect(mm.localize(25, 10, defaultMetrics)).to.deep.eq({
-            time: Time.newAbsolute(0, 1),
+            time: Time.newExtendedTime(0, 1, -15000),
             staff: 0,
             item: 'clef',
             pitch: -0
         });
 
         expect(mm.localize(46, 10, defaultMetrics)).to.deep.eq({
-            time: Time.newAbsolute(0, 1),
+            time: Time.newExtendedTime(0, 1, -15000),
             staff: 0,
             item: 'key',
             pitch: -0
@@ -596,30 +607,30 @@ describe('Physical model, measure map', () => {
         it('should calculate system breaks from a width', () => {
             const mm = new MeasureMap([
                 {absTime: Time.StartTime, startPos: 0, width: 50, widths: { clef: 10, key: 20, note: 10, accidentals: 0, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
-                {absTime: Time.newAbsolute(1, 1), startPos: 50, width: 20, widths: { clef: 0, key: 0, note: 10, accidentals: 0, bar: 10, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
-                {absTime: Time.newAbsolute(2, 1), startPos: 70, width: 20, widths: { clef: 0, key: 0, note: 10, accidentals: 10, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
-                {absTime: Time.newAbsolute(3, 1), startPos: 90, width: 10, widths: { clef: 0, key: 0, note: 5, accidentals: 0, bar: 5, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
-                {absTime: Time.newAbsolute(4, 1), startPos: 100, width: 10, widths: { clef: 0, key: 0, note: 10, accidentals: 0, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
-                {absTime: Time.newAbsolute(5, 1), startPos: 110, width: 10, widths: { clef: 0, key: 0, note: 5, accidentals: 0, bar: 5, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
-                {absTime: Time.newAbsolute(6, 1), startPos: 120, width: 20, widths: { clef: 0, key: 0, note: 10, accidentals: 10, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
-                {absTime: Time.newAbsolute(7, 1), startPos: 140, width: 10, widths: { clef: 0, key: 0, note: 5, accidentals: 0, bar: 5, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
-                {absTime: Time.newAbsolute(8, 1), startPos: 150, width: 10, widths: { clef: 0, key: 0, note: 10, accidentals: 0, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }}
+                {absTime: Time.newExtendedTime(1, 1), startPos: 50, width: 20, widths: { clef: 0, key: 0, note: 10, accidentals: 0, bar: 10, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newExtendedTime(2, 1), startPos: 70, width: 20, widths: { clef: 0, key: 0, note: 10, accidentals: 10, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newExtendedTime(3, 1), startPos: 90, width: 10, widths: { clef: 0, key: 0, note: 5, accidentals: 0, bar: 5, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newExtendedTime(4, 1), startPos: 100, width: 10, widths: { clef: 0, key: 0, note: 10, accidentals: 0, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newExtendedTime(5, 1), startPos: 110, width: 10, widths: { clef: 0, key: 0, note: 5, accidentals: 0, bar: 5, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newExtendedTime(6, 1), startPos: 120, width: 20, widths: { clef: 0, key: 0, note: 10, accidentals: 10, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newExtendedTime(7, 1), startPos: 140, width: 10, widths: { clef: 0, key: 0, note: 5, accidentals: 0, bar: 5, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newExtendedTime(8, 1), startPos: 150, width: 10, widths: { clef: 0, key: 0, note: 10, accidentals: 0, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }}
             ]);
 
             const split1 = findSystemSplits(mm, 50);
 
             expect(split1).to.have.length(4);
-            expect(split1[0]).to.deep.eq(Time.newAbsolute(0, 1));
-            expect(split1[1]).to.deep.eq(Time.newAbsolute(1, 1));
-            expect(split1[2]).to.deep.eq(Time.newAbsolute(3, 1));
-            expect(split1[3]).to.deep.eq(Time.newAbsolute(7, 1));
+            expect(split1[0]).to.deep.eq(Time.newExtendedTime(0, 1, -Infinity));
+            expect(split1[1]).to.deep.eq(Time.newExtendedTime(1, 1));
+            expect(split1[2]).to.deep.eq(Time.newExtendedTime(3, 1));
+            expect(split1[3]).to.deep.eq(Time.newExtendedTime(7, 1));
 
             
             const split2 = findSystemSplits(mm, 100);
 
             expect(split2).to.have.length(2);
-            expect(split2[0]).to.deep.eq(Time.newAbsolute(0, 1));
-            expect(split2[1]).to.deep.eq(Time.newAbsolute(3, 1));
+            expect(split2[0]).to.deep.eq(Time.newExtendedTime(0, 1, -Infinity));
+            expect(split2[1]).to.deep.eq(Time.newExtendedTime(3, 1));
         });
     });
 
