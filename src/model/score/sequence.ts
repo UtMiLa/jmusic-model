@@ -12,6 +12,20 @@ import { Clef } from '../states/clef';
 import { EventType, getExtendedTime } from './timing-order';
 
 export type MusicEvent = Note | StateChange | LongDecorationElement;
+
+
+export function isStateChange(item: MusicEvent): item is StateChange {
+    return (item as StateChange).isState;
+}
+
+export function isLongDecoration(item: MusicEvent): item is LongDecorationElement {
+    return (item as LongDecorationElement).longDeco !== undefined;
+}
+
+export function isNote(item: MusicEvent): item is Note {
+    return (item as Note).pitches !== undefined;
+}
+
 export interface ISequence {
     elements: MusicEvent[];
     duration: TimeSpan;
@@ -97,7 +111,7 @@ export abstract class BaseSequence implements ISequence {
             if (!res.find(item => Time.equals(item, time))) {
                 res.push(time);
             }
-            if ((elem as Note).grace) {
+            if (isNote(elem) && elem.grace) {
                 if (time.extended) {
                     time = {...time, extended: time.extended + 1};
                 } else {
@@ -128,7 +142,7 @@ export abstract class BaseSequence implements ISequence {
         let graceGroup = 0;
         this.elements.forEach((elem, index) => {
             // if grace note, set extended accordingly on time
-            if ((elem as Note).grace) {
+            if (isNote(elem) && elem.grace) {
                 if (graceGroup) {
                     graceGroup++;
                     time = getExtendedTime(time, EventType.GraceNote, graceGroup); //time = {...time, extended: graceGroup};
@@ -139,12 +153,12 @@ export abstract class BaseSequence implements ISequence {
             } else {
                 graceGroup = 0;
             }
-            if ((elem as StateChange).isState) {
+            if (isStateChange(elem)) {
 
                 const slot = res.get(getExtendedTime(time, EventType.Bar));
-                slot.states.push(elem as StateChange);
+                slot.states.push(elem);
                 
-            } else if ((elem as LongDecorationElement).longDeco !== undefined) {
+            } else if (isLongDecoration(elem)) {
 
                 const slot = res.get(getExtendedTime(time, EventType.Expression));
                 if (!slot.decorations) slot.decorations = [];
@@ -153,7 +167,7 @@ export abstract class BaseSequence implements ISequence {
             } else {
                 
                 const slot = res.get(getExtendedTime(time, EventType.Note));
-                slot.elements.push(Note.clone(elem as Note, { uniq: `${keyPrefix}-${index}` }));
+                slot.elements.push(Note.clone(elem, { uniq: `${keyPrefix}-${index}` }));
                 
             }
 

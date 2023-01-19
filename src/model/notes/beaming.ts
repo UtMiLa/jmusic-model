@@ -1,7 +1,7 @@
 import { LongDecorationElement } from './../decorations/decoration-type';
 import { StateChange } from './../states/state';
 import { Time, AbsoluteTime } from './../rationals/time';
-import { ISequence } from './../score/sequence';
+import { ISequence, isLongDecoration, isStateChange } from './../score/sequence';
 import { Note } from './note';
 
 
@@ -75,14 +75,14 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
     }
 
     seq.elements.forEach((element, elmIndex) => {
-        if ((element as StateChange).isState) {
+        if (isStateChange(element)) {
             // state change
-            const stC = element as StateChange;
-        } else if ((element as LongDecorationElement).longDeco !== undefined) {
+            //const stC = element as StateChange;
+        } else if (isLongDecoration(element)) {
             // decoration
-            const deco = element as LongDecorationElement;
+            //const deco = element as LongDecorationElement;
         } else {
-            const note = element as Note;
+            const note = element;
             const currBeamCnt = beamCount(note.undottedDuration.denominator);
             const isOnNextBeat = Time.sortComparison(time, nextBeat) >= 0;
             if (isOnNextBeat || currBeamCnt === 0 || !note.pitches.length) {
