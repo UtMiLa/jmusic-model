@@ -25,13 +25,13 @@ describe('View model', () => {
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
-        expect(staffView.timeSlots.length).to.eq(8);
-        expect(staffView.timeSlots[0].accidentals).to.be.undefined;
-        expect(staffView.timeSlots[3].accidentals).to.be.undefined;
-        expect(staffView.timeSlots[4].accidentals).to.deep.eq([{ alteration: 0, displacement: 0, position: -7}]);
-        expect(staffView.timeSlots[5].accidentals).to.be.undefined;
+        expect(staffView.timeSlots.length).to.eq(9);
+        expect(staffView.timeSlots[1].accidentals).to.be.undefined;
+        expect(staffView.timeSlots[4].accidentals).to.be.undefined;
+        expect(staffView.timeSlots[5].accidentals).to.deep.eq([{ alteration: 0, displacement: 0, position: -7}]);
         expect(staffView.timeSlots[6].accidentals).to.be.undefined;
-        expect(staffView.timeSlots[7].accidentals).to.deep.eq([{ alteration: -1, displacement: 0, position: -7}]);
+        expect(staffView.timeSlots[7].accidentals).to.be.undefined;
+        expect(staffView.timeSlots[8].accidentals).to.deep.eq([{ alteration: -1, displacement: 0, position: -7}]);
     });
 
 
@@ -41,9 +41,9 @@ describe('View model', () => {
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
-        expect(staffView.timeSlots.length).to.eq(8);
-        expect(staffView.timeSlots[0].beamings, 'note 1').to.be.undefined;
-        expect(staffView.timeSlots[3].beamings, 'note 2').to.deep.eq([{
+        expect(staffView.timeSlots.length).to.eq(9);
+        expect(staffView.timeSlots[1].beamings, 'note 1').to.be.undefined;
+        expect(staffView.timeSlots[4].beamings, 'note 2').to.deep.eq([{
             noteRefs: [ 
                 {
                     absTime: Time.newAbsolute(3, 8), 
@@ -56,8 +56,8 @@ describe('View model', () => {
             ],
             beams: [{ fromIdx: 0, toIndex: 1, level: 0 }]
         }]);
-        expect(staffView.timeSlots[4].beamings, 'note 3').to.be.undefined;        
-        expect(staffView.timeSlots[5].beamings, 'note 4').to.deep.eq([{
+        expect(staffView.timeSlots[5].beamings, 'note 3').to.be.undefined;        
+        expect(staffView.timeSlots[6].beamings, 'note 4').to.deep.eq([{
             noteRefs: [
                 {
                     absTime: Time.newAbsolute(5, 8), 
@@ -70,8 +70,8 @@ describe('View model', () => {
             ],
             beams: [{ fromIdx: 0, toIndex: 1, level: 0 }, { fromIdx: undefined, toIndex: 1, level: 1 }]
         }]);
-        expect(staffView.timeSlots[6].beamings, 'note 5').to.be.undefined;
-        expect(staffView.timeSlots[7].beamings, 'note 6').to.be.undefined;
+        expect(staffView.timeSlots[7].beamings, 'note 5').to.be.undefined;
+        expect(staffView.timeSlots[8].beamings, 'note 6').to.be.undefined;
     });
 
     it('should make correct broken beams', () => {
@@ -79,8 +79,10 @@ describe('View model', () => {
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
-        expect(staffView.timeSlots.length).to.eq(3);
-        expect(staffView.timeSlots[0].beamings, 'note 1').to.deep.eq([{
+        //console.log(Time.StartTime, Time.StartTimeMinus);
+
+        expect(staffView.timeSlots.length).to.eq(4);
+        expect(staffView.timeSlots[1].beamings, 'note 1').to.deep.eq([{
             noteRefs: [ 
                 {
                     absTime: Time.StartTime, 
@@ -120,8 +122,8 @@ describe('View model', () => {
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
-        expect(staffView.timeSlots.length).to.eq(6);
-        expect(staffView.timeSlots[0].beamings, 'note 1').to.deep.eq([{
+        expect(staffView.timeSlots.length).to.eq(7);
+        expect(staffView.timeSlots[1].beamings, 'note 1').to.deep.eq([{
             noteRefs: [ 
                 {
                     absTime: Time.StartTime, 
@@ -137,7 +139,7 @@ describe('View model', () => {
             ]
         }]);
 
-        expect(staffView.timeSlots[2].beamings, 'note 3').to.deep.eq([{
+        expect(staffView.timeSlots[3].beamings, 'note 3').to.deep.eq([{
             noteRefs: [ 
                 {
                     absTime: Time.newAbsolute(1, 4),
@@ -153,7 +155,7 @@ describe('View model', () => {
             ]
         }]);
 
-        expect(staffView.timeSlots[4].beamings, 'note 5').to.deep.eq([{
+        expect(staffView.timeSlots[5].beamings, 'note 5').to.deep.eq([{
             noteRefs: [ 
                 {
                     absTime: Time.newAbsolute(1, 2),
@@ -186,8 +188,8 @@ describe('View model', () => {
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
-        expect(staffView.timeSlots.length).to.eq(6);
-        expect(staffView.timeSlots[0].beamings, 'note 1').to.deep.eq([{
+        expect(staffView.timeSlots.length).to.eq(7);
+        expect(staffView.timeSlots[1].beamings, 'note 1').to.deep.eq([{
             noteRefs: [ 
                 {
                     absTime: Time.StartTime, 
@@ -207,7 +209,7 @@ describe('View model', () => {
             ]
         }]);
 
-        expect(staffView.timeSlots[3].beamings, 'note 3').to.deep.eq([{
+        expect(staffView.timeSlots[4].beamings, 'note 3').to.deep.eq([{
             noteRefs: [ 
                 {
                     absTime: Time.newAbsolute(1, 4),
@@ -244,8 +246,8 @@ describe('View model', () => {
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
-        expect(staffView.timeSlots.length).to.eq(5);
-        expect(staffView.timeSlots[0].tuplets, 'note 1').to.deep.eq([{
+        expect(staffView.timeSlots.length).to.eq(6);
+        expect(staffView.timeSlots[1].tuplets, 'note 1').to.deep.eq([{
             noteRefs: [ 
                 {
                     absTime: Time.StartTime, 
@@ -291,9 +293,9 @@ describe('View model', () => {
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
         
-        expect(staffView.timeSlots.length).to.eq(6);
+        expect(staffView.timeSlots.length).to.eq(7);
 
-        expect(staffView.timeSlots[0].tuplets, 'note 1').to.deep.eq([{
+        expect(staffView.timeSlots[1].tuplets, 'note 1').to.deep.eq([{
             noteRefs: [ 
                 {
                     absTime: Time.StartTime, 
@@ -313,7 +315,7 @@ describe('View model', () => {
             ]
         }]);
 
-        expect(staffView.timeSlots[3].tuplets, 'note 3').to.deep.eq({
+        expect(staffView.timeSlots[4].tuplets, 'note 3').to.deep.eq({
             noteRefs: [ 
                 {
                     absTime: Time.newAbsolute(1, 4),
@@ -339,7 +341,7 @@ describe('View model', () => {
         const score = new JMusic({ content: [['c\'\'1 d\'\'1 e\'\'1'], ['c\'1 d\'1 e\'1']] });
 
         const log1 = scoreModelToViewModel(score);
-        expect(log1.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [1], uniq: '0-0-0' });
+        expect(log1.staves[0].timeSlots[1].notes[0]).to.deep.include({ positions: [1], uniq: '0-0-0' });
 
         const log2 = scoreModelToViewModel(score, { startTime: Time.newAbsolute(1, 1), endTime: Time.EternityTime });
         expect(log2.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [2], uniq: '0-0-1' });
@@ -351,13 +353,13 @@ describe('View model', () => {
         const score = new JMusic({ content: [['c\'\'1 \\key e \\major d\'\'1 e\'\'1'], ['c\'1 \\meter 2/2 d\'1 e\'1']], meter: '4/4' });
 
         const log1 = scoreModelToViewModel(score);
-        expect(log1.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [1], uniq: '0-0-0' });
+        expect(log1.staves[0].timeSlots[1].notes[0]).to.deep.include({ positions: [1], uniq: '0-0-0' });
         expect(log1.staves[0].timeSlots[0].clef).to.deep.eq({ clefType: ClefType.G, line: -2, position: 1});
         expect(log1.staves[0].timeSlots[0].meter).to.deep.eq({ meterText: ['4', '4'] });
         expect(log1.staves[0].timeSlots[0].key).to.deep.eq({ keyPositions: [] });
 
         const log2 = scoreModelToViewModel(score, { startTime: Time.newAbsolute(2, 1), endTime: Time.EternityTime });
-        expect(log2.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [3], uniq: '0-0-3' });
+        expect(log2.staves[0].timeSlots[1].notes[0]).to.deep.include({ positions: [3], uniq: '0-0-3' });
         expect(log2.staves[0].timeSlots[0].clef).to.deep.eq({ clefType: ClefType.G, line: -2, position: 1});
         expect(log2.staves[0].timeSlots[0].meter).to.be.undefined;
         expect(log2.staves[0].timeSlots[0].key).to.deep.eq({ keyPositions: [{ alteration: 1, position: 4}, { alteration: 1, position: 1}, { alteration: 1, position: 5}, { alteration: 1, position: 2}] });
@@ -367,10 +369,10 @@ describe('View model', () => {
         const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], meter: '4/4' });
 
         const log2 = scoreModelToViewModel(score, { startTime: Time.newAbsolute(1, 1), endTime: Time.newAbsolute(2, 1) });
-        expect(log2.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [2], uniq: '0-0-1' });
-        expect(log2.staves[0].timeSlots[2].notes).to.deep.eq([]);
-        expect(log2.staves[0].timeSlots[2].accidentals).to.deep.eq([]);
-        expect(log2.staves[0].timeSlots[1].bar).to.deep.eq({ barType: BarType.Simple });
+        expect(log2.staves[0].timeSlots[1].notes[0]).to.deep.include({ positions: [2], uniq: '0-0-1' });
+        expect(log2.staves[0].timeSlots[3].notes).to.deep.eq([]);
+        expect(log2.staves[0].timeSlots[3].accidentals).to.deep.eq([]);
+        expect(log2.staves[0].timeSlots[2].bar).to.deep.eq({ barType: BarType.Simple });
     });
 
     it('should add repeats', () => {
@@ -380,8 +382,8 @@ describe('View model', () => {
         
         const log2 = scoreModelToViewModel(score);
         //console.log(log2.staves[0].timeSlots);
-        expect(log2.staves[0].timeSlots[1].bar).to.deep.eq({ barType: BarType.Simple, repeatStart: true });
-        expect(log2.staves[0].timeSlots[3].bar).to.deep.eq({ barType: BarType.Simple, repeatEnd: true });
+        expect(log2.staves[0].timeSlots[2].bar).to.deep.eq({ barType: BarType.Simple, repeatStart: true });
+        expect(log2.staves[0].timeSlots[4].bar).to.deep.eq({ barType: BarType.Simple, repeatEnd: true });
     });
 
     describe('Expressions', () => {
@@ -394,7 +396,7 @@ describe('View model', () => {
             score.addLongDecoration(LongDecorationType.Crescendo, ins1, Time.newSpan(2, 1));
     
             const log2 = scoreModelToViewModel(score);
-            expect(log2.staves[0].timeSlots[0].decorations).to.deep.eq([
+            expect(log2.staves[0].timeSlots[1].decorations).to.deep.eq([
                 { 
                     type: LongDecorationType.Crescendo, 
                     noteRefs: [

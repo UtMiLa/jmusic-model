@@ -34,7 +34,7 @@ describe('Staff view model', () => {
         expect(vm).to.deep.equal({
             timeSlots: [
                 { 
-                    absTime: Time.newAbsolute(0, 1), 
+                    absTime: Time.newExtendedTime(0, 1, -15000), 
                     clef:{ 
                         position: 1,
                         clefType: ClefType.G,
@@ -73,8 +73,8 @@ describe('Staff view model', () => {
 
         expect(vm).to.deep.equal({
             timeSlots: [
-                { 
-                    absTime: Time.newAbsolute(0, 1), 
+                {
+                    absTime: Time.newExtendedTime(0, 1, -15000), 
                     clef:    { 
                         position: 1,
                         clefType: ClefType.G,
@@ -97,6 +97,10 @@ describe('Staff view model', () => {
                         'position': 2
                     }]
                     },
+                    notes: []
+                },
+                { 
+                    absTime: Time.newAbsolute(0, 1), 
                     notes: [
                         {
                             positions: [-6],
@@ -146,8 +150,8 @@ describe('Staff view model', () => {
 
         expect(vm).to.deep.equal({
             timeSlots: [
-                { 
-                    absTime: Time.newAbsolute(0, 1), 
+                {
+                    absTime: Time.newExtendedTime(0, 1, -15000), 
                     clef:    { 
                         position: 1,
                         clefType: ClefType.G,
@@ -155,7 +159,13 @@ describe('Staff view model', () => {
                     },
                     key:    { 
                         keyPositions: []
-                    },                    
+                    },
+                    notes: []
+                },
+
+                { 
+                    absTime: Time.newAbsolute(0, 1), 
+         
                     notes: [                
 
                         {
@@ -208,8 +218,8 @@ describe('Staff view model', () => {
 
         expect(vm).to.deep.equal({
             timeSlots: [
-                { 
-                    absTime: Time.newAbsolute(0, 1), 
+                {
+                    absTime: Time.newExtendedTime(0, 1, -15000), 
                     clef:    { 
                         position: 1,
                         clefType: ClefType.G,
@@ -218,8 +228,11 @@ describe('Staff view model', () => {
                     key:    { 
                         keyPositions: []
                     },
+                    notes: []
+                },
+                { 
+                    absTime: Time.newAbsolute(0, 1), 
                     notes: [
-
                         {
                             positions: [-6],
                             noteType: NoteType.NWhole,
@@ -275,10 +288,10 @@ describe('Staff view model', () => {
         staffClef.initialMeter = {count: 3, value: 4};
 
         const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
-        expect(vm.timeSlots.length).to.equal(7);
+        expect(vm.timeSlots.length).to.equal(8);
 
         for (let i = 0; i < 5; i++) {
-            if (i === 3 || i === 5){
+            if (i === 4 || i === 6){
                 expect(vm.timeSlots[i].bar).to.deep.equal({ barType: BarType.Simple });
             } else {
                 expect(vm.timeSlots[i].bar).to.be.undefined;
@@ -294,10 +307,10 @@ describe('Staff view model', () => {
         staffClef.initialMeter = {count: 2, value: 4};
 
         const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
-        expect(vm.timeSlots.length).to.equal(3);
+        expect(vm.timeSlots.length).to.equal(4);
 
         for (let i = 0; i < 3; i++) {
-            if (i === 0) {
+            if (i <= 1) {
                 expect(vm.timeSlots[i].bar).to.be.undefined;
             } else
                 expect(vm.timeSlots[i].bar).to.deep.equal({ barType: BarType.Simple });
@@ -313,10 +326,10 @@ describe('Staff view model', () => {
         staffClef.initialMeter = {count: 3, value: 4, upBeat: Time.QuarterTime};
 
         const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
-        expect(vm.timeSlots.length).to.equal(10);
+        expect(vm.timeSlots.length).to.equal(11);
 
         for (let i = 0; i < 8; i++) {
-            if (i === 1 || i === 5 || i === 9){
+            if (i === 2 || i === 6 || i === 10){
                 expect(vm.timeSlots[i].bar).to.deep.equal({ barType: BarType.Simple });
             } else {
                 expect(vm.timeSlots[i].bar).to.be.undefined;
@@ -330,9 +343,9 @@ describe('Staff view model', () => {
         staffClef.voices[0].noteDirection = NoteDirection.Up;
         
         const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
-        expect(vm.timeSlots.length).to.equal(2);
+        expect(vm.timeSlots.length).to.equal(3);
 
-        expect(vm.timeSlots[0].ties).to.deep.equal([
+        expect(vm.timeSlots[1].ties).to.deep.equal([
             { position: -6, direction: NoteDirection.Up, toTime: Time.newAbsolute(1, 2) }
         ]);
 
@@ -348,9 +361,9 @@ describe('Staff view model', () => {
         staffClef.voices[1].noteDirection = NoteDirection.Down;
         
         const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
-        expect(vm.timeSlots.length).to.equal(2);
+        expect(vm.timeSlots.length).to.equal(3);
 
-        expect(vm.timeSlots[0].ties).to.deep.equal([
+        expect(vm.timeSlots[1].ties).to.deep.equal([
             { position: -4, direction: NoteDirection.Up, toTime: Time.newAbsolute(1, 2) },
             { position: -6, direction: NoteDirection.Down, toTime: Time.newAbsolute(1, 2) }
         ]);

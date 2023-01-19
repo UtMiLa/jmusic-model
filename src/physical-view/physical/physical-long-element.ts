@@ -31,11 +31,11 @@ export abstract class PhysicalLongElementBase {
     abstract finishObject(output: PhysicalElementBase[]): void;
 
     addNote(noteRef: NoteRef, notestem: PhysicalHorizVarSizeElement, output: PhysicalElementBase[]): boolean {
-        console.log('addNote', noteRef, notestem);    
+        //console.log('addNote', noteRef, notestem);    
         if (this.testNote(noteRef)) {
             this.registeredNotes[noteRef.uniq] = notestem;
 
-            console.log('adding note, testnote ok', noteRef, this.noteRefs, this.registeredNotes);    
+            //console.log('adding note, testnote ok', noteRef, this.noteRefs, this.registeredNotes);    
         
             if (Object.keys(this.registeredNotes).length === this.noteRefs.length) {
 

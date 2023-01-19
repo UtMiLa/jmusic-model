@@ -606,7 +606,7 @@ describe('Physical model, measure map', () => {
     describe('System breaks', () => {
         it('should calculate system breaks from a width', () => {
             const mm = new MeasureMap([
-                {absTime: Time.StartTime, startPos: 0, width: 50, widths: { clef: 10, key: 20, note: 10, accidentals: 0, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
+                {absTime: Time.newExtendedTime(0, 1, -Infinity), startPos: 0, width: 50, widths: { clef: 10, key: 20, note: 10, accidentals: 0, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
                 {absTime: Time.newExtendedTime(1, 1), startPos: 50, width: 20, widths: { clef: 0, key: 0, note: 10, accidentals: 0, bar: 10, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
                 {absTime: Time.newExtendedTime(2, 1), startPos: 70, width: 20, widths: { clef: 0, key: 0, note: 10, accidentals: 10, bar: 0, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},
                 {absTime: Time.newExtendedTime(3, 1), startPos: 90, width: 10, widths: { clef: 0, key: 0, note: 5, accidentals: 0, bar: 5, meter: 0}, offsets: { clef: 0, key: 0, note: 0, accidentals: 0, bar: 0, meter: 0 }},

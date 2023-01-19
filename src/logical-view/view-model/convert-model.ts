@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import { ExtendedTime } from './../../model/rationals/time';
 import { RepeatDef } from './../../model/score/repeats';
 import { getStateAt, ScopedTimeKey } from './state-map';
@@ -26,7 +27,7 @@ import { createIdPrefix, createStateMap } from './state-map';
 import { convertKey } from '../../physical-view/physical/physical-key';
 import { repeatsToView } from './convert-repeat';
 import { LongDecoToView } from './convert-decoration';
-import { EventType, getExtendedTime } from '~/model/score/timing-order';
+import { EventType, getExtendedTime } from '../../model/score/timing-order';
 
 export interface SubsetDef {
     startTime: AbsoluteTime;
@@ -172,7 +173,8 @@ export function scoreModelToViewModel(def: ScoreDef, restrictions: SubsetDef = {
 function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef, repeats: RepeatDef[] | undefined = undefined): StaffViewModel {
 
     //console.log(def, stateMap, staffNo);
-    (restrictions.startTime as ExtendedTime).extended = -Infinity;
+    //(restrictions.startTime as ExtendedTime).extended = -Infinity;
+    restrictions.startTime = { ...restrictions.startTime, extended: -Infinity } as AbsoluteTime;
 
     const clef = new Clef(def.initialClef);
 

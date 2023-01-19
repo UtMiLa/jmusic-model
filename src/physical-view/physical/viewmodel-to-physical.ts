@@ -149,7 +149,7 @@ function convertStaff(
 
     if (cursorElement) resultElements.push(cursorElement);
      
-    console.log('longElements', longElements);
+    //console.log('longElements', longElements);
     //console.log('resultElements', resultElements);
     
     return resultElements;

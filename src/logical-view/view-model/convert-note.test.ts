@@ -161,17 +161,17 @@ describe('View model, note', () => {
 
         const viewModel = scoreModelToViewModel(seq);
 
-        expect(viewModel.staves[0].timeSlots[0].beamings).to.have.length(1);
-        expect((viewModel.staves[0].timeSlots[0].beamings as any)[0].beams).to.deep.eq([
+        expect(viewModel.staves[0].timeSlots[1].beamings).to.have.length(1);
+        expect((viewModel.staves[0].timeSlots[1].beamings as any)[0].beams).to.deep.eq([
             { fromIdx: 0, toIndex: 2, level: 0 },
             { fromIdx: 1, toIndex: 2, level: 1 },
             { fromIdx: undefined, toIndex: 2, level: 2 },
         ]);
-        expect((viewModel.staves[0].timeSlots[3].beamings as any)[0].beams).to.deep.eq([
+        expect((viewModel.staves[0].timeSlots[4].beamings as any)[0].beams).to.deep.eq([
             { fromIdx: 0, toIndex: 1, level: 0 },
             { fromIdx: undefined, toIndex: 1, level: 1 },
         ]);
-        expect((viewModel.staves[0].timeSlots[10].beamings as any)[0].beams).to.deep.eq([
+        expect((viewModel.staves[0].timeSlots[11].beamings as any)[0].beams).to.deep.eq([
             { fromIdx: 0, toIndex: 2, level: 0 },
             { fromIdx: 0, toIndex: undefined, level: 1 },
             { fromIdx: undefined, toIndex: 2, level: 1 },
@@ -215,7 +215,7 @@ describe('View model, note', () => {
         
         const log2 = scoreModelToViewModel(score);
         //console.log(log2.staves[0].timeSlots);
-        expect(log2.staves[0].timeSlots[0].notes[0].expressions).to.deep.eq(['marcato']);
+        expect(log2.staves[0].timeSlots[1].notes[0].expressions).to.deep.eq(['marcato']);
     });
 
     it('should convert a note with lyrics to view model', () => {
