@@ -1,3 +1,5 @@
+import { getExtendedTime, EventType } from '~/model/score/timing-order';
+import { Note } from './../../model/notes/note';
 import { InsertionPoint } from './../../editor/insertion-point';
 import { BarType } from './score-view-model';
 import { FlagType } from './note-view-model';
@@ -106,6 +108,77 @@ describe('View model', () => {
 
     });
 
+
+    xit('should mark grace note beams as such', () => {
+        const staff: StaffDef = createTestStaff(['bes4 r4 bes16 b16 b4'], [4, 4], [-1, 3]);
+
+        (staff.voices[0].content.elements[2] as Note).grace = true;
+        (staff.voices[0].content.elements[3] as Note).grace = true;
+
+        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+
+        expect(staffView.timeSlots.length).to.eq(6);
+        expect(staffView.timeSlots[1].beamings, 'note 1').to.be.undefined;
+        expect(staffView.timeSlots[3].beamings, 'note 2').to.deep.eq([{
+            noteRefs: [ 
+                {
+                    absTime: getExtendedTime(Time.newAbsolute(1, 2), EventType.GraceNote, 0), 
+                    uniq: '0-0-2'
+                },
+                {
+                    absTime: getExtendedTime(Time.newAbsolute(1, 2), EventType.GraceNote, 1), 
+                    uniq: '0-0-3'
+                },
+            ],
+            beams: [
+                { fromIdx: 0, toIndex: 1, level: 0 },
+                { fromIdx: 0, toIndex: 1, level: 1 }
+            ]
+        }]);
+    });
+
+    xit('should beam grace notes even if starting off-beat', () => {
+        const staff: StaffDef = createTestStaff(['bes8 bes16 b16 b4'], [4, 4], [-1, 3]);
+
+        (staff.voices[0].content.elements[1] as Note).grace = true;
+        (staff.voices[0].content.elements[2] as Note).grace = true;
+
+        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+
+        expect(staffView.timeSlots.length).to.eq(5);
+        expect(staffView.timeSlots[1].beamings, 'note 1').to.deep.eq([{
+            noteRefs: [ 
+                {
+                    absTime: getExtendedTime(Time.newAbsolute(3, 8), EventType.GraceNote, 0), 
+                    uniq: '0-0-1'
+                },
+                {
+                    absTime: getExtendedTime(Time.newAbsolute(3, 8), EventType.GraceNote, 1), 
+                    uniq: '0-0-2'
+                },
+            ],
+            beams: [
+                { fromIdx: 0, toIndex: 1, level: 0 },
+                { fromIdx: 0, toIndex: 1, level: 1 }
+            ]
+        }]);
+        /*expect(staffView.timeSlots[5].beamings, 'note 3').to.be.undefined;        
+        expect(staffView.timeSlots[6].beamings, 'note 4').to.deep.eq([{
+            noteRefs: [
+                {
+                    absTime: Time.newAbsolute(5, 8), 
+                    uniq: '0-0-4'
+                },
+                {
+                    absTime: Time.newAbsolute(13, 16),
+                    uniq: '0-0-5'
+                },
+            ],
+            beams: [{ fromIdx: 0, toIndex: 1, level: 0 }, { fromIdx: undefined, toIndex: 1, level: 1 }]
+        }]);
+        expect(staffView.timeSlots[7].beamings, 'note 5').to.be.undefined;
+        expect(staffView.timeSlots[8].beamings, 'note 6').to.be.undefined;*/
+    });
 
     it('should make correct beams in cloned notes', () => {
 

@@ -214,5 +214,41 @@ describe('Beaming', () => {
         expect(beamGroups[1].notes).to.have.length(4);
     });
 
+    it('should beam grace notes separately from normal beams', () => {
+        const seq = new SimpleSequence( 'c16 c16 c16 c16 c16 c16 c16 c16 c16');
+
+        [0, 1, 3, 4, 5, 7].forEach(index => {
+            (seq.elements[index] as Note).grace = true;
+        });
+        
+        const meter = MeterFactory.createRegularMeter({ count: 4, value: 4 });
+
+        const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
+
+        expect(seq.duration).to.deep.eq(Time.newSpan(3, 16));
+        expect(beamGroups).to.have.length(2);
+        expect(beamGroups[0].beams).to.deep.eq([{
+            fromIdx: 0,
+            toIndex: 1,
+            level: 0
+        }, {
+            fromIdx: 0,
+            toIndex: 1,
+            level: 1
+        }]);
+        expect(beamGroups[0].notes).to.have.length(2);
+
+        expect(beamGroups[1].beams).to.deep.eq([{    
+            fromIdx: 0,
+            toIndex: 2,
+            level: 0
+        }, {    
+            fromIdx: 0,
+            toIndex: 2,
+            level: 1
+        }]);
+        expect(beamGroups[1].notes).to.have.length(3);
+    });
+
     
 });
