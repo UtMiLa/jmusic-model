@@ -83,71 +83,18 @@ function convertStaff(
     if (!mapItem)
         throw 'Internal error in measure map';
 
-    if (timeSlot.beamings) {
-        timeSlot.beamings.forEach(beaming => {
-            longElements.push(new PhysicalBeamGroup(beaming, settings));
-        });
-    }
+    convertBeamsIf(timeSlot, longElements, settings);
+    convertTupletsIf(timeSlot, longElements, settings);
+    convertDecorationsIf(timeSlot, longElements, settings);
+    convertClefIf(timeSlot, resultElements, mapItem, settings);
+    convertBarIf(timeSlot, resultElements, mapItem, settings);
+    resultElements = convertKeyIf(timeSlot, resultElements, mapItem, settings);
+    resultElements = convertMeterIf(timeSlot, resultElements, mapItem, settings);
+    resultElements = convertAccidentalsIf(timeSlot, resultElements, mapItem, settings);
+    resultElements = convertNotesIf(timeSlot, mapItem, settings, resultElements, longElements);
+    resultElements = convertTiesIf(timeSlot, resultElements, measureMap, mapItem, settings);
 
-    if (timeSlot.tuplets) {
-        timeSlot.tuplets.forEach(tuplet => longElements.push(new PhysicalTupletBracket(tuplet, settings)));
-    }
-
-    if (timeSlot.decorations) {
-        timeSlot.decorations.forEach(decoration => longElements.push(new PhysicalLongDecoration(decoration, settings)));
-    }
-
-
-    if (timeSlot.clef) {
-        resultElements.push(convertClef(timeSlot.clef, mapItem.clef as number, settings));
-    }
-    if (timeSlot.bar) {
-        let element = HorizVarSizeGlyphs.Bar;
-        if (timeSlot.bar.repeatEnd) {
-            element = timeSlot.bar.repeatStart ?  HorizVarSizeGlyphs.RepeatEndStart : HorizVarSizeGlyphs.RepeatEnd;
-        } else if (timeSlot.bar.repeatStart) {
-            element = HorizVarSizeGlyphs.RepeatStart;
-        }
-        resultElements.push({
-            element,
-            position: { x: mapItem.bar as number, y: 0 },
-            height: 4 * settings.scaleDegreeUnit * 2
-        } as PhysicalHorizVarSizeElement);
-    }
-    if (timeSlot.key) {
-        resultElements = resultElements.concat(convertKey(timeSlot.key, mapItem.key as number, settings));
-    }
-    if (timeSlot.meter) {
-        resultElements = resultElements.concat(convertMeter(timeSlot.meter, mapItem.meter as number, settings));
-    }
-    if (timeSlot.accidentals) {
-        resultElements = resultElements.concat(convertAccidentals(timeSlot.accidentals, mapItem.accidentals as number, settings));
-
-    }
-    timeSlot.notes.forEach((note: NoteViewModel) => {
-        const addItems = convertNote(note, mapItem.note, settings);
-        resultElements = resultElements.concat(addItems);
-        const notestem = addItems.find(elm => elm.element === HorizVarSizeGlyphs.Stem) as PhysicalHorizVarSizeElement;
-        /*if (note.flagType === FlagType.Beam && notestem) {
-            //console.log('adding beam');
-            longElements.forEach(beaming => beaming.addNote({ absTime: timeSlot.absTime, uniq: note.uniq + '' }, notestem, resultElements));
-        }
-        if (note.tuplet) {*/
-        longElements.forEach(longElement => longElement.addNote({ absTime: timeSlot.absTime, uniq: note.uniq + '' }, notestem, resultElements));
-        //}
-    });
-    if (timeSlot.ties) {
-        resultElements = resultElements.concat(convertTies(timeSlot.ties, measureMap, mapItem, settings));
-    }
-
-    let cursorElement: PhysicalHorizVarSizeElement | undefined;
-
-    if (cursor && Time.sortComparison(timeSlot.absTime, cursor.absTime) === 0) {
-        cursorElement = { element: HorizVarSizeGlyphs.Cursor, height: 20, position: { x: mapItem.note, y: scaleDegreeToY(cursor.position, settings) } };
-        //console.log('cursor', cursor, cursorElement);        
-    }
-
-    if (cursorElement) resultElements.push(cursorElement);
+    convertCursorIf(cursor, timeSlot, mapItem, settings, resultElements);
      
     //console.log('longElements', longElements);
     //console.log('resultElements', resultElements);
@@ -155,7 +102,33 @@ function convertStaff(
     return resultElements;
 }
 
-function convertTies(ties: TieViewModel[], measureMap: MeasureMap, mapItem: MeasureMapXValueItem, settings: Metrics) {
+function convertBeamsIf(timeSlot: TimeSlotViewModel, longElements: PhysicalLongElement[], settings: Metrics) {
+    if (timeSlot.beamings) {
+        timeSlot.beamings.forEach(beaming => {
+            longElements.push(new PhysicalBeamGroup(beaming, settings));
+        });
+    }
+}
+
+function convertCursorIf(cursor: Cursor | undefined, timeSlot: TimeSlotViewModel, mapItem: MeasureMapXValueItem, settings: Metrics, resultElements: PhysicalElementBase[]) {
+    let cursorElement: PhysicalHorizVarSizeElement | undefined;
+
+    if (cursor && Time.sortComparison(timeSlot.absTime, cursor.absTime) === 0) {
+        cursorElement = { element: HorizVarSizeGlyphs.Cursor, height: 20, position: { x: mapItem.note, y: scaleDegreeToY(cursor.position, settings) } };
+        //console.log('cursor', cursor, cursorElement);        
+    }
+
+    if (cursorElement)
+        resultElements.push(cursorElement);
+}
+
+function convertTiesIf(timeSlot: TimeSlotViewModel, resultElements: PhysicalElementBase[], measureMap: MeasureMap, mapItem: MeasureMapXValueItem, settings: Metrics) {
+    if (timeSlot.ties) {
+        resultElements = resultElements.concat(doConvertTies(timeSlot.ties, measureMap, mapItem, settings));
+    }
+    return resultElements;
+}
+function doConvertTies(ties: TieViewModel[], measureMap: MeasureMap, mapItem: MeasureMapXValueItem, settings: Metrics) {
     const tieElements: PhysicalElementBase[] = [];
     ties.forEach((tie: TieViewModel) => {
         let length = 12;
@@ -176,8 +149,67 @@ function convertTies(ties: TieViewModel[], measureMap: MeasureMap, mapItem: Meas
     });
     return tieElements;
 }
+function convertNotesIf(timeSlot: TimeSlotViewModel, mapItem: MeasureMapXValueItem, settings: Metrics, resultElements: PhysicalElementBase[], longElements: PhysicalLongElement[]) {
+    timeSlot.notes.forEach((note: NoteViewModel) => {
+        const addItems = convertNote(note, mapItem.note, settings);
+        resultElements = resultElements.concat(addItems);
+        const notestem = addItems.find(elm => elm.element === HorizVarSizeGlyphs.Stem) as PhysicalHorizVarSizeElement;
+        /*if (note.flagType === FlagType.Beam && notestem) {
+            //console.log('adding beam');
+            longElements.forEach(beaming => beaming.addNote({ absTime: timeSlot.absTime, uniq: note.uniq + '' }, notestem, resultElements));
+        }
+        if (note.tuplet) {*/
+        longElements.forEach(longElement => longElement.addNote({ absTime: timeSlot.absTime, uniq: note.uniq + '' }, notestem, resultElements));
+        //}
+    });
+    return resultElements;
+}
 
-function convertClef(clef: ClefViewModel, xPos: number, settings: Metrics): PhysicalElementBase {
+function convertAccidentalsIf(timeSlot: TimeSlotViewModel, resultElements: PhysicalElementBase[], mapItem: MeasureMapXValueItem, settings: Metrics) {
+    if (timeSlot.accidentals) {
+        resultElements = resultElements.concat(convertAccidentals(timeSlot.accidentals, mapItem.accidentals as number, settings));
+
+    }
+    return resultElements;
+}
+
+function convertMeterIf(timeSlot: TimeSlotViewModel, resultElements: PhysicalElementBase[], mapItem: MeasureMapXValueItem, settings: Metrics) {
+    if (timeSlot.meter) {
+        resultElements = resultElements.concat(convertMeter(timeSlot.meter, mapItem.meter as number, settings));
+    }
+    return resultElements;
+}
+
+function convertKeyIf(timeSlot: TimeSlotViewModel, resultElements: PhysicalElementBase[], mapItem: MeasureMapXValueItem, settings: Metrics) {
+    if (timeSlot.key) {
+        resultElements = resultElements.concat(convertKey(timeSlot.key, mapItem.key as number, settings));
+    }
+    return resultElements;
+}
+
+function convertBarIf(timeSlot: TimeSlotViewModel, resultElements: PhysicalElementBase[], mapItem: MeasureMapXValueItem, settings: Metrics) {
+    if (timeSlot.bar) {
+        let element = HorizVarSizeGlyphs.Bar;
+        if (timeSlot.bar.repeatEnd) {
+            element = timeSlot.bar.repeatStart ? HorizVarSizeGlyphs.RepeatEndStart : HorizVarSizeGlyphs.RepeatEnd;
+        } else if (timeSlot.bar.repeatStart) {
+            element = HorizVarSizeGlyphs.RepeatStart;
+        }
+        resultElements.push({
+            element,
+            position: { x: mapItem.bar as number, y: 0 },
+            height: 4 * settings.scaleDegreeUnit * 2
+        } as PhysicalHorizVarSizeElement);
+    }
+}
+
+function convertClefIf(timeSlot: TimeSlotViewModel, resultElements: PhysicalElementBase[], mapItem: MeasureMapXValueItem, settings: Metrics) {
+    if (timeSlot.clef) {
+        resultElements.push(doConvertClef(timeSlot.clef, mapItem.clef as number, settings));
+    }
+}
+
+function doConvertClef(clef: ClefViewModel, xPos: number, settings: Metrics): PhysicalElementBase {
     let glyph: GlyphCode;
 
     switch(clef.clefType) {
@@ -196,6 +228,20 @@ function convertClef(clef: ClefViewModel, xPos: number, settings: Metrics): Phys
         glyph
     } as PhysicalFixedSizeElement;
 }
+
+function convertDecorationsIf(timeSlot: TimeSlotViewModel, longElements: PhysicalLongElement[], settings: Metrics) {
+    if (timeSlot.decorations) {
+        timeSlot.decorations.forEach(decoration => longElements.push(new PhysicalLongDecoration(decoration, settings)));
+    }
+}
+
+function convertTupletsIf(timeSlot: TimeSlotViewModel, longElements: PhysicalLongElement[], settings: Metrics) {
+    if (timeSlot.tuplets) {
+        timeSlot.tuplets.forEach(tuplet => longElements.push(new PhysicalTupletBracket(tuplet, settings)));
+    }
+}
+
+
 /*
 function convertTupletBracket(tuplet: TupletViewModel, settings: Metrics): PhysicalTupletBracketElement {
 
