@@ -1,7 +1,7 @@
 /* eslint-disable comma-dangle */
 export interface RationalDef {
-    numerator: number;
-    denominator: number;
+    readonly numerator: number;
+    readonly denominator: number;
 }
 
 export class Rational {

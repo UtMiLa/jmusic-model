@@ -1,14 +1,14 @@
 import { Rational, RationalDef } from './rational';
 export interface TimeSpan extends RationalDef {
-    type: 'span'
+    readonly type: 'span'
 }
 
 export interface AbsoluteTime extends RationalDef {
-    type: 'abs'
+    readonly type: 'abs'
 }
 
 export interface ExtendedTime extends AbsoluteTime {
-    extended?: number;
+    readonly extended?: number;
 }
 
 export class Time {

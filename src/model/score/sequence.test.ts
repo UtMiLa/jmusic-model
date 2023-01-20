@@ -189,7 +189,7 @@ describe('Sequence', () => {
             expect(seqCombined.elements[0]).to.deep.equal(Note.parseLily('c4'));
             expect(seqCombined.elements[7]).to.deep.equal(Note.parseLily('c4'));
 
-            seq1.elements[0].duration.denominator = 8;
+            seq1.elements[0] = Note.clone(seq1.elements[0] as Note, { _duration: { ...seq1.elements[0].duration, denominator: 8 }});
 
             expect(seqCombined.elements[0]).to.deep.equal(Note.parseLily('c8'));
             expect(seqCombined.elements[7]).to.deep.equal(Note.parseLily('c8'));
