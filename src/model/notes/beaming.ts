@@ -36,6 +36,7 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
     const grouping: BeamGroup[] = [];
     let tempGroup: Note[] = [];
     let tempSubGroups: BeamDef[] = [];
+    let tempGraceGroup: Note[] = [];
     let subGroups: BeamDef[] = [];
     let time = Time.newAbsolute(0, 1);
     let prevBeamCnt = 0;
@@ -74,6 +75,29 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
         }
     }
 
+    function finishGraceGroup() {
+        /*while (prevBeamCnt >= 1) {
+            // end a subgroup
+            finishSubgroup();
+        }*/
+
+        if (tempGraceGroup.length >= 2) {
+            const beams = [];
+            for (let i = 0; i < beamCount(tempGraceGroup[0].nominalDuration.denominator); i++) {
+                beams.push({    
+                    fromIdx: 0,
+                    toIndex: tempGraceGroup.length - 1,
+                    level: i
+                });
+            }
+
+            grouping.push({ 
+                notes: tempGraceGroup, 
+                beams
+            });
+        }
+    }
+
     seq.elements.forEach((element, elmIndex) => {
         if (isStateChange(element)) {
             // state change
@@ -83,6 +107,20 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
             //const deco = element as LongDecorationElement;
         } else {
             const note = element;
+
+            if (note.grace) {
+                if (tempGraceGroup.length && tempGraceGroup[0].nominalDuration.denominator !== note.nominalDuration.denominator) {
+                    finishGraceGroup();
+                    tempGraceGroup = [];
+                }
+                tempGraceGroup.push(Note.clone(note, {uniq: keyPrefix + '-' + elmIndex }));
+                return;
+            }
+            if (tempGraceGroup.length) {
+                finishGraceGroup();
+                tempGraceGroup = [];
+            }
+
             const currBeamCnt = beamCount(note.undottedDuration.denominator);
             const isOnNextBeat = Time.sortComparison(time, nextBeat) >= 0;
             if (isOnNextBeat || currBeamCnt === 0 || !note.pitches.length) {
@@ -149,4 +187,18 @@ cur > prev: stop subgroup (if subgroup.length = 1: calc direction)
          8   16    32       32      32      32      16        8      32       32
 grp 
 subgrp       [1-]  [1-,2-] [1-,2-] [1-,2-] [1-,2-] [1-,2-5] [1-6]    [9-,9-] [9-,9-]  [9-10,9-10]
+*/
+
+/*
+if grace and denom > 4:
+    if existing grace group:
+        add to grace group
+    else:
+        create new grace group and add to this
+    subgroups should work like normal subgroups, except ignoring metric rules
+    p.t. workaround about subgroups: only groups grace notes with same denominator together
+if not grace:
+    if existing grace group:
+        close grace group, and clear it
+    continue with normal beaming strategy as above
 */

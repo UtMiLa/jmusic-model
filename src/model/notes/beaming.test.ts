@@ -226,7 +226,7 @@ describe('Beaming', () => {
         const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
 
         expect(seq.duration).to.deep.eq(Time.newSpan(3, 16));
-        expect(beamGroups).to.have.length(2);
+        expect(beamGroups).to.have.length(3);
         expect(beamGroups[0].beams).to.deep.eq([{
             fromIdx: 0,
             toIndex: 1,
