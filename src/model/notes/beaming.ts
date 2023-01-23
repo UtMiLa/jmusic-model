@@ -37,10 +37,14 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
     let tempGroup: Note[] = [];
     let tempSubGroups: BeamDef[] = [];
     let tempGraceGroup: Note[] = [];
+    let tempGraceSubGroups: BeamDef[] = [];
     let subGroups: BeamDef[] = [];
+    let graceSubGroups: BeamDef[] = [];
     let time = Time.newAbsolute(0, 1);
     let prevBeamCnt = 0;
+    let prevGraceBeamCnt = 0;
     let noteIdx = 0;
+    let graceNoteIdx = 0;
 
     function finishSubgroup() {
         prevBeamCnt--;
@@ -55,6 +59,21 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
         }
         if (subGrp.level)
             subGroups.push(subGrp);
+    }
+
+    function finishGraceSubgroup() {
+        prevGraceBeamCnt--;
+        const subGrp = tempGraceSubGroups.pop() as BeamDef;
+        subGrp.toIndex = graceNoteIdx - 1;
+        if (subGrp.fromIdx === subGrp.toIndex) {
+            if (subGrp.fromIdx === 0) {
+                subGrp.toIndex = undefined;
+            } else {
+                subGrp.fromIdx = undefined;
+            }
+        }
+        if (subGrp.level)
+            graceSubGroups.push(subGrp);
     }
 
     function finishGroup() {
@@ -76,10 +95,10 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
     }
 
     function finishGraceGroup() {
-        /*while (prevBeamCnt >= 1) {
+        while (prevGraceBeamCnt >= 1) {
             // end a subgroup
-            finishSubgroup();
-        }*/
+            finishGraceSubgroup();
+        }
 
         if (tempGraceGroup.length >= 2) {
             const beams = [];
@@ -89,6 +108,10 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
                     toIndex: tempGraceGroup.length - 1,
                     level: i
                 });
+            }
+
+            if (graceSubGroups.length) {
+                beams.push(...graceSubGroups);
             }
 
             grouping.push({ 
@@ -108,20 +131,34 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
         } else {
             const note = element;
 
+            const currBeamCnt = beamCount(note.undottedDuration.denominator);
+
             if (note.grace) {
-                if (tempGraceGroup.length && tempGraceGroup[0].nominalDuration.denominator !== note.nominalDuration.denominator) {
-                    finishGraceGroup();
-                    tempGraceGroup = [];
-                }
                 tempGraceGroup.push(Note.clone(note, {uniq: keyPrefix + '-' + elmIndex }));
+
+                while (currBeamCnt > prevGraceBeamCnt) {
+                    // start a subgroup
+                    tempGraceSubGroups.push({ fromIdx: graceNoteIdx, toIndex: undefined, level: prevGraceBeamCnt });
+                    prevGraceBeamCnt++;
+                } 
+                while (currBeamCnt < prevGraceBeamCnt && prevGraceBeamCnt >= 1) {
+                    // end a subgroup
+                    finishGraceSubgroup();
+                    //tempGraceSubGroups = [];
+                }
+                prevGraceBeamCnt = currBeamCnt;
+                graceNoteIdx++;
                 return;
             }
+            prevGraceBeamCnt = 0;
+            graceNoteIdx = 0;
             if (tempGraceGroup.length) {
                 finishGraceGroup();
                 tempGraceGroup = [];
             }
+            tempGraceSubGroups = [];
+            graceSubGroups = [];
 
-            const currBeamCnt = beamCount(note.undottedDuration.denominator);
             const isOnNextBeat = Time.sortComparison(time, nextBeat) >= 0;
             if (isOnNextBeat || currBeamCnt === 0 || !note.pitches.length) {
                 // new beat, or quarter note, or rest

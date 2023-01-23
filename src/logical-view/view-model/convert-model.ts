@@ -13,7 +13,7 @@ import { MeterFactory } from './../../model';
 import { meterToView } from './convert-meter';
 import { AbsoluteTime, Time } from './../../model';
 import { keyToView } from './convert-key';
-import { FlagType, NoteViewModel, TupletViewModel } from './note-view-model';
+import { FlagType, NoteViewModel, TupletViewModel, BeamingViewModel } from './note-view-model';
 import { Note, NoteDirection } from '../../model';
 import { Clef } from '../../model';
 import { SimpleSequence } from '../../model';
@@ -420,8 +420,8 @@ function createNoteViewModels(state: State): NoteViewModel[] {
 
         if (bg && bg.notes[0].uniq === note.uniq) {
             let noteTime = state.voiceTimeSlot.time;
-            const beaming = {
-                noteRefs: bg.notes.map((nt, idx) => {
+            const beaming: BeamingViewModel = {
+                noteRefs: bg.notes.map((nt) => {
                     const res = { 
                         absTime: state.findNoteTime(nt.uniq + ''),
                         uniq: nt.uniq + '' 
@@ -432,6 +432,9 @@ function createNoteViewModels(state: State): NoteViewModel[] {
                 ),
                 beams: bg.beams.sort((a: BeamDef, b: BeamDef) => a.level - b.level)
             };
+            if (note.grace) {
+                beaming.grace = true;
+            }
                             
             if (state.slot.beamings) {
                 state.slot.beamings.push(beaming);

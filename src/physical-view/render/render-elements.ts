@@ -129,13 +129,13 @@ export function renderBeam(elem: PhysicalElementBase, position: RenderPosition, 
 
     const elmBeam = elem as PhysicalBeamElement;
 
-    //console.log('render beam', elem);
+    const scale = elmBeam.scale ? elmBeam.scale : 1;
 
     renderer.draw('#000000', '#000000', [
         { type: DrawOperationType.MoveTo, points: [convertXY(elmBeam.position)]},
         { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height })]},
-        { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height - 3})]},
-        { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x, y: elmBeam.position.y - 3 })]},
+        { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height - 3 * scale })]},
+        { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x, y: elmBeam.position.y - 3 * scale })]},
         { type: DrawOperationType.Fill, points: []}
     ]);
 }
