@@ -1,15 +1,12 @@
 import { LongDecorationViewModel as LongDecorationViewModel } from './../../logical-view/view-model/convert-decoration';
 import { Time } from './../../model/rationals/time';
 import { ScoreViewModel } from './../../logical-view/view-model/score-view-model';
-import { PhysicalHorizVarSizeElement, PhysicalVertVarSizeElement } from './physical-elements';
-import { FlagType, NoteViewModel, BeamingViewModel, TupletViewModel } from './../../logical-view/view-model/note-view-model';
-import { HorizVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
+import { NoteViewModel } from './../../logical-view/view-model/note-view-model';
+import { VertVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */
 import { NoteType, NoteDirection } from '../../model/notes/note';
 import { Metrics, StandardMetrics } from './metrics';
 import { expect } from 'chai';
-import { convertNote } from './physical-note';
-import { findNoteInViewModel } from './physical-beaming';
 import { viewModelToPhysical } from './viewmodel-to-physical';
 import { LongDecorationType } from '~/model';
 

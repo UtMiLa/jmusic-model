@@ -24,9 +24,11 @@ export class PhysicalBeamGroup extends PhysicalLongElementBase {
         super(bvm.noteRefs, settings);
 
         this.beams = bvm.beams;
+        this.grace = bvm.grace;
     }
 
     beams: BeamDef[];
+    grace?: boolean;
 
     calcSlope(): number {
         const firstNote = this.getNotestem(0);
@@ -83,12 +85,17 @@ export class PhysicalBeamGroup extends PhysicalLongElementBase {
             const length = lastXPos - firstXPos;
             const height = length * slope;
             const yStart = (firstXPos - startPoint.x) * slope + startPoint.y;
-            output.push({
+            const beamSpacing = this.grace ? this.settings.beamSpacing * this.settings.graceScale : this.settings.beamSpacing;
+            const res: PhysicalElementBase = {
                 element: VertVarSizeGlyphs.Beam,
-                position: { x: firstXPos, y: yStart - this.settings.beamSpacing * beam.level * sign },
+                position: { x: firstXPos, y: yStart - beamSpacing * beam.level * sign },
                 length,
                 height
-            });
+            };
+            if (this.grace) {
+                res.scale = this.settings.graceScale;
+            }
+            output.push(res);
 
         });
     }

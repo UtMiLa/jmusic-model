@@ -109,7 +109,7 @@ describe('View model', () => {
     });
 
 
-    xit('should mark grace note beams as such', () => {
+    it('should mark grace note beams as such', () => {
         const staff: StaffDef = createTestStaff(['bes4 r4 bes16 b16 b4'], [4, 4], [-1, 3]);
 
         (staff.voices[0].content.elements[2] as Note).grace = true;
@@ -137,7 +137,7 @@ describe('View model', () => {
         }]);
     });
 
-    xit('should beam grace notes even if starting off-beat', () => {
+    it('should beam grace notes even if starting off-beat', () => {
         const staff: StaffDef = createTestStaff(['bes8 bes16 b16 b4'], [4, 4], [-1, 3]);
 
         (staff.voices[0].content.elements[1] as Note).grace = true;
@@ -146,14 +146,14 @@ describe('View model', () => {
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
         expect(staffView.timeSlots.length).to.eq(5);
-        expect(staffView.timeSlots[1].beamings, 'note 1').to.deep.eq([{
+        expect(staffView.timeSlots[2].beamings, 'note 1').to.deep.eq([{
             noteRefs: [ 
                 {
-                    absTime: getExtendedTime(Time.newAbsolute(3, 8), EventType.GraceNote, 0), 
+                    absTime: getExtendedTime(Time.newAbsolute(1, 8), EventType.GraceNote, 0), 
                     uniq: '0-0-1'
                 },
                 {
-                    absTime: getExtendedTime(Time.newAbsolute(3, 8), EventType.GraceNote, 1), 
+                    absTime: getExtendedTime(Time.newAbsolute(1, 8), EventType.GraceNote, 1), 
                     uniq: '0-0-2'
                 },
             ],

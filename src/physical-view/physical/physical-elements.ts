@@ -11,6 +11,7 @@ export interface PhysicalElementBase {
     position: Point;
     length?: number;
     height?: number;
+    scale?: number;
 }
 
 export interface PhysicalFixedSizeElement extends PhysicalElementBase {

@@ -446,6 +446,74 @@ describe('Physical model, note beaming', () => {
         
     });
 
+    
+
+    it('should output smaller beams for a grace note 1/8 1/8 1/4 group', () => {
+        const beaming = {
+            noteRefs: [
+                {
+                    absTime: Time.newAbsolute(0, 1), 
+                    uniq: '16_1'
+                },
+                {
+                    absTime: Time.newAbsolute(1, 16), 
+                    uniq: '16_2'
+                },
+                {
+                    absTime: Time.newAbsolute(1, 8), 
+                    uniq: '8'
+                }
+            ],
+            beams: [
+                { fromIdx: 0, toIndex: 2, level: 0 },
+                { fromIdx: 0, toIndex: 1, level: 1 }
+            ],
+            grace: true
+        };
+        const physBM = new PhysicalBeamGroup(beaming as BeamingViewModel, defaultMetrics);
+
+        const notestem1 = { element: HorizVarSizeGlyphs.Stem, height: 14, position: { x: 70+7, y: -1 * 6 } };
+        const notestem2 = { element: HorizVarSizeGlyphs.Stem, height: 14, position: { x: 90+7, y: 1 * 6 } };
+        const notestem3 = { element: HorizVarSizeGlyphs.Stem, height: 14, position: { x: 110+7, y: 2 * 6 } };
+
+        const output: any[] = [];
+   
+        expect(physBM.addNote({
+            uniq: '16_1',
+            absTime: Time.newAbsolute(0, 1)
+        }, notestem1, output)).to.be.false;
+
+        expect(physBM.addNote({
+            uniq: '16_2',
+            absTime: Time.newAbsolute(1, 16)  
+        }, notestem2, output)).to.be.false;
+
+        expect(output).to.have.length(0);
+
+        expect(physBM.addNote({
+            uniq: '8',
+            absTime: Time.newAbsolute(1, 8)  
+        }, notestem3, output)).to.be.true;
+
+        expect(output).to.have.length(2);
+        
+        expect(output[0].element).to.eq(VertVarSizeGlyphs.Beam);
+        expect(output[0].position.x).to.eq(notestem1.position.x);
+        expect(output[0].position.y).to.eq(notestem1.position.y + notestem1.height);
+        expect(output[0].length).to.eq(notestem3.position.x - notestem1.position.x);
+        expect(output[0].height).to.eq(notestem3.position.y - notestem1.position.y);
+        expect(output[0].scale).to.eq(defaultMetrics.graceScale);
+
+        expect(output[1].element).to.eq(VertVarSizeGlyphs.Beam);
+        expect(output[1].position.x).to.eq(notestem1.position.x);
+        expect(output[1].position.y).to.eq(notestem1.position.y + notestem1.height - defaultMetrics.beamSpacing * defaultMetrics.graceScale);
+        expect(output[1].length).to.eq(notestem2.position.x - notestem1.position.x);
+        expect(output[1].height).to.eq((notestem3.position.y - notestem1.position.y) * (90-70)/(110-70) );
+
+        expect(notestem2.height).to.eq(14 - 3);
+    });
+
+    
 /*
 
     Når der kommer en BeamGrpVM, oprettes en physBeamGrp, som pushes i en lokal stak.

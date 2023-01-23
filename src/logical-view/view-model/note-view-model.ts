@@ -12,6 +12,7 @@ export interface NoteRef {
 export interface BeamingViewModel {
     noteRefs: NoteRef[];    
     beams: BeamDef[];
+    grace?: boolean;
 }
 
 export interface TupletDef {
