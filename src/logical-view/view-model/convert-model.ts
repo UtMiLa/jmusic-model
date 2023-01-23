@@ -42,13 +42,22 @@ class State {
         public voice: VoiceDef, 
         public clef: Clef
     ) {
-        //        
+        const voiceSequence = voice.content;
+        this.voiceTimeSlots = voiceSequence.groupByTimeSlots(createIdPrefix(staffNo, voiceNo));
     }
 
     public nextBarIterator: IterableIterator<AbsoluteTime> | undefined;
     public nextBar = Time.EternityTime;
     public tupletGroups = [] as TupletViewModel[];
     public tupletGroup: TupletViewModel | undefined;
+    public voiceTimeSlots: TimeSlot[];
+
+    
+    findNoteTime(uniq: string): AbsoluteTime {
+        const slot = this.voiceTimeSlots.find(vts => vts.elements.find(elm => elm.uniq === uniq));
+        if (!slot) throw 'Note not found: ' + uniq;
+        return slot.time;
+    }
 
 
     private _voiceTimeSlot: TimeSlot | undefined;
@@ -278,7 +287,6 @@ function createViewModelsForVoice(def: StaffDef, staffNo: number, meter: Meter |
 
     def.voices.forEach((voice, voiceNo) => {
         const voiceSequence = voice.content;
-        const voiceTimeSlots = voiceSequence.groupByTimeSlots(createIdPrefix(staffNo, voiceNo));
         const voiceEndTime = Time.fromStart(voiceSequence.duration);
         const voiceBeamGroups = meter ? calcBeamGroups(voiceSequence, meterMap.getAllBeats(), `${staffNo}-${voiceNo}`) : [];
 
@@ -293,7 +301,7 @@ function createViewModelsForVoice(def: StaffDef, staffNo: number, meter: Meter |
             state.setMeter(meter, Time.newAbsolute(0, 1));
 
 
-        voiceTimeSlots.forEach((voiceTimeSlot, slotNo) => {
+        state.voiceTimeSlots.forEach((voiceTimeSlot, slotNo) => {
             state.slot = getTimeSlot(timeSlots, voiceTimeSlot.time);
             state.voiceTimeSlot = voiceTimeSlot;
             state.slotNo = slotNo;
@@ -302,7 +310,7 @@ function createViewModelsForVoice(def: StaffDef, staffNo: number, meter: Meter |
             if (voiceTimeSlot.decorations) {
                 if (!state.slot.decorations) state.slot.decorations = [];
                 voiceTimeSlot.decorations.forEach(vc => {
-                    const decoVM = LongDecoToView(vc, voiceTimeSlot.time, voiceTimeSlots);
+                    const decoVM = LongDecoToView(vc, voiceTimeSlot.time, state.voiceTimeSlots);
                     if (!decoVM) throw 'Error converting long decoration';
                     state.slot.decorations?.push(decoVM);
                 });
@@ -414,7 +422,10 @@ function createNoteViewModels(state: State): NoteViewModel[] {
             let noteTime = state.voiceTimeSlot.time;
             const beaming = {
                 noteRefs: bg.notes.map((nt, idx) => {
-                    const res = { absTime: noteTime, uniq: nt.uniq + '' };
+                    const res = { 
+                        absTime: state.findNoteTime(nt.uniq + ''),
+                        uniq: nt.uniq + '' 
+                    };
                     noteTime = Time.addTime(noteTime, nt.duration);
                     return res;
                 }

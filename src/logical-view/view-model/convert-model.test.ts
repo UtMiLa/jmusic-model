@@ -122,11 +122,11 @@ describe('View model', () => {
         expect(staffView.timeSlots[3].beamings, 'note 2').to.deep.eq([{
             noteRefs: [ 
                 {
-                    absTime: getExtendedTime(Time.newAbsolute(1, 2), EventType.GraceNote, 0), 
+                    absTime: getExtendedTime(Time.newAbsolute(1, 2), EventType.GraceNote, 1), 
                     uniq: '0-0-2'
                 },
                 {
-                    absTime: getExtendedTime(Time.newAbsolute(1, 2), EventType.GraceNote, 1), 
+                    absTime: getExtendedTime(Time.newAbsolute(1, 2), EventType.GraceNote, 2), 
                     uniq: '0-0-3'
                 },
             ],
@@ -149,11 +149,11 @@ describe('View model', () => {
         expect(staffView.timeSlots[2].beamings, 'note 1').to.deep.eq([{
             noteRefs: [ 
                 {
-                    absTime: getExtendedTime(Time.newAbsolute(1, 8), EventType.GraceNote, 0), 
+                    absTime: getExtendedTime(Time.newAbsolute(1, 8), EventType.GraceNote, 1), 
                     uniq: '0-0-1'
                 },
                 {
-                    absTime: getExtendedTime(Time.newAbsolute(1, 8), EventType.GraceNote, 1), 
+                    absTime: getExtendedTime(Time.newAbsolute(1, 8), EventType.GraceNote, 2), 
                     uniq: '0-0-2'
                 },
             ],
