@@ -241,7 +241,7 @@ describe('Physical model, measure map', () => {
         });
 
         expect(measureMap.lookup(Time.newExtendedTime(1, 4))).to.deep.equal({
-            note: 100 + defaultMetrics.leftMargin
+            note: 80 + defaultMetrics.graceNoteSpacing + defaultMetrics.leftMargin
         });
 
     });

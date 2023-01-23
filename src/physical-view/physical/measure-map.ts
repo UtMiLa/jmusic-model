@@ -254,11 +254,17 @@ export function getTimeSlotSpacing(slot: TimeSlotViewModel, settings: Metrics): 
         res.width += res.widths.accidentals;
     }
     if (slot.notes.length) { 
-        // todo: notes can have different position in same staff.
-        // todo: calculate left and right displacement, and an offset and width from that
-        res.widths.note = settings.defaultSpacing;
-        res.offsets.note = 0;
-        res.width += res.widths.note;
+        if (slot.notes[0].grace) {
+            res.widths.note = settings.graceNoteSpacing;
+            res.offsets.note = 0;
+            res.width += res.widths.note;
+        } else {
+            // todo: notes can have different position in same staff.
+            // todo: calculate left and right displacement, and an offset and width from that
+            res.widths.note = settings.defaultSpacing;
+            res.offsets.note = 0;
+            res.width += res.widths.note;
+        }
     }
 
     return res;

@@ -21,6 +21,7 @@ export interface Metrics {
     graceScale: number;
 
     defaultSpacing: number;
+    graceNoteSpacing: number;
     afterBarSpacing: number;
     beforeRepeatSpacing: number;
     afterRepeatSpacing: number;
@@ -79,6 +80,7 @@ export class StandardMetrics implements Metrics {
     graceScale = 0.6;
 
     defaultSpacing = 20;
+    graceNoteSpacing = 12;
     afterBarSpacing = 8;
     beforeRepeatSpacing = 8;
     afterRepeatSpacing = 8;
