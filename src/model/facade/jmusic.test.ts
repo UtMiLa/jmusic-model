@@ -123,6 +123,7 @@ describe('Facade', () => {
     });
     describe('Operations', () => {
         let score: JMusic;
+        let scoreChangeCalls: number;
 
         beforeEach(() => {
             score = new JMusic({ 
@@ -131,6 +132,8 @@ describe('Facade', () => {
                 clefs: [ 'treble', 'bass' ],
                 key: 'g \\minor'
             });
+            scoreChangeCalls = 0;
+            score.onChanged(() => { scoreChangeCalls++; });
         });
 
         it('should append a note to a voice', () => {
@@ -141,6 +144,7 @@ describe('Facade', () => {
             const seq = score.staves[0].voices[1].content;
             expect(seq.duration).to.deep.eq(Time.newSpan(9, 4));
             expect(seq.elements[8]).to.deep.eq(Note.parseLily('e4'));
+            expect(scoreChangeCalls).to.eq(1);
         });
 
         // todo: make these methods work with function sequences as well
@@ -153,6 +157,7 @@ describe('Facade', () => {
             score.addPitch(ins, Pitch.parseLilypond('e'));
             const seq = score.staves[0].voices[1].content;
             expect(seq.elements[3]).to.deep.eq(Note.parseLily('<c e>4'));
+            expect(scoreChangeCalls).to.eq(1);
         });
 
         xit('should remove a pitch from a note', () => {});
@@ -172,6 +177,7 @@ describe('Facade', () => {
 
     describe('Decorations', () => {
         let score: JMusic;
+        let scoreChangeCalls: number;
 
         beforeEach(() => {
             score = new JMusic({ 
@@ -180,6 +186,8 @@ describe('Facade', () => {
                 clefs: [ 'treble', 'bass' ],
                 key: 'g \\minor'
             });
+            scoreChangeCalls = 0;
+            score.onChanged(() => { scoreChangeCalls++; });
         });
 
         it('should add a crescendo to a voice', () => {
@@ -192,12 +200,14 @@ describe('Facade', () => {
 
             let voice = score.staves[0].voices[1];
             expect(voice.content.elements[3]).to.deep.equal({ longDeco: LongDecorationType.Crescendo, length: Time.WholeTime, duration: Time.NoTime });
+            expect(scoreChangeCalls).to.eq(1);
 
             ins.time = Time.newAbsolute(5, 4);
             score.addLongDecoration(LongDecorationType.Decrescendo, ins, Time.HalfTime);
 
             voice = score.staves[0].voices[1];
             expect(voice.content.elements[6]).to.deep.equal({ longDeco: LongDecorationType.Decrescendo, length: Time.HalfTime, duration: Time.NoTime });
+            expect(scoreChangeCalls).to.eq(2);
 
         });
     });

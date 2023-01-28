@@ -36,6 +36,8 @@ export type KeyFlex = Key | KeyDef | string;
 /** Tolerant input type for sequences: a ISequence object, or a string in Lilypond format */
 export type SequenceFlex = ISequence | string;
 
+export type ChangeHandler = () => void;
+
 /** Facade object for music scores */
 export class JMusic implements ScoreDef {
 
@@ -76,6 +78,8 @@ export class JMusic implements ScoreDef {
 
     staves: StaffDef[] = [];
     repeats?: RepeatDef[] | undefined;
+
+    changeHandlers: ChangeHandler[] = [];
 
     static makeClef(input: ClefFlex): ClefDef {
         if (typeof (input) === 'string') {
@@ -131,19 +135,30 @@ export class JMusic implements ScoreDef {
         const note = JMusic.makeNote(noteInput);
         const seq = this.sequenceFromInsertionPoint(ins);
         seq.elements.push(note);
+        this.didChange();
     }
 
     addPitch(ins: InsertionPoint, pitch: Pitch): void {
         const seq = this.sequenceFromInsertionPoint(ins);
         const note = this.noteFromInsertionPoint(ins);
         note.pitches.push(pitch);
+        this.didChange();
     }
 
 
-    addLongDecoration(decorationType: LongDecorationType, ins: InsertionPoint, length: TimeSpan) {
+    addLongDecoration(decorationType: LongDecorationType, ins: InsertionPoint, length: TimeSpan): void {
         const seq = this.sequenceFromInsertionPoint(ins);
 
         seq.insertElement(ins.time, { longDeco: decorationType, length, duration: Time.NoTime });
+        this.didChange();
+    }
+
+    onChanged(handler: ChangeHandler): void {        
+        this.changeHandlers.push(handler);
+    }
+
+    didChange(): void {
+        this.changeHandlers.forEach(handler => handler());
     }
 
 }
