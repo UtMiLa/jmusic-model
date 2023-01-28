@@ -18,6 +18,11 @@ export class Clef {
         return -this.def.clefType + this.def.line + pitch.diatonicNumber;
     }
 
+    mapPosition(position: number): Pitch {
+        const diatonicNumber = position + this.def.clefType - this.def.line + 4 * 7;
+        return new Pitch(diatonicNumber % 7, Math.trunc(diatonicNumber / 7));
+    }
+
     equals(clef: Clef): boolean {
         return this.def.clefType === clef.def.clefType && this.def.line === clef.def.line;
     }

@@ -40,6 +40,27 @@ describe('Clef', () => {
 
     });
 
+    it('should map line correctly to pitch', () => {
+        const pitchC4 = new Pitch(0, 4);
+        const resTreble = clefTreble.mapPosition(-6);
+        const resAlto = clefAlto.mapPosition(0);
+        const resBass = clefBass.mapPosition(6);
+        const resTenor = clefTenor.mapPosition(1);
+        const resTenorC = clefTenorC.mapPosition(2);
+        expect(resTreble).to.deep.equal(pitchC4);
+        expect(resAlto).to.deep.equal(pitchC4);
+        expect(resBass).to.deep.equal(pitchC4);
+        expect(resTenor).to.deep.equal(pitchC4);
+        expect(resTenorC).to.deep.equal(pitchC4);
+
+        const pitchF3 = new Pitch(3, 3);
+        const resBassF = clefBass.mapPosition(2);
+        const resAltoF = clefAlto.mapPosition(-4);
+        expect(resBassF).to.deep.equal(pitchF3);
+        expect(resAltoF).to.deep.equal(pitchF3);
+
+    });
+
     it('should parse a clef change', () => {
         const seq = new SimpleSequence( 'c4 \\clef treble c4' );
 

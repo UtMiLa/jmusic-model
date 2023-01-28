@@ -13,6 +13,7 @@ import { Meter } from '../states/meter';
 import { Note } from '../notes/note';
 import { Pitch } from '../pitches/pitch';
 import { Time } from '../rationals/time';
+import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
 
 export interface JMusicSettings {
     content: string[][];
@@ -131,6 +132,19 @@ export class JMusic implements ScoreDef {
         return this.staves[ins.staffNo].voices[ins.voiceNo].content.groupByTimeSlots('0').filter(ts => Time.equals(ts.time, ins.time))[0].elements[0];
     }
 
+    pitchFromInsertionPoint(ins: InsertionPoint): Pitch {
+        const stateMap = createStateMap(this);
+        const state = getStateAt(stateMap, ins.time, ins.staffNo);
+        if (!state.clef) {
+            const clef = this.staves[ins.staffNo].initialClef;
+            if (!clef) throw 'Cannot map position without a clef';
+
+            state.clef = new Clef(clef);
+        }
+        
+        return state.clef.mapPosition(ins.position);
+    }
+
     appendNote(ins: InsertionPoint, noteInput: NoteFlex): void {
         const note = JMusic.makeNote(noteInput);
         const seq = this.sequenceFromInsertionPoint(ins);
@@ -138,7 +152,10 @@ export class JMusic implements ScoreDef {
         this.didChange();
     }
 
-    addPitch(ins: InsertionPoint, pitch: Pitch): void {
+    addPitch(ins: InsertionPoint, pitch?: Pitch): void {
+        if (!pitch) {
+            pitch = this.pitchFromInsertionPoint(ins);
+        }
         const seq = this.sequenceFromInsertionPoint(ins);
         const note = this.noteFromInsertionPoint(ins);
         note.pitches.push(pitch);

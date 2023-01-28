@@ -160,6 +160,33 @@ describe('Facade', () => {
             expect(scoreChangeCalls).to.eq(1);
         });
 
+        it('should calculate a pitch from the insertion point', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 1;
+            ins.position = 3;
+            ins.time = Time.newAbsolute(3, 4);
+            const pitch = score.pitchFromInsertionPoint(ins);
+            expect(pitch).to.deep.eq(Pitch.parseLilypond('e\'\''));
+            expect(scoreChangeCalls).to.eq(0);
+
+            ins.position = 4;
+            const pitch1 = score.pitchFromInsertionPoint(ins);
+            expect(pitch1).to.deep.eq(Pitch.parseLilypond('f\'\''));
+        });
+
+        it('should add a pitch from the insertion point', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 1;
+            ins.position = 3;
+            ins.time = Time.newAbsolute(3, 4);
+            score.addPitch(ins);
+            const seq = score.staves[0].voices[1].content;
+            expect(seq.elements[3]).to.deep.eq(Note.parseLily('<c e\'\'>4'));
+            expect(scoreChangeCalls).to.eq(1);
+        });
+
         xit('should remove a pitch from a note', () => {});
         xit('should alter a pitch in a note', () => {});
         xit('should convert a note to a rest', () => {});
