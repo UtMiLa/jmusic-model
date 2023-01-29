@@ -193,7 +193,19 @@ describe('Facade', () => {
         xit('should convert a rest to a note', () => {});
         xit('should delete a note', () => {});
         xit('should insert a note', () => {});
-        xit('should insert a meter change', () => {});
+
+        it('should insert a meter change', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 1;
+            ins.position = 3;
+            ins.time = Time.newAbsolute(1, 1);
+            score.addMeterChg(ins, '3/4');
+            const seq = score.staves[0].voices[1].content;
+            expect(seq.elements[4]).to.deep.include({meter: MeterFactory.createRegularMeter({ count: 3, value: 4})});
+            expect(scoreChangeCalls).to.eq(1);
+        });
+
         xit('should change a key change', () => {});
         xit('should delete a clef change', () => {});
         xit('should add a variable', () => {});

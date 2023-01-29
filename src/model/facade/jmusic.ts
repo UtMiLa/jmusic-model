@@ -2,7 +2,7 @@ import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
 import { ISequence } from './../score/sequence';
 import { InsertionPoint } from './../../editor/insertion-point';
-import { RegularMeterDef } from './../states/meter';
+import { RegularMeterDef, MeterFactory } from './../states/meter';
 import { Key, KeyDef } from './../states/key';
 import { Clef, ClefDef } from './../states/clef';
 import { RepeatDef } from '../score/repeats';
@@ -167,6 +167,14 @@ export class JMusic implements ScoreDef {
         const seq = this.sequenceFromInsertionPoint(ins);
 
         seq.insertElement(ins.time, { longDeco: decorationType, length, duration: Time.NoTime });
+        this.didChange();
+    }
+
+    addMeterChg(ins: InsertionPoint, meter: MeterFlex) {
+        const m = JMusic.makeMeter(meter);
+        
+        const seq = this.sequenceFromInsertionPoint(ins);
+        seq.insertElement(ins.time, { isState: true, meter: MeterFactory.createRegularMeter(m), duration: Time.NoTime });
         this.didChange();
     }
 
