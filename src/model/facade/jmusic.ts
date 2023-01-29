@@ -8,7 +8,7 @@ import { Clef, ClefDef } from './../states/clef';
 import { RepeatDef } from '../score/repeats';
 import { parseLilyClef, parseLilyKey, parseLilyMeter, SimpleSequence } from '../score/sequence';
 import { StaffDef } from '../score/staff';
-import { ScoreDef } from './../score/score';
+import { isScoreDef, ScoreDef } from './../score/score';
 import { Meter } from '../states/meter';
 import { Note } from '../notes/note';
 import { Pitch } from '../pitches/pitch';
@@ -42,7 +42,7 @@ export type ChangeHandler = () => void;
 /** Facade object for music scores */
 export class JMusic implements ScoreDef {
 
-    constructor(voice?: string | JMusicSettings) {
+    constructor(voice?: string | JMusicSettings | ScoreDef) {
         if (typeof(voice) === 'string') {
             this.staves.push({ 
                 initialClef: Clef.clefTreble.def,
@@ -50,6 +50,8 @@ export class JMusic implements ScoreDef {
                 initialMeter: { count: 4, value: 4 },
                 voices: [{ content: new SimpleSequence(voice) }]
             });
+        } else if (isScoreDef(voice)) {
+            this.staves = [ ...voice.staves ]; 
         } else if (typeof(voice) === 'object') {
             const settings = voice as JMusicSettings;
             settings.content.forEach((stf, idx) => {

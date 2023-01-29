@@ -5,9 +5,11 @@ import { Time } from './../rationals/time';
 import { Clef, ClefType } from './../states/clef';
 import { expect } from 'chai';
 import { JMusic } from './jmusic';
-import { Note } from '../notes/note';
+import { Note, NoteDirection } from '../notes/note';
 import { Pitch } from '../pitches/pitch';
 import { Key } from '../states/key';
+import { SimpleSequence } from '../score/sequence';
+import { StaffDef } from '../score/staff';
 
 describe('Facade', () => {
 
@@ -120,6 +122,44 @@ describe('Facade', () => {
             expect(sc.staves[1].voices[0].content.elements).to.have.length(4);
             expect(sc.repeats).to.be.undefined;
         });
+
+        it('should create a score from a ScoreDef object', () => {
+            const meterModel = {
+                staves: [{
+                    initialClef: { clefType: ClefType.G, line: -2 },
+                    initialMeter: { count: 4, value: 4 },
+                    initialKey: { accidental: -1, count: 0 },
+                    voices:[
+                        {
+                            noteDirection: NoteDirection.Up,
+                            content: new SimpleSequence('c\'1')
+                        },
+                        {
+                            noteDirection: NoteDirection.Down,
+                            content: new SimpleSequence('c1')
+                        }
+                    ]
+                } as StaffDef,
+                {
+                    initialClef: { clefType: ClefType.F, line: 2 },
+                    initialMeter: { count: 4, value: 4 },
+                    initialKey: { accidental: -1, count: 0 },
+                    voices:[
+                        {
+                            noteDirection: NoteDirection.Up,
+                            content: new SimpleSequence('c,1')
+                        }
+                    ]
+                } as StaffDef
+                ]
+            };
+
+            const jMusicObj = new JMusic(meterModel);
+
+            expect(jMusicObj.staves).to.have.length(2);
+        });
+
+
     });
     describe('Operations', () => {
         let score: JMusic;
