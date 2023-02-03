@@ -1,4 +1,4 @@
-import { add, mathMod, multiply, pipe, range, __ } from 'ramda';
+import { add, mathMod, multiply, pipe, range, times, __ } from 'ramda';
 import { Alteration, Pitch, PitchClass, Accidental } from './../pitches/pitch';
 
 export interface KeyDef {
@@ -21,14 +21,18 @@ export class Key {
     }*/
 
     enumerate(): PitchClass[] {
-        const firstPc = this.def.accidental === 1 ? 3 : 6; // pitchclass of resp. first # and first b
-        const fifthStep = this.def.accidental === 1 ? 4 : 3; // step a fifth up or diwn
+        return Key.enumerate(this.def.accidental, this.def.count);
+    }
 
-        const calcPc = pipe(multiply(fifthStep), add(firstPc), mathMod(__, 7)); // pitchclass for nth accidental
+    static enumerate(accidental: Alteration, count: number): PitchClass[] {
+        const firstPc = accidental === 1 ? 3 : 6; // pitchclass of resp. first # and first b
+        // const firstPc = ifElse(equals(1), always(3), always(6))(accidental);
+        const fifthStep = accidental * 4; // step a fifth up or down for each new accidental
+        const toPCObject = (pc: number) => new PitchClass(pc, accidental); // pc number to PitchClass object
 
-        const pcs = range(0, this.def.count).map(calcPc); // all pitchclasses of key
+        const calcPc = pipe(multiply(fifthStep), add(firstPc), mathMod(__, 7), toPCObject); // pitchclass for nth accidental
 
-        return pcs.map(pc0 => new PitchClass(pc0, this.def.accidental)); // convert to PitchClass objects
+        return times(calcPc, count); // all pitchclasses of key
     }
 
     static fromMode(pitch: PitchClass, mode: string): Key {
