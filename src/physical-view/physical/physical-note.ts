@@ -5,6 +5,7 @@ import { Metrics } from './metrics';
 import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement, PhysicalVertVarSizeElement, PhysicalTextElement } from './physical-elements';
 import { calcDisplacements, scaleDegreeToY } from './functions';
 import { getGlyphForNoteExpression } from '../../model/notes/note-expressions';
+import { mathMod } from 'ramda';
 
 
 /*export function testNote(viewModel: any): NoteViewModel | undefined {
@@ -149,7 +150,7 @@ function convertRest(note: NoteViewModel, xPos: number, settings: Metrics) {
 function addDots(note: NoteViewModel, yPos: number, settings: Metrics, result: PhysicalElementBase[], xPos: number) {
     if (note.dotNo) {
         for (let i = 0; i < note.dotNo; i++) {
-            const yAdjustedPos = yPos + ((yPos + settings.scaleDegreeUnit) % (settings.scaleDegreeUnit*2));
+            const yAdjustedPos = yPos + mathMod((yPos + settings.scaleDegreeUnit), (settings.scaleDegreeUnit*2));
             //console.log('yAdjustedPos', yAdjustedPos, yPos, (yPos % settings.scaleDegreeUnit*2));
             result.push({
                 position: { x: xPos + settings.dotToNoteDist + settings.dotToDotDist * i, y: yAdjustedPos },

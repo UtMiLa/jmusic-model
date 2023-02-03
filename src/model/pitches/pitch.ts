@@ -1,3 +1,5 @@
+import {mathMod}  from 'ramda';
+
 const pitchNames = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
 const accidentalNamesLy = ['eses', 'es', '', 'is', 'isis'];
 const accidentalNamesEn = [' dbl flat', ' flat', '', ' sharp', ' dbl sharp'];
@@ -28,7 +30,7 @@ export class Pitch {
     public static fromMidi(midiNo: number): Pitch {
         const pitch = Math.floor(7 * (midiNo - 56) / 12) - 2;        
         const alterationNo = midiNo - Math.floor(12 * (pitch + 1) / 7) - 59;
-        return new Pitch((pitch + 700) % 7, Math.trunc((midiNo) / 12) - 1, alterationNo as Alteration);
+        return new Pitch(mathMod(pitch, 7), Math.trunc((midiNo) / 12) - 1, alterationNo as Alteration);
     }
 
     public get midi(): number {
@@ -130,7 +132,7 @@ export class PitchClass {
     }
     /** 0 = C, +1 = fifth up (1 = G, 2 = D), -1 = fifth down (-1 = F etc) */    
     get circleOf5Number(): number {
-        return (2 * this._pitchClass + 1) % 7 - 1 + 7 * this._accidental;
+        return mathMod(2 * this._pitchClass + 1, 7) - 1 + 7 * this._accidental;
     }
     get pitchClassName(): string {
         return pitchNames[this._pitchClass];

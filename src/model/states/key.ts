@@ -1,3 +1,4 @@
+import { mathMod, range } from 'ramda';
 import { Alteration, Pitch, PitchClass, Accidental } from './../pitches/pitch';
 
 export interface KeyDef {
@@ -8,7 +9,8 @@ export interface KeyDef {
 export class Key {
     constructor(public def: KeyDef) {}
 
-    *enumerate(): Generator<PitchClass, void, unknown> {
+    /*
+    *enumerate1(): Generator<PitchClass, void, unknown> {
         let pc = this.def.accidental === 1 ? 3 : 6;
         const step = this.def.accidental === 1 ? 4 : 3;
         for(let i = 0; i < this.def.count; i++) {
@@ -16,7 +18,21 @@ export class Key {
             pc += step;
             pc %= 7;
         }        
+    }*/
 
+    enumerate(): PitchClass[] {
+        //const res = [] as PitchClass[];
+        
+        const pc = this.def.accidental === 1 ? 3 : 6;
+        const step = this.def.accidental === 1 ? 4 : 3;
+
+        const r1 = range(0, this.def.count).reduce((pr: {result: PitchClass[], pc: number }) => {
+            const pitchClass = new PitchClass(pr.pc, this.def.accidental);
+            return { result: [...pr.result, pitchClass], pc: mathMod(pr.pc + step, 7) };
+        }, { result: [], pc: pc }
+        );
+
+        return r1.result;
     }
 
     static fromMode(pitch: PitchClass, mode: string): Key {

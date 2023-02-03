@@ -2,6 +2,7 @@ import { Alteration } from './../../model';
 import { Pitch } from '../../model';
 import { Clef } from './../../model';
 import { Key } from './../../model';
+import { mathMod } from 'ramda';
 
 
 export interface KeyViewModelElement {
@@ -26,17 +27,17 @@ export function keyToView(key: Key, clef: Clef): KeyViewModel {
 
             let clefOffset = 4 - clefC;
 
-            clefOffset = (clefOffset + 84) % 7;
+            clefOffset = mathMod(clefOffset, 7);
             if (p < 0) {
                 // b
                 const magicNo = clefMagicNo['b'][clefOffset];
-                const staffLine = ((i * 4 + clefOffset + 8 - magicNo) % 7) + magicNo - 6;
+                const staffLine = mathMod((i * 4 + clefOffset + 8 - magicNo), 7) + magicNo - 6;
                 return { position: 5 - staffLine, alteration: -1 };
             }
             else {
                 // x
                 const magicNo = clefMagicNo['x'][clefOffset];
-                const staffLine = ((i * 3 + clefOffset + 11 - magicNo) % 7) + magicNo - 6;
+                const staffLine = mathMod((i * 3 + clefOffset + 11 - magicNo), 7) + magicNo - 6;
                 return { position: 5 - staffLine, alteration: 1 };
             }            
         })
