@@ -3,7 +3,7 @@ import { Time } from './../../model/rationals/time';
 import { TupletSequence } from './../../model/score/transformations';
 import { SimpleSequence } from './../../model/score/sequence';
 import { Clef, ClefType } from '../../model/states/clef';
-import { Note } from '../../model/notes/note';
+import { createNoteFromLilypond, Note } from '../../model/notes/note';
 /* eslint-disable comma-dangle */
 import { NoteType, NoteDirection } from '../../model/notes/note';
 import { expect } from 'chai';
@@ -20,7 +20,7 @@ describe('View model, note', () => {
     });
 
     it('should convert a note to view model', () => {
-        const note: Note = Note.parseLily('c\'4');
+        const note: Note = createNoteFromLilypond('c\'4');
 
         const viewModel = noteToView(note, clef);
 
@@ -33,9 +33,9 @@ describe('View model, note', () => {
     });
 
     it('should direct note stems from position', () => {
-        const note1: Note = Note.parseLily('a\'4');
-        const note2: Note = Note.parseLily('b\'4');
-        const note3: Note = Note.parseLily('c\'\'4');
+        const note1: Note = createNoteFromLilypond('a\'4');
+        const note2: Note = createNoteFromLilypond('b\'4');
+        const note3: Note = createNoteFromLilypond('c\'\'4');
 
         const viewModel1 = noteToView(note1, clef);
         const viewModel2 = noteToView(note2, clef);
@@ -63,9 +63,9 @@ describe('View model, note', () => {
 
     
     it('should direct fixed note stems correctly', () => {
-        const note1: Note = Note.parseLily('a\'4');
-        const note2: Note = Note.parseLily('b\'4');
-        const note3: Note = Note.parseLily('c\'\'4');
+        const note1: Note = createNoteFromLilypond('a\'4');
+        const note2: Note = createNoteFromLilypond('b\'4');
+        const note3: Note = createNoteFromLilypond('c\'\'4');
 
         note1.direction = NoteDirection.Up;
         note2.direction = NoteDirection.Down;
@@ -97,11 +97,11 @@ describe('View model, note', () => {
 
 
     it('should set flagType correctly', () => {
-        const note1: Note = Note.parseLily('a\'4');
-        const note2: Note = Note.parseLily('b\'8');
-        const note3: Note = Note.parseLily('c\'\'16');
-        const note4: Note = Note.parseLily('c\'\'32');
-        const note5: Note = Note.parseLily('c\'\'64');
+        const note1: Note = createNoteFromLilypond('a\'4');
+        const note2: Note = createNoteFromLilypond('b\'8');
+        const note3: Note = createNoteFromLilypond('c\'\'16');
+        const note4: Note = createNoteFromLilypond('c\'\'32');
+        const note5: Note = createNoteFromLilypond('c\'\'64');
 
         const viewModel1 = noteToView(note1, clef);
         const viewModel2 = noteToView(note2, clef);
@@ -119,11 +119,11 @@ describe('View model, note', () => {
 
 
     it('should set flagType correctly on dotted notes', () => {
-        const note1: Note = Note.parseLily('a\'4.');
-        const note2: Note = Note.parseLily('b\'8.');
-        const note3: Note = Note.parseLily('c\'\'16..');
-        const note4: Note = Note.parseLily('r32.');
-        const note5: Note = Note.parseLily('c\'\'64.');
+        const note1: Note = createNoteFromLilypond('a\'4.');
+        const note2: Note = createNoteFromLilypond('b\'8.');
+        const note3: Note = createNoteFromLilypond('c\'\'16..');
+        const note4: Note = createNoteFromLilypond('r32.');
+        const note5: Note = createNoteFromLilypond('c\'\'64.');
 
         const viewModel1 = noteToView(note1, clef);
         const viewModel2 = noteToView(note2, clef);
@@ -140,14 +140,14 @@ describe('View model, note', () => {
 
 
     it('should convert a dotted note to view model', () => {
-        const note: Note = Note.parseLily('c\'2..');
+        const note: Note = createNoteFromLilypond('c\'2..');
 
         const viewModel = noteToView(note, clef);
 
         expect(viewModel.noteType).to.equal(NoteType.NHalf);
         expect(viewModel.dotNo).to.equal(2);
 
-        const note2: Note = Note.parseLily('c\'2');
+        const note2: Note = createNoteFromLilypond('c\'2');
 
         const viewModel2 = noteToView(note2, clef);
 
@@ -203,7 +203,7 @@ describe('View model, note', () => {
 
     
     it('should convert a note with expressions to view model', () => {
-        const note: Note = Note.parseLily('c\'2\\staccato');
+        const note: Note = createNoteFromLilypond('c\'2\\staccato');
 
         const viewModel = noteToView(note, clef);
 
@@ -219,7 +219,7 @@ describe('View model, note', () => {
     });
 
     it('should convert a note with lyrics to view model', () => {
-        const note: Note = Note.parseLily('c\'2');
+        const note: Note = createNoteFromLilypond('c\'2');
         note.text = ['ghjk', 'ery'];
 
         const viewModel = noteToView(note, clef);

@@ -1,5 +1,5 @@
 import { Pitch } from './../pitches/pitch';
-import { Note, NoteDirection } from './../notes/note';
+import { cloneNote, createNoteFromLilypond, Note, NoteDirection } from './../notes/note';
 import { Time } from '../rationals/time';
 import { SimpleSequence, CompositeSequence } from './sequence';
 import { expect } from 'chai';
@@ -9,6 +9,7 @@ describe('Sequence', () => {
     const seq2Text = 'c,2 d,8 e,8 c4';
     const seq3Text = 'c,2 d,8 <e, c>4';
     //const seq4Text = 'c,2 d,8 <e, c>4';
+
 
     beforeEach(() => { 
         //
@@ -171,8 +172,8 @@ describe('Sequence', () => {
             expect(seqCombined.duration).to.deep.equal(Time.newSpan(3, 2));
             expect(seqCombined.elements).to.have.length(7);
 
-            expect(seqCombined.elements[0]).to.deep.equal(Note.parseLily('c4'));
-            expect(seqCombined.elements[5]).to.deep.equal(Note.parseLily('e,8'));
+            expect(seqCombined.elements[0]).to.deep.equal(createNoteFromLilypond('c4'));
+            expect(seqCombined.elements[5]).to.deep.equal(createNoteFromLilypond('e,8'));
         });
 
         it('should reflect changes in original sequences', () => {
@@ -186,22 +187,22 @@ describe('Sequence', () => {
             expect(seqCombined.duration).to.deep.equal(Time.newSpan(2, 1));
             expect(seqCombined.elements).to.have.length(10);
 
-            expect(seqCombined.elements[0]).to.deep.equal(Note.parseLily('c4'));
-            expect(seqCombined.elements[7]).to.deep.equal(Note.parseLily('c4'));
+            expect(seqCombined.elements[0]).to.deep.equal(createNoteFromLilypond('c4'));
+            expect(seqCombined.elements[7]).to.deep.equal(createNoteFromLilypond('c4'));
 
-            seq1.elements[0] = Note.clone(seq1.elements[0] as Note, { _duration: { ...seq1.elements[0].duration, denominator: 8 }});
+            seq1.elements[0] = cloneNote(seq1.elements[0] as Note, { _duration: { ...seq1.elements[0].duration, denominator: 8 }});
 
-            expect(seqCombined.elements[0]).to.deep.equal(Note.parseLily('c8'));
-            expect(seqCombined.elements[7]).to.deep.equal(Note.parseLily('c8'));
+            expect(seqCombined.elements[0]).to.deep.equal(createNoteFromLilypond('c8'));
+            expect(seqCombined.elements[7]).to.deep.equal(createNoteFromLilypond('c8'));
 
             expect(seqCombined.duration).to.deep.equal(Time.newSpan(7, 4));
 
-            seq1.addElement(Note.parseLily('d4'));
+            seq1.addElement(createNoteFromLilypond('d4'));
 
             expect(seqCombined.elements).to.have.length(12);
 
-            expect(seqCombined.elements[3]).to.deep.equal(Note.parseLily('d4'));
-            expect(seqCombined.elements[11]).to.deep.equal(Note.parseLily('d4'));
+            expect(seqCombined.elements[3]).to.deep.equal(createNoteFromLilypond('d4'));
+            expect(seqCombined.elements[11]).to.deep.equal(createNoteFromLilypond('d4'));
 
             expect(seqCombined.duration).to.deep.equal(Time.newSpan(9, 4));
         });

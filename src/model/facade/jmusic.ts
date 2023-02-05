@@ -10,7 +10,7 @@ import { parseLilyClef, parseLilyKey, parseLilyMeter, SimpleSequence } from '../
 import { StaffDef } from '../score/staff';
 import { isScoreDef, ScoreDef } from './../score/score';
 import { Meter } from '../states/meter';
-import { Note } from '../notes/note';
+import { createNoteFromLilypond, Note } from '../notes/note';
 import { Pitch } from '../pitches/pitch';
 import { Time } from '../rationals/time';
 import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
@@ -121,7 +121,7 @@ export class JMusic implements ScoreDef {
     static makeNote(input: NoteFlex): Note {
 
         if (typeof (input) === 'string') {
-            return Note.parseLily(input);
+            return createNoteFromLilypond(input);
         }
         return input as Note;
     }

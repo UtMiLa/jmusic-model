@@ -18,9 +18,41 @@ export enum TupletState {
     None, Begin, Inside, End
 }
 
-export class Note {
+export interface Note {
+    /*_pitches: Pitch[];
+    _duration: TimeSpan;*/
+    pitches: Pitch[];
+    duration: TimeSpan;
+    nominalDuration: TimeSpan;
+    undottedDuration: TimeSpan; // todo: calculate all durations
+    dotNo: number;
+    tupletFactor?: RationalDef;
+    tupletGroup?: TupletState;
+    direction: NoteDirection;
+    type: NoteType;
+    tie?: boolean;
+    uniq?: string;
+    expressions?: NoteExpression[];
+    text?: string[];
+    grace?: boolean;
+}
+
+export function createNoteFromLilypond(input: string): Note {
+    return NoteInst.parseLily(input);
+}
+
+export function cloneNote(input: Note,  changeProperties: { [key: string]: any } = {}): Note {
+    return NoteInst.clone(input, changeProperties);
+}
+
+export function createNote(pitches: Pitch[], duration: TimeSpan): Note {
+    return new NoteInst(pitches, duration);
+}
+
+
+class NoteInst implements Note {
     static clone(note: Note, changeProperties: { [key: string]: any } = {}): Note {        
-        const res = new Note(note._pitches, note._duration);
+        const res = createNote(note.pitches, note.nominalDuration);
         if (note.uniq) res.uniq = note.uniq;
         if (note.tupletFactor) res.tupletFactor = note.tupletFactor;
         if (note.tie) res.tie = note.tie;
@@ -72,7 +104,7 @@ export class Note {
             }
         }
         //console.log(match);
-        const res = new Note(pitches.map(pitch => Pitch.parseLilypond(pitch)), Time.fromLilypond(durationString));
+        const res = createNote(pitches.map(pitch => Pitch.parseLilypond(pitch)), Time.fromLilypond(durationString));
         if (tie) res.tie = tie;        
         if (expressions.length) res.expressions = expressions.map(expression => parseLilyNoteExpression(expression));
         return res;

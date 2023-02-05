@@ -1,19 +1,19 @@
 import { TimeSpan } from './../rationals/time';
 import { Time } from '../rationals/time';
-import { Note, NoteType } from './note';
+import { createNote, createNoteFromLilypond, Note, NoteType } from './note';
 import { expect } from 'chai';
 import { Pitch } from '../pitches/pitch';
 
 describe('Note', () => {
-    
+
     it('should parse a note from Lilypond format', () => {
-        const note = Note.parseLily('c\'4');
+        const note = createNoteFromLilypond('c\'4');
         expect(note.pitches.length).to.eq(1);
         expect(note.pitches[0].octave).to.eq(4);
         expect(note.pitches[0].pitchClassName).to.eq('c');
         expect(note.duration).to.deep.eq(Time.newSpan(1, 4));
 
-        const note2 = Note.parseLily('f,2.');
+        const note2 = createNoteFromLilypond('f,2.');
         expect(note2.pitches.length).to.eq(1);
         expect(note2.pitches[0].octave).to.eq(2);
         expect(note2.pitches[0].pitchClassName).to.eq('f');        
@@ -21,35 +21,35 @@ describe('Note', () => {
     });
 
     it('should parse a rest from Lilypond format', () => {
-        const note = Note.parseLily('r4');
+        const note = createNoteFromLilypond('r4');
         expect(note.pitches.length).to.eq(0);
         expect(note.type).to.eq(NoteType.RQuarter);
         expect(note.duration).to.deep.eq(Time.newSpan(1, 4));
 
-        const note2 = Note.parseLily('r2.');
+        const note2 = createNoteFromLilypond('r2.');
         expect(note2.pitches.length).to.eq(0);
         expect(note2.type).to.eq(NoteType.RHalf);
         expect(note2.duration).to.deep.eq(Time.newSpan(3, 4));
 
 
-        expect(Note.parseLily('r1').type).to.eq(NoteType.RWhole);
+        expect(createNoteFromLilypond('r1').type).to.eq(NoteType.RWhole);
 
-        expect(Note.parseLily('r8').type).to.eq(NoteType.R8);
-        expect(Note.parseLily('r16').type).to.eq(NoteType.R16);
-        expect(Note.parseLily('r32').type).to.eq(NoteType.R32);
-        expect(Note.parseLily('r64').type).to.eq(NoteType.R64);
-        expect(Note.parseLily('r128').type).to.eq(NoteType.R128);
+        expect(createNoteFromLilypond('r8').type).to.eq(NoteType.R8);
+        expect(createNoteFromLilypond('r16').type).to.eq(NoteType.R16);
+        expect(createNoteFromLilypond('r32').type).to.eq(NoteType.R32);
+        expect(createNoteFromLilypond('r64').type).to.eq(NoteType.R64);
+        expect(createNoteFromLilypond('r128').type).to.eq(NoteType.R128);
 
-        const goodRest = new Note([], Time.newSpan(2, 1));
+        const goodRest = createNote([], Time.newSpan(2, 1));
         expect(goodRest.type).to.eq(NoteType.RBreve);
 
-        const badRest = new Note([], Time.newSpan(1, 3));
+        const badRest = createNote([], Time.newSpan(1, 3));
         expect(() => badRest.type).to.throw();
 
     });
 
     it('should support multiple pitches', () => {
-        const note = new Note([
+        const note = createNote([
             Pitch.fromScientific('c', 4),
             Pitch.fromScientific('f', 2)
         ], Time.newSpan(1, 4));
@@ -64,7 +64,7 @@ describe('Note', () => {
 
 
     it('should parse a chord from Lilypond format', () => {
-        const note = Note.parseLily('<c\' e\' g\'>4');
+        const note = createNoteFromLilypond('<c\' e\' g\'>4');
         expect(note.pitches.length).to.eq(3);
         expect(note.pitches[0].octave).to.eq(4);
         expect(note.pitches[0].pitchClassName).to.eq('c');
@@ -77,7 +77,7 @@ describe('Note', () => {
     });
 
     it('should parse dots correctly', () => {
-        const notes = ['c\'4.', 'e\'8', 'g\'2..'].map(lily => Note.parseLily(lily));
+        const notes = ['c\'4.', 'e\'8', 'g\'2..'].map(lily => createNoteFromLilypond(lily));
         expect(notes[0].duration).to.deep.eq(Time.newSpan(3, 8));
         expect(notes[1].duration).to.deep.eq(Time.newSpan(1, 8));
         expect(notes[2].duration).to.deep.eq(Time.newSpan(7, 8));
@@ -85,7 +85,7 @@ describe('Note', () => {
 
 
     it('should report correct number of dots', () => {
-        const notes = ['c\'4.', 'e\'8', 'g\'2..'].map(lily => Note.parseLily(lily));
+        const notes = ['c\'4.', 'e\'8', 'g\'2..'].map(lily => createNoteFromLilypond(lily));
         expect(notes[0].dotNo).to.eq(1);
         expect(notes[1].dotNo).to.eq(0);
         expect(notes[2].dotNo).to.eq(2);
@@ -93,28 +93,28 @@ describe('Note', () => {
 
 
     it('should report undotted value correctly', () => {
-        const notes = ['c\'4.', 'e\'8', 'g\'2..'].map(lily => Note.parseLily(lily));
+        const notes = ['c\'4.', 'e\'8', 'g\'2..'].map(lily => createNoteFromLilypond(lily));
         expect(notes[0].undottedDuration).to.deep.eq(Time.newSpan(1, 4));
         expect(notes[0].type).to.deep.eq(NoteType.NQuarter);
         expect(notes[1].undottedDuration).to.deep.eq(Time.newSpan(1, 8));
         expect(notes[2].undottedDuration).to.deep.eq(Time.newSpan(1, 2));
 
-        const goodRest = new Note([], Time.newSpan(2, 1));
+        const goodRest = createNote([], Time.newSpan(2, 1));
         expect(goodRest.undottedDuration).to.deep.eq(Time.newSpan(2, 1));
     });
 
     
     it('should create a tied note', () => {
-        const note = Note.parseLily('c\'4~');
+        const note = createNoteFromLilypond('c\'4~');
         expect(note.tie).to.be.true;
-        const note1 = Note.parseLily('c\'4');
+        const note1 = createNoteFromLilypond('c\'4');
         expect(note1.tie).to.be.undefined;
-        const note2 = Note.parseLily('<c\' e\' g\'>4~');
+        const note2 = createNoteFromLilypond('<c\' e\' g\'>4~');
         expect(note2.tie).to.be.true;
     });
 
     it('should create a tuplet note', () => {
-        const note = Note.parseLily('c4');
+        const note = createNoteFromLilypond('c4');
         expect(note.duration).to.deep.equal(Time.newSpan(1, 4));
         expect(note.undottedDuration).to.deep.equal(Time.newSpan(1, 4));
         expect(note.nominalDuration).to.deep.equal(Time.newSpan(1, 4));
@@ -126,18 +126,18 @@ describe('Note', () => {
     });
 
     it('should create a staccato note', ()=> {
-        const note = Note.parseLily('c4\\staccato');
+        const note = createNoteFromLilypond('c4\\staccato');
         expect(note.expressions).to.deep.eq(['staccato']);
     });
 
     it('should fail on non-existent expression', ()=> {
         expect(() => {
-            const note = Note.parseLily('c4\\nonexistent');
+            const note = createNoteFromLilypond('c4\\nonexistent');
         }).to.throw();
     });
 
     it('should create a note with two expressions', ()=> {
-        const note = Note.parseLily('c4\\fermata\\marcato');
+        const note = createNoteFromLilypond('c4\\fermata\\marcato');
         expect(note.expressions).to.deep.eq(['fermata', 'marcato']);
     });
 

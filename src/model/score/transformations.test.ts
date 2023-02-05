@@ -1,5 +1,5 @@
 import { GraceSequence, RetrogradeSequence, TupletSequence } from './transformations';
-import { Note, NoteDirection, TupletState } from './../notes/note';
+import { createNoteFromLilypond, Note, NoteDirection, TupletState } from './../notes/note';
 import { Time } from '../rationals/time';
 import { SimpleSequence, CompositeSequence } from './sequence';
 import { expect } from 'chai';
@@ -8,6 +8,7 @@ describe('Sequence transformations', () => {
     const seq2Text = 'c,2 d,8 e,8 c4';
     const seq3Text = 'c,2 d,8 <e, c>4';
     const seq4Text = 'c,16 d,16 e,16';
+
     beforeEach(() => { 
         //
     });
@@ -18,9 +19,9 @@ describe('Sequence transformations', () => {
         
         expect(retro.elements.length).to.equal(3);
         expect(retro.duration).to.deep.equal(Time.newSpan(7, 8));
-        expect(seq1.elements[0]).to.deep.equal(Note.parseLily('c,2'));
-        expect(retro.elements[2]).to.deep.equal(Note.parseLily('c,2'));
-        expect(retro.elements[0]).to.deep.equal(Note.parseLily('<e, c>4'));
+        expect(seq1.elements[0]).to.deep.equal(createNoteFromLilypond('c,2'));
+        expect(retro.elements[2]).to.deep.equal(createNoteFromLilypond('c,2'));
+        expect(retro.elements[0]).to.deep.equal(createNoteFromLilypond('<e, c>4'));
     });
 
     it('should create the a tuplet group from a sequence', () => {

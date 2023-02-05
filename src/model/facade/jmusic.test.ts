@@ -5,7 +5,7 @@ import { Time } from './../rationals/time';
 import { Clef, ClefType } from './../states/clef';
 import { expect } from 'chai';
 import { JMusic } from './jmusic';
-import { Note, NoteDirection } from '../notes/note';
+import { createNote, createNoteFromLilypond, Note, NoteDirection } from '../notes/note';
 import { Pitch } from '../pitches/pitch';
 import { Key } from '../states/key';
 import { SimpleSequence } from '../score/sequence';
@@ -34,8 +34,8 @@ describe('Facade', () => {
         });
 
         it('should read a note in different types', () => {
-            expect(JMusic.makeNote('a,4')).to.deep.eq(new Note([Pitch.fromScientific('a', 2)], Time.QuarterTime));
-            expect(JMusic.makeNote(new Note([Pitch.fromScientific('a', 2)], Time.QuarterTime))).to.deep.eq(new Note([Pitch.fromScientific('a', 2)], Time.QuarterTime));
+            expect(JMusic.makeNote('a,4')).to.deep.eq(createNote([Pitch.fromScientific('a', 2)], Time.QuarterTime));
+            expect(JMusic.makeNote(createNote([Pitch.fromScientific('a', 2)], Time.QuarterTime))).to.deep.eq(createNote([Pitch.fromScientific('a', 2)], Time.QuarterTime));
         });
     });
 
@@ -183,7 +183,7 @@ describe('Facade', () => {
             score.appendNote(ins, 'e4');
             const seq = score.staves[0].voices[1].content;
             expect(seq.duration).to.deep.eq(Time.newSpan(9, 4));
-            expect(seq.elements[8]).to.deep.eq(Note.parseLily('e4'));
+            expect(seq.elements[8]).to.deep.eq(createNoteFromLilypond('e4'));
             expect(scoreChangeCalls).to.eq(1);
         });
 
@@ -196,7 +196,7 @@ describe('Facade', () => {
             ins.time = Time.newAbsolute(3, 4);
             score.addPitch(ins, Pitch.parseLilypond('e'));
             const seq = score.staves[0].voices[1].content;
-            expect(seq.elements[3]).to.deep.eq(Note.parseLily('<c e>4'));
+            expect(seq.elements[3]).to.deep.eq(createNoteFromLilypond('<c e>4'));
             expect(scoreChangeCalls).to.eq(1);
         });
 
@@ -223,7 +223,7 @@ describe('Facade', () => {
             ins.time = Time.newAbsolute(3, 4);
             score.addPitch(ins);
             const seq = score.staves[0].voices[1].content;
-            expect(seq.elements[3]).to.deep.eq(Note.parseLily('<c e\'\'>4'));
+            expect(seq.elements[3]).to.deep.eq(createNoteFromLilypond('<c e\'\'>4'));
             expect(scoreChangeCalls).to.eq(1);
         });
 

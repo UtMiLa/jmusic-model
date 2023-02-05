@@ -2,7 +2,7 @@ import { LongDecorationElement } from './../decorations/decoration-type';
 import { StateChange } from './../states/state';
 import { Time, AbsoluteTime } from './../rationals/time';
 import { ISequence, isLongDecoration, isStateChange } from './../score/sequence';
-import { Note } from './note';
+import { cloneNote, Note } from './note';
 
 
 export interface BeamDef {
@@ -134,7 +134,7 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
             const currBeamCnt = beamCount(note.undottedDuration.denominator);
 
             if (note.grace) {
-                tempGraceGroup.push(Note.clone(note, {uniq: keyPrefix + '-' + elmIndex }));
+                tempGraceGroup.push(cloneNote(note, {uniq: keyPrefix + '-' + elmIndex }));
 
                 while (currBeamCnt > prevGraceBeamCnt) {
                     // start a subgroup
@@ -180,7 +180,7 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
                 }
             }
             if (currBeamCnt > 0 && note.pitches.length) {
-                tempGroup.push(Note.clone(note, {uniq: keyPrefix + '-' + elmIndex }));
+                tempGroup.push(cloneNote(note, {uniq: keyPrefix + '-' + elmIndex }));
             }
     
             while (currBeamCnt > prevBeamCnt) {

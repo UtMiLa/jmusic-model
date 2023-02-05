@@ -3,7 +3,7 @@ import { Time, AbsoluteTime } from './../rationals/time';
 import { TimeSpan } from '../rationals/time';
 import { BaseSequence, ISequence } from '../score/sequence';
 import { StateChange } from '../states/state';
-import { Note } from './note';
+import { cloneNote, Note } from './note';
 
 export class LyricsSequence extends BaseSequence {
     /**
@@ -22,7 +22,7 @@ export class LyricsSequence extends BaseSequence {
             const note = elm as Note;
             if (note.pitches && note.pitches.length) {
                 const theText = note.text ? [...note.text, lyricsSplit[i++]] :  [lyricsSplit[i++]];
-                return Note.clone(note, { text: theText });
+                return cloneNote(note, { text: theText });
             }
             return elm;            
         });
