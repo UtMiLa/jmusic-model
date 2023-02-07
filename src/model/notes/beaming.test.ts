@@ -1,10 +1,12 @@
-import { Note } from './note';
+import { setGraceNoteInSequence } from '~/tools/test-tools';
+import { Note, UpdateNote } from './note';
 import { TupletSequence } from './../score/transformations';
 import { Time } from './../rationals/time';
 import { getAllBeats, MeterFactory, MeterMap } from './../states/meter';
-import { SimpleSequence } from './../score/sequence';
+import { SimpleSequence, SequenceDef } from './../score/sequence';
 import { expect } from 'chai';
 import { calcBeamGroups, __beaming_internal as __internal } from './beaming';
+import { StaffDef } from '../score/staff';
 
 describe('Beaming', () => {
 
@@ -179,10 +181,10 @@ describe('Beaming', () => {
     });
 
     it('should beam grace notes together', () => {
-        const seq = new SimpleSequence( 'c16 c16 c4 c16 c16 c16 c16 c4 c16 c4');
+        let seq = new SimpleSequence( 'c16 c16 c4 c16 c16 c16 c16 c4 c16 c4');
 
         [0, 1, 3, 4, 5, 6, 8].forEach(index => {
-            (seq.elements[index] as Note).grace = true;
+            seq = setGraceNoteInSequence(seq, index);
         });
         
         const meter = MeterFactory.createRegularMeter({ count: 4, value: 4 });
@@ -218,7 +220,7 @@ describe('Beaming', () => {
         const seq = new SimpleSequence( 'c16 c16 c16 c16 c16 c16 c16 c16 c16');
 
         [0, 1, 3, 4, 5, 7].forEach(index => {
-            (seq.elements[index] as Note).grace = true;
+            setGraceNoteInSequence(seq, index);
         });
         
         const meter = MeterFactory.createRegularMeter({ count: 4, value: 4 });

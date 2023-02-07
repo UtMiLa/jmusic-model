@@ -1,4 +1,4 @@
-import { Rational } from './../../model';
+import { getNoteType, getUndottedDuration, Rational } from './../../model';
 import { Clef } from './../../model';
 import { NoteDirection, Note } from '../../model';
 import { FlagType, NoteViewModel } from './note-view-model';
@@ -56,7 +56,7 @@ export function noteToView(note: Note, clef: Clef): NoteViewModel {
     }
     let flagType = FlagType.None;
 
-    const duration = note.undottedDuration;
+    const duration = getUndottedDuration(note);
 
     if (duration.denominator >= 8) {
         switch (duration.denominator) {
@@ -70,7 +70,7 @@ export function noteToView(note: Note, clef: Clef): NoteViewModel {
     }
     const res: NoteViewModel = {
         positions,
-        noteType: note.type,
+        noteType: getNoteType(note),
         direction,
         flagType
         //,colors: note.pitches.map(p => '#' + HSVtoRGB(((p.pitchClass.circleOf5Number + 56) % 12)/12, 1, .7))

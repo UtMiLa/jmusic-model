@@ -1,5 +1,5 @@
 import { getExtendedTime, EventType } from '~/model/score/timing-order';
-import { Note } from './../../model/notes/note';
+import { Note, UpdateNote } from './../../model/notes/note';
 import { InsertionPoint } from './../../editor/insertion-point';
 import { BarType } from './score-view-model';
 import { FlagType } from './note-view-model';
@@ -10,7 +10,7 @@ import { JMusic, LongDecorationType, NoteDirection, NoteType, Time } from './../
 import { ClefType, StaffDef } from './../../model';
 import { Clef } from './../../model';
 import { scoreModelToViewModel, __internal } from './convert-model';
-import { createTestStaff } from '../../tools/test-tools';
+import { createTestStaff, setGraceNoteInStaff } from '../../tools/test-tools';
 import { createScopedTimeMap } from './state-map';
 /* eslint-disable comma-dangle */
 
@@ -110,10 +110,10 @@ describe('View model', () => {
 
 
     it('should mark grace note beams as such', () => {
-        const staff: StaffDef = createTestStaff(['bes4 r4 bes16 b16 b4'], [4, 4], [-1, 3]);
+        let staff: StaffDef = createTestStaff(['bes4 r4 bes16 b16 b4'], [4, 4], [-1, 3]);
 
-        (staff.voices[0].content.elements[2] as Note).grace = true;
-        (staff.voices[0].content.elements[3] as Note).grace = true;
+        staff = setGraceNoteInStaff(staff, 0, 2);
+        staff = setGraceNoteInStaff(staff, 0, 3);
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
@@ -139,10 +139,10 @@ describe('View model', () => {
     });
 
     it('should beam grace notes even if starting off-beat', () => {
-        const staff: StaffDef = createTestStaff(['bes8 bes16 b16 b4'], [4, 4], [-1, 3]);
+        let staff: StaffDef = createTestStaff(['bes8 bes16 b16 b4'], [4, 4], [-1, 3]);
 
-        (staff.voices[0].content.elements[1] as Note).grace = true;
-        (staff.voices[0].content.elements[2] as Note).grace = true;
+        staff = setGraceNoteInStaff(staff, 0, 1);
+        staff = setGraceNoteInStaff(staff, 0, 2);
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
@@ -168,12 +168,12 @@ describe('View model', () => {
 
     
     it('should beam grace notes with different values', () => {
-        const staff: StaffDef = createTestStaff(['bes8 bes16 b32 a32 g16 b4'], [4, 4], [-1, 3]);
+        let staff: StaffDef = createTestStaff(['bes8 bes16 b32 a32 g16 b4'], [4, 4], [-1, 3]);
 
-        (staff.voices[0].content.elements[1] as Note).grace = true;
-        (staff.voices[0].content.elements[2] as Note).grace = true;
-        (staff.voices[0].content.elements[3] as Note).grace = true;
-        (staff.voices[0].content.elements[4] as Note).grace = true;
+        staff = setGraceNoteInStaff(staff, 0, 1);
+        staff = setGraceNoteInStaff(staff, 0, 2);
+        staff = setGraceNoteInStaff(staff, 0, 3);
+        staff = setGraceNoteInStaff(staff, 0, 4);
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 

@@ -2,7 +2,7 @@ import { LongDecorationElement } from './../decorations/decoration-type';
 import { StateChange } from './../states/state';
 import { Time, AbsoluteTime } from './../rationals/time';
 import { ISequence, isLongDecoration, isStateChange } from './../score/sequence';
-import { cloneNote, Note } from './note';
+import { cloneNote, getNominalDuration, getUndottedDuration, Note } from './note';
 
 
 export interface BeamDef {
@@ -102,7 +102,7 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
 
         if (tempGraceGroup.length >= 2) {
             const beams = [];
-            for (let i = 0; i < beamCount(tempGraceGroup[0].nominalDuration.denominator); i++) {
+            for (let i = 0; i < beamCount(getNominalDuration(tempGraceGroup[0]).denominator); i++) {
                 beams.push({    
                     fromIdx: 0,
                     toIndex: tempGraceGroup.length - 1,
@@ -131,7 +131,7 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
         } else {
             const note = element;
 
-            const currBeamCnt = beamCount(note.undottedDuration.denominator);
+            const currBeamCnt = beamCount(getUndottedDuration(note).denominator);
 
             if (note.grace) {
                 tempGraceGroup.push(cloneNote(note, {uniq: keyPrefix + '-' + elmIndex }));

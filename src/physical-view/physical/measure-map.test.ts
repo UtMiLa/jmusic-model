@@ -1,7 +1,7 @@
 import { GraceSequence } from './../../model/score/transformations';
 import { EventType } from './../../model/score/timing-order';
 import { getExtendedTime } from '~/model/score/timing-order';
-import { Note } from './../../model/notes/note';
+import { Note, UpdateNote } from './../../model/notes/note';
 import { SimpleSequence, CompositeSequence } from './../../model/score/sequence';
 import { StateChange } from './../../model/states/state';
 import { Time } from './../../model/rationals/time';
@@ -13,7 +13,7 @@ import { Metrics, StandardMetrics } from './metrics';
 import { findSystemSplits, generateMeasureMap, MeasureMap, MeasureMapItem, MeasureMapXValueItem } from './measure-map';
 import { StaffViewModel } from '../../logical-view/view-model/score-view-model';
 import { TimeMap } from '../../tools/time-map';
-import { createTestScoreVM } from '../../tools/test-tools';
+import { createTestScoreVM, setGraceNoteInStaff } from '../../tools/test-tools';
 import { createScopedTimeMap } from '../../logical-view/view-model/state-map';
 
 describe('Physical model, measure map', () => {
@@ -218,7 +218,7 @@ describe('Physical model, measure map', () => {
 
     it('should order and lookup extended times', () => {
 
-        const staff = {
+        let staff = {
             initialClef: { clefType: ClefType.G, line: -2 },
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0 },
@@ -227,7 +227,7 @@ describe('Physical model, measure map', () => {
             }]
         } as StaffDef;
 
-        (staff.voices[0].content.elements[1] as Note).grace = true;
+        staff = setGraceNoteInStaff(staff, 0, 1);
 
         staffViewModel = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 

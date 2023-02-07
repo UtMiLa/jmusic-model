@@ -15,12 +15,13 @@ export class RetrogradeSequence extends BaseSequence {
         const res = this.sequence.elements.map(n => {
             if (isStateChange(n)) return n;
             if (isLongDecoration(n)) return n;
-            const note = cloneNote(n);
-            if ((note as Note).tupletGroup === TupletState.Begin) {
-                (note as Note).tupletGroup = TupletState.End;
-            } else if ((note as Note).tupletGroup === TupletState.End) {
-                (note as Note).tupletGroup = TupletState.Begin;
+            let tupletGroup;
+            if ((n as Note).tupletGroup === TupletState.Begin) {
+                tupletGroup = TupletState.End;
+            } else if ((n as Note).tupletGroup === TupletState.End) {
+                tupletGroup = TupletState.Begin;
             }
+            const note = tupletGroup ? cloneNote(n, { tupletGroup }) : n;
             return note;
         }).reverse();
         return res;

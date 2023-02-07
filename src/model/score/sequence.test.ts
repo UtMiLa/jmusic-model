@@ -190,7 +190,7 @@ describe('Sequence', () => {
             expect(seqCombined.elements[0]).to.deep.equal(createNoteFromLilypond('c4'));
             expect(seqCombined.elements[7]).to.deep.equal(createNoteFromLilypond('c4'));
 
-            seq1.elements[0] = cloneNote(seq1.elements[0] as Note, { _duration: { ...seq1.elements[0].duration, denominator: 8 }});
+            seq1.elements[0] = cloneNote(seq1.elements[0] as Note, { _duration: { ...seq1.elements[0].duration, denominator: 8 }} as any);
 
             expect(seqCombined.elements[0]).to.deep.equal(createNoteFromLilypond('c8'));
             expect(seqCombined.elements[7]).to.deep.equal(createNoteFromLilypond('c8'));
