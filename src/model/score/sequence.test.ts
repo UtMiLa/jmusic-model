@@ -60,8 +60,10 @@ describe('Sequence', () => {
         expect(slots[0]).to.deep.include(
             { time: Time.newAbsolute(0, 1), states: [], elements: [
                 {
-                    '_duration': Time.newSpan(1, 4),
-                    '_pitches': [
+                    'duration': Time.newSpan(1, 4),
+                    'nominalDuration': Time.newSpan(1, 4),
+                    'dotNo': 0,
+                    'pitches': [
                         new Pitch(0, 3, 0)
                     ],
                     'direction': NoteDirection.Undefined,
@@ -74,8 +76,10 @@ describe('Sequence', () => {
         expect(slots).to.deep.eq([
             { time: Time.newAbsolute(0, 1), states: [], elements: [
                 {
-                    '_duration': Time.newSpan(1, 4),
-                    '_pitches': [
+                    'duration': Time.newSpan(1, 4),
+                    'nominalDuration': Time.newSpan(1, 4),
+                    'dotNo': 0,
+                    'pitches': [
                         new Pitch(0, 3, 0)
                     ],
                     'direction': NoteDirection.Undefined,
@@ -84,8 +88,10 @@ describe('Sequence', () => {
             ] },
             { time: Time.newAbsolute(1, 4), states: [], elements: [
                 {
-                    '_duration': Time.newSpan(1, 8),
-                    '_pitches': [
+                    'duration': Time.newSpan(1, 8),
+                    'nominalDuration': Time.newSpan(1, 8),
+                    'dotNo': 0,
+                    'pitches': [
                         new Pitch(1, 3, 0)
                     ],
                     'direction': NoteDirection.Undefined,
@@ -94,8 +100,10 @@ describe('Sequence', () => {
             ] },
             { time: Time.newAbsolute(3, 8), states: [], elements: [
                 {
-                    '_duration': Time.newSpan(1, 8),
-                    '_pitches': [
+                    'duration': Time.newSpan(1, 8),
+                    'nominalDuration': Time.newSpan(1, 8),
+                    'dotNo': 0,
+                    'pitches': [
                         new Pitch(2, 3, 0)
                     ],
                     'direction': NoteDirection.Undefined,
@@ -190,7 +198,7 @@ describe('Sequence', () => {
             expect(seqCombined.elements[0]).to.deep.equal(createNoteFromLilypond('c4'));
             expect(seqCombined.elements[7]).to.deep.equal(createNoteFromLilypond('c4'));
 
-            seq1.elements[0] = cloneNote(seq1.elements[0] as Note, { _duration: { ...seq1.elements[0].duration, denominator: 8 }} as any);
+            seq1.elements[0] = cloneNote(seq1.elements[0] as Note, { nominalDuration: { ...seq1.elements[0].duration, denominator: 8 }} as any);
 
             expect(seqCombined.elements[0]).to.deep.equal(createNoteFromLilypond('c8'));
             expect(seqCombined.elements[7]).to.deep.equal(createNoteFromLilypond('c8'));

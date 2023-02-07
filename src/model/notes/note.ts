@@ -100,7 +100,7 @@ export function createNoteFromLilypond(input: string): Note {
 }
 
 export function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
-    const res = createNote(note.pitches, getNominalDuration(note));
+    /*const res = createNote(note.pitches, getNominalDuration(note));
     let extra: UpdateNote = res;
     if (note.uniq) extra.uniq = note.uniq;
     if (note.tupletFactor) extra.tupletFactor = note.tupletFactor;
@@ -109,14 +109,14 @@ export function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
     if (note.grace) extra.grace = note.grace;
     if (note.tupletGroup) extra.tupletGroup = note.tupletGroup;
     if (note.expressions) extra.expressions = [...note.expressions];
-    if (note.text) extra.text = [...note.text];
+    if (note.text) extra.text = [...note.text];*/
 
-    Object.keys(changeProperties).forEach(key => (extra as any)[key] = (changeProperties as any)[key]);
+    //Object.keys(changeProperties).forEach(key => (extra as any)[key] = (changeProperties as any)[key]);
 
     //extra = {...extra, changeProperties};
-    //extra = mergeRight(extra, changeProperties);
-    //extra.duration = getRealDuration(res); // todo: make setter function for duration-related stuff (like grace and tuplet notes)
-    //extra.dotNo = getDotNo(res);
+    const extra = mergeRight(note, changeProperties);
+    extra.duration = getRealDuration(extra); // todo: make setter function for duration-related stuff (like grace and tuplet notes)
+    extra.dotNo = getDotNo(extra);
 
 
     return extra as Note;
@@ -143,7 +143,7 @@ export function createNote(pitches: Pitch[], duration: TimeSpan): Note {
         dotNo: getDotNo(note0)
     };
 
-    return new NoteInst(pitches, duration);
+    //return new NoteInst(pitches, duration);
 
     return note;
 }
@@ -201,43 +201,4 @@ export function getUndottedDuration(note: Note): TimeSpan {
         Time.addSpans(nominalDuration, Time.newSpan(1, nominalDuration.denominator)),
         1, 2
     );
-}
-
-class NoteInst implements Note {
-   
-    constructor(private _pitches: Pitch[], private _duration: TimeSpan) {
-        //console.log('new note', _pitch, _duration);        
-    }
-
-    get pitches(): Pitch[] {
-        return this._pitches;
-    }
-
-    get duration(): TimeSpan {
-        if (this.grace) return Time.NoTime;
-        if (this.tupletFactor) {
-            return {...Rational.multiply(this._duration, this.tupletFactor), type: 'span'};
-        } else {
-            return this._duration;
-        }
-        
-    }
-
-    get nominalDuration(): TimeSpan {
-        return this._duration;
-    }
-
-    tupletFactor?: RationalDef;
-    tupletGroup?: TupletState;
-
-    get dotNo(): number {
-        return Time.getDotNo(this.nominalDuration.numerator);
-    }
-    direction: NoteDirection = NoteDirection.Undefined;
-    tie?: boolean;
-    uniq?: string;
-    expressions?: NoteExpression[];
-    text?: string[];
-    grace?: boolean;
-    // remember to update clone() if you add properties!
 }
