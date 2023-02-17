@@ -1,8 +1,7 @@
 import { AbsoluteTime, Time } from './../rationals/time';
 import { Rational, RationalDef } from '../../model/rationals/rational';
-import { cloneNote, Note, TupletState } from '../notes/note';
+import { Note, setGrace, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
 import { TimeSpan } from '../rationals/time';
-import { StateChange } from '../states/state';
 import { isLongDecoration, isStateChange, BaseSequence, ISequence, MusicEvent, TimeSlot } from './sequence';
 
 
@@ -21,7 +20,7 @@ export class RetrogradeSequence extends BaseSequence {
             } else if ((n as Note).tupletGroup === TupletState.End) {
                 tupletGroup = TupletState.Begin;
             }
-            const note = tupletGroup ? cloneNote(n, { tupletGroup }) : n;
+            const note = tupletGroup ? setTupletGroup(n, tupletGroup) : n;
             return note;
         }).reverse();
         return res;
@@ -49,7 +48,7 @@ export class TupletSequence extends BaseSequence {
                 return ele;
             } else {
                 const tupletGroup = i ? (i === arr.length - 1 ? TupletState.End : TupletState.Inside) : TupletState.Begin;
-                return cloneNote(ele, { tupletFactor : this.fraction, tupletGroup });
+                return setTupletGroup(setTupletFactor(ele, this.fraction), tupletGroup);
             }
         });
     }
@@ -74,7 +73,7 @@ export class GraceSequence extends BaseSequence {
                 return ele;
             } else {
                 //const graceGroup = i ? (i === arr.length - 1 ? TupletState.End : TupletState.Inside) : TupletState.Begin;
-                return cloneNote(ele, { grace: true });
+                return setGrace(ele, true);
             }
         });
     }

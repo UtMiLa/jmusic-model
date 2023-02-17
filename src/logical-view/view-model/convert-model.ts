@@ -8,7 +8,7 @@ import { TimeMap, IndexedMap } from './../../tools/time-map';
 import { Meter, MeterMap } from './../../model/states/meter';
 import { BeamGroup, BeamDef } from './../../model/notes/beaming';
 import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
-import { cloneNote, getAllBars, ScoreDef, TimeSlot, TupletState } from './../../model';
+import { getAllBars, ScoreDef, setNoteDirection, TimeSlot, TupletState } from './../../model';
 import { MeterFactory } from './../../model';
 import { meterToView } from './convert-meter';
 import { AbsoluteTime, Time } from './../../model';
@@ -445,10 +445,9 @@ function createNoteViewModels(state: State): NoteViewModel[] {
             //console.log('beamings', slot);
         }
 
-        const noteClone = cloneNote(note, {
-            direction: note.direction ? note.direction : state.voice.noteDirection,
-            uniq: note.uniq
-        });
+        const noteClone = note.direction ? setNoteDirection(note, note.direction)
+            : state.voice.noteDirection ? setNoteDirection(note, state.voice.noteDirection)
+                : note;
         const noteView = noteToView(noteClone, state.clef);
 
         if (bg)

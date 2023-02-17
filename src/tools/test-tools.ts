@@ -1,5 +1,5 @@
 import { scoreModelToViewModel, ScoreViewModel } from '../logical-view';
-import { ClefType, cloneNote, Note, RegularMeterDef, ScoreDef, SimpleSequence, StaffDef, Time, UpdateNote } from './../model';
+import { ClefType, Note, RegularMeterDef, ScoreDef, setGrace, SimpleSequence, StaffDef, Time, UpdateNote } from './../model';
 
 export function createTestScore(staves: string[][], meter: number[], key: number[], clefs: string[] | undefined = undefined): ScoreDef {
     return {
@@ -35,11 +35,11 @@ export function createTestScoreVM(staves: string[][], meter: number[], key: numb
 }
 
 export function setGraceNoteInSequence(seq: SimpleSequence, elementNo: number): SimpleSequence {
-    seq.elements[elementNo] = cloneNote(seq.elements[elementNo] as Note, { grace: true });
+    seq.elements[elementNo] = setGrace(seq.elements[elementNo] as Note, true);
     return seq;
 }
 
 export function setGraceNoteInStaff(staff: StaffDef, voiceNo: number, elementNo: number): StaffDef {
-    staff.voices[voiceNo].content.elements[elementNo] = cloneNote(staff.voices[voiceNo].content.elements[elementNo] as Note, { grace: true });
+    staff.voices[voiceNo].content.elements[elementNo] = setGrace(staff.voices[voiceNo].content.elements[elementNo] as Note, true);
     return staff;
 }
