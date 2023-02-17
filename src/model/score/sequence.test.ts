@@ -1,5 +1,5 @@
 import { Pitch } from './../pitches/pitch';
-import { cloneNote, createNoteFromLilypond, Note, NoteDirection } from './../notes/note';
+import { createNoteFromLilypond, Note, NoteDirection, setDuration } from './../notes/note';
 import { Time } from '../rationals/time';
 import { SimpleSequence, CompositeSequence } from './sequence';
 import { expect } from 'chai';
@@ -198,7 +198,7 @@ describe('Sequence', () => {
             expect(seqCombined.elements[0]).to.deep.equal(createNoteFromLilypond('c4'));
             expect(seqCombined.elements[7]).to.deep.equal(createNoteFromLilypond('c4'));
 
-            seq1.elements[0] = cloneNote(seq1.elements[0] as Note, { nominalDuration: { ...seq1.elements[0].duration, denominator: 8 }} as any);
+            seq1.elements[0] = setDuration(seq1.elements[0] as Note, { ...seq1.elements[0].duration, denominator: 8 });
 
             expect(seqCombined.elements[0]).to.deep.equal(createNoteFromLilypond('c8'));
             expect(seqCombined.elements[7]).to.deep.equal(createNoteFromLilypond('c8'));

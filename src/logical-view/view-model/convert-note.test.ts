@@ -3,7 +3,7 @@ import { Time } from './../../model/rationals/time';
 import { TupletSequence } from './../../model/score/transformations';
 import { SimpleSequence } from './../../model/score/sequence';
 import { Clef, ClefType } from '../../model/states/clef';
-import { cloneNote, createNoteFromLilypond, Note } from '../../model/notes/note';
+import { createNoteFromLilypond, Note, setNoteDirection, setNoteText } from '../../model/notes/note';
 /* eslint-disable comma-dangle */
 import { NoteType, NoteDirection } from '../../model/notes/note';
 import { expect } from 'chai';
@@ -67,9 +67,9 @@ describe('View model, note', () => {
         const note2_: Note = createNoteFromLilypond('b\'4');
         const note3_: Note = createNoteFromLilypond('c\'\'4');
 
-        const note1 = cloneNote(note1_, { direction: NoteDirection.Up });
-        const note2 = cloneNote(note2_, { direction: NoteDirection.Down });
-        const note3 = cloneNote(note3_, { direction: NoteDirection.Up });
+        const note1 = setNoteDirection(note1_, NoteDirection.Up );
+        const note2 = setNoteDirection(note2_, NoteDirection.Down );
+        const note3 = setNoteDirection(note3_, NoteDirection.Up );
 
         const viewModel1 = noteToView(note1, clef);
         const viewModel2 = noteToView(note2, clef);
@@ -220,7 +220,7 @@ describe('View model, note', () => {
 
     it('should convert a note with lyrics to view model', () => {
         const note0: Note = createNoteFromLilypond('c\'2');
-        const note = cloneNote(note0, {text: ['ghjk', 'ery']});
+        const note = setNoteText(note0, ['ghjk', 'ery']);
 
         const viewModel = noteToView(note, clef);
 
