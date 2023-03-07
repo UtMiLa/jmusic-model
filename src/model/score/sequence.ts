@@ -76,7 +76,7 @@ export function parseLilyClef(ly: string): Clef {
     throw 'Illegal clef: ' + ly;
 }
 
-function parseLilyElement(ly: string): Note | StateChange {
+export function parseLilyElement(ly: string): Note | StateChange {
     if (ly.startsWith('\\clef')) {
         const sc = new StateChange();
         sc.clef = parseLilyClef(ly);
