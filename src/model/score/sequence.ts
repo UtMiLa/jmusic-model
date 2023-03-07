@@ -6,7 +6,7 @@ import { Key } from './../states/key';
 import { TimeMap } from './../../tools/time-map';
 import { StateChange } from './../states/state';
 import { AbsoluteTime, ExtendedTime } from './../rationals/time';
-import { cloneNote, createNoteFromLilypond, Note } from '../notes/note';
+import { createNoteFromLilypond, Note, setNoteId } from '../notes/note';
 import { Time, TimeSpan } from '../rationals/time';
 import { Clef } from '../states/clef';
 import { EventType, getExtendedTime } from './timing-order';
@@ -167,7 +167,7 @@ export abstract class BaseSequence implements ISequence {
             } else {
                 
                 const slot = res.get(getExtendedTime(time, EventType.Note));
-                slot.elements.push(cloneNote(elem, { uniq: `${keyPrefix}-${index}` }));
+                slot.elements.push(setNoteId(elem, keyPrefix, index));
                 
             }
 

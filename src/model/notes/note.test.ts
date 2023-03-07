@@ -1,6 +1,6 @@
 import { TimeSpan } from './../rationals/time';
 import { Time } from '../rationals/time';
-import { cloneNote, createNote, createNoteFromLilypond, getNominalDuration, getNoteType, getUndottedDuration, Note, NoteType } from './note';
+import { createNote, createNoteFromLilypond, getNominalDuration, getNoteType, getUndottedDuration, Note, NoteType, setTupletFactor } from './note';
 import { expect } from 'chai';
 import { Pitch } from '../pitches/pitch';
 
@@ -118,7 +118,7 @@ describe('Note', () => {
         expect(getUndottedDuration(note)).to.deep.equal(Time.newSpan(1, 4));
         expect(getNominalDuration(note)).to.deep.equal(Time.newSpan(1, 4));
 
-        const note1 = cloneNote(note, {tupletFactor: { numerator: 2, denominator: 3 }});
+        const note1 = setTupletFactor(note, { numerator: 2, denominator: 3 });
         expect(note1.duration).to.deep.equal(Time.newSpan(1, 6));
         expect(getUndottedDuration(note1)).to.deep.equal(Time.newSpan(1, 4));
         expect(getNominalDuration(note1)).to.deep.equal(Time.newSpan(1, 4));

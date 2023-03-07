@@ -3,8 +3,8 @@ import { RationalDef } from '../../model/rationals/rational';
 import { Rational } from '../rationals/rational';
 import { TimeSpan, Time } from '../rationals/time';
 import { Pitch } from '../pitches/pitch';
-import { mergeRight } from 'ramda';
-
+//import { mergeRight } from 'ramda';
+import * as R from 'ramda';
 
 export enum NoteType {
     NBreve = 1, NWhole, NHalf, NQuarter,
@@ -99,7 +99,7 @@ export function createNoteFromLilypond(input: string): Note {
     return cloneNote(res, extra);
 }
 
-export function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
+function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
     /*const res = createNote(note.pitches, getNominalDuration(note));
     let extra: UpdateNote = res;
     if (note.uniq) extra.uniq = note.uniq;
@@ -114,12 +114,36 @@ export function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
     //Object.keys(changeProperties).forEach(key => (extra as any)[key] = (changeProperties as any)[key]);
 
     //extra = {...extra, changeProperties};
-    const extra = mergeRight(note, changeProperties);
+    const extra = R.mergeRight(note, changeProperties);
     extra.duration = getRealDuration(extra); // todo: make setter function for duration-related stuff (like grace and tuplet notes)
     extra.dotNo = getDotNo(extra);
 
 
     return extra as Note;
+}
+
+const curryCloneNote = R.curry(cloneNote);
+
+export const setNoteDirection = (note: Note, direction: NoteDirection) => (curryCloneNote(note)({ direction })) as Note;
+
+export function setNoteText(note: Note,  text: string[] ): Note {
+    return cloneNote(note, { text });
+}
+
+export function setNoteId(note: Note,  prefix: string, index: number): Note {
+    return cloneNote(note, { uniq: prefix + '-' + index });
+}
+export function setGrace(note: Note, grace: boolean): Note {
+    return cloneNote(note, { grace });
+}
+export function setTupletFactor(note: Note, tupletFactor: RationalDef | undefined): Note {
+    return cloneNote(note, { tupletFactor });
+}
+export function setTupletGroup(note: Note, tupletGroup: TupletState): Note {
+    return cloneNote(note, { tupletGroup });
+}
+export function setDuration(note: Note, duration: TimeSpan): Note {
+    return cloneNote(note, { nominalDuration: duration });
 }
 
 export function getDotNo(note: Note): number {
