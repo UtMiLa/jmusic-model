@@ -1,5 +1,5 @@
 import { Pitch } from './../pitches/pitch';
-import { cloneNote, createNoteFromLilypond, Note, NoteDirection } from './../notes/note';
+import { createNoteFromLilypond, Note, NoteDirection } from './../notes/note';
 import { Time } from '../rationals/time';
 import {  } from './sequence';
 import { expect } from 'chai';
