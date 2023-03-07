@@ -1,20 +1,28 @@
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
+import { createFunction, isSeqFunction, SeqFunction } from './functions';
 import { BaseSequence, MusicEvent, parseLilyElement, SimpleSequence } from './sequence';
 
 
-export type FlexibleItem = string | FlexibleItem[];
+export type FlexibleItem = string | SeqFunction | FlexibleItem[];
 
 export type FlexibleElement = MusicEvent | FlexibleSequence;
 
 function recursivelySplitStringsIn(item: FlexibleItem): FlexibleItem[] {
     if (typeof item === 'string') {
         return SimpleSequence.splitByNotes(item);
+    } else if (isSeqFunction(item)) {
+        const x = R.modify('args', args => args.map(recursivelySplitStringsIn), item) as unknown as FlexibleItem[];
+        return x;
     } else {
         return item.map(i => recursivelySplitStringsIn(i));
     }
 }
 
+
+function calcElements(items: FlexibleItem[]): MusicEvent[] {
+    return new FlexibleSequence(items, true).elements;
+}
 
 export class FlexibleSequence extends BaseSequence {
 
@@ -24,7 +32,7 @@ export class FlexibleSequence extends BaseSequence {
         this.def = alreadySplit ? init as FlexibleItem[] : recursivelySplitStringsIn(init);
     }
 
-    private _elements: FlexibleElement[] = [];
+    private _elements: MusicEvent[] = [];
 
     get elements(): MusicEvent[] {
         return R.flatten(this._elements.map((item) => isFlexibleSequence(item) ? item.elements : [item]));
@@ -44,16 +52,36 @@ export class FlexibleSequence extends BaseSequence {
     }
     public set def(init: FlexibleItem[]) {
         this._def = init;
-        this._elements = init.map(item => {
+
+        function isSingleStringArray(test: unknown): test is string[] {
+            return (test as string[]).length === 1 && typeof ((test as string[])[0]) === 'string';
+        }
+        
+        function isOtherFlexibleItemArray(test: unknown): test is FlexibleItem[] {
+            return true;
+        }
+        
+        this._elements = R.chain(
+            R.cond<FlexibleItem, string, SeqFunction, string[], FlexibleItem[], MusicEvent[]>([
+                [R.is(String), ((item: string) => [parseLilyElement(item) as MusicEvent])],
+                [isSeqFunction, (item: SeqFunction) => createFunction(item.function)(calcElements(item.args))],
+                [isSingleStringArray, (item: string[]) => [parseLilyElement(item[0])]],
+                [isOtherFlexibleItemArray, calcElements]
+            ])
+            
+            /*(item => {
             if (typeof item === 'string') {
-                return parseLilyElement(item);
+                return [parseLilyElement(item)];
+            } else if (isSeqFunction(item)) {
+                return createFunction(item.function)(calcElements(item.args));
             } else if (item.length === 1 && typeof (item[0]) === 'string') {
-                return parseLilyElement(item[0]);
+                return [parseLilyElement(item[0])];
             } else {
-                return new FlexibleSequence(item, true);
+                return calcElements(item);
             }
-        });
+        })*/, init);
     }
+
 
     modifyItem(lens: R.Lens<FlexibleItem, FlexibleItem>, changer: (x: FlexibleItem) => FlexibleItem): void {
         R.over(lens, changer);
