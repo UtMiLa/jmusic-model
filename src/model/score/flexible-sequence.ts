@@ -6,8 +6,6 @@ import { BaseSequence, MusicEvent, parseLilyElement, SimpleSequence } from './se
 
 export type FlexibleItem = string | SeqFunction | FlexibleItem[];
 
-export type FlexibleElement = MusicEvent | FlexibleSequence;
-
 function recursivelySplitStringsIn(item: FlexibleItem): FlexibleItem[] {
     if (typeof item === 'string') {
         return SimpleSequence.splitByNotes(item);
@@ -67,19 +65,8 @@ export class FlexibleSequence extends BaseSequence {
                 [isSeqFunction, (item: SeqFunction) => createFunction(item.function)(calcElements(item.args))],
                 [isSingleStringArray, (item: string[]) => [parseLilyElement(item[0])]],
                 [isOtherFlexibleItemArray, calcElements]
-            ])
-            
-            /*(item => {
-            if (typeof item === 'string') {
-                return [parseLilyElement(item)];
-            } else if (isSeqFunction(item)) {
-                return createFunction(item.function)(calcElements(item.args));
-            } else if (item.length === 1 && typeof (item[0]) === 'string') {
-                return [parseLilyElement(item[0])];
-            } else {
-                return calcElements(item);
-            }
-        })*/, init);
+            ])            
+            , init);
     }
 
 
