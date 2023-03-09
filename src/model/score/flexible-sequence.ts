@@ -10,7 +10,7 @@ function recursivelySplitStringsIn(item: FlexibleItem): FlexibleItem[] {
     if (typeof item === 'string') {
         return SimpleSequence.splitByNotes(item);
     } else if (isSeqFunction(item)) {
-        const x = R.modify('args', args => args.map(recursivelySplitStringsIn), item) as unknown as FlexibleItem[];
+        const x = R.modify('args', args => recursivelySplitStringsIn(args), item) as unknown as FlexibleItem[];
         return x;
     } else {
         return item.map(i => recursivelySplitStringsIn(i));
@@ -62,7 +62,7 @@ export class FlexibleSequence extends BaseSequence {
         this._elements = R.chain(
             R.cond<FlexibleItem, string, SeqFunction, string[], FlexibleItem[], MusicEvent[]>([
                 [R.is(String), ((item: string) => [parseLilyElement(item) as MusicEvent])],
-                [isSeqFunction, (item: SeqFunction) => createFunction(item.function)(calcElements(item.args))],
+                [isSeqFunction, (item: SeqFunction) => createFunction(item.function, item.extraArgs)(calcElements([item.args]))],
                 [isSingleStringArray, (item: string[]) => [parseLilyElement(item[0])]],
                 [isOtherFlexibleItemArray, calcElements]
             ])            
@@ -80,5 +80,5 @@ export class FlexibleSequence extends BaseSequence {
 }
 
 export function isFlexibleSequence(test: unknown): test is FlexibleSequence {
-    return (test as FlexibleSequence).constructor?.name === 'FlexibleSequence';
+    return !!test && (test as FlexibleSequence).constructor?.name === 'FlexibleSequence';
 }
