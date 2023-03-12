@@ -1,33 +1,39 @@
+import { isVariableRef, VariableRef, VariableRepository, VariableDef } from './variables';
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
 import { createFunction, isSeqFunction, SeqFunction } from './functions';
 import { BaseSequence, MusicEvent, parseLilyElement, SimpleSequence } from './sequence';
 
 
-export type FlexibleItem = string | SeqFunction | FlexibleItem[];
+export type FlexibleItem = string | SeqFunction | VariableRef |FlexibleItem[];
 
-function recursivelySplitStringsIn(item: FlexibleItem): FlexibleItem[] {
+function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository): FlexibleItem[] {
     if (typeof item === 'string') {
         return SimpleSequence.splitByNotes(item);
     } else if (isSeqFunction(item)) {
-        const x = R.modify('args', args => recursivelySplitStringsIn(args), item) as unknown as FlexibleItem[];
+        const x = R.modify('args', args => recursivelySplitStringsIn(args, repo), item) as unknown as FlexibleItem[];
         return x;
+    } else if (isVariableRef(item)) {
+        return new FlexibleSequence(repo.valueOf(item.variable)).def;
     } else {
-        return item.map(i => recursivelySplitStringsIn(i));
+        return item.map(i => recursivelySplitStringsIn(i, repo));
     }
 }
 
 
-function calcElements(items: FlexibleItem[]): MusicEvent[] {
-    return new FlexibleSequence(items, true).elements;
+function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
+    return new FlexibleSequence(items, repo, true).elements;
 }
 
 export class FlexibleSequence extends BaseSequence {
 
-    constructor(init: FlexibleItem, alreadySplit = false) {
+    constructor(init: FlexibleItem, private repo: VariableRepository = new VariableRepository([]), alreadySplit = false) {
         super();
 
-        this.def = alreadySplit ? init as FlexibleItem[] : recursivelySplitStringsIn(init);
+        if (!alreadySplit) repo.observer$.subscribe(newRepo => {
+            this.def = recursivelySplitStringsIn(init, newRepo);
+        });
+        this.def = alreadySplit ? init as FlexibleItem[] : recursivelySplitStringsIn(init, repo);
     }
 
     private _elements: MusicEvent[] = [];
@@ -60,11 +66,12 @@ export class FlexibleSequence extends BaseSequence {
         }
         
         this._elements = R.chain(
-            R.cond<FlexibleItem, string, SeqFunction, string[], FlexibleItem[], MusicEvent[]>([
+            R.cond<FlexibleItem, string, SeqFunction, /*VariableRef,*/ string[], FlexibleItem[], MusicEvent[]>([
                 [R.is(String), ((item: string) => [parseLilyElement(item) as MusicEvent])],
-                [isSeqFunction, (item: SeqFunction) => createFunction(item.function, item.extraArgs)(calcElements([item.args]))],
+                [isSeqFunction, (item: SeqFunction) => createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))],
+                //[isVariableRef, (item: VariableRef) => calcElements([(this.repo.valueOf(item.variable)], this.repo)],
                 [isSingleStringArray, (item: string[]) => [parseLilyElement(item[0])]],
-                [isOtherFlexibleItemArray, calcElements]
+                [isOtherFlexibleItemArray, (elm) => calcElements(elm, this.repo)]
             ])            
             , init);
     }
