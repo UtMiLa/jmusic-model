@@ -10,6 +10,44 @@ export interface SeqFunction {
     extraArgs?: unknown[];
 }
 
+/* todo functions:
+    repeatFor       [# of times]            repeat for a timespan
+    repeatUntil     [absTime or fixpoint]   repeat until an absoluteTime (which can be a variable timeMark defined in another voice)
+    extendFor       [absTime]               extend a note
+    extendUntil     [fixpoint]
+    restFor         [absTime]               rest
+    restUntil       [fixpoint]
+
+    transposeModal  [interval; scale/key]   transpose using a scale or a key
+    transposeChrom  [interval]              transpose chromatically
+
+    invertModal     [centerNote; scale/key] inversion using a scale or a key
+    invertChrom     [centerNote]            chromatical inversion
+
+    augment         [factor]                change all values by a factor (or a fixed value)
+    mensuration     [fromTime; toTime]      change all values by mensuration rules
+    replaceValue    [fromValue; toValue; mode]    replace a time value with another
+                                                and fill with rests (c2 d4. e8 -> c8 r4. d8 r4 e8)
+                                                and repeat notes (c2 d4. e8 -> c8 c8 c8 c8 d8 d8 d8 e8)
+                                                and change rhythm (c2 d4. e8 -> c8 d8 e8)
+
+    replacePattern  (complex)
+
+    cut             [time1; time2]          from time1 to time2
+
+    sample          [sampleSeq]             c16 d16 e16 f16 g16 a16 b16 c16 | x8. x8. x8 -> c8. f8. b8
+
+    merge           [valueSeq]              values from seq1 with pitches from seq2
+
+    addPassing      []                      adds passing notes: c4 e4 c4 -> c8 d8 e8 d8 c4
+
+    arpeggiate      [patternSeq]            makes chords to arpeggios or Alberti-bass-like sequences
+    collapse        [chordValues]           make arpeggios to chords
+
+    offset          [timeSpan]              delays the beginning of the sequence
+
+    chordToVoice    [voiceNo; totalNo]      
+*/
 
 export function isSeqFunction(test: unknown): test is SeqFunction {
     return !!(test as SeqFunction).function && !!(test as SeqFunction).args;
