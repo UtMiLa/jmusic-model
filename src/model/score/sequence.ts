@@ -26,6 +26,10 @@ export function isNote(item: MusicEvent): item is Note {
     return (item as Note).pitches !== undefined;
 }
 
+export function isMusicEvent(item: unknown): item is MusicEvent {
+    return isStateChange(item as MusicEvent) || isLongDecoration(item as MusicEvent) || isNote(item as MusicEvent);
+}
+
 export interface ISequence {
     elements: MusicEvent[];
     duration: TimeSpan;
