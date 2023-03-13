@@ -172,7 +172,7 @@ export class JMusic implements ScoreDef {
         this.didChange();
     }
 
-    addMeterChg(ins: InsertionPoint, meter: MeterFlex) {
+    addMeterChg(ins: InsertionPoint, meter: MeterFlex): void {
         const m = JMusic.makeMeter(meter);
         
         const seq = this.sequenceFromInsertionPoint(ins);

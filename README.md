@@ -68,6 +68,7 @@ Import/export:
 
 Model operations:
 * Create score from settings
+* Use variables
 
 Transformations on sequences:
 * retrograde
@@ -99,7 +100,7 @@ Model operations:
 * Clear area
 * Change meter/key/clef
 * Copy/paste selection
-* Define and use variables
+* Define variables
 
 Transformations on sequences:
 * transpose chromatically/diatonically
