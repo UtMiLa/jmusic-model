@@ -251,5 +251,21 @@ describe('Flexible Sequence', () => {
         });
 
     });
+
+    describe('Operations on FlexibleSequence', () => {
+        it('should support insertElement');
+        it('should support appendElement');
+        it('should support deleteElement');
+        it('should support modifyElement');
+        // could be some sort of 
+        //    where time = x
+        //        (or where index = i)
+        //        (or where element matches f(element) or R.where)
+        //        (or at end of seq)
+        //    modify event => f(event)
+        //        (or insert or delete)
+
+
+    });
 });
 
