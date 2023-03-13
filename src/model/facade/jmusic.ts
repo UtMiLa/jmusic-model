@@ -1,3 +1,4 @@
+import { FlexibleItem } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
 import { ISequence } from './../score/sequence';
@@ -15,12 +16,18 @@ import { Pitch } from '../pitches/pitch';
 import { Time } from '../rationals/time';
 import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
 import { FlexibleSequence } from '../score/flexible-sequence';
+import { VariableDef, VariableRepository } from '../score/variables';
+import R = require('ramda');
 
 export interface JMusicSettings {
-    content: string[][];
+    content: FlexibleItem[][];
     clefs?: (Clef | string)[];
     meter?: Meter | string;
     key?: Key | string;
+}
+
+export interface JMusicVars {
+    [key: string]: FlexibleItem;
 }
 
 /** Tolerant input type for notes: a Note object, or a string in Lilypond format */
@@ -43,13 +50,16 @@ export type ChangeHandler = () => void;
 /** Facade object for music scores */
 export class JMusic implements ScoreDef {
 
-    constructor(voice?: string | JMusicSettings | ScoreDef) {
+    constructor(voice?: string | JMusicSettings | ScoreDef, vars?: JMusicVars) {
+
+        this.vars = new VariableRepository(vars ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: pair[1] })) : []);
+
         if (typeof(voice) === 'string') {
             this.staves.push({ 
                 initialClef: Clef.clefTreble.def,
                 initialKey: { count: 0, accidental: 0 },
                 initialMeter: { count: 4, value: 4 },
-                voices: [{ content: new FlexibleSequence(voice) }]
+                voices: [{ content: new FlexibleSequence(voice, this.vars) }]
             });
         } else if (isScoreDef(voice)) {
             this.staves = [ ...voice.staves ]; 
@@ -74,7 +84,7 @@ export class JMusic implements ScoreDef {
                     initialClef: clef,
                     initialKey: key,
                     initialMeter: meter,
-                    voices: stf.map(cnt => ({ content: new FlexibleSequence(cnt) }))
+                    voices: stf.map(cnt => ({ content: new FlexibleSequence(cnt, this.vars) }))
                 });
             });
         }
@@ -82,6 +92,7 @@ export class JMusic implements ScoreDef {
 
     staves: StaffDef[] = [];
     repeats?: RepeatDef[] | undefined;
+    vars: VariableRepository;
 
     changeHandlers: ChangeHandler[] = [];
 

@@ -159,6 +159,24 @@ describe('Facade', () => {
             expect(jMusicObj.staves).to.have.length(2);
         });
 
+            
+        it('should create a one-voice one-staff score using variables', () => {
+            const sc = new JMusic(
+                { content: [[['c4', { variable: 'varTest' }]]]},
+                { varTest: ['e4 d4'] }
+            );
+
+            expect(sc.staves).to.have.length(1);
+            expect(sc.staves[0].initialClef).to.deep.eq({ clefType: ClefType.G, line: -2 });
+            expect(sc.staves[0].initialKey).to.deep.eq({ count: 0, accidental: 0 });
+            expect(sc.staves[0].initialMeter).to.be.undefined;
+            expect(sc.staves[0].voices).to.have.length(1);
+            expect(sc.staves[0].voices[0].content.duration).to.deep.eq(Time.newSpan(3, 4));
+            expect(sc.staves[0].voices[0].content.elements).to.have.length(3);
+            expect(sc.staves[0].voices[0].content.elements[2]).to.deep.eq(createNoteFromLilypond('d4'));
+            expect(sc.repeats).to.be.undefined;
+        });
+    
 
     });
     describe('Operations', () => {
