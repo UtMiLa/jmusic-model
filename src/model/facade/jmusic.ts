@@ -6,7 +6,7 @@ import { RegularMeterDef, MeterFactory } from './../states/meter';
 import { Key, KeyDef } from './../states/key';
 import { Clef, ClefDef } from './../states/clef';
 import { RepeatDef } from '../score/repeats';
-import { parseLilyClef, parseLilyKey, parseLilyMeter, SimpleSequence } from '../score/sequence';
+import { parseLilyClef, parseLilyKey, parseLilyMeter } from '../score/sequence';
 import { StaffDef } from '../score/staff';
 import { isScoreDef, ScoreDef } from './../score/score';
 import { Meter } from '../states/meter';
@@ -14,6 +14,7 @@ import { createNoteFromLilypond, Note } from '../notes/note';
 import { Pitch } from '../pitches/pitch';
 import { Time } from '../rationals/time';
 import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
+import { FlexibleSequence } from '../score/flexible-sequence';
 
 export interface JMusicSettings {
     content: string[][];
@@ -48,7 +49,7 @@ export class JMusic implements ScoreDef {
                 initialClef: Clef.clefTreble.def,
                 initialKey: { count: 0, accidental: 0 },
                 initialMeter: { count: 4, value: 4 },
-                voices: [{ content: new SimpleSequence(voice) }]
+                voices: [{ content: new FlexibleSequence(voice) }]
             });
         } else if (isScoreDef(voice)) {
             this.staves = [ ...voice.staves ]; 
@@ -73,7 +74,7 @@ export class JMusic implements ScoreDef {
                     initialClef: clef,
                     initialKey: key,
                     initialMeter: meter,
-                    voices: stf.map(cnt => ({ content: new SimpleSequence(cnt) }))
+                    voices: stf.map(cnt => ({ content: new FlexibleSequence(cnt) }))
                 });
             });
         }
@@ -150,7 +151,7 @@ export class JMusic implements ScoreDef {
     appendNote(ins: InsertionPoint, noteInput: NoteFlex): void {
         const note = JMusic.makeNote(noteInput);
         const seq = this.sequenceFromInsertionPoint(ins);
-        seq.elements.push(note);
+        seq.appendElement(note);
         this.didChange();
     }
 

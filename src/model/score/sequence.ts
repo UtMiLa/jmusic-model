@@ -35,6 +35,7 @@ export interface ISequence {
     duration: TimeSpan;
     groupByTimeSlots(keyPrefix: string): TimeSlot[];
     insertElement(time: AbsoluteTime, elm: MusicEvent): void;
+    appendElement(elm: MusicEvent): void;
 }
 
 export interface SequenceDef {
@@ -106,6 +107,7 @@ export abstract class BaseSequence implements ISequence {
     /*protected uniqueId = generateUniqueId();*/
 
     abstract insertElement(time: AbsoluteTime, elm: MusicEvent): void;
+    appendElement(elm: MusicEvent): void { throw 'appendElement not implemented'; }
 
     getTimeSlots(): ExtendedTime[] {
         let time: ExtendedTime = Time.newAbsolute(0, 1);

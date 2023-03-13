@@ -117,8 +117,46 @@ export class FlexibleSequence extends BaseSequence {
         return allPaths[index];
     }
 
-    insertElement(time: AbsoluteTime, element: MusicEvent): void {
-        const i = this.indexOfTime(time);
+    appendElement(element: FlexibleItem): void {
+        if (R.is(Array, this.def)) {
+            this.def = R.append(element, this.def);
+        } else {
+            this.def = [this.def, element];
+        }
+    }    
+
+
+    deleteElement(i: number | AbsoluteTime): void {
+        if (typeof i !== 'number') i = this.indexOfTime(i);
+        const path = this.indexToPath(i);
+
+        if (path.length === 2) {
+            this.def = R.remove(path[0] as number, 1, this.def);
+            return;
+        }
+        
+
+        throw 'Not implemented';
+
+    }
+
+    modifyElement(i: number | AbsoluteTime, fn: (from: FlexibleItem) => FlexibleItem): void {
+        if (typeof i !== 'number') i = this.indexOfTime(i);
+        const path = this.indexToPath(i);
+        
+        if (path.length === 2) {
+            this.def = R.modify(path[0] as number, fn, this.def);
+            return;
+        }
+        
+
+        throw 'Not implemented';
+
+    }    
+
+
+    insertElement(i: number | AbsoluteTime, element: FlexibleItem): void {
+        if (typeof i !== 'number') i = this.indexOfTime(i);
         const path = this.indexToPath(i);
         //[1,0] tager def og indsætter element før index 1
         if (path.length === 2) {
