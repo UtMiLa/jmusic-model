@@ -87,6 +87,16 @@ describe('Flexible sequence transformations', () => {
         expect(retro.elements[0]).to.deep.equal(createNoteFromLilypond('<e, c>4'));
     });
 
+
+    it('should map an element index to a path even when functions are present', () => {
+        const seq = new FlexibleSequence([seq1Text, { function: 'Reverse', args: [seq3Text]}, seq2Text]);
+
+        expect(seq.indexToPath(0)).to.deep.eq([0, 0, 0]);
+        expect(seq.indexToPath(2)).to.deep.eq([0, 2, 0]);
+        expect(seq.indexToPath(6)).to.deep.eq([2, 0, 0]);
+        expect(() => seq.indexToPath(10)).to.throw();
+    });
+
     it('should create the a tuplet group from a sequence', () => {
         const seq1 = new FlexibleSequence(seq1Text);
         const tuplet = new FlexibleSequence([{ function:'Tuplet', args: [seq1Text], extraArgs: [{ numerator: 2, denominator: 3 }]} as SeqFunction]);

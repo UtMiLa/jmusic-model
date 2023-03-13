@@ -2,7 +2,7 @@ import { isVariableRef, VariableRef, VariableRepository, VariableDef } from './v
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
 import { createFunction, isSeqFunction, SeqFunction } from './functions';
-import { BaseSequence, MusicEvent, parseLilyElement, SimpleSequence } from './sequence';
+import { BaseSequence, isMusicEvent, MusicEvent, parseLilyElement, SimpleSequence } from './sequence';
 
 // Fix for types for R.chain
 import * as _ from 'ts-toolbelt';
@@ -11,7 +11,9 @@ type addIndexFix<T, U> = (
 ) => _.F.Curry<(a: (item: T, idx: number, list: T[]) => U, b: readonly T[]) => U>;
 
 
-export type FlexibleItem = string | SeqFunction | VariableRef |FlexibleItem[];
+export type FlexibleItem = string | SeqFunction | VariableRef | FlexibleItem[] | MusicEvent;
+
+export type PathElement = string | number;
 
 function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository): FlexibleItem[] {
     if (typeof item === 'string') {
@@ -21,6 +23,8 @@ function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository)
         return x;
     } else if (isVariableRef(item)) {
         return new FlexibleSequence(repo.valueOf(item.variable)).def;
+    } else if (isMusicEvent(item)) {
+        return [item];
     } else {
         return item.map(i => recursivelySplitStringsIn(i, repo));
     }
@@ -72,11 +76,12 @@ export class FlexibleSequence extends BaseSequence {
         }
         
         this._elements = R.chain(
-            R.cond<FlexibleItem, string, SeqFunction, /*VariableRef,*/ string[], FlexibleItem[], MusicEvent[]>([
+            R.cond<FlexibleItem, string, SeqFunction, /*VariableRef,*/ string[], MusicEvent, FlexibleItem[], MusicEvent[]>([
                 [R.is(String), ((item: string) => [parseLilyElement(item) as MusicEvent])],
                 [isSeqFunction, (item: SeqFunction) => createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))],
                 //[isVariableRef, (item: VariableRef) => calcElements([(this.repo.valueOf(item.variable)], this.repo)],
                 [isSingleStringArray, (item: string[]) => [parseLilyElement(item[0])]],
+                [isMusicEvent, (item: MusicEvent) => [item]],
                 [isOtherFlexibleItemArray, (elm) => calcElements(elm, this.repo)]
             ])            
             , init);
@@ -88,19 +93,20 @@ export class FlexibleSequence extends BaseSequence {
     }
 
 
-    indexToPath(index: number): (number | string)[] {
+    indexToPath(index: number): PathElement[] {
 
-        const itemsToPaths = (item: FlexibleItem): (number | string)[][] => {
+        const itemsToPaths = (item: FlexibleItem): PathElement[][] => {
             if (typeof item === 'string') {
                 const no = SimpleSequence.splitByNotes(item).length;
                 return R.range(0, no).map(n => [n]);
             } else if (isSeqFunction(item)) {
-                //const x = R.modify('args', args => recursivelySplitStringsIn(args, repo), item) as unknown as FlexibleItem[];
-                return [];
+                return createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo)).map((a, i) => ['args', i]);
             } else if (isVariableRef(item)) {
                 return [];//new FlexibleSequence(repo.valueOf(item.variable)).def;
+            } else if (isMusicEvent(item)) {
+                return [[0]];
             } else {
-                return (R.addIndex as addIndexFix<FlexibleItem, (number|string)[][]>)(R.chain<FlexibleItem, (number|string)[]>)((s: FlexibleItem, idx: number) => itemsToPaths(s).map(x => [idx, ...x]), item);
+                return (R.addIndex as addIndexFix<FlexibleItem, PathElement[][]>)(R.chain<FlexibleItem, PathElement[]>)((s: FlexibleItem, idx: number) => itemsToPaths(s).map(x => [idx, ...x]), item);
             }
         };
         
@@ -111,8 +117,25 @@ export class FlexibleSequence extends BaseSequence {
         return allPaths[index];
     }
 
-    insertElement(time: AbsoluteTime, elm: MusicEvent): void {
-        throw new Error('Method not implemented.');
+    insertElement(time: AbsoluteTime, element: MusicEvent): void {
+        const i = this.indexOfTime(time);
+        const path = this.indexToPath(i);
+        //[1,0] tager def og indsætter element før index 1
+        if (path.length === 2) {
+            this.def = R.insert(path[0] as number, element, this.def);
+            return;
+        }
+        
+
+        throw 'Not implemented';
+        /*
+        const setPath = (def: FlexibleItem, path: PathElement[], element: MusicEvent) => {
+            const [i, ...rest] = path;
+            //const thing = def[i];
+        };
+        */
+        //this.def.splice(i, 0, element);
+
     }    
 }
 
