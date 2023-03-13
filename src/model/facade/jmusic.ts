@@ -1,3 +1,4 @@
+import { NoteDirection } from '~/model';
 import { FlexibleItem } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
@@ -84,7 +85,10 @@ export class JMusic implements ScoreDef {
                     initialClef: clef,
                     initialKey: key,
                     initialMeter: meter,
-                    voices: stf.map(cnt => ({ content: new FlexibleSequence(cnt, this.vars) }))
+                    voices: stf.map((cnt, idx) => ({ 
+                        content: new FlexibleSequence(cnt, this.vars), 
+                        noteDirection: stf.length === 1 ? NoteDirection.Undefined : idx % 2 === 0 ? NoteDirection.Up : NoteDirection.Down 
+                    }))
                 });
             });
         }
