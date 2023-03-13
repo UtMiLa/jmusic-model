@@ -4,6 +4,12 @@ import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
 import { createFunction, isSeqFunction, SeqFunction } from './functions';
 import { BaseSequence, MusicEvent, parseLilyElement, SimpleSequence } from './sequence';
 
+// Fix for types for R.chain
+import * as _ from 'ts-toolbelt';
+type addIndexFix<T, U> = (
+    fn: (f: (item: T) => U, list: readonly T[]) => U,
+) => _.F.Curry<(a: (item: T, idx: number, list: T[]) => U, b: readonly T[]) => U>;
+
 
 export type FlexibleItem = string | SeqFunction | VariableRef |FlexibleItem[];
 
@@ -79,6 +85,30 @@ export class FlexibleSequence extends BaseSequence {
 
     modifyItem(lens: R.Lens<FlexibleItem, FlexibleItem>, changer: (x: FlexibleItem) => FlexibleItem): void {
         R.over(lens, changer);
+    }
+
+
+    indexToPath(index: number): (number | string)[] {
+
+        const itemsToPaths = (item: FlexibleItem): (number | string)[][] => {
+            if (typeof item === 'string') {
+                const no = SimpleSequence.splitByNotes(item).length;
+                return R.range(0, no).map(n => [n]);
+            } else if (isSeqFunction(item)) {
+                //const x = R.modify('args', args => recursivelySplitStringsIn(args, repo), item) as unknown as FlexibleItem[];
+                return [];
+            } else if (isVariableRef(item)) {
+                return [];//new FlexibleSequence(repo.valueOf(item.variable)).def;
+            } else {
+                return (R.addIndex as addIndexFix<FlexibleItem, (number|string)[][]>)(R.chain<FlexibleItem, (number|string)[]>)((s: FlexibleItem, idx: number) => itemsToPaths(s).map(x => [idx, ...x]), item);
+            }
+        };
+        
+        const allPaths = itemsToPaths(this.def);
+
+        if (index >= allPaths.length) throw 'Illegal index';
+
+        return allPaths[index];
     }
 
     insertElement(time: AbsoluteTime, elm: MusicEvent): void {

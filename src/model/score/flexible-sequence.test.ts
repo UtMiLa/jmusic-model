@@ -43,6 +43,23 @@ describe('Flexible Sequence', () => {
         expect(seq2.def).to.deep.eq([['c4', 'd8', 'e8'], [['c,2', 'd,8', '<e, c>4'], ['c,2', 'd,8', 'e,8', 'c4']]]);
     });
 
+    it('should map an element index to a path', () => {
+        const seq1 = new FlexibleSequence(seq1Text);
+
+        expect(seq1.indexToPath(0)).to.deep.eq([0, 0]);
+        expect(seq1.indexToPath(2)).to.deep.eq([2, 0]);
+        expect(() => seq1.indexToPath(3)).to.throw();
+
+        const seq2 = new FlexibleSequence([seq1Text, [seq3Text, seq2Text]]);
+
+        expect(seq2.indexToPath(0)).to.deep.eq([0, 0, 0]);
+        expect(seq2.indexToPath(3)).to.deep.eq([1, 0, 0, 0]);
+        expect(seq2.indexToPath(5)).to.deep.eq([1, 0, 2, 0]);
+        expect(seq2.indexToPath(6)).to.deep.eq([1, 1, 0, 0]);
+        expect(seq2.indexToPath(9)).to.deep.eq([1, 1, 3, 0]);
+        expect(() => seq2.indexToPath(10)).to.throw();
+    });
+
 
     it('should calculate the length of a sequence', () => {
         const seq1 = new FlexibleSequence(seq1Text);
