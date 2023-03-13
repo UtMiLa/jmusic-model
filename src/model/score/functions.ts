@@ -20,6 +20,7 @@ export interface SeqFunction {
 
     transposeModal  [interval; scale/key]   transpose using a scale or a key
     transposeChrom  [interval]              transpose chromatically
+    duxToComes      [key]                   replace 5th with 4th
 
     invertModal     [centerNote; scale/key] inversion using a scale or a key
     invertChrom     [centerNote]            chromatical inversion
@@ -47,6 +48,9 @@ export interface SeqFunction {
     offset          [timeSpan]              delays the beginning of the sequence
 
     chordToVoice    [voiceNo; totalNo]      
+
+
+    might be defined like mongoDb: match unwind project group sort
 */
 
 export function isSeqFunction(test: unknown): test is SeqFunction {
