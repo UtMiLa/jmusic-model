@@ -20,7 +20,7 @@ export interface SeqFunction {
 
     transposeModal  [interval; scale/key]   transpose using a scale or a key
     transposeChrom  [interval]              transpose chromatically
-    duxToComes      [key]                   replace 5th with 4th
+    duxToComes      [key]                   replace 5th with 4th (complicated; not fixed rule)
 
     invertModal     [centerNote; scale/key] inversion using a scale or a key
     invertChrom     [centerNote]            chromatical inversion
@@ -51,6 +51,24 @@ export interface SeqFunction {
 
 
     might be defined like mongoDb: match unwind project group sort
+
+
+
+    suggestion: a domain language to construct functions:
+
+        transposeChromatic: interval ->
+            note -> modify(pitches, map(addInterval(interval)))
+            key -> transposeKey(interval)
+            others -> keep
+        offset: timeSpan -> 
+            others -> prepend(rest(timeSpan))
+        merge: sequence ->
+            notes -> zip(sequence.notes) -> modify(duration, zipped.duration)
+            others -> keep
+        reverse:
+            note -> reverse
+            longDecoration -> invertDeco()
+            others -> skip
 */
 
 export function isSeqFunction(test: unknown): test is SeqFunction {

@@ -5,7 +5,7 @@ import {  } from './sequence';
 import { expect } from 'chai';
 import { LongDecorationType } from '../decorations/decoration-type';
 import { FlexibleSequence } from './flexible-sequence';
-import { FuncDef, SeqFunction } from './functions';
+import { createFunction, FuncDef, SeqFunction } from './functions';
 describe('Functions', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';
@@ -198,6 +198,94 @@ describe('Flexible sequence transformations', () => {
         });
         expect(slots1[3].time).to.not.have.property('extended');
 
+    });
+
+    describe('Transpose modally', () => {
+        it('should');
+    });
+
+    describe('Transpose chromatically', () => {
+        it('should transpose a sequence by an interval', () => {
+            const seq = new FlexibleSequence('cis4 des4 e8 f4.');
+
+            createFunction('Transpose', [new interval(3, 0)]);
+        });
+    });
+
+    describe('Retrograde', () => {
+        it('should');
+    });
+
+    describe('Inversion', () => {
+        it('should');
+    });
+
+    describe('Change node properties', () => {
+        it('should');
+    });
+
+    describe('Repeat', () => {
+        it('should');
+    });
+
+    describe('Rest', () => {
+        it('should');
+    });
+
+    describe('Extend', () => {
+        it('should');
+    });
+
+    describe('Augmentation', () => {
+        it('should');
+    });
+
+    describe('ReplaceValue', () => {
+        it('should');
+    });
+
+    describe('ReplacePitch', () => {
+        it('should');
+    });
+
+    describe('ReplacePattern', () => {
+        it('should');
+    });
+
+    describe('Cut', () => {
+        it('should');
+    });
+
+    describe('Sample', () => {
+        it('should');
+    });
+
+    describe('Delay', () => {
+        it('should');
+    });
+
+    describe('Merge', () => {
+        it('should');
+    });
+
+    describe('Add Passing notes', () => {
+        it('should');
+    });
+
+    describe('Arpeggiate', () => {
+        it('should');
+    });
+
+    describe('Collapse arpeggios to chords', () => {
+        it('should');
+    });
+
+    describe('Get Voice from chords', () => {
+        it('should');
+    });
+
+    describe('Combine voices to chords', () => {
+        it('should');
     });
 
 
