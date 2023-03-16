@@ -79,6 +79,22 @@ describe('Pitch', () => {
         expect(new PitchClass(4, -1).circleOf5Number).to.eq(-6);
     });
 
+    it('should get correct citcle of fifths number', () => {
+        expect(PitchClass.fromCircleOf5(0)).to.deep.eq(new PitchClass(0, 0));
+        expect(PitchClass.fromCircleOf5(1)).to.deep.eq(new PitchClass(4, 0));
+        expect(PitchClass.fromCircleOf5(2)).to.deep.eq(new PitchClass(1, 0));
+        expect(PitchClass.fromCircleOf5(3)).to.deep.eq(new PitchClass(5, 0));
+        expect(PitchClass.fromCircleOf5(4)).to.deep.eq(new PitchClass(2, 0));
+        expect(PitchClass.fromCircleOf5(5)).to.deep.eq(new PitchClass(6, 0));
+        expect(PitchClass.fromCircleOf5(6)).to.deep.eq(new PitchClass(3, 1));
+        expect(PitchClass.fromCircleOf5(-1)).to.deep.eq(new PitchClass(3, 0));
+        expect(PitchClass.fromCircleOf5(-2)).to.deep.eq(new PitchClass(6, -1));
+        expect(PitchClass.fromCircleOf5(-3)).to.deep.eq(new PitchClass(2, -1));
+        expect(PitchClass.fromCircleOf5(-4)).to.deep.eq(new PitchClass(5, -1));
+        expect(PitchClass.fromCircleOf5(-5)).to.deep.eq(new PitchClass(1, -1));
+        expect(PitchClass.fromCircleOf5(-6)).to.deep.eq(new PitchClass(4, -1));
+    });
+
     it('should convert MIDI number to pitch', () => {
         expect(Pitch.fromMidi(60).lilypond).to.eq('c\'');
         expect(Pitch.fromMidi(59).lilypond).to.eq('b');

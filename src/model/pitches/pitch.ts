@@ -1,4 +1,5 @@
 import {mathMod}  from 'ramda';
+import R = require('ramda');
 
 const pitchNames = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
 const accidentalNamesLy = ['eses', 'es', '', 'is', 'isis'];
@@ -133,6 +134,14 @@ export class PitchClass {
     /** 0 = C, +1 = fifth up (1 = G, 2 = D), -1 = fifth down (-1 = F etc) */    
     get circleOf5Number(): number {
         return mathMod(2 * this._pitchClass + 1, 7) - 1 + 7 * this._accidental;
+    }
+    static fromCircleOf5(co5: number): PitchClass {
+
+        const accidental = Math.floor((co5 + 1) / 7);
+        //const pitchClass = Math.floor(((co5 + 1 - 7 * accidental) - 1) / 2);
+        const pitchClass = R.mathMod((4 * (co5 - 7 * accidental)), 7);
+
+        return new PitchClass(pitchClass, accidental as Alteration);
     }
     get pitchClassName(): string {
         return pitchNames[this._pitchClass];

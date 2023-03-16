@@ -208,7 +208,25 @@ describe('Flexible sequence transformations', () => {
         it('should transpose a sequence by an interval', () => {
             const seq = new FlexibleSequence('cis4 des4 e8 f4.');
 
-            createFunction('Transpose', [new interval(3, 0)]);
+            const fun = createFunction('Transpose', [{ interval: 3, alteration: 0 }]);
+
+            const res = fun(seq.elements);
+
+            expect(res).to.have.length(4);
+            expect(res[0]).to.deep.eq(createNoteFromLilypond('fis4'));
+            expect(res[1]).to.deep.eq(createNoteFromLilypond('ges4'));
+            expect(res[2]).to.deep.eq(createNoteFromLilypond('a8'));
+            expect(res[3]).to.deep.eq(createNoteFromLilypond('bes4.'));
+
+            const fun2 = createFunction('Transpose', [{ interval: 1, alteration: -1 }]);
+
+            const res2 = fun2(seq.elements);
+
+            expect(res2).to.have.length(4);
+            expect(res2[0]).to.deep.eq(createNoteFromLilypond('d4'));
+            expect(res2[1]).to.deep.eq(createNoteFromLilypond('eeses4'));
+            expect(res2[2]).to.deep.eq(createNoteFromLilypond('f8'));
+            expect(res2[3]).to.deep.eq(createNoteFromLilypond('ges4.'));
         });
     });
 
