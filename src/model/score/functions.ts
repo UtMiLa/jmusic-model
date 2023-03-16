@@ -1,5 +1,7 @@
 import R = require('ramda');
 import { Note, setGrace, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
+import { addInterval, Interval } from '../pitches/intervals';
+import { Pitch } from '../pitches/pitch';
 import { RationalDef } from '../rationals/rational';
 import { TimeSpan, AbsoluteTime } from '../rationals/time';
 import { FlexibleItem, FlexibleSequence } from './flexible-sequence';
@@ -75,7 +77,7 @@ export function isSeqFunction(test: unknown): test is SeqFunction {
     return !!(test as SeqFunction).function && !!(test as SeqFunction).args;
 }
 
-export type FuncDef = 'Reverse' | 'Repeat' | 'Grace' | 'Tuplet';
+export type FuncDef = 'Reverse' | 'Repeat' | 'Grace' | 'Tuplet' | 'Transpose' | 'ModalTranspose';
 
 type MusicFunc = (elements: MusicEvent[]) => MusicEvent[];
 type CurryMusicFunc = (...args: unknown[]) => MusicFunc;
@@ -85,7 +87,7 @@ const flippedRepeater = R.flip(repeater);
 const flattenedRepeater = R.curry(R.pipe(flippedRepeater, R.flatten as any));
 
 const reverseTuplets = R.modify<'tupletGroup', TupletState, TupletState>('tupletGroup', 
-    tg => tg === TupletState.Begin
+    (tg: TupletState) => tg === TupletState.Begin
         ? TupletState.End 
         : tg === TupletState.End
             ? TupletState.Begin
@@ -104,11 +106,19 @@ const setTupletNotes = (fraction: RationalDef, notes: MusicEvent[]) => {
     ));
 };
 
+
+const transposePitch = R.curry((interval: Interval, pitch: Pitch) => addInterval(pitch, interval));
+const transposeNote = R.curry((interval: Interval, note: Note) => ({...note, pitches: note.pitches.map(pitch => transposePitch(interval, pitch))}));
+
+const transpose = R.curry((interval, sequence: MusicEvent[]) => R.map(R.when(isNote, transposeNote(interval)))(sequence));
+
 const internal_functions: {[key: string]: MusicFunc | CurryMusicFunc } = {
     'Reverse': R.pipe(R.reverse<MusicEvent>, R.map(reverseTuplets)),
     'Repeat': flattenedRepeater as CurryMusicFunc,
     'Grace': R.map(setGraceNote),
-    'Tuplet': R.curry(setTupletNotes) as CurryMusicFunc
+    'Tuplet': R.curry(setTupletNotes) as CurryMusicFunc,
+    'Transpose': transpose as CurryMusicFunc,
+    'ModalTranspose': R.identity
 };
 
 export function createFunction(funcDef: FuncDef, extraArgs?: unknown[]): (elements: MusicEvent[]) => MusicEvent[] {
