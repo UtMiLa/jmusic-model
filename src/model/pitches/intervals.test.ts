@@ -51,5 +51,31 @@ describe('Intervals', () => {
         expectAddInterval('ees', 'fis', { interval: 1, alteration: 2 });
         expectAddInterval('d', 'b', { interval: 5, alteration: 1 });
         expectAddInterval('d', 'bes', { interval: 5, alteration: -1 });
-    }); // todo: test intervals with octaves, and across octave bounds
+    });
+
+    it('should handle octaves correctly when finding intervals between pitches', () => {
+        expectPitchDiff('c', 'c\'', { interval: 7, alteration: 0 });
+        expectPitchDiff('c', 'c\'\'', { interval: 14, alteration: 0 });
+        expectPitchDiff('c', 'c,', { interval: -7, alteration: 0 });
+        expectPitchDiff('c', 'c,,', { interval: -14, alteration: 0 });
+        expectPitchDiff('c', 'b,', { interval: -1, alteration: 1 });
+        expectPitchDiff('a', 'c\'', { interval: 2, alteration: -1 });
+        expectPitchDiff('a', 'b', { interval: 1, alteration: 1 });
+        expectPitchDiff('a', 'cis\'', { interval: 2, alteration: 1 });
+        expectPitchDiff('a', 'b,', { interval: -6, alteration: 1 });
+        expectPitchDiff('bis,', 'ces', { interval: 1, alteration: -3 });
+    });
+
+    it('should handle octaves correctly when adding intervals', () => {
+        expectAddInterval('c', 'c\'', { interval: 7, alteration: 0 });
+        expectAddInterval('c', 'c\'\'', { interval: 14, alteration: 0 });
+        expectAddInterval('c', 'c,', { interval: -7, alteration: 0 });
+        expectAddInterval('c', 'c,,', { interval: -14, alteration: 0 });
+        expectAddInterval('c', 'b,', { interval: -1, alteration: 1 });
+        expectAddInterval('a', 'c\'', { interval: 2, alteration: -1 });
+        expectAddInterval('a', 'b', { interval: 1, alteration: 1 });
+        expectAddInterval('a', 'cis\'', { interval: 2, alteration: 1 });
+        expectAddInterval('a', 'b,', { interval: -6, alteration: 1 });
+        expectAddInterval('bis,', 'ces', { interval: 1, alteration: -3 });
+    });
 });
