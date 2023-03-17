@@ -42,10 +42,15 @@ export function addInterval(pitch: Pitch, interval: Interval): Pitch {
     }
 
 
-    const diffPc = [0, 2, 4, -1, 1, 3, 5][interval.interval % 7] + 7 * alt;
+    const diffPc = [0, 2, 4, -1, 1, 3, 5][R.mathMod(interval.interval, 7)] + 7 * alt;
     const newpc = pc.circleOf5Number + diffPc;
     const newPitchClass = PitchClass.fromCircleOf5(newpc);
     const newAccidentals = newPitchClass.alteration;
+    if (Number.isNaN(newAccidentals)) {
+        // eslint-disable-next-line no-debugger
+        debugger;
+    }
+    const octave = pitch.octave + Math.floor((pitch.pitchClassNumber + interval.interval) / 7);
 
-    return new Pitch(newPitchClass.pitchClass, pitch.octave, newAccidentals);
+    return new Pitch(newPitchClass.pitchClass, octave, newAccidentals);
 }
