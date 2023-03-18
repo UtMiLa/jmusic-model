@@ -230,6 +230,29 @@ describe('Flexible sequence transformations', () => {
         });
     });
 
+    describe('Relative', () => {
+        function expectRelative(fromseq: string, startNote: string, toSeq: string) {
+            const seq1 = new FlexibleSequence(fromseq);
+            const seq2 = new FlexibleSequence(toSeq);
+            const fun = createFunction('Relative', [Pitch.parseLilypond(startNote)]);
+            expect(fun(seq1.elements), `${fromseq} - ${startNote}`).to.deep.eq(seq2.elements);
+        }
+
+        it('should adjust octave the same way as Lilypond \\relative', () => {
+            expectRelative('c4', 'f', 'c4');
+            expectRelative('c4', 'f\'', 'c\'4');
+            expectRelative('c4', 'f,', 'c,4');
+            expectRelative('c,4', 'f', 'c,4');
+            expectRelative('c\'4', 'f', 'c\'4');
+            expectRelative('c,,4', 'f', 'c,,4');
+            expectRelative('b4', 'f', 'b4');
+            expectRelative('d8', 'g', 'd8');
+            expectRelative('c8', 'g', 'c\'8');
+            expectRelative('c4 e8 a16 d16 g1', 'c', 'c4 e8 a16 d\'16 g\'1');
+            expectRelative('cis4 ees8 ais16 des16 g1', 'c', 'cis4 ees8 ais16 des\'16 g\'1');
+        });
+    });
+
     describe('Retrograde', () => {
         it('should');
     });

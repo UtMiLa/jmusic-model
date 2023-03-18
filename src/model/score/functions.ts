@@ -1,6 +1,6 @@
 import R = require('ramda');
 import { Note, setGrace, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
-import { addInterval, Interval } from '../pitches/intervals';
+import { addInterval, diffPitch, Interval } from '../pitches/intervals';
 import { Pitch } from '../pitches/pitch';
 import { RationalDef } from '../rationals/rational';
 import { TimeSpan, AbsoluteTime } from '../rationals/time';
@@ -77,7 +77,7 @@ export function isSeqFunction(test: unknown): test is SeqFunction {
     return !!(test as SeqFunction).function && !!(test as SeqFunction).args;
 }
 
-export type FuncDef = 'Reverse' | 'Repeat' | 'Grace' | 'Tuplet' | 'Transpose' | 'ModalTranspose';
+export type FuncDef = 'Relative' | 'Reverse' | 'Repeat' | 'Grace' | 'Tuplet' | 'Transpose' | 'ModalTranspose';
 
 type MusicFunc = (elements: MusicEvent[]) => MusicEvent[];
 type CurryMusicFunc = (...args: unknown[]) => MusicFunc;
@@ -112,7 +112,26 @@ const transposeNote = R.curry((interval: Interval, note: Note) => ({...note, pit
 
 const transpose = R.curry((interval, sequence: MusicEvent[]) => R.map(R.when(isNote, transposeNote(interval)))(sequence));
 
+const relative = R.curry((pitch: Pitch, seq: MusicEvent[]) => seq.reduce<{accu: MusicEvent[], pitch: Pitch}>((prev: {accu: MusicEvent[], pitch: Pitch}, curr: MusicEvent) => {
+    if (isNote(curr) && curr.pitches.length) {
+        // todo: chords
+        const firstPitch = curr.pitches[0];
+        const fromOctave = prev.pitch.octave;
+        const toOctave = firstPitch.octave;
+
+        const pcDiff = prev.pitch.pitchClassNumber - firstPitch.pitchClassNumber;
+        const correctionNumber = Math.trunc(pcDiff / 4);
+        const octave = fromOctave + toOctave - 3 + correctionNumber;
+        const curr1 = R.assocPath(['pitches', 0], new Pitch(firstPitch.pitchClassNumber, octave, firstPitch.alteration), curr);
+
+        return { accu: [...prev.accu, curr1], pitch: curr1.pitches[0] };
+    } else {
+        return { accu: [...prev.accu, curr], pitch: prev.pitch };
+    }
+}, { accu: [], pitch }).accu);
+
 const internal_functions: {[key: string]: MusicFunc | CurryMusicFunc } = {
+    'Relative': relative as CurryMusicFunc,
     'Reverse': R.pipe(R.reverse<MusicEvent>, R.map(reverseTuplets)),
     'Repeat': flattenedRepeater as CurryMusicFunc,
     'Grace': R.map(setGraceNote),
