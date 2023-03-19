@@ -100,20 +100,7 @@ export function createNoteFromLilypond(input: string): Note {
 }
 
 function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
-    /*const res = createNote(note.pitches, getNominalDuration(note));
-    let extra: UpdateNote = res;
-    if (note.uniq) extra.uniq = note.uniq;
-    if (note.tupletFactor) extra.tupletFactor = note.tupletFactor;
-    if (note.tie) extra.tie = note.tie;
-    if (note.direction) extra.direction = note.direction;
-    if (note.grace) extra.grace = note.grace;
-    if (note.tupletGroup) extra.tupletGroup = note.tupletGroup;
-    if (note.expressions) extra.expressions = [...note.expressions];
-    if (note.text) extra.text = [...note.text];*/
 
-    //Object.keys(changeProperties).forEach(key => (extra as any)[key] = (changeProperties as any)[key]);
-
-    //extra = {...extra, changeProperties};
     const extra = R.mergeRight(note, changeProperties);
     extra.duration = getRealDuration(extra); // todo: make setter function for duration-related stuff (like grace and tuplet notes)
     extra.dotNo = getDotNo(extra);
@@ -141,6 +128,9 @@ export function setTupletFactor(note: Note, tupletFactor: RationalDef | undefine
 }
 export function setTupletGroup(note: Note, tupletGroup: TupletState): Note {
     return cloneNote(note, { tupletGroup });
+}
+export function setPitches(note: Note, pitches: Pitch[]): Note {
+    return cloneNote(note, { pitches });
 }
 export function setDuration(note: Note, duration: TimeSpan): Note {
     return cloneNote(note, { nominalDuration: duration });

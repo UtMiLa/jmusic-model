@@ -1,5 +1,5 @@
 import R = require('ramda');
-import { Note, setGrace, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
+import { Note, setGrace, setPitches, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
 import { addInterval, diffPitch, Interval } from '../pitches/intervals';
 import { Pitch } from '../pitches/pitch';
 import { RationalDef } from '../rationals/rational';
@@ -122,13 +122,13 @@ const relative = R.curry((pitch: Pitch, seq: MusicEvent[]) => seq.reduce<{accu: 
         const pcDiff = prev.pitch.pitchClassNumber - firstPitch.pitchClassNumber;
         const correctionNumber = Math.trunc(pcDiff / 4);
         const octave = fromOctave + toOctave - 3 + correctionNumber;
-        const curr1 = R.assocPath(['pitches', 0], new Pitch(firstPitch.pitchClassNumber, octave, firstPitch.alteration), curr);
+        const curr1 = setPitches(curr, R.set(R.lensIndex(0), new Pitch(firstPitch.pitchClassNumber, octave, firstPitch.alteration), curr.pitches));
 
         return { accu: [...prev.accu, curr1], pitch: curr1.pitches[0] };
     } else {
         return { accu: [...prev.accu, curr], pitch: prev.pitch };
     }
-}, { accu: [], pitch }).accu);
+}, { accu: [], pitch: typeof(pitch) === 'string' ? Pitch.parseLilypond(pitch) : pitch }).accu);
 
 const internal_functions: {[key: string]: MusicFunc | CurryMusicFunc } = {
     'Relative': relative as CurryMusicFunc,
