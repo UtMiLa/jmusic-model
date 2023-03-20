@@ -251,6 +251,12 @@ describe('Flexible sequence transformations', () => {
             expectRelative('c4 e8 a16 d16 g1', 'c', 'c4 e8 a16 d\'16 g\'1');
             expectRelative('cis4 ees8 ais16 des16 g1', 'c', 'cis4 ees8 ais16 des\'16 g\'1');
         });
+
+
+        it('should adjust octaves after first note in chords', () => {
+            expectRelative('c\'4 <c e g>4 <c\' e g\'>4 <c, e, g\'\'>4', 'c', 'c\'4 <c\' e\' g\'>4 <c\'\' e\'\' g\'\'\'>4 <c\' e g\'\'>4');
+        });
+
     });
 
     describe('Retrograde', () => {
