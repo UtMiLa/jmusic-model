@@ -1,5 +1,5 @@
 import { NoteDirection } from '~/model';
-import { FlexibleItem } from './../score/flexible-sequence';
+import { FlexibleItem, FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
 import { ISequence } from './../score/sequence';
@@ -16,7 +16,6 @@ import { createNoteFromLilypond, Note } from '../notes/note';
 import { Pitch } from '../pitches/pitch';
 import { Time } from '../rationals/time';
 import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
-import { FlexibleSequence } from '../score/flexible-sequence';
 import { VariableDef, VariableRepository } from '../score/variables';
 import R = require('ramda');
 
@@ -53,7 +52,7 @@ export class JMusic implements ScoreDef {
 
     constructor(voice?: string | JMusicSettings | ScoreDef, vars?: JMusicVars) {
 
-        this.vars = new VariableRepository(vars ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: pair[1] })) : []);
+        this.vars = new VariableRepository(vars ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: new FlexibleSequence(pair[1]) })) : []);
 
         if (typeof(voice) === 'string') {
             this.staves.push({ 
@@ -202,6 +201,13 @@ export class JMusic implements ScoreDef {
 
     didChange(): void {
         this.changeHandlers.forEach(handler => handler());
+    }
+
+    getView(varname?: string): JMusic {
+        if (varname) {
+            return new JMusic({content: [[this.vars.valueOf(varname).elements]]});
+        }
+        return this;
     }
 
 }

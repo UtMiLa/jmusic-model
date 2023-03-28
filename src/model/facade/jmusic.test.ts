@@ -4,7 +4,7 @@ import { MeterFactory } from './../states/meter';
 import { Time } from './../rationals/time';
 import { Clef, ClefType } from './../states/clef';
 import { expect } from 'chai';
-import { JMusic } from './jmusic';
+import { JMusic, JMusicVars } from './jmusic';
 import { createNote, createNoteFromLilypond, Note, NoteDirection } from '../notes/note';
 import { Pitch } from '../pitches/pitch';
 import { Key } from '../states/key';
@@ -307,5 +307,51 @@ describe('Facade', () => {
             expect(scoreChangeCalls).to.eq(2);
 
         });
+    });
+
+    describe('Views', () => {
+        let score: JMusic;
+        let scoreChangeCalls: number;
+
+        beforeEach(() => {
+            score = new JMusic({ 
+                content: [['g4 g4 g4 g4 \\key a \\major g4 g4 g4 g4', 'c4 c4 c4 c4 c4 c4 c4 c4'], ['c,4 c,4 c,4 c,4 \\clef tenor c,4 c,4 c,4 c,4']],
+                meter: '4/4',
+                clefs: [ 'treble', 'bass' ],
+                key: 'g \\minor'
+            }, {
+                var1: 'f8 f8 f8 f8'
+            });
+            scoreChangeCalls = 0;
+            score.onChanged(() => { scoreChangeCalls++; });
+        });
+
+        it('should provide a view to the score', () => {
+            const v = score.getView();
+            expect(v.staves).to.have.length(2);
+            expect(v.staves[0].voices).to.have.length(2);
+        });
+
+        it('should provide a view to one variable', () => {
+            const v = score.getView('var1');
+            expect(v.staves).to.have.length(1);
+            expect(v.staves[0].voices).to.have.length(1);
+        });
+        it('should be able to update a variable through the view', () => {
+            const v = score.getView('var1');
+            const ins = { 
+                time: Time.StartTime,
+                voiceNo: 0,
+                staffNo: 0,
+                position: 0
+            } as InsertionPoint;
+
+            expect(score.vars.valueOf('var1').elements[0]).to.deep.eq(createNoteFromLilypond('f8'));
+
+            v.addPitch(ins, Pitch.parseLilypond('g'));
+            expect(v.staves[0].voices[0].content.elements[0]).to.deep.eq(createNoteFromLilypond('<f g>8'));
+            expect(score.vars.valueOf('var1').elements[0]).to.deep.eq(createNoteFromLilypond('<f g>8'));
+        });
+
     });
 });

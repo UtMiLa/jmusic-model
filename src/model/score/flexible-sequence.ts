@@ -22,7 +22,7 @@ function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository)
         const x = R.modify('args', args => recursivelySplitStringsIn(args, repo), item) as unknown as FlexibleItem[];
         return x;
     } else if (isVariableRef(item)) {
-        return new FlexibleSequence(repo.valueOf(item.variable)).def;
+        return repo.valueOf(item.variable).elements;
     } else if (isMusicEvent(item)) {
         return [item];
     } else {
@@ -30,6 +30,21 @@ function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository)
     }
 }
 
+function simplifyDef(item: FlexibleItem): FlexibleItem {
+    
+    if (R.is(Array, item)) {
+        if (item.length === 1)
+            return item[0];
+        return item.map(simplifyDef);
+    } else if (isSeqFunction(item)) {
+        const x = R.modify('args', args => simplifyDef(args), item) as unknown as FlexibleItem[];
+        return x;
+    } else if (isVariableRef(item)) {
+        return item;
+    }
+    return item;
+    
+}
 
 function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
     return new FlexibleSequence(items, repo, true).elements;
@@ -62,7 +77,7 @@ export class FlexibleSequence extends BaseSequence {
 
     private _def!: FlexibleItem[];
     public get def(): FlexibleItem[] {
-        return this._def;
+        return this._def.map(simplifyDef);
     }
     public set def(init: FlexibleItem[]) {
         this._def = init;
