@@ -159,6 +159,33 @@ describe('Facade', () => {
             expect(jMusicObj.staves).to.have.length(2);
         });
 
+        it('should create a score from a ScoreDef including repeats', () => {
+            const scoreDef = {
+                repeats: [
+                    {from: Time.StartTime, to: Time.newAbsolute(3,1) },
+                    {from: Time.newAbsolute(4,1), to: Time.newAbsolute(6,1) },
+                    {from: Time.newAbsolute(6,1), to: Time.newAbsolute(8,1) },
+                    {from: Time.newAbsolute(21,2), to: Time.newAbsolute(23,2) }
+                ],
+                staves: [
+                   {
+                       initialClef: { clefType: ClefType.F, line: 2 },
+                       initialMeter: { count: 4, value: 4 },
+                       initialKey: { accidental: -1, count: 3 },
+                       voices:[
+                           {
+                               noteDirection: NoteDirection.Down,
+                               content: new  SimpleSequence('c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1')}
+                       ]
+                   } as StaffDef
+                ]
+            };
+
+            const jMusic = new JMusic(scoreDef);
+
+            expect(jMusic.repeats).to.have.length(4);
+        });
+
             
         it('should create a one-voice one-staff score using variables', () => {
             const sc = new JMusic(

@@ -63,6 +63,7 @@ export class JMusic implements ScoreDef {
             });
         } else if (isScoreDef(voice)) {
             this.staves = [ ...voice.staves ]; 
+            this.repeats = voice.repeats ?? [];
         } else if (typeof(voice) === 'object') {
             const settings = voice as JMusicSettings;
             settings.content.forEach((stf, idx) => {
