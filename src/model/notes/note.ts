@@ -22,7 +22,6 @@ export enum TupletState {
 export type Note = Readonly<{
     pitches: Pitch[];
     nominalDuration: TimeSpan;
-    dotNo: number;
     tupletFactor?: RationalDef;
     tupletGroup?: TupletState;
     direction: NoteDirection;
@@ -38,7 +37,6 @@ export type Note = Readonly<{
 export interface UpdateNote {
     pitches?: Pitch[];
     nominalDuration?: TimeSpan;
-    dotNo?: number;
     tupletFactor?: RationalDef;
     tupletGroup?: TupletState;
     direction?: NoteDirection;
@@ -96,7 +94,6 @@ export function createNoteFromLilypond(input: string): Note {
 function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
 
     const extra = R.mergeRight(note, changeProperties);
-    extra.dotNo = getDotNo(extra);
 
 
     return extra as Note;
@@ -134,18 +131,10 @@ export function getDotNo(note: Note): number {
 }
 
 export function createNote(pitches: Pitch[], duration: TimeSpan): Note {
-    const note0: Note = {
-        pitches: pitches,
-        nominalDuration: duration,
-        dotNo: 0,
-        direction: NoteDirection.Undefined
-    };
-
     const note: Note = {
         pitches: pitches,
         nominalDuration: duration,
-        direction: NoteDirection.Undefined,
-        dotNo: getDotNo(note0)
+        direction: NoteDirection.Undefined
     };
 
     return note;

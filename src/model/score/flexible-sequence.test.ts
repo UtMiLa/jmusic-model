@@ -105,7 +105,6 @@ describe('Flexible Sequence', () => {
             { time: Time.newAbsolute(0, 1), states: [], elements: [
                 {
                     'nominalDuration': Time.newSpan(1, 4),
-                    'dotNo': 0,
                     'pitches': [
                         new Pitch(0, 3, 0)
                     ],
@@ -120,7 +119,6 @@ describe('Flexible Sequence', () => {
             { time: Time.newAbsolute(0, 1), states: [], elements: [
                 {
                     'nominalDuration': Time.newSpan(1, 4),
-                    'dotNo': 0,
                     'pitches': [
                         new Pitch(0, 3, 0)
                     ],
@@ -131,7 +129,6 @@ describe('Flexible Sequence', () => {
             { time: Time.newAbsolute(1, 4), states: [], elements: [
                 {
                     'nominalDuration': Time.newSpan(1, 8),
-                    'dotNo': 0,
                     'pitches': [
                         new Pitch(1, 3, 0)
                     ],
@@ -142,7 +139,6 @@ describe('Flexible Sequence', () => {
             { time: Time.newAbsolute(3, 8), states: [], elements: [
                 {
                     'nominalDuration': Time.newSpan(1, 8),
-                    'dotNo': 0,
                     'pitches': [
                         new Pitch(2, 3, 0)
                     ],

@@ -1,4 +1,4 @@
-import { getDuration, getNoteType, getUndottedDuration, Rational } from './../../model';
+import { getDotNo, getDuration, getNoteType, getUndottedDuration, Rational } from './../../model';
 import { Clef } from './../../model';
 import { NoteDirection, Note } from '../../model';
 import { FlagType, NoteViewModel } from './note-view-model';
@@ -76,7 +76,8 @@ export function noteToView(note: Note, clef: Clef): NoteViewModel {
         //,colors: note.pitches.map(p => '#' + HSVtoRGB(((p.pitchClass.circleOf5Number + 56) % 12)/12, 1, .7))
     };
 
-    if (note.dotNo) res.dotNo = note.dotNo;
+    const dotNo = getDotNo(note);
+    if (dotNo) res.dotNo = dotNo;
     if (note.grace) res.grace = true;
     if (note.uniq) res.uniq = note.uniq;
     if (note.tupletFactor) res.tuplet = true;

@@ -1,6 +1,6 @@
 import { TimeSpan } from './../rationals/time';
 import { Time } from '../rationals/time';
-import { createNote, createNoteFromLilypond, getNominalDuration, getNoteType, getUndottedDuration, Note, NoteType, setTupletFactor } from './note';
+import { createNote, createNoteFromLilypond, getDotNo, getNominalDuration, getNoteType, getUndottedDuration, Note, NoteType, setTupletFactor } from './note';
 import { expect } from 'chai';
 import { Pitch } from '../pitches/pitch';
 import { getDuration } from '../score/sequence';
@@ -86,9 +86,9 @@ describe('Note', () => {
 
     it('should report correct number of dots', () => {
         const notes = ['c\'4.', 'e\'8', 'g\'2..'].map(lily => createNoteFromLilypond(lily));
-        expect(notes[0].dotNo).to.eq(1);
-        expect(notes[1].dotNo).to.eq(0);
-        expect(notes[2].dotNo).to.eq(2);
+        expect(getDotNo(notes[0])).to.eq(1);
+        expect(getDotNo(notes[1])).to.eq(0);
+        expect(getDotNo(notes[2])).to.eq(2);
     });
 
 
