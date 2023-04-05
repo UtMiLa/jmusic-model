@@ -75,7 +75,6 @@ describe('Meter', () => {
             expect(seq.count).to.eq(3);
             expect(seq.elements[1]).to.deep.eq({
                 meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }),
-                duration: Time.newSpan(0, 1),
                 isState: true
             });
     

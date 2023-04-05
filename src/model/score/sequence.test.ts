@@ -1,7 +1,7 @@
 import { Pitch } from './../pitches/pitch';
 import { createNoteFromLilypond, Note, NoteDirection, setDuration } from './../notes/note';
 import { Time } from '../rationals/time';
-import { SimpleSequence, CompositeSequence } from './sequence';
+import { SimpleSequence, CompositeSequence, getDuration } from './sequence';
 import { expect } from 'chai';
 import { LongDecorationType } from '../decorations/decoration-type';
 describe('Sequence', () => {
@@ -141,14 +141,14 @@ describe('Sequence', () => {
     it('should assign decorations to the time slots of a sequence', () => {
         const seq1 = SimpleSequence.createFromString(seq1Text);
         
-        seq1.insertElement(Time.newAbsolute(1, 4), { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime, duration: Time.NoTime });
+        seq1.insertElement(Time.newAbsolute(1, 4), { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime });
 
         const slots = seq1.groupByTimeSlots('x');
         expect(slots).to.have.length(3);
 
         expect(slots[1]).to.deep.include(
             { time: Time.newAbsolute(1, 4), states: [], decorations: [
-                { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime, duration: Time.NoTime }
+                { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime }
             ]}
         );
     });
@@ -198,7 +198,7 @@ describe('Sequence', () => {
             expect(seqCombined.elements[0]).to.deep.equal(createNoteFromLilypond('c4'));
             expect(seqCombined.elements[7]).to.deep.equal(createNoteFromLilypond('c4'));
 
-            seq1.elements[0] = setDuration(seq1.elements[0] as Note, { ...seq1.elements[0].duration, denominator: 8 });
+            seq1.elements[0] = setDuration(seq1.elements[0] as Note, { ...getDuration(seq1.elements[0]), denominator: 8 });
 
             expect(seqCombined.elements[0]).to.deep.equal(createNoteFromLilypond('c8'));
             expect(seqCombined.elements[7]).to.deep.equal(createNoteFromLilypond('c8'));

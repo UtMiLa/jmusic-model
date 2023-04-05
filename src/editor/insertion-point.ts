@@ -1,4 +1,4 @@
-import { AbsoluteTime } from '../model';
+import { AbsoluteTime, getDuration } from '../model';
 import { Time } from '../model';
 import { ScoreDef } from '../model';
 export class InsertionPoint {
@@ -23,10 +23,10 @@ export class InsertionPoint {
         let i = 0;
         const elements = currentVoice.content.elements;
         while(i < elements.length) {
-            if (Time.equals(t, time) && elements[i].duration.numerator) {
+            if (Time.equals(t, time) && getDuration(elements[i]).numerator) {
                 return(i);
             }
-            t = Time.addTime(t, elements[i].duration);
+            t = Time.addTime(t, getDuration(elements[i]));
             i++;
         }
         
@@ -38,7 +38,7 @@ export class InsertionPoint {
         const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
         if (index >= 0 && currentVoice.content.elements.length > index + 1) {
             //index++;
-            this.time = Time.addTime(this.time, currentVoice.content.elements[index].duration);
+            this.time = Time.addTime(this.time, getDuration(currentVoice.content.elements[index]));
         }
     }
 
@@ -46,7 +46,7 @@ export class InsertionPoint {
         const index = this.findIndex(this.time);
         const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
         if (index >= 0) {
-            this.time = Time.subtractTime(this.time, currentVoice.content.elements[index-1].duration);
+            this.time = Time.subtractTime(this.time, getDuration(currentVoice.content.elements[index-1]));
         }
     }
 }

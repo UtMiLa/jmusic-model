@@ -183,7 +183,7 @@ export class JMusic implements ScoreDef {
     addLongDecoration(decorationType: LongDecorationType, ins: InsertionPoint, length: TimeSpan): void {
         const seq = this.sequenceFromInsertionPoint(ins);
 
-        seq.insertElement(ins.time, { longDeco: decorationType, length, duration: Time.NoTime });
+        seq.insertElement(ins.time, { longDeco: decorationType, length });
         this.didChange();
     }
 
@@ -191,7 +191,7 @@ export class JMusic implements ScoreDef {
         const m = JMusic.makeMeter(meter);
         
         const seq = this.sequenceFromInsertionPoint(ins);
-        seq.insertElement(ins.time, { isState: true, meter: MeterFactory.createRegularMeter(m), duration: Time.NoTime });
+        seq.insertElement(ins.time, { isState: true, meter: MeterFactory.createRegularMeter(m) });
         this.didChange();
     }
 

@@ -70,7 +70,6 @@ describe('Clef', () => {
                 clefType: ClefType.G,
                 line: -2
             }),
-            duration: Time.newSpan(0, 1),
             isState: true
         });
 
@@ -82,7 +81,6 @@ describe('Clef', () => {
                 clefType: ClefType.F,
                 line: 2
             }),
-            duration: Time.newSpan(0, 1),
             isState: true
         });
 

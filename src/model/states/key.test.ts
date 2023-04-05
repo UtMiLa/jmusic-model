@@ -64,7 +64,6 @@ describe('Key', () => {
                 accidental: -1,
                 count: 6
             }),
-            duration: Time.newSpan(0, 1),
             isState: true
         });
 

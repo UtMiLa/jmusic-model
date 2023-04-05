@@ -30,6 +30,13 @@ export function isMusicEvent(item: unknown): item is MusicEvent {
     return isStateChange(item as MusicEvent) || isLongDecoration(item as MusicEvent) || isNote(item as MusicEvent);
 }
 
+export function getDuration(item: MusicEvent): TimeSpan {
+    if (isNote(item)) {
+        return item.duration;
+    }
+    return Time.NoTime;
+}
+
 export interface ISequence {
     elements: MusicEvent[];
     duration: TimeSpan;
@@ -124,7 +131,7 @@ export abstract class BaseSequence implements ISequence {
                     time = {...time, extended: -100};
                 }
             } else {
-                time  = Time.addTime(time, elem.duration);
+                time  = Time.addTime(time, getDuration(elem));
             }
         });
 
@@ -135,7 +142,7 @@ export abstract class BaseSequence implements ISequence {
         let timeR = Time.StartTime;
         return this.elements.findIndex(elem => {
             if (Time.equals(time, timeR)) return true;
-            timeR = Time.addTime(timeR, elem.duration);
+            timeR = Time.addTime(timeR, getDuration(elem));
             return false;
         });
     }
@@ -177,7 +184,7 @@ export abstract class BaseSequence implements ISequence {
                 
             }
 
-            time  = Time.addTime(time, elem.duration);
+            time = Time.addTime(time, getDuration(elem));
 
         });
 
@@ -247,7 +254,7 @@ export class SimpleSequence extends BaseSequence {
     }
 
     get duration(): TimeSpan {
-        return this.elements.reduce((prev, curr) => Time.addSpans(prev, curr.duration), Time.newSpan(0, 1));
+        return this.elements.reduce((prev, curr) => Time.addSpans(prev, getDuration(curr)), Time.newSpan(0, 1));
     }
 
 }

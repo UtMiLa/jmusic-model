@@ -78,7 +78,7 @@ export function createStateMap(score: ScoreDef):  IndexedMap<StateChange, Scoped
 }
 
 export function getStateAt(stateMap: IndexedMap<StateChange, ScopedTimeKey>, time: AbsoluteTime, staff: number): StateChange {
-    let res = { meter: undefined, clef: undefined, key: undefined, duration: Time.NoTime, isState: true } as StateChange;
+    let res = { meter: undefined, clef: undefined, key: undefined, isState: true } as StateChange;
     for (let i = 0; i < stateMap.length; i++) {
         if (Time.sortComparison(time, stateMap.items[i].index.absTime) < 0) break;
         if (stateMap.items[i].index.scope === undefined || stateMap.items[i].index.scope === staff) {

@@ -8,7 +8,7 @@ import { TimeMap, IndexedMap } from './../../tools/time-map';
 import { Meter, MeterMap } from './../../model/states/meter';
 import { BeamGroup, BeamDef } from './../../model/notes/beaming';
 import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
-import { getAllBars, ScoreDef, setNoteDirection, TimeSlot, TupletState } from './../../model';
+import { getAllBars, getDuration, ScoreDef, setNoteDirection, TimeSlot, TupletState } from './../../model';
 import { MeterFactory } from './../../model';
 import { meterToView } from './convert-meter';
 import { AbsoluteTime, Time } from './../../model';
@@ -375,7 +375,7 @@ function createTieViewModel(state: State) {
                 ties.push({
                     position: pos,
                     direction: note.direction === NoteDirection.Undefined ? state.voice.noteDirection : note.direction,
-                    toTime: Time.addTime(state.voiceTimeSlot.time, note.duration)
+                    toTime: Time.addTime(state.voiceTimeSlot.time, getDuration(note))
                 } as TieViewModel);
             });
         }
@@ -426,7 +426,7 @@ function createNoteViewModels(state: State): NoteViewModel[] {
                         absTime: state.findNoteTime(nt.uniq + ''),
                         uniq: nt.uniq + '' 
                     };
-                    noteTime = Time.addTime(noteTime, nt.duration);
+                    noteTime = Time.addTime(noteTime, getDuration(nt));
                     return res;
                 }
                 ),

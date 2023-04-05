@@ -1,5 +1,5 @@
 import { Time, AbsoluteTime } from './../rationals/time';
-import { ISequence, isLongDecoration, isStateChange } from './../score/sequence';
+import { getDuration, ISequence, isLongDecoration, isStateChange } from './../score/sequence';
 import { getNominalDuration, getUndottedDuration, Note, setNoteId } from './note';
 
 
@@ -198,7 +198,7 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
     
     
         }
-        time = Time.addTime(time, element.duration);
+        time = Time.addTime(time, getDuration(element));
 
     });
 

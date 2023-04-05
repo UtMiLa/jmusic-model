@@ -8,5 +8,4 @@ export enum LongDecorationType {
 export interface LongDecorationElement {
     longDeco: LongDecorationType;
     length: TimeSpan;
-    duration: TimeSpan;
 }

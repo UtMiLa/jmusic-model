@@ -1,7 +1,7 @@
 import { Pitch } from './../pitches/pitch';
 import { createNoteFromLilypond, Note, NoteDirection, TupletState } from './../notes/note';
 import { Time } from '../rationals/time';
-import {  } from './sequence';
+import { getDuration } from './sequence';
 import { expect } from 'chai';
 import { LongDecorationType } from '../decorations/decoration-type';
 import { FlexibleSequence } from './flexible-sequence';
@@ -103,9 +103,9 @@ describe('Flexible sequence transformations', () => {
         
         expect(tuplet.elements.length).to.equal(3);
         expect(tuplet.duration).to.deep.equal(Time.newSpan(1, 3));
-        expect(seq1.elements[0].duration).to.deep.equal(Time.newSpan(1, 4));
-        expect(tuplet.elements[0].duration).to.deep.equal(Time.newSpan(1, 6));
-        expect(tuplet.elements[2].duration).to.deep.equal(Time.newSpan(1, 12));
+        expect(getDuration(seq1.elements[0])).to.deep.equal(Time.newSpan(1, 4));
+        expect(getDuration(tuplet.elements[0])).to.deep.equal(Time.newSpan(1, 6));
+        expect(getDuration(tuplet.elements[2])).to.deep.equal(Time.newSpan(1, 12));
         
     });
 

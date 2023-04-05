@@ -186,14 +186,14 @@ describe('Flexible Sequence', () => {
     it('should assign decorations to the time slots of a sequence', () => {
         const seq1 = new FlexibleSequence(seq1Text);
         
-        seq1.insertElement(Time.newAbsolute(1, 4), { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime, duration: Time.NoTime });
+        seq1.insertElement(Time.newAbsolute(1, 4), { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime/*, duration: Time.NoTime*/ });
 
         const slots = seq1.groupByTimeSlots('x');
         expect(slots).to.have.length(3);
 
         expect(slots[1]).to.deep.include(
             { time: Time.newAbsolute(1, 4), states: [], decorations: [
-                { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime, duration: Time.NoTime }
+                { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime/*, duration: Time.NoTime*/ }
             ]}
         );
     });

@@ -1,4 +1,4 @@
-import { getNoteType, getUndottedDuration, Rational } from './../../model';
+import { getDuration, getNoteType, getUndottedDuration, Rational } from './../../model';
 import { Clef } from './../../model';
 import { NoteDirection, Note } from '../../model';
 import { FlagType, NoteViewModel } from './note-view-model';
@@ -65,7 +65,7 @@ export function noteToView(note: Note, clef: Clef): NoteViewModel {
             case 32: flagType = FlagType.F3; break;
             case 64: flagType = FlagType.F4; break;
             case 128: flagType = FlagType.F5; break;
-            default: flagType = FlagType.None; throw 'Illegal duration: ' + Rational.toString(note.duration); break;
+            default: flagType = FlagType.None; throw 'Illegal duration: ' + Rational.toString(getDuration(note)); break;
         }
     }
     const res: NoteViewModel = {
