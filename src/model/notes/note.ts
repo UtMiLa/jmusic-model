@@ -21,7 +21,6 @@ export enum TupletState {
 
 export type Note = Readonly<{
     pitches: Pitch[];
-    duration: TimeSpan;
     nominalDuration: TimeSpan;
     dotNo: number;
     tupletFactor?: RationalDef;
@@ -38,7 +37,6 @@ export type Note = Readonly<{
 
 export interface UpdateNote {
     pitches?: Pitch[];
-    duration?: TimeSpan;
     nominalDuration?: TimeSpan;
     dotNo?: number;
     tupletFactor?: RationalDef;
@@ -92,17 +90,12 @@ export function createNoteFromLilypond(input: string): Note {
     if (tie) extra.tie = tie;
     if (expressions.length) extra.expressions = expressions.map(expression => parseLilyNoteExpression(expression));
     
-    /*res.duration = getRealDuration(res);
-    res.dotNo = getDotNo(res);*/
-
-
     return cloneNote(res, extra);
 }
 
 function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
 
     const extra = R.mergeRight(note, changeProperties);
-    extra.duration = getRealDuration(extra); // todo: make setter function for duration-related stuff (like grace and tuplet notes)
     extra.dotNo = getDotNo(extra);
 
 
@@ -144,7 +137,6 @@ export function createNote(pitches: Pitch[], duration: TimeSpan): Note {
     const note0: Note = {
         pitches: pitches,
         nominalDuration: duration,
-        duration: duration,
         dotNo: 0,
         direction: NoteDirection.Undefined
     };
@@ -153,11 +145,8 @@ export function createNote(pitches: Pitch[], duration: TimeSpan): Note {
         pitches: pitches,
         nominalDuration: duration,
         direction: NoteDirection.Undefined,
-        duration: getRealDuration(note0),
         dotNo: getDotNo(note0)
     };
-
-    //return new NoteInst(pitches, duration);
 
     return note;
 }

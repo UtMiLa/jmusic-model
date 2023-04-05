@@ -296,14 +296,14 @@ describe('Facade', () => {
             score.addLongDecoration(LongDecorationType.Crescendo, ins, Time.WholeTime);
 
             let voice = score.staves[0].voices[1];
-            expect(voice.content.elements[3]).to.deep.equal({ longDeco: LongDecorationType.Crescendo, length: Time.WholeTime, duration: Time.NoTime });
+            expect(voice.content.elements[3]).to.deep.equal({ longDeco: LongDecorationType.Crescendo, length: Time.WholeTime });
             expect(scoreChangeCalls).to.eq(1);
 
             ins.time = Time.newAbsolute(5, 4);
             score.addLongDecoration(LongDecorationType.Decrescendo, ins, Time.HalfTime);
 
             voice = score.staves[0].voices[1];
-            expect(voice.content.elements[6]).to.deep.equal({ longDeco: LongDecorationType.Decrescendo, length: Time.HalfTime, duration: Time.NoTime });
+            expect(voice.content.elements[6]).to.deep.equal({ longDeco: LongDecorationType.Decrescendo, length: Time.HalfTime });
             expect(scoreChangeCalls).to.eq(2);
 
         });

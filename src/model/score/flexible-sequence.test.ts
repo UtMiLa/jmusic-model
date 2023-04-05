@@ -52,7 +52,6 @@ describe('Flexible Sequence', () => {
     it('should accept a MusicEvent object', () => {
         const clefChg = { 
             clef: parseLilyClef('treble'), 
-            duration: Time.newSpan(0, 1),
             isState: true
         };
         const seq = new FlexibleSequence(['c4', clefChg, 'e8']);
@@ -105,7 +104,6 @@ describe('Flexible Sequence', () => {
         expect(slots[0]).to.deep.include(
             { time: Time.newAbsolute(0, 1), states: [], elements: [
                 {
-                    'duration': Time.newSpan(1, 4),
                     'nominalDuration': Time.newSpan(1, 4),
                     'dotNo': 0,
                     'pitches': [
@@ -121,7 +119,6 @@ describe('Flexible Sequence', () => {
         expect(slots).to.deep.eq([
             { time: Time.newAbsolute(0, 1), states: [], elements: [
                 {
-                    'duration': Time.newSpan(1, 4),
                     'nominalDuration': Time.newSpan(1, 4),
                     'dotNo': 0,
                     'pitches': [
@@ -133,7 +130,6 @@ describe('Flexible Sequence', () => {
             ] },
             { time: Time.newAbsolute(1, 4), states: [], elements: [
                 {
-                    'duration': Time.newSpan(1, 8),
                     'nominalDuration': Time.newSpan(1, 8),
                     'dotNo': 0,
                     'pitches': [
@@ -145,7 +141,6 @@ describe('Flexible Sequence', () => {
             ] },
             { time: Time.newAbsolute(3, 8), states: [], elements: [
                 {
-                    'duration': Time.newSpan(1, 8),
                     'nominalDuration': Time.newSpan(1, 8),
                     'dotNo': 0,
                     'pitches': [
@@ -186,14 +181,14 @@ describe('Flexible Sequence', () => {
     it('should assign decorations to the time slots of a sequence', () => {
         const seq1 = new FlexibleSequence(seq1Text);
         
-        seq1.insertElement(Time.newAbsolute(1, 4), { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime/*, duration: Time.NoTime*/ });
+        seq1.insertElement(Time.newAbsolute(1, 4), { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime });
 
         const slots = seq1.groupByTimeSlots('x');
         expect(slots).to.have.length(3);
 
         expect(slots[1]).to.deep.include(
             { time: Time.newAbsolute(1, 4), states: [], decorations: [
-                { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime/*, duration: Time.NoTime*/ }
+                { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime }
             ]}
         );
     });
@@ -201,14 +196,14 @@ describe('Flexible Sequence', () => {
     it('should assign slurs to the time slots of a sequence', () => {
         const seq1 = new FlexibleSequence(seq1Text);
         
-        seq1.insertElement(Time.newAbsolute(1, 4), { longDeco: LongDecorationType.Slur, length: Time.QuarterTime, duration: Time.NoTime });
+        seq1.insertElement(Time.newAbsolute(1, 4), { longDeco: LongDecorationType.Slur, length: Time.QuarterTime });
 
         const slots = seq1.groupByTimeSlots('x');
         expect(slots).to.have.length(3);
 
         expect(slots[1]).to.deep.include(
             { time: Time.newAbsolute(1, 4), states: [], decorations: [
-                { longDeco: LongDecorationType.Slur, length: Time.QuarterTime, duration: Time.NoTime }
+                { longDeco: LongDecorationType.Slur, length: Time.QuarterTime }
             ]}
         );
     });

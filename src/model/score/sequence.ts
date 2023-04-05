@@ -6,7 +6,7 @@ import { Key } from './../states/key';
 import { TimeMap } from './../../tools/time-map';
 import { StateChange } from './../states/state';
 import { AbsoluteTime, ExtendedTime } from './../rationals/time';
-import { createNoteFromLilypond, Note, setNoteId } from '../notes/note';
+import { createNoteFromLilypond, getRealDuration, Note, setNoteId } from '../notes/note';
 import { Time, TimeSpan } from '../rationals/time';
 import { Clef } from '../states/clef';
 import { EventType, getExtendedTime } from './timing-order';
@@ -32,7 +32,7 @@ export function isMusicEvent(item: unknown): item is MusicEvent {
 
 export function getDuration(item: MusicEvent): TimeSpan {
     if (isNote(item)) {
-        return item.duration;
+        return getRealDuration(item);
     }
     return Time.NoTime;
 }
