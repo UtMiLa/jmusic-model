@@ -1,6 +1,6 @@
 import { StandardMetrics } from './../../physical-view';
 import { expect } from 'chai';
-import { NoteDirection, NoteType } from '~/model';
+import { NoteDirection, NoteType } from '../../model';
 import { NoteViewModel } from './../../logical-view/view-model/note-view-model';
 import { calcDisplacements, scaleDegreeToY, staffLineToY, yToScaleDegree, yToStaffLine } from './functions';
 describe('Physical help functions', () => {

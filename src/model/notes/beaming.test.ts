@@ -1,4 +1,4 @@
-import { setGraceNoteInSequence } from '~/tools/test-tools';
+import { setGraceNoteInSequence } from '../../tools/test-tools';
 import { Note, UpdateNote } from './note';
 import { TupletSequence } from './../score/transformations';
 import { Time } from './../rationals/time';

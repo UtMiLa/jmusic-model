@@ -1,4 +1,4 @@
-import { getExtendedTime, EventType } from '~/model/score/timing-order';
+import { getExtendedTime, EventType } from '../../model/score/timing-order';
 import { IndexedMap } from './../../tools/time-map';
 import { AbsoluteTime, Time } from './../../model/rationals/time';
 import { BarType, BarViewModel } from './score-view-model';

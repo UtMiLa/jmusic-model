@@ -91,7 +91,7 @@ export function createNoteFromLilypond(input: string): Note {
     return cloneNote(res, extra);
 }
 
-function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
+export function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
 
     const extra = R.mergeRight(note, changeProperties);
 

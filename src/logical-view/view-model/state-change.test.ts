@@ -1,5 +1,5 @@
 import { EventType } from './../../model/score/timing-order';
-import { getExtendedTime } from '~/model/score/timing-order';
+import { getExtendedTime } from '../../model/score/timing-order';
 import { createTestScore, createTestScoreVM } from '../../tools/test-tools';
 import { SimpleSequence } from './../../model/score/sequence';
 import { MeterFactory } from './../../model/states/meter';

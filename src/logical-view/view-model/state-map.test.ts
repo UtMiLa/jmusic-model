@@ -1,4 +1,4 @@
-import { EventType, getExtendedTime } from '~/model/score/timing-order';
+import { EventType, getExtendedTime } from '../../model/score/timing-order';
 import { JMusic } from './../../model/facade/jmusic';
 import { Clef } from './../../model/states/clef';
 import { Key } from './../../model/states/key';

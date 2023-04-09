@@ -8,7 +8,7 @@ import { NoteType, NoteDirection } from '../../model/notes/note';
 import { Metrics, StandardMetrics } from './metrics';
 import { expect } from 'chai';
 import { viewModelToPhysical } from './viewmodel-to-physical';
-import { LongDecorationType } from '~/model';
+import { LongDecorationType } from '../../model';
 
 describe('Physical model, long expressions', () => {
     let defaultMetrics: Metrics;

@@ -10,7 +10,7 @@ import { StaffDef } from '../../model/score/staff';
 import { expect } from 'chai';
 import { ClefType } from '../../model/states/clef';
 import { __internal } from './convert-model';
-import { TimeMap } from '~/tools/time-map';
+import { TimeMap } from '../../tools/time-map';
 import { createScopedTimeMap } from './state-map';
 describe('Staff view model', () => {
     let staffClef: StaffDef;

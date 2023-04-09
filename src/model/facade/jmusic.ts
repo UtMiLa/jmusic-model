@@ -1,4 +1,4 @@
-import { NoteDirection } from '~/model';
+import { NoteDirection } from '../../model';
 import { FlexibleItem, FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';

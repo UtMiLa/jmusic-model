@@ -1,6 +1,6 @@
 import { AbsoluteTime, Time, TimeSpan } from './time';
 import { expect } from 'chai';
-import { Rational, RationalDef } from '~/model/rationals/rational';
+import { Rational, RationalDef } from '../../model/rationals/rational';
 
 describe('Times', ()=> {
     describe('Rational', ()=> {

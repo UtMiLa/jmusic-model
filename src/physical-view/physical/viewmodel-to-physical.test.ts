@@ -8,7 +8,7 @@ import { Time } from './../../model/rationals/time';
 import { HorizVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */
 import { NoteType, NoteDirection } from '../../model/notes/note';
-import { ClefType } from '~/model/states/clef';
+import { ClefType } from '../../model/states/clef';
 import { PhysicalElementBase, PhysicalVertVarSizeElement } from './physical-elements';
 import { Metrics, StandardMetrics } from './metrics';
 import { VertVarSizeGlyphs, FixedSizeGlyphs } from './glyphs';
@@ -17,7 +17,7 @@ import { viewModelToPhysical } from './viewmodel-to-physical';
 import { ScoreViewModel } from '../../logical-view';
 import { staffLineToY } from './functions';
 import { getTimeSlotWidth, MeasureMap } from './measure-map';
-import { FlagType } from '~/logical-view';
+import { FlagType } from '../../logical-view';
 
 describe('Physical model', () => {
     let defaultMetrics: Metrics;
