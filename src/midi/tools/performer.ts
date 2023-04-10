@@ -1,9 +1,17 @@
 import R = require('ramda');
 import { JMusic, isNote, Rational, getDuration } from '../../model';
 
+interface InternalMidiEvent {
+    time: number;
+    duration: number;
+    pitches: number[];
+    channel: number;
+    velocity: number;
+  }
+
 export interface MidiPlayer {
     playNote(channel: number, velocity: number, pitches: number[], startTime: number, duration: number): void;
-  }
+}
   
 export class MidiPerformer {
     constructor() {
@@ -11,16 +19,9 @@ export class MidiPerformer {
     }
     tempo = 3000;
     percent = .85;
-  
-    perform(model: JMusic, player: MidiPlayer) {
-  
-        const allEvents: {
-        time: number;
-        duration: number;
-        pitches: number[];
-        channel: number;
-        velocity: number;
-      }[] = [];
+
+    getMusicEvents(model: JMusic): InternalMidiEvent[][] {
+        const allEvents: InternalMidiEvent[] = [];
   
         model.staves.forEach(staff => {
   
@@ -39,24 +40,26 @@ export class MidiPerformer {
                                 channel: 0,
                                 velocity: 100
                             });
-                            //player.playNote(0, 100, pitches, Rational.value(slot.time) * this.tempo, Rational.value(getDuration(element)) * this.tempo * this.percent);
                         }
                     });
                 });
   
-                /*let startTime = Time.StartTime;
-          voice.content.elements.forEach(element => {
-            if (isNote(element)) {
-              const pitches = element.pitches.map(pitch => pitch.midi);
-              player.playNote(0, 100, pitches, Rational.value(startTime) * this.tempo, Rational.value(getDuration(element)) * this.tempo * this.percent);
-              startTime = Time.addTime(startTime, getDuration(element));
-            }
-          });*/
             });
         });
+
+        return R.groupWith(
+            (a: InternalMidiEvent, b: InternalMidiEvent) => (a.time === b.time),
+            R.sortBy(R.prop('time'), allEvents)
+        );
+    }
   
-        R.sortBy(R.prop('time'), allEvents).forEach(event => {
-            player.playNote(event.channel, event.velocity, event.pitches, event.time, event.duration);
+    perform(model: JMusic, player: MidiPlayer): void {
+  
+        
+        this.getMusicEvents(model).forEach(eventGroup => {
+            eventGroup.forEach(event => {
+                player.playNote(event.channel, event.velocity, event.pitches, event.time, event.duration);
+            });
         });
     }
 }
