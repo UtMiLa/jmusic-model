@@ -228,6 +228,21 @@ describe('Flexible sequence transformations', () => {
             expect(res2[2]).to.deep.eq(createNoteFromLilypond('f8'));
             expect(res2[3]).to.deep.eq(createNoteFromLilypond('ges4.'));
         });
+
+
+        /*xit('should map inverse function', () => {
+            const seq = new FlexibleSequence('cis4 des4 e8 f4.');
+
+            const fun = createFunction('Transpose', [{ interval: 3, alteration: 0 }]);
+
+            const res = fun(seq.elements);
+
+            //const inverseFun = createInverseFunction('Transpose', [{ interval: 3, alteration: 0 }]);
+
+            // update(seq, elementNo, updater: (oldNote) => [newNotes])
+            // 
+            // ( R.promap(transpose(interval), transpose(-interval), updater)
+        });*/
     });
 
     describe('Relative', () => {

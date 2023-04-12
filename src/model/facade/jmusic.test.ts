@@ -272,12 +272,12 @@ describe('Facade', () => {
             expect(scoreChangeCalls).to.eq(1);
         });
 
-        xit('should remove a pitch from a note', () => {});
+        /*xit('should remove a pitch from a note', () => {});
         xit('should alter a pitch in a note', () => {});
         xit('should convert a note to a rest', () => {});
         xit('should convert a rest to a note', () => {});
         xit('should delete a note', () => {});
-        xit('should insert a note', () => {});
+        xit('should insert a note', () => {});*/
 
         it('should insert a meter change', () => {
             const ins = new InsertionPoint(score);
@@ -291,12 +291,12 @@ describe('Facade', () => {
             expect(scoreChangeCalls).to.eq(1);
         });
 
-        xit('should change a key change', () => {});
+        /*xit('should change a key change', () => {});
         xit('should delete a clef change', () => {});
         xit('should add a variable', () => {});
         xit('should retrieve a variable', () => {});
         xit('should use a variable reference', () => {});
-        xit('should update references when a variable is changed', () => {});
+        xit('should update references when a variable is changed', () => {});*/
     });
 
     describe('Decorations', () => {
@@ -342,12 +342,12 @@ describe('Facade', () => {
 
         beforeEach(() => {
             score = new JMusic({ 
-                content: [['g4 g4 g4 g4 \\key a \\major g4 g4 g4 g4', 'c4 c4 c4 c4 c4 c4 c4 c4'], ['c,4 c,4 c,4 c,4 \\clef tenor c,4 c,4 c,4 c,4']],
+                content: [['g4 g4 g4 g4 \\key a \\major g4 g4 g4 g4', 'c4 c4 c4 c4 c4 c4 c4 c4'], [[{function: 'Transpose', args: [{ variable: 'var1' }], extraArgs: [{ interval: 3, alteration: 0 }]}]]],
                 meter: '4/4',
                 clefs: [ 'treble', 'bass' ],
                 key: 'g \\minor'
             }, {
-                var1: 'f8 f8 f8 f8'
+                var1: 'f8 g8 a8 b8'
             });
             scoreChangeCalls = 0;
             score.onChanged(() => { scoreChangeCalls++; });
@@ -364,6 +364,7 @@ describe('Facade', () => {
             expect(v.staves).to.have.length(1);
             expect(v.staves[0].voices).to.have.length(1);
         });
+
         it('should be able to update a variable through the view', () => {
             const v = score.getView('var1');
             const ins = { 
@@ -379,6 +380,23 @@ describe('Facade', () => {
             expect(v.staves[0].voices[0].content.elements[0]).to.deep.eq(createNoteFromLilypond('<f g>8'));
             expect(score.vars.valueOf('var1').elements[0]).to.deep.eq(createNoteFromLilypond('<f g>8'));
         });
+
+        /*xit('should be able to update a through bijective function through the view', () => {
+            const v = score.getView();
+            const ins = { 
+                time: Time.StartTime,
+                voiceNo: 0,
+                staffNo: 1,
+                position: 0
+            } as InsertionPoint;
+
+            expect(score.vars.valueOf('var1').elements[0]).to.deep.eq(createNoteFromLilypond('f8'));
+            expect(v.staves[1].voices[0].content.elements[0]).to.deep.eq(createNoteFromLilypond('bes8'));
+
+            v.addPitch(ins, Pitch.parseLilypond('g'));
+            expect(v.staves[1].voices[0].content.elements[0]).to.deep.eq(createNoteFromLilypond('<bes g>8'));
+            expect(score.vars.valueOf('var1').elements[0]).to.deep.eq(createNoteFromLilypond('<f d>8'));
+        });*/
 
     });
 });
