@@ -44,11 +44,11 @@ export class ChordSmartInputState implements TapEntryState {
     }
 
     noteOn(pitch: number, notesPressed: number[]): TapEntryState {
-        console.log('noteOn',pitch);
+        //console.log('noteOn',pitch);
 
         this.chord.add(new EntryNote(Pitch.fromMidi(pitch), this.score.counter));
         //this.setCurrent();
-        console.log('noteOn this.chord',this.chord);
+        //console.log('noteOn this.chord',this.chord);
 
         return this;
     }

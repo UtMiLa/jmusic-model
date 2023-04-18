@@ -131,7 +131,7 @@ export class EntryChord {
     }
 
     sort() {
-        this.notes.sort((n1, n2) => n1.pitch.diatonicNumber > n2.pitch.diatonicNumber ? 1: -1);
+        this.notes.sort((n1, n2) => n1.pitch.diatonicNumber < n2.pitch.diatonicNumber ? 1: -1);
         return this;
     }
 

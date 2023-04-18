@@ -44,7 +44,10 @@ describe('Tap-entry', () => {
 
     beforeEach(() => {
         midiMock = new MidiInServiceMock();
-        score = new TapEntryScore({ count: 5, value: 4}, Time.QuarterTime, 1);
+    });
+
+    function expectInputOutput(input: string, noVoices: number, output: string[]) {
+        score = new TapEntryScore({ count: 5, value: 4}, Time.QuarterTime, noVoices);
         tapEntry = new TapEntry(score);
         commands = [];
 
@@ -53,9 +56,7 @@ describe('Tap-entry', () => {
         });
 
         tapEntry.subscribeMidi(midiMock);
-    });
 
-    function expectInputOutput(input: string, output: string[]) {
         midiMock.simulateEvents(input);
 
         console.log(score);
@@ -71,29 +72,19 @@ describe('Tap-entry', () => {
     }
 
     it('should generate notes of the same length', () => {
-
-        expectInputOutput('+60 -60 +62 -62', ['c\'4 d\'4 ']);
-        /*midiMock.simulateEvents('+60 -60 +62 -62');
-
-        expect(commands).to.deep.eq([{
-            command: 'AppendNote',
-            data: createNoteFromLilypond('c\'4')
-        }, {
-            command: 'AppendNote',
-            data: createNoteFromLilypond('d\'4')
-        }]);*/
+        expectInputOutput('+60 -60 +62 -62', 1, ['c\'4 d\'4 ']);
     });
 
     it('should extend length when tapping', () => {
-        expectInputOutput('+60 tap tap -60 +62 tap -62', ['c\'2. d\'2 ']);
+        expectInputOutput('+60 tap tap -60 +62 tap -62', 1, ['c\'2. d\'2 ']);
     });
 
     it('should create rests when tapping without notes', () => {
-        //
+        expectInputOutput('+60 -60 tap tap +62 -62 tap', 1, ['c\'4 r2 d\'4 r4 ']);
     });
 
     it('should split chords in voices', () => {
-        //
+        expectInputOutput('+60 +64 -64 -60 +65 +62 -62 -65', 2, ['e\'4 f\'4 ', 'c\'4 d\'4 ']);
     });
 
     it('should extend length on some notes when tapping', () => {
