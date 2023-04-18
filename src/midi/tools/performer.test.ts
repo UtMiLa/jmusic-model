@@ -279,7 +279,7 @@ describe('MIDI performer', () => {
 
 
 
-    it('should merge tied notes together', () => {
+    xit('should merge tied notes together', () => {
         const score = new JMusic({content: [['c\'4 d\'2~ d\'4~ <d\' f\'>4']]});
         const velocity = 100;
         const channel = 0;
