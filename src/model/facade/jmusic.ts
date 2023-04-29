@@ -16,7 +16,7 @@ import { createNoteFromLilypond, Note } from '../notes/note';
 import { Pitch } from '../pitches/pitch';
 import { Time } from '../rationals/time';
 import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
-import { VariableDef, VariableRepository } from '../score/variables';
+import { VariableRepository } from '../score/variables';
 import R = require('ramda');
 
 export interface JMusicSettings {
@@ -46,6 +46,25 @@ export type KeyFlex = Key | KeyDef | string;
 export type SequenceFlex = ISequence | string;
 
 export type ChangeHandler = () => void;
+
+
+export const initStateInSequence = (s: ISequence) => {
+    const slots = s.groupByTimeSlots('');
+    if (!slots.length) return {};
+    const firstSlot = slots[0];
+    if (!firstSlot.states) return {};   
+    
+    const res = {} as any;
+    const key = firstSlot.states.find(st => st.key);
+    const clef = firstSlot.states.find(st => st.clef);
+    const meter = firstSlot.states.find(st => st.meter);
+
+    if (key) res.key = key.key;
+    if (clef) res.clef = clef.clef;
+    if (meter) res.meter = meter.meter;
+
+    return res;
+};
 
 /** Facade object for music scores */
 export class JMusic implements ScoreDef {
@@ -92,6 +111,25 @@ export class JMusic implements ScoreDef {
                 });
             });
         }
+
+        this.staves.forEach(staff => {
+            staff.voices.forEach(voice => {
+                const states = initStateInSequence(voice.content);
+                if (states.clef) {
+                    //console.log('changing clef', staff.initialClef, states.clef);
+                    staff.initialClef = states.clef.def;
+                }
+                if (states.meter) {
+                    //console.log('changing meter', staff.initialMeter, states.meter);
+                    this.staves.forEach(staff1 => (staff1.initialMeter = states.meter.def));
+                }
+                if (states.key) {
+                    //console.log('changing key', staff.initialKey, states.key);
+                    this.staves.forEach(staff1 => (staff1.initialKey = states.key.def));
+                }
+            });
+        });
+        //console.log('staves', this.staves);
     }
 
     staves: StaffDef[] = [];

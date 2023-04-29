@@ -4,12 +4,13 @@ import { MeterFactory } from './../states/meter';
 import { Time } from './../rationals/time';
 import { Clef, ClefType } from './../states/clef';
 import { expect } from 'chai';
-import { JMusic, JMusicVars } from './jmusic';
+import { JMusic, JMusicVars, initStateInSequence } from './jmusic';
 import { createNote, createNoteFromLilypond, Note, NoteDirection } from '../notes/note';
 import { Pitch } from '../pitches/pitch';
-import { Key } from '../states/key';
+import { Key, KeyDef } from '../states/key';
 import { SimpleSequence } from '../score/sequence';
 import { StaffDef } from '../score/staff';
+import { FlexibleSequence } from '../score/flexible-sequence';
 
 describe('Facade', () => {
 
@@ -379,6 +380,48 @@ describe('Facade', () => {
             v.addPitch(ins, Pitch.parseLilypond('g'));
             expect(v.staves[0].voices[0].content.elements[0]).to.deep.eq(createNoteFromLilypond('<f g>8'));
             expect(score.vars.valueOf('var1').elements[0]).to.deep.eq(createNoteFromLilypond('<f g>8'));
+        });
+
+        
+        it('should provide a helper function to find key/clef/meter at beat 0', () => {
+            const seq1 = new FlexibleSequence('\\key a \\major g4 g4 g4 g4');
+            const seq2 = new FlexibleSequence(['\\clef alto c4 c4 c4 c4']);
+            const seq3 = new FlexibleSequence(['\\meter 3/8 c4 c4 c4 c4']);
+            
+            const foundStates1 = initStateInSequence(seq1);
+            expect(foundStates1).to.deep.eq({key: new Key({ accidental: 1, count: 3 })});
+            
+            const foundStates2 = initStateInSequence(seq2);
+            expect(foundStates2).to.deep.eq({clef: new Clef({ clefType: ClefType.C, line: 0 })});
+
+            const foundStates3 = initStateInSequence(seq3);
+            expect(foundStates3).to.deep.eq({ meter: MeterFactory.createRegularMeter({ count: 3, value: 8 })});
+            
+        });
+
+
+        it('should override init key/clef/meter by state changes at beat 0', () => {
+            const init = new JMusic({ 
+                content: [
+                    ['\\key a \\major g4 g4 g4 g4', '\\clef alto c4 c4 c4 c4'],
+                    ['\\meter 3/8 c4 c4 c4 c4']
+                ],
+                meter: '4/4',
+                clefs: [ 'treble', 'bass' ],
+                key: 'g \\minor'
+            }, {
+                var1: 'f8 g8 a8 b8'
+            });
+            
+            const staves = init.getView().staves;
+           
+            expect(staves[0].initialKey).to.deep.eq(new Key({ accidental: 1, count: 3 }).def);
+            expect(staves[1].initialKey).to.deep.eq(new Key({ accidental: 1, count: 3 }).def);
+            expect(staves[0].initialClef).to.deep.eq(new Clef({ clefType: ClefType.C, line: 0 }).def);
+            expect(staves[1].initialClef).to.deep.eq(new Clef({ clefType: ClefType.F, line: 2 }).def);
+            expect(staves[0].initialMeter).to.deep.eq(MeterFactory.createRegularMeter({ count: 3, value: 8 }).def);
+            expect(staves[1].initialMeter).to.deep.eq(MeterFactory.createRegularMeter({ count: 3, value: 8 }).def);
+
         });
 
         /*xit('should be able to update a through bijective function through the view', () => {
