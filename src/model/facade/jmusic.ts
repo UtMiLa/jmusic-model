@@ -1,8 +1,8 @@
-import { NoteDirection } from '../../model';
+import { NoteDirection, cloneNote } from '../../model';
 import { FlexibleItem, FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
-import { ISequence } from './../score/sequence';
+import { ISequence, isNote } from './../score/sequence';
 import { InsertionPoint } from './../../editor/insertion-point';
 import { RegularMeterDef, MeterFactory } from './../states/meter';
 import { Key, KeyDef } from './../states/key';
@@ -18,6 +18,7 @@ import { Time } from '../rationals/time';
 import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
 import { VariableRepository } from '../score/variables';
 import R = require('ramda');
+import { Enharmonic, addInterval, enharmonicChange } from '../pitches/intervals';
 
 export interface JMusicSettings {
     content: FlexibleItem[][];
@@ -188,6 +189,20 @@ export class JMusic implements ScoreDef {
         return this.staves[ins.staffNo].voices[ins.voiceNo].content.groupByTimeSlots('0').filter(ts => Time.equals(ts.time, ins.time))[0].elements[0];
     }
 
+    /*noteEquals(note1: MusicEvent, note2: Note): boolean {
+        //console.log(note1, note2);
+
+        return (note1 as Note).pitches === note2.pitches;
+    }*/
+
+    replaceNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note, toNote: Note): void {
+        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content.mapElements(
+            (ct, time) => {
+                return Time.equals(time, ins.time) && isNote(ct) ? toNote : ct;
+            }
+        ));
+    }
+
     pitchFromInsertionPoint(ins: InsertionPoint): Pitch {
         const stateMap = createStateMap(this);
         const state = getStateAt(stateMap, ins.time, ins.staffNo);
@@ -218,6 +233,18 @@ export class JMusic implements ScoreDef {
         this.didChange();
     }
 
+    changePitchEnharm(ins: InsertionPoint, pitch?: Pitch): void {
+        if (!pitch) {
+            pitch = this.pitchFromInsertionPoint(ins);
+        }
+        const note = this.noteFromInsertionPoint(ins);
+        //const seq = this.sequenceFromInsertionPoint(ins);
+        const note1 = cloneNote(note, { pitches: note.pitches.map(p => {
+            return enharmonicChange(p, Enharmonic.BestBet);
+        }) });
+        this.replaceNoteAtInsertionPoint(ins, note, note1);
+        this.didChange();
+    }
 
     addLongDecoration(decorationType: LongDecorationType, ins: InsertionPoint, length: TimeSpan): void {
         const seq = this.sequenceFromInsertionPoint(ins);

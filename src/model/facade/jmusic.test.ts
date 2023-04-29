@@ -273,6 +273,18 @@ describe('Facade', () => {
             expect(scoreChangeCalls).to.eq(1);
         });
 
+        it('should change a pitch enharmonically at the insertion point', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 1;
+            ins.position = 1;
+            ins.time = Time.newAbsolute(3, 4);
+            score.changePitchEnharm(ins);
+            const seq = score.staves[0].voices[1].content;
+            expect(seq.elements[3]).to.deep.include(createNoteFromLilypond('bis,4'));
+            expect(scoreChangeCalls).to.eq(1);
+        });
+
         /*xit('should remove a pitch from a note', () => {});
         xit('should alter a pitch in a note', () => {});
         xit('should convert a note to a rest', () => {});

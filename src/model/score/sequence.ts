@@ -40,6 +40,7 @@ export function getDuration(item: MusicEvent): TimeSpan {
 export interface ISequence {
     elements: MusicEvent[];
     duration: TimeSpan;
+    mapElements<T>(callBack: (elm: MusicEvent, time: AbsoluteTime) => T): T[];
     groupByTimeSlots(keyPrefix: string): TimeSlot[];
     insertElement(time: AbsoluteTime, elm: MusicEvent): void;
     appendElement(elm: MusicEvent): void;
@@ -145,6 +146,12 @@ export abstract class BaseSequence implements ISequence {
             timeR = Time.addTime(timeR, getDuration(elem));
             return false;
         });
+    }
+
+    mapElements<T>(callBack: (elm: MusicEvent, time: AbsoluteTime) => T): T[] {
+        return this.elements.reduce((prev: { accu: T[], time: AbsoluteTime }, curr) => {
+            return { accu: [...prev.accu, callBack(curr, prev.time)], time: Time.addTime(prev.time, getDuration(curr)) };
+        }, { accu: [], time: Time.StartTime }).accu;
     }
 
     groupByTimeSlots(keyPrefix: string): TimeSlot[] {
