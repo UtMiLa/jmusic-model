@@ -13,7 +13,7 @@ import { StaffDef } from '../score/staff';
 import { isScoreDef, ScoreDef } from './../score/score';
 import { Meter } from '../states/meter';
 import { createNoteFromLilypond, Note } from '../notes/note';
-import { Pitch } from '../pitches/pitch';
+import { Alteration, Pitch } from '../pitches/pitch';
 import { Time } from '../rationals/time';
 import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
 import { VariableRepository } from '../score/variables';
@@ -241,6 +241,25 @@ export class JMusic implements ScoreDef {
         //const seq = this.sequenceFromInsertionPoint(ins);
         const note1 = cloneNote(note, { pitches: note.pitches.map(p => {
             return enharmonicChange(p, Enharmonic.BestBet);
+        }) });
+        this.replaceNoteAtInsertionPoint(ins, note, note1);
+        this.didChange();
+    }
+
+    alterPitch(ins: InsertionPoint, alteration: number, pitch?: Pitch): void {
+        if (!pitch) {
+            pitch = this.pitchFromInsertionPoint(ins);
+        }
+        const note = this.noteFromInsertionPoint(ins);
+        //const seq = this.sequenceFromInsertionPoint(ins);
+        const note1 = cloneNote(note, { pitches: note.pitches.map(p => {
+            if (Math.abs(p.alteration + alteration) >= 3) {
+                const pitch = p.pitchClassNumber + alteration;
+                if (pitch < 0) return new Pitch(pitch + 7, p.octave - 1, 0);    
+                if (pitch >= 7) return new Pitch(pitch - 7, p.octave + 1, 0);    
+                return new Pitch(( + 7) % 7, p.octave, 0);    
+            }
+            return new Pitch(p.pitchClassNumber, p.octave, (p.alteration + alteration) as Alteration);
         }) });
         this.replaceNoteAtInsertionPoint(ins, note, note1);
         this.didChange();

@@ -285,6 +285,47 @@ describe('Facade', () => {
             expect(scoreChangeCalls).to.eq(1);
         });
 
+        it('should alter a pitch up or down at the insertion point', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 1;
+            ins.position = 1;
+            ins.time = Time.newAbsolute(3, 4);
+            score.alterPitch(ins, 1);
+            const seq = score.staves[0].voices[1].content;
+            expect(seq.elements[3]).to.deep.include(createNoteFromLilypond('cis4'));
+            expect(scoreChangeCalls).to.eq(1);
+
+            score.alterPitch(ins, -1);
+            const seq2 = score.staves[0].voices[1].content;
+            expect(seq2.elements[3]).to.deep.include(createNoteFromLilypond('c4'));
+            expect(scoreChangeCalls).to.eq(2);
+        });
+
+        it('should alter a pitch without getting alteration of 3 at the insertion point', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 1;
+            ins.position = 1;
+            ins.time = Time.newAbsolute(3, 4);
+            score.alterPitch(ins, -2);
+            const seq = score.staves[0].voices[1].content;
+            expect(seq.elements[3]).to.deep.include(createNoteFromLilypond('ceses4'));
+            expect(scoreChangeCalls).to.eq(1);
+
+            score.alterPitch(ins, -1);
+            const seq2 = score.staves[0].voices[1].content;
+            expect(seq2.elements[3]).to.deep.include(createNoteFromLilypond('b,4'));
+            expect(scoreChangeCalls).to.eq(2);
+
+            
+            score.alterPitch(ins, 2);
+            score.alterPitch(ins, 1);
+            const seq3 = score.staves[0].voices[1].content;
+            expect(seq3.elements[3]).to.deep.include(createNoteFromLilypond('c4'));
+            expect(scoreChangeCalls).to.eq(4);
+        });
+
         /*xit('should remove a pitch from a note', () => {});
         xit('should alter a pitch in a note', () => {});
         xit('should convert a note to a rest', () => {});
