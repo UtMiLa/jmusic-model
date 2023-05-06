@@ -41,6 +41,7 @@ export interface ISequence {
     elements: MusicEvent[];
     duration: TimeSpan;
     mapElements<T>(callBack: (elm: MusicEvent, time: AbsoluteTime) => T): T[];
+    filterElements(callBack: (elm: MusicEvent, time: AbsoluteTime) => boolean): MusicEvent[];
     groupByTimeSlots(keyPrefix: string): TimeSlot[];
     insertElement(time: AbsoluteTime, elm: MusicEvent): void;
     appendElement(elm: MusicEvent): void;
@@ -152,6 +153,18 @@ export abstract class BaseSequence implements ISequence {
         return this.elements.reduce((prev: { accu: T[], time: AbsoluteTime }, curr) => {
             return { accu: [...prev.accu, callBack(curr, prev.time)], time: Time.addTime(prev.time, getDuration(curr)) };
         }, { accu: [], time: Time.StartTime }).accu;
+    }
+
+    filterElements(callBack: (elm: MusicEvent, time: AbsoluteTime) => boolean): MusicEvent[] {
+        return this.elements.reduce((prev: { accu: MusicEvent[], time: AbsoluteTime }, curr) => {
+            return { 
+                accu: callBack(curr, prev.time) ? [...prev.accu, curr] : prev.accu, 
+                time: Time.addTime(prev.time, getDuration(curr)) 
+            };
+        }, { 
+            accu: [], 
+            time: Time.StartTime 
+        }).accu;
     }
 
     groupByTimeSlots(keyPrefix: string): TimeSlot[] {

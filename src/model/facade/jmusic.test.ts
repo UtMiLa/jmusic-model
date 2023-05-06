@@ -213,7 +213,7 @@ describe('Facade', () => {
 
         beforeEach(() => {
             score = new JMusic({ 
-                content: [['g4 g4 g4 g4 \\key a \\major g4 g4 g4 g4', 'c4 c4 c4 c4 c4 c4 c4 c4'], ['c,4 c,4 c,4 c,4 \\clef tenor c,4 c,4 c,4 c,4']],
+                content: [['g4 g4 g4 g4 \\key a \\major g4 gis4 a4 ais4', 'c4 c4 c4 c4 c4 c4 c4 c4'], ['c,4 c,4 c,4 c,4 \\clef tenor c,4 c,4 c,4 c,4']],
                 meter: '4/4',
                 clefs: [ 'treble', 'bass' ],
                 key: 'g \\minor'
@@ -282,6 +282,18 @@ describe('Facade', () => {
             score.removePitch(ins);
             const seq = score.staves[0].voices[1].content;
             expect(seq.elements[3]).to.deep.include(createNoteFromLilypond('r4'));
+            expect(scoreChangeCalls).to.eq(1);
+        });
+
+        it('should delete a note from the insertion point', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 0;
+            ins.position = 1;
+            ins.time = Time.newAbsolute(3, 2);
+            score.deleteNote(ins);
+            const seq = score.staves[0].voices[0].content;
+            expect(seq.elements[7]).to.deep.include(createNoteFromLilypond('ais4'));
             expect(scoreChangeCalls).to.eq(1);
         });
 

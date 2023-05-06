@@ -203,6 +203,14 @@ export class JMusic implements ScoreDef {
         ));
     }
 
+    deleteNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note): void {
+        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content.filterElements(
+            (ct, time) => {
+                return !(Time.equals(time, ins.time) && isNote(ct));
+            }
+        ));
+    }
+
     pitchFromInsertionPoint(ins: InsertionPoint): Pitch {
         const stateMap = createStateMap(this);
         const state = getStateAt(stateMap, ins.time, ins.staffNo);
@@ -223,11 +231,19 @@ export class JMusic implements ScoreDef {
         this.didChange();
     }
 
+    deleteNote(ins: InsertionPoint, pitch?: Pitch): void {
+        if (!pitch) {
+            pitch = this.pitchFromInsertionPoint(ins);
+        }
+        const note = this.noteFromInsertionPoint(ins);
+        this.deleteNoteAtInsertionPoint(ins, note);
+        this.didChange();
+    }
+
     addPitch(ins: InsertionPoint, pitch?: Pitch): void {
         if (!pitch) {
             pitch = this.pitchFromInsertionPoint(ins);
         }
-        const seq = this.sequenceFromInsertionPoint(ins);
         const note = this.noteFromInsertionPoint(ins);
         note.pitches.push(pitch);
         this.didChange();
