@@ -297,6 +297,18 @@ describe('Facade', () => {
             expect(scoreChangeCalls).to.eq(1);
         });
 
+        it('should change the value of a note at the insertion point', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 0;
+            ins.position = 1;
+            ins.time = Time.newAbsolute(3, 2);
+            score.setNoteValue(ins, Time.HalfTime);
+            const seq = score.staves[0].voices[0].content;
+            expect(seq.elements[7]).to.deep.include(createNoteFromLilypond('a2'));
+            expect(scoreChangeCalls).to.eq(1);
+        });
+
         it('should change a pitch enharmonically at the insertion point', () => {
             const ins = new InsertionPoint(score);
             ins.staffNo = 0;
@@ -350,11 +362,7 @@ describe('Facade', () => {
             expect(scoreChangeCalls).to.eq(4);
         });
 
-        /*xit('should remove a pitch from a note', () => {});
-        xit('should alter a pitch in a note', () => {});
-        xit('should convert a note to a rest', () => {});
-        xit('should convert a rest to a note', () => {});
-        xit('should delete a note', () => {});
+        /*
         xit('should insert a note', () => {});*/
 
         it('should insert a meter change', () => {
