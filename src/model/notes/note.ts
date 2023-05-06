@@ -5,6 +5,7 @@ import { TimeSpan, Time } from '../rationals/time';
 import { Pitch } from '../pitches/pitch';
 //import { mergeRight } from 'ramda';
 import * as R from 'ramda';
+import { getDotNumber, getUndottedValue } from '../rationals/dots';
 
 export enum NoteType {
     NBreve = 1, NWhole, NHalf, NQuarter,
@@ -127,7 +128,7 @@ export function setDuration(note: Note, duration: TimeSpan): Note {
 }
 
 export function getDotNo(note: Note): number {
-    return Time.getDotNo(note.nominalDuration.numerator);
+    return getDotNumber(note.nominalDuration);
 }
 
 export function createNote(pitches: Pitch[], duration: TimeSpan): Note {
@@ -185,12 +186,13 @@ export function getNominalDuration(note: Note): TimeSpan {
 }
 
 export function getUndottedDuration(note: Note): TimeSpan {
-    const nominalDuration = getNominalDuration(note);
+    /*const nominalDuration = getNominalDuration(note);
     if (nominalDuration.denominator === 1 && nominalDuration.numerator === 2) {
         return nominalDuration; // todo: what if 6/1? but we have no longa yet
     }
     return Time.scale(
         Time.addSpans(nominalDuration, Time.newSpan(1, nominalDuration.denominator)),
         1, 2
-    );
+    );*/
+    return getUndottedValue(getNominalDuration(note));
 }

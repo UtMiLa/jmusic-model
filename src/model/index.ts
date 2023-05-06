@@ -1,6 +1,7 @@
 export * from './notes/note';
 export * from './pitches/pitch';
 export * from './rationals/rational';
+export * from './rationals/dots';
 export * from './rationals/time';
 export * from './states/clef';
 export * from './states/key';

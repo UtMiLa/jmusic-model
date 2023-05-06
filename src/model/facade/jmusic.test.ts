@@ -309,6 +309,19 @@ describe('Facade', () => {
             expect(scoreChangeCalls).to.eq(1);
         });
 
+        
+        /*it('should change the number of dots of a note at the insertion point', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 0;
+            ins.position = 1;
+            ins.time = Time.newAbsolute(3, 2);
+            score.setNoteDots(ins, 2);
+            const seq = score.staves[0].voices[0].content;
+            expect(seq.elements[7]).to.deep.include(createNoteFromLilypond('a4..'));
+            expect(scoreChangeCalls).to.eq(1);
+        });*/
+
         it('should change a pitch enharmonically at the insertion point', () => {
             const ins = new InsertionPoint(score);
             ins.staffNo = 0;

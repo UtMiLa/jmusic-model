@@ -244,6 +244,13 @@ export class JMusic implements ScoreDef {
         this.didChange();
     }
 
+    /*setNoteDots(ins: InsertionPoint, no: number): void {
+        const note = this.noteFromInsertionPoint(ins);
+        const note1 = cloneNote(note, { dots: no });
+        this.replaceNoteAtInsertionPoint(ins, note, note1);
+        this.didChange();
+    }*/
+
     addPitch(ins: InsertionPoint, pitch?: Pitch): void {
         if (!pitch) {
             pitch = this.pitchFromInsertionPoint(ins);
