@@ -233,6 +233,17 @@ export class JMusic implements ScoreDef {
         this.didChange();
     }
 
+    removePitch(ins: InsertionPoint, pitch?: Pitch): void {
+        if (!pitch) {
+            pitch = this.pitchFromInsertionPoint(ins);
+        }
+        //const seq = this.sequenceFromInsertionPoint(ins);
+        const note = this.noteFromInsertionPoint(ins);
+        const note1 = cloneNote(note, { pitches: note.pitches.filter(p => p.diatonicNumber !== pitch?.diatonicNumber) });
+        this.replaceNoteAtInsertionPoint(ins, note, note1);
+        this.didChange();
+    }
+
     changePitchEnharm(ins: InsertionPoint, pitch?: Pitch): void {
         if (!pitch) {
             pitch = this.pitchFromInsertionPoint(ins);
