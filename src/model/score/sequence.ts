@@ -13,6 +13,12 @@ import { EventType, getExtendedTime } from './timing-order';
 
 export type MusicEvent = Note | StateChange | LongDecorationElement;
 
+export interface SeqEnumerationState {
+    clef?: Clef;
+    key?: Key;
+    meter?: Meter;
+}
+
 
 export function isStateChange(item: MusicEvent): item is StateChange {
     return (item as StateChange).isState;
@@ -40,8 +46,8 @@ export function getDuration(item: MusicEvent): TimeSpan {
 export interface ISequence {
     elements: MusicEvent[];
     duration: TimeSpan;
-    mapElements<T>(callBack: (elm: MusicEvent, time: AbsoluteTime) => T): T[];
-    filterElements(callBack: (elm: MusicEvent, time: AbsoluteTime) => boolean): MusicEvent[];
+    mapElements<T>(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => T, initState?: SeqEnumerationState): T[];
+    filterElements(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => boolean, initState?: SeqEnumerationState): MusicEvent[];
     groupByTimeSlots(keyPrefix: string): TimeSlot[];
     insertElement(time: AbsoluteTime, elm: MusicEvent): void;
     appendElement(elm: MusicEvent): void;
@@ -149,22 +155,61 @@ export abstract class BaseSequence implements ISequence {
         });
     }
 
-    mapElements<T>(callBack: (elm: MusicEvent, time: AbsoluteTime) => T): T[] {
-        return this.elements.reduce((prev: { accu: T[], time: AbsoluteTime }, curr) => {
-            return { accu: [...prev.accu, callBack(curr, prev.time)], time: Time.addTime(prev.time, getDuration(curr)) };
-        }, { accu: [], time: Time.StartTime }).accu;
+    private static updateState(oldState: SeqEnumerationState | undefined, event: MusicEvent): SeqEnumerationState | undefined {
+        if (oldState && isStateChange(event)) {
+            if (event.meter) oldState = { ...oldState, meter: event.meter };
+            if (event.clef) oldState = { ...oldState, clef: event.clef };
+            if (event.key) oldState = { ...oldState, key: event.key };
+        }
+        return oldState;
     }
 
-    filterElements(callBack: (elm: MusicEvent, time: AbsoluteTime) => boolean): MusicEvent[] {
-        return this.elements.reduce((prev: { accu: MusicEvent[], time: AbsoluteTime }, curr) => {
+    private _reduce<T, S>(
+        convertAccu: (oldAccu: T[], curr: MusicEvent, callBackResult: S) => T[], 
+        callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => S, 
+        initState?: SeqEnumerationState
+    ): T[] {
+        return this.elements.reduce((prev: { accu: T[], time: AbsoluteTime, state?: SeqEnumerationState }, curr) => {
             return { 
-                accu: callBack(curr, prev.time) ? [...prev.accu, curr] : prev.accu, 
-                time: Time.addTime(prev.time, getDuration(curr)) 
+                accu: convertAccu(prev.accu, curr, callBack(curr, prev.time, prev.state)), 
+                time: Time.addTime(prev.time, getDuration(curr)),
+                state: BaseSequence.updateState(prev.state, curr)
             };
         }, { 
             accu: [], 
-            time: Time.StartTime 
+            time: Time.StartTime, 
+            state: initState 
         }).accu;
+    }
+
+    mapElements<T>(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => T, initState?: SeqEnumerationState): T[] {
+        return this._reduce((oldAccu, curr, callBackResult) => [...oldAccu, callBackResult], callBack, initState);
+        /*return this.elements.reduce((prev: { accu: T[], time: AbsoluteTime, state?: SeqEnumerationState }, curr) => {
+            return { 
+                accu: [...prev.accu, callBack(curr, prev.time, prev.state)], 
+                time: Time.addTime(prev.time, getDuration(curr)),
+                state: BaseSequence.updateState(prev.state, curr)
+            };
+        }, { 
+            accu: [], 
+            time: Time.StartTime, 
+            state: initState 
+        }).accu;*/
+    }
+
+    filterElements(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => boolean, initState?: SeqEnumerationState): MusicEvent[] {
+        return this._reduce<MusicEvent, boolean>((oldAccu, curr, callBackResult) => callBackResult ? [...oldAccu, curr] : oldAccu, callBack, initState);
+        /*return this.elements.reduce((prev: { accu: MusicEvent[], time: AbsoluteTime, state?: SeqEnumerationState }, curr) => {
+            return { 
+                accu: callBack(curr, prev.time, prev.state) ? [...prev.accu, curr] : prev.accu, 
+                time: Time.addTime(prev.time, getDuration(curr)),
+                state: BaseSequence.updateState(prev.state, curr)
+            };
+        }, { 
+            accu: [], 
+            time: Time.StartTime,
+            state: initState
+        }).accu;*/
     }
 
     groupByTimeSlots(keyPrefix: string): TimeSlot[] {

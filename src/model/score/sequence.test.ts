@@ -1,9 +1,15 @@
 import { Pitch } from './../pitches/pitch';
 import { createNoteFromLilypond, Note, NoteDirection, setDuration } from './../notes/note';
 import { Time } from '../rationals/time';
-import { SimpleSequence, CompositeSequence, getDuration } from './sequence';
+import { SimpleSequence, CompositeSequence, getDuration, BaseSequence, ISequence } from './sequence';
 import { expect } from 'chai';
 import { LongDecorationType } from '../decorations/decoration-type';
+import { SinonSpy } from 'sinon';
+import Sinon = require('sinon');
+import { MeterFactory } from '../states/meter';
+import { StateChange } from '../states/state';
+import { Clef } from '../states/clef';
+import { Key } from '../states/key';
 describe('Sequence', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';
@@ -205,6 +211,93 @@ describe('Sequence', () => {
             expect(seqCombined.elements[11]).to.deep.equal(createNoteFromLilypond('d4'));
 
             expect(seqCombined.duration).to.deep.equal(Time.newSpan(9, 4));
+        });
+
+    });
+
+    describe('Map and filter', () => {
+        let seq: ISequence;
+        let spy: SinonSpy;
+
+        beforeEach(() => {
+            seq = new SimpleSequence('c4 d8. e16 f4 \\meter 5/8 \\key g \\major g4 \\clef bass a4.');
+            spy = Sinon.spy();
+        });
+        it ('should map elements together with times', () => {
+            seq.mapElements(spy);
+            
+            Sinon.assert.callCount(spy, 9);
+            Sinon.assert.calledWith(spy, createNoteFromLilypond('c4'), Time.StartTime);
+            Sinon.assert.calledWith(spy, createNoteFromLilypond('g4'), Time.newAbsolute(3, 4));
+            const stateChg = StateChange.newMeterChange(MeterFactory.createRegularMeter({ count: 5, value: 8 }));
+            Sinon.assert.calledWith(spy, stateChg, Time.newAbsolute(3, 4));
+        });
+        it ('should filter elements together with times', () => {
+            seq.filterElements(spy);
+            
+            Sinon.assert.callCount(spy, 9);
+            Sinon.assert.calledWith(spy, createNoteFromLilypond('c4'), Time.StartTime);
+            Sinon.assert.calledWith(spy, createNoteFromLilypond('g4'), Time.newAbsolute(3, 4));
+            const stateChg = StateChange.newMeterChange(MeterFactory.createRegularMeter({ count: 5, value: 8 }));
+            Sinon.assert.calledWith(spy, stateChg, Time.newAbsolute(3, 4));
+        });
+
+        it ('should map elements together with state info', () => {
+            const initState = { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }), key: new Key({ accidental: -1, count: 3 }) };
+            seq.mapElements(spy, initState);
+            
+            Sinon.assert.callCount(spy, 9);
+            Sinon.assert.calledWith(spy, 
+                createNoteFromLilypond('c4'), 
+                Time.StartTime, 
+                initState
+            );
+            Sinon.assert.calledWith(spy, 
+                createNoteFromLilypond('g4'), 
+                Time.newAbsolute(3, 4), 
+                { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 5, value: 8 }), key: new Key({ accidental: 1, count: 1 }) }
+            );
+            Sinon.assert.calledWith(spy, 
+                StateChange.newMeterChange(MeterFactory.createRegularMeter({ count: 5, value: 8 })), 
+                Time.newAbsolute(3, 4),
+                { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }), key: new Key({ accidental: -1, count: 3 }) }
+            );
+
+            Sinon.assert.calledWith(spy, 
+                createNoteFromLilypond('a4.'), 
+                Time.newAbsolute(1, 1),
+                { clef: Clef.clefBass, meter: MeterFactory.createRegularMeter({ count: 5, value: 8 }), key: new Key({ accidental: 1, count: 1 }) }
+            );
+
+        });
+
+        it ('should filter elements together with state info', () => {
+            const initState = { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }), key: new Key({ accidental: -1, count: 3 }) };
+            seq.filterElements(spy, initState);
+            
+            Sinon.assert.callCount(spy, 9);
+            Sinon.assert.calledWith(spy, 
+                createNoteFromLilypond('c4'), 
+                Time.StartTime, 
+                initState
+            );
+            Sinon.assert.calledWith(spy, 
+                createNoteFromLilypond('g4'), 
+                Time.newAbsolute(3, 4), 
+                { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 5, value: 8 }), key: new Key({ accidental: 1, count: 1 }) }
+            );
+            Sinon.assert.calledWith(spy, 
+                StateChange.newMeterChange(MeterFactory.createRegularMeter({ count: 5, value: 8 })), 
+                Time.newAbsolute(3, 4),
+                { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }), key: new Key({ accidental: -1, count: 3 }) }
+            );
+
+            Sinon.assert.calledWith(spy, 
+                createNoteFromLilypond('a4.'), 
+                Time.newAbsolute(1, 1),
+                { clef: Clef.clefBass, meter: MeterFactory.createRegularMeter({ count: 5, value: 8 }), key: new Key({ accidental: 1, count: 1 }) }
+            );
+
         });
 
     });
