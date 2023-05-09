@@ -2,7 +2,7 @@ import { NoteDirection, cloneNote } from '../../model';
 import { FlexibleItem, FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
-import { ISequence, isNote } from './../score/sequence';
+import { ISequence, MusicEvent, isClefChange, isKeyChange, isMeterChange, isNote, isStateChange } from './../score/sequence';
 import { InsertionPoint } from './../../editor/insertion-point';
 import { RegularMeterDef, MeterFactory } from './../states/meter';
 import { Key, KeyDef } from './../states/key';
@@ -19,6 +19,7 @@ import { createStateMap, getStateAt } from '../../logical-view/view-model/state-
 import { VariableRepository } from '../score/variables';
 import R = require('ramda');
 import { Enharmonic, addInterval, enharmonicChange } from '../pitches/intervals';
+import { StateChange } from '../states/state';
 
 export interface JMusicSettings {
     content: FlexibleItem[][];
@@ -152,7 +153,7 @@ export class JMusic implements ScoreDef {
 
     static makeKey(input: KeyFlex): KeyDef {
         if (typeof (input) === 'string') {
-            return parseLilyKey('\\key ' + input).def;
+            return parseLilyKey('\\key ' + input.replace(' major', ' \\major').replace(' minor', ' \\minor')).def;
         }
         const cd = input as KeyDef;
         if (cd.accidental !== undefined && cd.count !== undefined ) {
@@ -195,10 +196,20 @@ export class JMusic implements ScoreDef {
         return (note1 as Note).pitches === note2.pitches;
     }*/
 
-    replaceNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note, toNote: Note): void {
-        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content.mapElements(
+    InsertElementAtInsertionPoint(ins: InsertionPoint, element: MusicEvent, checkType: (e: MusicEvent) => boolean): void {
+        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content.chainElements(
             (ct, time) => {
-                return Time.equals(time, ins.time) && isNote(ct) ? toNote : ct;
+                if (!Time.equals(time, ins.time)) return [ct];
+                if (checkType(ct)) return [];
+                return isNote(ct) ? [element, ct] : [ct];
+            }
+        ));
+    }
+
+    replaceNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note, toNote: Note): void {
+        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content.chainElements(
+            (ct, time) => {
+                return [Time.equals(time, ins.time) && isNote(ct) ? toNote : ct];
             }
         ));
     }
@@ -243,13 +254,6 @@ export class JMusic implements ScoreDef {
         this.replaceNoteAtInsertionPoint(ins, note, note1);
         this.didChange();
     }
-
-    /*setNoteDots(ins: InsertionPoint, no: number): void {
-        const note = this.noteFromInsertionPoint(ins);
-        const note1 = cloneNote(note, { dots: no });
-        this.replaceNoteAtInsertionPoint(ins, note, note1);
-        this.didChange();
-    }*/
 
     addPitch(ins: InsertionPoint, pitch?: Pitch): void {
         if (!pitch) {
@@ -313,8 +317,21 @@ export class JMusic implements ScoreDef {
     addMeterChg(ins: InsertionPoint, meter: MeterFlex): void {
         const m = JMusic.makeMeter(meter);
         
-        const seq = this.sequenceFromInsertionPoint(ins);
-        seq.insertElement(ins.time, { isState: true, meter: MeterFactory.createRegularMeter(m) });
+        this.InsertElementAtInsertionPoint(ins, StateChange.newMeterChange(MeterFactory.createRegularMeter(m)), isMeterChange);
+        this.didChange();
+    }
+
+    addKeyChg(ins: InsertionPoint, key: KeyFlex): void {
+        const m = JMusic.makeKey(key);
+        
+        this.InsertElementAtInsertionPoint(ins, StateChange.newKeyChange(new Key(m)), isKeyChange);
+        this.didChange();
+    }
+
+    addClefChg(ins: InsertionPoint, clef: ClefFlex): void {
+        const m = JMusic.makeClef(clef);
+        
+        this.InsertElementAtInsertionPoint(ins, StateChange.newClefChange(new Clef(m)), isClefChange);
         this.didChange();
     }
 

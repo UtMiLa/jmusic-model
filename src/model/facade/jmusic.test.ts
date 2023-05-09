@@ -390,9 +390,44 @@ describe('Facade', () => {
             expect(scoreChangeCalls).to.eq(1);
         });
 
-        /*xit('should change a key change', () => {});
-        xit('should delete a clef change', () => {});
-        xit('should add a variable', () => {});
+        it('should overwrite a meter change', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 1;
+            ins.position = 3;
+            ins.time = Time.newAbsolute(1, 1);
+            score.addMeterChg(ins, '3/4');
+            score.addMeterChg(ins, '5/8');
+            const seq = score.staves[0].voices[1].content;
+            expect(seq.elements[4]).to.deep.include({meter: MeterFactory.createRegularMeter({ count: 5, value: 8})});
+            expect(seq.elements[5]).to.deep.include(createNoteFromLilypond('c4'));
+            expect(scoreChangeCalls).to.eq(2);
+        });
+
+        it('should change a key change', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 1;
+            ins.position = 3;
+            ins.time = Time.newAbsolute(1, 1);
+            score.addKeyChg(ins, 'f major');
+            const seq = score.staves[0].voices[1].content;
+            expect(seq.elements[4]).to.deep.include({key: new Key({ accidental: -1, count: 1 })});
+            expect(scoreChangeCalls).to.eq(1);
+        });
+        it('should delete a clef change', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 1;
+            ins.position = 3;
+            ins.time = Time.newAbsolute(1, 1);
+            score.addClefChg(ins, 'alto');
+            const seq = score.staves[0].voices[1].content;
+            expect(seq.elements[4]).to.deep.include({clef: new Clef({ line: 0, clefType: ClefType.C })});
+            expect(scoreChangeCalls).to.eq(1);
+
+        });
+        /*xit('should add a variable', () => {});
         xit('should retrieve a variable', () => {});
         xit('should use a variable reference', () => {});
         xit('should update references when a variable is changed', () => {});*/

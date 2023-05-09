@@ -24,6 +24,18 @@ export function isStateChange(item: MusicEvent): item is StateChange {
     return (item as StateChange).isState;
 }
 
+export function isMeterChange(item: MusicEvent): item is StateChange {
+    return isStateChange(item) && !!item.meter;
+}
+
+export function isKeyChange(item: MusicEvent): item is StateChange {
+    return isStateChange(item) && !!item.key;
+}
+
+export function isClefChange(item: MusicEvent): item is StateChange {
+    return isStateChange(item) && !!item.clef;
+}
+
 export function isLongDecoration(item: MusicEvent): item is LongDecorationElement {
     return (item as LongDecorationElement).longDeco !== undefined;
 }
@@ -46,7 +58,7 @@ export function getDuration(item: MusicEvent): TimeSpan {
 export interface ISequence {
     elements: MusicEvent[];
     duration: TimeSpan;
-    mapElements<T>(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => T, initState?: SeqEnumerationState): T[];
+    chainElements<T>(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => T[], initState?: SeqEnumerationState): T[];
     filterElements(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => boolean, initState?: SeqEnumerationState): MusicEvent[];
     groupByTimeSlots(keyPrefix: string): TimeSlot[];
     insertElement(time: AbsoluteTime, elm: MusicEvent): void;
@@ -182,34 +194,20 @@ export abstract class BaseSequence implements ISequence {
         }).accu;
     }
 
-    mapElements<T>(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => T, initState?: SeqEnumerationState): T[] {
-        return this._reduce((oldAccu, curr, callBackResult) => [...oldAccu, callBackResult], callBack, initState);
-        /*return this.elements.reduce((prev: { accu: T[], time: AbsoluteTime, state?: SeqEnumerationState }, curr) => {
-            return { 
-                accu: [...prev.accu, callBack(curr, prev.time, prev.state)], 
-                time: Time.addTime(prev.time, getDuration(curr)),
-                state: BaseSequence.updateState(prev.state, curr)
-            };
-        }, { 
-            accu: [], 
-            time: Time.StartTime, 
-            state: initState 
-        }).accu;*/
+    /** Like seq.elements.map(), but with additional parameters to callback:
+     * time: time from beginning of sequence
+     * state: optional state information about current key, clef, and meter. Only provided if initState is provided.
+     */
+    chainElements<T>(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => T[], initState?: SeqEnumerationState): T[] {
+        return this._reduce((oldAccu, curr, callBackResult) => callBackResult ? [...oldAccu, ...callBackResult] : oldAccu, callBack, initState);
     }
 
+    /** Like seq.elements.filter(), but with additional parameters to callback:
+     * time: time from beginning of sequence
+     * state: optional state information about current key, clef, and meter. Only provided if initState is provided.
+     */
     filterElements(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => boolean, initState?: SeqEnumerationState): MusicEvent[] {
         return this._reduce<MusicEvent, boolean>((oldAccu, curr, callBackResult) => callBackResult ? [...oldAccu, curr] : oldAccu, callBack, initState);
-        /*return this.elements.reduce((prev: { accu: MusicEvent[], time: AbsoluteTime, state?: SeqEnumerationState }, curr) => {
-            return { 
-                accu: callBack(curr, prev.time, prev.state) ? [...prev.accu, curr] : prev.accu, 
-                time: Time.addTime(prev.time, getDuration(curr)),
-                state: BaseSequence.updateState(prev.state, curr)
-            };
-        }, { 
-            accu: [], 
-            time: Time.StartTime,
-            state: initState
-        }).accu;*/
     }
 
     groupByTimeSlots(keyPrefix: string): TimeSlot[] {
