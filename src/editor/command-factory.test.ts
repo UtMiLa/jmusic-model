@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { BaseCommandFactory } from './command-factory';
 import { InsertionPoint } from './insertion-point';
+import { DeleteNoteCommand, DeletePitchCommand } from './commands';
 
 describe('Command factory', () => {
     describe('Command input', () => {
@@ -10,11 +11,11 @@ describe('Command factory', () => {
 
             const obj = fac.createCommand('DeleteNote', ins);
 
-            expect(obj).to.deep.eq({ name: 'del note' });
+            expect(obj).to.deep.eq(new DeleteNoteCommand([ins]));
             
             const obj1 = fac.createCommand('DeletePitch', ins, [1]);
 
-            expect(obj1).to.deep.eq({ name: 'del pitch' });
+            expect(obj1).to.deep.eq(new DeletePitchCommand([ins]));
         });
     });
 });

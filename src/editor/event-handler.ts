@@ -1,4 +1,5 @@
-import { BaseCommandFactory, Command } from './command-factory';
+import { BaseCommandFactory } from './command-factory';
+import { Command } from './commands';
 import { InsertionPoint } from './insertion-point';
 
 export interface CommandExecuter {
@@ -14,7 +15,11 @@ export interface EventHandler {
 }
 
 export class BaseEventHandler {
-    constructor(private commandFactory: BaseCommandFactory, private commandExecuter: CommandExecuter) {}
+    constructor(
+        private commandFactory: BaseCommandFactory, 
+        private commandExecuter: CommandExecuter,
+        private insertionPoint: InsertionPoint
+    ) {}
 
     noteDown(noteMidi: number): void {
         //
@@ -30,7 +35,7 @@ export class BaseEventHandler {
     }
     actionSelected(action: string): void {
         //
-        const cmd = this.commandFactory.createCommand(action, new InsertionPoint({staves: []}));
+        const cmd = this.commandFactory.createCommand(action, this.insertionPoint);
         this.commandExecuter.execute(cmd);
     }
 

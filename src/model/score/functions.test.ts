@@ -6,6 +6,9 @@ import { expect } from 'chai';
 import { LongDecorationType } from '../decorations/decoration-type';
 import { FlexibleSequence } from './flexible-sequence';
 import { createFunction, FuncDef, SeqFunction } from './functions';
+
+// Inspiration: Lilypond functions https://lilypond.org/doc/v2.25/Documentation/notation/available-music-functions
+
 describe('Functions', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';

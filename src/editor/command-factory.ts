@@ -1,13 +1,16 @@
+import { Command, DeleteNoteCommand, DeletePitchCommand } from './commands';
 import { InsertionPoint } from './insertion-point';
 
-export type Command = { name: string } | undefined;
+export type CommandType = typeof Command;
+
+
 
 export class BaseCommandFactory {
-    registry: { [key: string]: Command } = {
-        'DeleteNote': { name: 'del note' },
-        'DeletePitch': { name: 'del pitch' }
+    registry: { [key: string]: CommandType } = {
+        'DeleteNote': DeleteNoteCommand,
+        'DeletePitch': DeletePitchCommand
     };
     createCommand(id: string, insertionPoint: InsertionPoint, additionalArgs: any[] = []): Command {
-        return this.registry[id];
+        return new this.registry[id]([insertionPoint]);
     }
 }

@@ -3,6 +3,7 @@ import { JMusic, Time } from '../../model';
 import { MidiPerformer, MidiPlayer } from './performer';
 import { expect } from 'chai';
 
+// Inspiration: https://galactic.ink/midi-js/
 
 describe('MIDI performer', () => {
     it('should return sorted midi events for a score', () => {

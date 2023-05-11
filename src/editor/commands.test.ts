@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { BaseCommandFactory } from './command-factory';
 import { InsertionPoint } from './insertion-point';
-import { DeletePitchCommand } from './commands';
+import { DeleteNoteCommand, DeletePitchCommand } from './commands';
 import Sinon = require('sinon');
 import { JMusic } from '~/model';
 
@@ -16,6 +16,17 @@ describe('Commands', () => {
             cmd.execute(model);
 
             Sinon.assert.calledOnceWithExactly(model.removePitch, ins);
+
+        });
+        it('should delete a note', () => {
+            
+            const model = Sinon.stub(new JMusic());
+            const ins = new InsertionPoint(model);
+            const cmd = new DeleteNoteCommand([ins]);
+            
+            cmd.execute(model);
+
+            Sinon.assert.calledOnceWithExactly(model.deleteNote, ins);
 
         });
     });
