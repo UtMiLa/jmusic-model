@@ -3,7 +3,7 @@ import { InsertionPoint } from './insertion-point';
 
 
 export class Command {
-    constructor(protected args: [InsertionPoint]) {}
+    constructor(protected args: [InsertionPoint, any?]) {}
     execute(model: JMusic): void {
         //
     }
