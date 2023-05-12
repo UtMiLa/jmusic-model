@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { BaseCommandFactory } from './command-factory';
 import { InsertionPoint } from './insertion-point';
-import { DeleteNoteCommand, DeletePitchCommand } from './commands';
+import { AddClefCommand, AddKeyCommand, AddMeterCommand, AlterPitchCommand, ChangePitchEnharmCommand, DeleteNoteCommand, DeletePitchCommand, SetNoteDurationCommand, SetPitchCommand, ToggleNoteDotsCommand } from './commands';
 import Sinon = require('sinon');
-import { JMusic, Time } from '~/model';
+import { JMusic, Time, createNoteFromLilypond } from '../model';
 
 describe('Commands', () => {
     describe('Delete pitch command', () => {
@@ -12,7 +12,6 @@ describe('Commands', () => {
 
         beforeEach(() => {
             model = Sinon.stub(new JMusic());
-            ins = new InsertionPoint(model);
         });
 
         afterEach(() => {
@@ -36,7 +35,7 @@ describe('Commands', () => {
         });
         
         it('should set a pitch', () => {
-            const cmd = new DeleteNoteCommand([ins]);
+            const cmd = new SetPitchCommand([ins]);
             
             cmd.execute(model);
 
@@ -45,23 +44,25 @@ describe('Commands', () => {
         
         it('should set a note duration', () => {
             const time = Time.newSpan(1, 16);
-            const cmd = new DeleteNoteCommand([ins, time]);
+            const cmd = new SetNoteDurationCommand([ins, time]);
             
             cmd.execute(model);
 
             Sinon.assert.calledOnceWithExactly(model.setNoteValue, ins, time);
         });
         
-        xit('should toggle a note\'s dots', () => {
-            /*const cmd = new DeleteNoteCommand([ins]);
+        it('should toggle a note\'s dots', () => {
+            model.noteFromInsertionPoint.returns(createNoteFromLilypond('c4'));
+
+            const cmd = new ToggleNoteDotsCommand([ins]);
             
             cmd.execute(model);
 
-            Sinon.assert.calledOnceWithExactly(model.deleteNote, ins);*/
+            Sinon.assert.calledOnceWithExactly(model.setNoteValue, ins, Time.newSpan(3, 8));
         });
         
         it('should change a pitch enharmonically', () => {
-            const cmd = new DeleteNoteCommand([ins]);
+            const cmd = new ChangePitchEnharmCommand([ins]);
             
             cmd.execute(model);
 
@@ -69,7 +70,7 @@ describe('Commands', () => {
         });
         
         it('should alter a pitch', () => {
-            const cmd = new DeleteNoteCommand([ins, -1]);
+            const cmd = new AlterPitchCommand([ins, -1]);
             
             cmd.execute(model);
 
@@ -77,14 +78,26 @@ describe('Commands', () => {
         });
         
         it('should add a meter', () => {
-            const cmd = new DeleteNoteCommand([ins, '5/8']);
+            const cmd = new AddMeterCommand([ins, '5/8']);
             
             cmd.execute(model);
 
             Sinon.assert.calledOnceWithExactly(model.addMeterChg, ins, '5/8');
         });
 
-        it('should add a clef');
-        it('should add a key');
+        it('should add a clef', () => {
+            const cmd = new AddClefCommand([ins, 'alto']);
+            
+            cmd.execute(model);
+
+            Sinon.assert.calledOnceWithExactly(model.addClefChg, ins, 'alto');
+        });
+        it('should add a key', () => {
+            const cmd = new AddKeyCommand([ins, 'f major']);
+            
+            cmd.execute(model);
+
+            Sinon.assert.calledOnceWithExactly(model.addKeyChg, ins, 'f major');
+        });
     });
 });

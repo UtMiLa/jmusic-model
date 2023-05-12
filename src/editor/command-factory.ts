@@ -1,4 +1,4 @@
-import { Command, DeleteNoteCommand, DeletePitchCommand } from './commands';
+import { AddClefCommand, AddKeyCommand, AddMeterCommand, AlterPitchCommand, ChangePitchEnharmCommand, Command, DeleteNoteCommand, DeletePitchCommand, SetNoteDurationCommand, SetPitchCommand, ToggleNoteDotsCommand } from './commands';
 import { InsertionPoint } from './insertion-point';
 
 export type CommandType = typeof Command;
@@ -8,9 +8,17 @@ export type CommandType = typeof Command;
 export class BaseCommandFactory {
     registry: { [key: string]: CommandType } = {
         'DeleteNote': DeleteNoteCommand,
-        'DeletePitch': DeletePitchCommand
+        'DeletePitch': DeletePitchCommand,
+        'SetPitch': SetPitchCommand,
+        'SetDuration': SetNoteDurationCommand,
+        'SetDot': ToggleNoteDotsCommand,
+        'EnharmPitch': ChangePitchEnharmCommand,
+        'AlterPitch': AlterPitchCommand,
+        'SetMeter': AddMeterCommand,
+        'SetKey': AddKeyCommand,
+        'SetClef': AddClefCommand
     };
-    createCommand(id: string, insertionPoint: InsertionPoint, additionalArgs: any[] = []): Command {
-        return new this.registry[id]([insertionPoint]);
+    createCommand(id: string, insertionPoint: InsertionPoint, additionalArg: any[] = []): Command {
+        return new this.registry[id]([insertionPoint, ...additionalArg]);
     }
 }

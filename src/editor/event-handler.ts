@@ -11,7 +11,7 @@ export interface EventHandler {
     noteUp(noteMidi: number): void;
     keyDown(keyName: string): void;
     keyUp(keyName: string): void;
-    actionSelected(action: string): void;
+    actionSelected(action: string, additionalArgs?: any[]): void;
 }
 
 export class BaseEventHandler {
@@ -33,9 +33,9 @@ export class BaseEventHandler {
     keyUp(keyName: string): void {
         //
     }
-    actionSelected(action: string): void {
+    actionSelected(action: string, additionalArgs?: any[]): void {
         //
-        const cmd = this.commandFactory.createCommand(action, this.insertionPoint);
+        const cmd = this.commandFactory.createCommand(action, this.insertionPoint, additionalArgs);
         this.commandExecuter.execute(cmd);
     }
 

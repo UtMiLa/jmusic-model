@@ -13,7 +13,7 @@ describe('Command factory', () => {
 
             expect(obj).to.deep.eq(new DeleteNoteCommand([ins]));
             
-            const obj1 = fac.createCommand('DeletePitch', ins, [1]);
+            const obj1 = fac.createCommand('DeletePitch', ins);
 
             expect(obj1).to.deep.eq(new DeletePitchCommand([ins]));
         });
