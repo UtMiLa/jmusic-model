@@ -10,8 +10,8 @@ export interface CommandExecuter {
 export interface EventHandler {
     noteDown(noteMidi: number): void;
     noteUp(noteMidi: number): void;
-    keyDown(keyName: string): void;
-    keyUp(keyName: string): void;
+    keyDown(keyName: string): boolean;
+    keyUp(keyName: string): boolean;
     actionSelected(action: string, additionalArgs?: any[]): void;
 }
 
@@ -23,10 +23,10 @@ export class BaseEventHandler {
     ) {}
 
     noteDown(noteMidi: number): void {
-        //
+        console.log('noteDown', noteMidi);
     }
     noteUp(noteMidi: number): void {
-        //
+        console.log('noteUp', noteMidi);
     }
     keyDown(keyName: string): boolean {
         let cmd: Command | undefined;
@@ -57,8 +57,8 @@ export class BaseEventHandler {
         }
         return false;
     }
-    keyUp(keyName: string): void {
-        //
+    keyUp(keyName: string): boolean {
+        return false;
     }
     actionSelected(action: string, additionalArgs?: any[]): void {
         //
