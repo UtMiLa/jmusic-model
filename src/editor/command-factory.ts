@@ -1,4 +1,4 @@
-import { AddClefCommand, AddKeyCommand, AddMeterCommand, AlterPitchCommand, ChangePitchEnharmCommand, Command, DeleteNoteCommand, DeletePitchCommand, SetNoteDurationCommand, SetPitchCommand, ToggleNoteDotsCommand } from './commands';
+import { AddClefCommand, AddKeyCommand, AddMeterCommand, AlterPitchCommand, ChangePitchEnharmCommand, Command, DeleteNoteCommand, DeletePitchCommand, SetNoteDurationCommand, SetPitchCommand, SetPitchesCommand, ToggleNoteDotsCommand } from './commands';
 import { InsertionPoint } from './insertion-point';
 
 export type CommandType = typeof Command;
@@ -10,6 +10,7 @@ export class BaseCommandFactory {
         'DeleteNote': DeleteNoteCommand,
         'DeletePitch': DeletePitchCommand,
         'SetPitch': SetPitchCommand,
+        'SetPitches': SetPitchesCommand,
         'SetDuration': SetNoteDurationCommand,
         'SetDot': ToggleNoteDotsCommand,
         'EnharmPitch': ChangePitchEnharmCommand,

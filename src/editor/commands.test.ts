@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { BaseCommandFactory } from './command-factory';
 import { InsertionPoint } from './insertion-point';
-import { AddClefCommand, AddKeyCommand, AddMeterCommand, AlterPitchCommand, ChangePitchEnharmCommand, DeleteNoteCommand, DeletePitchCommand, SetNoteDurationCommand, SetPitchCommand, ToggleNoteDotsCommand } from './commands';
+import { AddClefCommand, AddKeyCommand, AddMeterCommand, AlterPitchCommand, ChangePitchEnharmCommand, DeleteNoteCommand, DeletePitchCommand, SetNoteDurationCommand, SetPitchCommand, SetPitchesCommand, ToggleNoteDotsCommand } from './commands';
 import Sinon = require('sinon');
-import { JMusic, Time, createNoteFromLilypond } from '../model';
+import { JMusic, Pitch, Time, createNoteFromLilypond } from '../model';
 
 describe('Commands', () => {
     describe('Delete pitch command', () => {
@@ -40,6 +40,14 @@ describe('Commands', () => {
             cmd.execute(model);
 
             Sinon.assert.calledOnceWithExactly(model.addPitch, ins);
+        });
+                
+        it('should set all pitches of a note', () => {
+            const cmd = new SetPitchesCommand([ins, [64, 66]]);
+            
+            cmd.execute(model);
+
+            Sinon.assert.calledOnceWithExactly(model.setPitches, ins, [64, 66].map(Pitch.fromMidi));
         });
         
         it('should set a note duration', () => {
