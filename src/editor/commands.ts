@@ -1,4 +1,4 @@
-import { JMusic, Pitch, getDotNumber, getDottedValue, getUndottedValue } from '../model';
+import { JMusic, Pitch, createNote, getDotNumber, getDottedValue, getUndottedValue } from '../model';
 import { InsertionPoint } from './insertion-point';
 
 
@@ -33,8 +33,16 @@ export class DeleteNoteCommand extends Command {
     execute(model: JMusic): void {
         model.deleteNote(this.args[0]);
     }
-
 }
+
+export class AddNoteCommand extends Command {
+    execute(model: JMusic): void {
+        const pitches = this.args[1].map((p: number) => Pitch.fromMidi(p));
+        const note = createNote(pitches, this.args[2]);
+        model.appendNote(this.args[0], note);
+    }
+}
+
 
 export class SetNoteDurationCommand extends Command {
     execute(model: JMusic): void {

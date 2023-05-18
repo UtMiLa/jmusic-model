@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { BaseCommandFactory } from './command-factory';
 import { InsertionPoint } from './insertion-point';
-import { AddClefCommand, AddKeyCommand, AddMeterCommand, AlterPitchCommand, ChangePitchEnharmCommand, DeleteNoteCommand, DeletePitchCommand, SetNoteDurationCommand, SetPitchCommand, SetPitchesCommand, ToggleNoteDotsCommand } from './commands';
+import { AddClefCommand, AddKeyCommand, AddMeterCommand, AddNoteCommand, AlterPitchCommand, ChangePitchEnharmCommand, DeleteNoteCommand, DeletePitchCommand, SetNoteDurationCommand, SetPitchCommand, SetPitchesCommand, ToggleNoteDotsCommand } from './commands';
 import Sinon = require('sinon');
 import { JMusic, Pitch, Time, createNoteFromLilypond } from '../model';
 
@@ -106,6 +106,14 @@ describe('Commands', () => {
             cmd.execute(model);
 
             Sinon.assert.calledOnceWithExactly(model.addKeyChg, ins, 'f major');
+        });
+        it('should add a note', () => {
+            const note = createNoteFromLilypond('<c e g>4');
+            const cmd = new AddNoteCommand([ins, [48, 52, 55], Time.QuarterTime]);
+            
+            cmd.execute(model);
+
+            Sinon.assert.calledOnceWithExactly(model.appendNote, ins, note);
         });
     });
 });

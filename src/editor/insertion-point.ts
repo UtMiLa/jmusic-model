@@ -36,17 +36,25 @@ export class InsertionPoint {
     moveRight(): void {
         const index = this.findIndex(this.time);
         const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
-        if (index >= 0 && currentVoice.content.elements.length > index + 1) {
+        if (index >= 0 && currentVoice.content.elements.length > index) {
             //index++;
             this.time = Time.addTime(this.time, getDuration(currentVoice.content.elements[index]));
         }
     }
 
     moveLeft(): void {
-        const index = this.findIndex(this.time);
+        let index = this.findIndex(this.time);
         const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
+        if (this.isAtEnd()) {
+            index = currentVoice.content.elements.length;
+        }
         if (index >= 0) {
             this.time = Time.subtractTime(this.time, getDuration(currentVoice.content.elements[index-1]));
         }
+    }
+
+    isAtEnd(): boolean {
+        const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
+        return Time.equals(this.time, Time.fromStart(currentVoice.content.duration));
     }
 }
