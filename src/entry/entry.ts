@@ -92,7 +92,7 @@ export class EntryNote {
         }
         const tieString = this.tie ? '~' : '';
 
-        console.log('not tostring', this, this.pitch.pitchClassName, dur.denominator, points, tieString );
+        //console.log('not tostring', this, this.pitch.pitchClassName, dur.denominator, points, tieString );
 
         return this.pitch.lilypond + dur.denominator + points + tieString + ' ';
     }

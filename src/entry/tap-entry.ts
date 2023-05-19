@@ -165,7 +165,7 @@ export class TapEntry implements EntryProcessor {
 
     noteOn(note: number, velocity: number): void {
         this.notesPressed.push(note);
-        console.log('noteOn', this.notesPressed);
+        //console.log('noteOn', this.notesPressed);
         this.state = this.state.noteOn(note, this.notesPressed);
     }
     noteOff(note: number, velocity: number): void {

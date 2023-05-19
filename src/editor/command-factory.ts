@@ -1,4 +1,4 @@
-import { AddClefCommand, AddKeyCommand, AddMeterCommand, AddNoteCommand, AlterPitchCommand, ChangePitchEnharmCommand, Command, DeleteNoteCommand, DeletePitchCommand, SetNoteDurationCommand, SetPitchCommand, SetPitchesCommand, ToggleNoteDotsCommand } from './commands';
+import { AddClefCommand, AddKeyCommand, AddMeterCommand, AddNoteCommand, AlterPitchCommand, ChangePitchEnharmCommand, Command, DeleteNoteCommand, DeletePitchCommand, FileNewCommand, SetNoteDurationCommand, SetPitchCommand, SetPitchesCommand, ToggleNoteDotsCommand } from './commands';
 import { InsertionPoint } from './insertion-point';
 
 export type CommandType = typeof Command;
@@ -23,7 +23,8 @@ export class BaseCommandFactory {
         'AlterPitch': { command: AlterPitchCommand, atNote: true, atEnd: false },
         'SetMeter': { command: AddMeterCommand, atNote: true, atEnd: false },
         'SetKey': { command: AddKeyCommand, atNote: true, atEnd: false },
-        'SetClef': { command: AddClefCommand, atNote: true, atEnd: false }
+        'SetClef': { command: AddClefCommand, atNote: true, atEnd: false },
+        'NewFile': { command: FileNewCommand, atNote: true, atEnd: true }
     };
     createCommand(id: string, insertionPoint: InsertionPoint, additionalArg: any[] = []): Command {
         const cmdReg =  this.registry[id]; 

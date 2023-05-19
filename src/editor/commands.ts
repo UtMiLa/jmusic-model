@@ -1,4 +1,4 @@
-import { JMusic, Pitch, createNote, getDotNumber, getDottedValue, getUndottedValue } from '../model';
+import { Clef, FlexibleSequence, JMusic, Key, Pitch, createNote, getDotNumber, getDottedValue, getUndottedValue } from '../model';
 import { InsertionPoint } from './insertion-point';
 
 
@@ -6,6 +6,30 @@ export class Command {
     constructor(protected args: [InsertionPoint, ...any]) {}
     execute(model: JMusic): void {
         //
+    }
+}
+
+export class FileNewCommand extends Command {
+    execute(model: JMusic): void {
+        model.staves = [
+            {
+                voices: [
+                    { content: new FlexibleSequence('r4') },
+                    { content: new FlexibleSequence('r4') }
+                ], initialClef: Clef.clefTreble.def, initialKey: { accidental: 0, count: 0 } 
+            },
+            {
+                voices: [
+                    { content: new FlexibleSequence('r4') },
+                    { content: new FlexibleSequence('r4') }
+                ], initialClef: Clef.clefBass.def, initialKey: { accidental: 0, count: 0 } 
+            }
+
+        ];
+
+        //model.vars.clearVars();
+
+        model.didChange();
     }
 }
 

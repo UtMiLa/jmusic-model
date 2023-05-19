@@ -37,13 +37,13 @@ export class BaseEventHandler {
         this.$noteChange.subscribe(() => handler(this.keysPressed));
     }
     noteDown(noteMidi: number): void {
-        console.log('noteDown', noteMidi);
+        //console.log('noteDown', noteMidi);
         //this.pressed[noteMidi] = true;
         this.keysPressed = R.union(this.keysPressed, [noteMidi]);
         this.$noteChange.next(noteMidi);
     }
     noteUp(noteMidi: number): void {
-        console.log('noteUp', noteMidi);
+        //console.log('noteUp', noteMidi);
         //this.pressed[noteMidi] = false;
         this.keysPressed = R.difference(this.keysPressed, [noteMidi]);
         this.$noteChange.next(noteMidi);
@@ -84,10 +84,10 @@ export class BaseEventHandler {
                     case '6': cmd = this.commandFactory.createCommand('SetDuration', this.insertionPoint, [Time.HalfTime]); break;
                     case '7': cmd = this.commandFactory.createCommand('SetDuration', this.insertionPoint, [Time.WholeTime]); break;
 
-                    case 'ArrowRight': this.insertionPoint.moveRight(); console.log('right', this.insertionPoint); return true;
-                    case 'ArrowLeft': this.insertionPoint.moveLeft(); console.log('left', this.insertionPoint); return true;
-                    case 'ArrowUp': this.insertionPoint.position++; console.log('++', this.insertionPoint); return true;
-                    case 'ArrowDown': this.insertionPoint.position--; console.log('--', this.insertionPoint); return true;
+                    case 'ArrowRight': this.insertionPoint.moveRight(); return true;
+                    case 'ArrowLeft': this.insertionPoint.moveLeft(); return true;
+                    case 'ArrowUp': this.insertionPoint.position++; return true;
+                    case 'ArrowDown': this.insertionPoint.position--; return true;
 
                     default: return false;
                 }

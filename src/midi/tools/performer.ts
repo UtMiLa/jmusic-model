@@ -42,12 +42,12 @@ export interface MidiPerformerSettingsNotNull {
 }
 
 export function splitPitches(slots: TimeSlot[]): TimeSlot[] {
-    console.log('splitPitches(', slots);
+    //console.log('splitPitches(', slots);
     return R.chain(slot => R.unwind('elements', slot), slots).map((x: any) => ({...x, elements: [x.elements]}));
 }
 
 export function combineTiedNotes(slots: TimeSlot[]): TimeSlot[] {
-    console.log('combineTiedNotes(', slots);
+    //console.log('combineTiedNotes(', slots);
     return R.reduce((prev, curr) => { return [...prev, curr]; }, [] as TimeSlot[], slots);
 }
 
@@ -83,7 +83,7 @@ export class MidiPerformer {
             staff.voices.forEach(voice => {
                 const timeslots = combineTiedNotes(splitPitches(voice.content.groupByTimeSlots('')));
 
-                console.log('timeslots', timeslots[0]);
+                //console.log('timeslots', timeslots[0]);
                 //let rememberTiedPitches = [];
 
                 timeslots.forEach(slot => {

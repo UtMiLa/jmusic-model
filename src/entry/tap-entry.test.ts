@@ -59,7 +59,7 @@ describe('Tap-entry', () => {
 
         midiMock.simulateEvents(input);
 
-        console.log(score);
+        //console.log(score);
 
         expect(score.voices).to.deep.eq(output);
         /*output.forEach(voice => {
