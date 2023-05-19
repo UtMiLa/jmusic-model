@@ -52,13 +52,11 @@ describe('Flexible Sequence', () => {
     it('should accept a MusicEvent object', () => {
         const clefChg = { 
             clef: parseLilyClef('treble'), 
-            duration: Time.newSpan(0, 1),
             isState: true
         };
         const seq = new FlexibleSequence(['c4', clefChg, 'e8']);
 
         expect(seq.count).to.eq(3);
-        //expect(seq.def).to.deep.eq([['c4'], [clefChg], ['e8']]);
         expect(seq.def).to.deep.eq(['c4', clefChg, 'e8']);
     });
 
@@ -248,7 +246,6 @@ describe('Flexible Sequence', () => {
             const seq = new FlexibleSequence(seq1Text);
 
             seq.deleteElement(Time.newAbsolute(1, 4));
-
 
             expect(seq.elements).to.have.length(2);
             expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));

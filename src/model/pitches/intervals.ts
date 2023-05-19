@@ -72,5 +72,4 @@ export function enharmonicChange(pitch: Pitch, enharmonic: Enharmonic): Pitch {
         return addInterval(pitch, { interval: 1, alteration: -2});
     }
 
-
 }

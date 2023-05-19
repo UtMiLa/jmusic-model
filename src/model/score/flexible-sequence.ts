@@ -22,7 +22,6 @@ function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository)
         const x = R.modify('args', args => recursivelySplitStringsIn(args, repo), item) as unknown as FlexibleItem[];
         return x;
     } else if (isVariableRef(item)) {
-        //return new FlexibleSequence(repo.valueOf(item.variable)).def;
         return repo.valueOf(item.variable).elements;
     } else if (isMusicEvent(item)) {
         return [item];

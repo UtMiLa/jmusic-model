@@ -92,7 +92,6 @@ export function createNoteFromLilypond(input: string): Note {
     return cloneNote(res, extra);
 }
 
-
 export function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
 
     const extra = R.mergeRight(note, changeProperties);
@@ -124,7 +123,6 @@ export function setTupletGroup(note: Note, tupletGroup: TupletState): Note {
 export function setPitches(note: Note, pitches: Pitch[]): Note {
     return cloneNote(note, { pitches });
 }
-
 export function setDuration(note: Note, duration: TimeSpan): Note {
     return cloneNote(note, { nominalDuration: duration });
 }

@@ -112,7 +112,6 @@ const transposeNote = R.curry((interval: Interval, note: Note) => ({...note, pit
 
 const transpose = R.curry((interval, sequence: MusicEvent[]) => R.map(R.when(isNote, transposeNote(interval)))(sequence));
 
-
 const relativeOctave = (prevPitch: Pitch, currPitch: Pitch): number => {
     const firstPitch = currPitch;
     const fromOctave = prevPitch.octave;

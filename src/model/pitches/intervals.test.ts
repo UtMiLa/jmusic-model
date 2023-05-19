@@ -95,5 +95,4 @@ describe('Intervals', () => {
         expect(enharmonicChange(Pitch.parseLilypond('g'), Enharmonic.BestBet)).to.deep.eq(Pitch.parseLilypond('fisis'));
         expect(enharmonicChange(Pitch.parseLilypond('d'), Enharmonic.BestBet)).to.deep.eq(Pitch.parseLilypond('cisis'));
     });
-
 });

@@ -121,7 +121,6 @@ export namespace Time {
         return t1.extended === t2.extended;
     };
 
-
     /*export const getDotNo = (numerator0: number): number => {
         let numerator = numerator0 + 1;
         let res = -1;

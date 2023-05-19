@@ -27,7 +27,6 @@ describe('Functions', () => {
         const seq = new FlexibleSequence(seqWithFunction);
 
         expect(seq.count).to.eq(4);
-        //expect(seq.def).to.deep.eq([['c4'], {function: 'Reverse', args: [['d4', 'e4', 'f4']]}]);
         expect(seq.def).to.deep.eq(['c4', {function: 'Reverse', args: ['d4', 'e4', 'f4']}]);
         expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
         expect(seq.elements[1]).to.deep.eq(createNoteFromLilypond('f4'));
@@ -42,7 +41,6 @@ describe('Functions', () => {
         const seq = new FlexibleSequence(seqWithFunction);
 
         expect(seq.count).to.eq(7);
-        //expect(seq.def).to.deep.eq([['c4'], {function: 'Repeat', args: [['d4', 'e4', 'f4']], extraArgs: [2] }]);
         expect(seq.def).to.deep.eq(['c4', {function: 'Repeat', args: ['d4', 'e4', 'f4'], extraArgs: [2] }]);
         expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
         expect(seq.elements[1]).to.deep.eq(createNoteFromLilypond('d4'));
@@ -58,7 +56,6 @@ describe('Functions', () => {
         const seq = new FlexibleSequence(seqWithFunction);
 
         expect(seq.count).to.eq(10);
-        //expect(seq.def).to.deep.eq([['c4'], {function: 'Repeat', args: ['d4', 'e4', 'f4'], extraArgs: [3]}]);
         expect(seq.def).to.deep.eq(['c4', {function: 'Repeat', args: ['d4', 'e4', 'f4'], extraArgs: [3]}]);
         expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
         expect(seq.elements[1]).to.deep.eq(createNoteFromLilypond('d4'));
@@ -277,7 +274,6 @@ describe('Flexible sequence transformations', () => {
         it('should adjust octaves after first note in chords', () => {
             expectRelative('c\'4 <c e g>4 <c\' e g\'>4 <c, e, g\'\'>4', 'c', 'c\'4 <c\' e\' g\'>4 <c\'\' e\'\' g\'\'\'>4 <c\' e g\'\'>4');
         });
-
 
     });
 

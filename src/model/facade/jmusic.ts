@@ -16,7 +16,7 @@ import { createNoteFromLilypond, Note } from '../notes/note';
 import { Alteration, Pitch } from '../pitches/pitch';
 import { Time } from '../rationals/time';
 import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
-import { VariableDef, VariableRepository } from '../score/variables';
+import { VariableRepository } from '../score/variables';
 import R = require('ramda');
 import { Enharmonic, addInterval, enharmonicChange } from '../pitches/intervals';
 import { StateChange } from '../states/state';
@@ -73,7 +73,6 @@ export class JMusic implements ScoreDef {
 
     constructor(voice?: string | JMusicSettings | ScoreDef, vars?: JMusicVars) {
 
-        //this.vars = new VariableRepository(vars ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: pair[1] })) : []);
         this.vars = new VariableRepository(vars ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: new FlexibleSequence(pair[1]) })) : []);
 
         if (typeof(voice) === 'string') {
