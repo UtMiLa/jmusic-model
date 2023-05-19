@@ -1,5 +1,5 @@
 import { Time, AbsoluteTime } from './../rationals/time';
-import { ISequence, isLongDecoration, isStateChange } from './../score/sequence';
+import { getDuration, ISequence, isLongDecoration, isStateChange } from './../score/sequence';
 import { getNominalDuration, getUndottedDuration, Note, setNoteId } from './note';
 
 
@@ -129,7 +129,7 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
         } else {
             const note = element;
 
-            const currBeamCnt = beamCount(getUndottedDuration(note).denominator);
+            const currBeamCnt = note.pitches.length && beamCount(getUndottedDuration(note).denominator);
 
             if (note.grace) {
                 tempGraceGroup.push(setNoteId(note, keyPrefix, elmIndex));
@@ -183,6 +183,7 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
     
             while (currBeamCnt > prevBeamCnt) {
                 // start a subgroup
+                if (prevBeamCnt === 0) noteIdx = 0;
                 tempSubGroups.push({ fromIdx: noteIdx, toIndex: undefined, level: prevBeamCnt });
                 prevBeamCnt++;
             } 
@@ -197,7 +198,7 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
     
     
         }
-        time = Time.addTime(time, element.duration);
+        time = Time.addTime(time, getDuration(element));
 
     });
 

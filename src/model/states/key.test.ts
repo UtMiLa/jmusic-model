@@ -47,14 +47,13 @@ describe('Key', () => {
         const seq = new SimpleSequence( 'c4 \\key d \\major c4' );
 
         expect(seq.count).to.eq(3);
-        /*expect(seq.elements[1]).to.deep.eq({
+        expect(seq.elements[1]).to.deep.eq({
             key: new Key({
                 accidental: 1,
                 count: 2
             }),
-            duration: Time.newSpan(0, 1),
             isState: true
-        });*/
+        });
 
         const seq2 = new SimpleSequence( 'c4 \\key ees \\minor c4' );
 
@@ -64,7 +63,6 @@ describe('Key', () => {
                 accidental: -1,
                 count: 6
             }),
-            duration: Time.newSpan(0, 1),
             isState: true
         });
 

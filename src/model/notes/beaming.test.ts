@@ -1,4 +1,4 @@
-import { setGraceNoteInSequence } from '~/tools/test-tools';
+import { setGraceNoteInSequence } from '../../tools/test-tools';
 import { Note, UpdateNote } from './note';
 import { TupletSequence } from './../score/transformations';
 import { Time } from './../rationals/time';
@@ -67,6 +67,42 @@ describe('Beaming', () => {
 
         expect(beamGroups).to.have.length(0);
     });
+
+
+    it('should beam correctly when rests', () => {
+        const seq = new SimpleSequence( 'c1 r16 c16 c16 c16 c32 c32 c32 r32');
+        const meter = MeterFactory.createRegularMeter({ count: 1, value: 4 });
+
+        const beamGroups = calcBeamGroups(seq, getAllBeats(meter));
+
+        expect(beamGroups).to.have.length(2);
+        expect(beamGroups[0].beams).to.deep.eq([{
+            fromIdx: 0,
+            toIndex: 2,
+            level: 0
+        },{    
+            fromIdx: 0,
+            toIndex: 2,
+            level: 1
+        }]);
+        expect(beamGroups[0].notes).to.have.length(3);
+
+        expect(beamGroups[1].beams).to.deep.eq([{
+            fromIdx: 0,
+            toIndex: 2,
+            level: 0
+        },{    
+            fromIdx: 0,
+            toIndex: 2,
+            level: 2
+        },{    
+            fromIdx: 0,
+            toIndex: 2,
+            level: 1
+        }]);
+        expect(beamGroups[1].notes).to.have.length(3);
+    });
+
 
 
 

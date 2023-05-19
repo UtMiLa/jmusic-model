@@ -8,8 +8,8 @@ import { Time } from './../../model/rationals/time';
 import { HorizVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */
 import { NoteType, NoteDirection } from '../../model/notes/note';
-import { ClefType } from '~/model/states/clef';
-import { PhysicalElementBase, PhysicalVertVarSizeElement } from './physical-elements';
+import { ClefType } from '../../model/states/clef';
+import { PhysicalElementBase, PhysicalVertVarSizeElement, getPhysicalRect } from './physical-elements';
 import { Metrics, StandardMetrics } from './metrics';
 import { VertVarSizeGlyphs, FixedSizeGlyphs } from './glyphs';
 import { expect } from 'chai';
@@ -17,7 +17,7 @@ import { viewModelToPhysical } from './viewmodel-to-physical';
 import { ScoreViewModel } from '../../logical-view';
 import { staffLineToY } from './functions';
 import { getTimeSlotWidth, MeasureMap } from './measure-map';
-import { FlagType } from '~/logical-view';
+import { FlagType } from '../../logical-view';
 
 describe('Physical model', () => {
     let defaultMetrics: Metrics;
@@ -100,7 +100,71 @@ describe('Physical model', () => {
         checkStaffLines(physicalModel.elements, 0, defaultMetrics.scaleDegreeUnit*2, 10);
     });
     
-   
+
+    it('should convert a view model with several empty staves', () => {
+        const viewModel: ScoreViewModel = { 
+            staves: [
+                { 
+                    timeSlots: [
+                        { 
+                            absTime: Time.newAbsolute(0, 1), 
+                            notes: [] } 
+                    ]
+                },
+                { 
+                    timeSlots: [
+                        { 
+                            absTime: Time.newAbsolute(0, 1), 
+                            notes: [] } 
+                    ]
+                }
+            ]
+        };
+
+        const physicalModel = viewModelToPhysical(viewModel, defaultMetrics);
+
+        const rect = getPhysicalRect(physicalModel);
+
+        expect(rect.yMin).to.eq(-114);
+
+        viewModel.staves.push({ 
+            timeSlots: [
+                { 
+                    absTime: Time.newAbsolute(0, 1), 
+                    notes: [] } 
+            ]
+        });
+
+        const physicalModel1 = viewModelToPhysical(viewModel, defaultMetrics);
+
+        const rect1 = getPhysicalRect(physicalModel1);
+
+        expect(rect1.yMin).to.eq(-114 - defaultMetrics.staffBottomMargin - defaultMetrics.staffTopMargin - 8 * defaultMetrics.scaleDegreeUnit);
+
+        viewModel.staves.push({ 
+            timeSlots: [
+                { 
+                    absTime: Time.newAbsolute(0, 1), 
+                    notes: [] } 
+            ]
+        });
+        viewModel.staves.push({ 
+            timeSlots: [
+                { 
+                    absTime: Time.newAbsolute(0, 1), 
+                    notes: [] } 
+            ]
+        });
+
+        const physicalModel2 = viewModelToPhysical(viewModel, defaultMetrics);
+
+        const rect2 = getPhysicalRect(physicalModel2);
+
+        expect(rect2.yMin).to.eq(-114 - 3*defaultMetrics.staffBottomMargin - 3*defaultMetrics.staffTopMargin - 3*8 * defaultMetrics.scaleDegreeUnit);
+
+    });
+    
+
     it('should convert a staff position to a y value', () => {
 
         const lineIdxes = [-2, -1, 0, 1, 2]; // staff lines from bottom to top

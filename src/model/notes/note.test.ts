@@ -1,8 +1,9 @@
 import { TimeSpan } from './../rationals/time';
 import { Time } from '../rationals/time';
-import { createNote, createNoteFromLilypond, getNominalDuration, getNoteType, getUndottedDuration, Note, NoteType, setTupletFactor } from './note';
+import { createNote, createNoteFromLilypond, getDotNo, getNominalDuration, getNoteType, getUndottedDuration, Note, NoteType, setTupletFactor } from './note';
 import { expect } from 'chai';
 import { Pitch } from '../pitches/pitch';
+import { getDuration } from '../score/sequence';
 
 describe('Note', () => {
 
@@ -11,25 +12,25 @@ describe('Note', () => {
         expect(note.pitches.length).to.eq(1);
         expect(note.pitches[0].octave).to.eq(4);
         expect(note.pitches[0].pitchClassName).to.eq('c');
-        expect(note.duration).to.deep.eq(Time.newSpan(1, 4));
+        expect(getDuration(note)).to.deep.eq(Time.newSpan(1, 4));
 
         const note2 = createNoteFromLilypond('f,2.');
         expect(note2.pitches.length).to.eq(1);
         expect(note2.pitches[0].octave).to.eq(2);
         expect(note2.pitches[0].pitchClassName).to.eq('f');        
-        expect(note2.duration).to.deep.eq(Time.newSpan(3, 4));
+        expect(getDuration(note2)).to.deep.eq(Time.newSpan(3, 4));
     });
 
     it('should parse a rest from Lilypond format', () => {
         const note = createNoteFromLilypond('r4');
         expect(note.pitches.length).to.eq(0);
         expect(getNoteType(note)).to.eq(NoteType.RQuarter);
-        expect(note.duration).to.deep.eq(Time.newSpan(1, 4));
+        expect(getDuration(note)).to.deep.eq(Time.newSpan(1, 4));
 
         const note2 = createNoteFromLilypond('r2.');
         expect(note2.pitches.length).to.eq(0);
         expect(getNoteType(note2)).to.eq(NoteType.RHalf);
-        expect(note2.duration).to.deep.eq(Time.newSpan(3, 4));
+        expect(getDuration(note2)).to.deep.eq(Time.newSpan(3, 4));
 
 
         expect(getNoteType(createNoteFromLilypond('r1'))).to.eq(NoteType.RWhole);
@@ -57,7 +58,7 @@ describe('Note', () => {
         expect(note.pitches[0].pitchClassName).to.eq('c');
         expect(note.pitches[1].octave).to.eq(2);
         expect(note.pitches[1].pitchClassName).to.eq('f');
-        expect(note.duration).to.deep.eq(Time.newSpan(1, 4));
+        expect(getDuration(note)).to.deep.eq(Time.newSpan(1, 4));
 
     });
 
@@ -71,23 +72,23 @@ describe('Note', () => {
         expect(note.pitches[1].pitchClassName).to.eq('e');
         expect(note.pitches[2].octave).to.eq(4);
         expect(note.pitches[2].pitchClassName).to.eq('g');
-        expect(note.duration).to.deep.eq(Time.newSpan(1, 4));
+        expect(getDuration(note)).to.deep.eq(Time.newSpan(1, 4));
 
     });
 
     it('should parse dots correctly', () => {
         const notes = ['c\'4.', 'e\'8', 'g\'2..'].map(lily => createNoteFromLilypond(lily));
-        expect(notes[0].duration).to.deep.eq(Time.newSpan(3, 8));
-        expect(notes[1].duration).to.deep.eq(Time.newSpan(1, 8));
-        expect(notes[2].duration).to.deep.eq(Time.newSpan(7, 8));
+        expect(getDuration(notes[0])).to.deep.eq(Time.newSpan(3, 8));
+        expect(getDuration(notes[1])).to.deep.eq(Time.newSpan(1, 8));
+        expect(getDuration(notes[2])).to.deep.eq(Time.newSpan(7, 8));
     });
 
 
     it('should report correct number of dots', () => {
         const notes = ['c\'4.', 'e\'8', 'g\'2..'].map(lily => createNoteFromLilypond(lily));
-        expect(notes[0].dotNo).to.eq(1);
-        expect(notes[1].dotNo).to.eq(0);
-        expect(notes[2].dotNo).to.eq(2);
+        expect(getDotNo(notes[0])).to.eq(1);
+        expect(getDotNo(notes[1])).to.eq(0);
+        expect(getDotNo(notes[2])).to.eq(2);
     });
 
 
@@ -114,12 +115,12 @@ describe('Note', () => {
 
     it('should create a tuplet note', () => {
         const note = createNoteFromLilypond('c4');
-        expect(note.duration).to.deep.equal(Time.newSpan(1, 4));
+        expect(getDuration(note)).to.deep.equal(Time.newSpan(1, 4));
         expect(getUndottedDuration(note)).to.deep.equal(Time.newSpan(1, 4));
         expect(getNominalDuration(note)).to.deep.equal(Time.newSpan(1, 4));
 
         const note1 = setTupletFactor(note, { numerator: 2, denominator: 3 });
-        expect(note1.duration).to.deep.equal(Time.newSpan(1, 6));
+        expect(getDuration(note1)).to.deep.equal(Time.newSpan(1, 6));
         expect(getUndottedDuration(note1)).to.deep.equal(Time.newSpan(1, 4));
         expect(getNominalDuration(note1)).to.deep.equal(Time.newSpan(1, 4));
     });

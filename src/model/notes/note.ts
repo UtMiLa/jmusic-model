@@ -5,6 +5,7 @@ import { TimeSpan, Time } from '../rationals/time';
 import { Pitch } from '../pitches/pitch';
 //import { mergeRight } from 'ramda';
 import * as R from 'ramda';
+import { getDotNumber, getUndottedValue } from '../rationals/dots';
 
 export enum NoteType {
     NBreve = 1, NWhole, NHalf, NQuarter,
@@ -21,9 +22,7 @@ export enum TupletState {
 
 export type Note = Readonly<{
     pitches: Pitch[];
-    duration: TimeSpan;
     nominalDuration: TimeSpan;
-    dotNo: number;
     tupletFactor?: RationalDef;
     tupletGroup?: TupletState;
     direction: NoteDirection;
@@ -38,9 +37,7 @@ export type Note = Readonly<{
 
 export interface UpdateNote {
     pitches?: Pitch[];
-    duration?: TimeSpan;
     nominalDuration?: TimeSpan;
-    dotNo?: number;
     tupletFactor?: RationalDef;
     tupletGroup?: TupletState;
     direction?: NoteDirection;
@@ -92,31 +89,13 @@ export function createNoteFromLilypond(input: string): Note {
     if (tie) extra.tie = tie;
     if (expressions.length) extra.expressions = expressions.map(expression => parseLilyNoteExpression(expression));
     
-    /*res.duration = getRealDuration(res);
-    res.dotNo = getDotNo(res);*/
-
-
     return cloneNote(res, extra);
 }
 
-function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
-    /*const res = createNote(note.pitches, getNominalDuration(note));
-    let extra: UpdateNote = res;
-    if (note.uniq) extra.uniq = note.uniq;
-    if (note.tupletFactor) extra.tupletFactor = note.tupletFactor;
-    if (note.tie) extra.tie = note.tie;
-    if (note.direction) extra.direction = note.direction;
-    if (note.grace) extra.grace = note.grace;
-    if (note.tupletGroup) extra.tupletGroup = note.tupletGroup;
-    if (note.expressions) extra.expressions = [...note.expressions];
-    if (note.text) extra.text = [...note.text];*/
 
-    //Object.keys(changeProperties).forEach(key => (extra as any)[key] = (changeProperties as any)[key]);
+export function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
 
-    //extra = {...extra, changeProperties};
     const extra = R.mergeRight(note, changeProperties);
-    extra.duration = getRealDuration(extra); // todo: make setter function for duration-related stuff (like grace and tuplet notes)
-    extra.dotNo = getDotNo(extra);
 
 
     return extra as Note;
@@ -142,32 +121,24 @@ export function setTupletFactor(note: Note, tupletFactor: RationalDef | undefine
 export function setTupletGroup(note: Note, tupletGroup: TupletState): Note {
     return cloneNote(note, { tupletGroup });
 }
+export function setPitches(note: Note, pitches: Pitch[]): Note {
+    return cloneNote(note, { pitches });
+}
+
 export function setDuration(note: Note, duration: TimeSpan): Note {
     return cloneNote(note, { nominalDuration: duration });
 }
 
 export function getDotNo(note: Note): number {
-    return Time.getDotNo(note.nominalDuration.numerator);
+    return getDotNumber(note.nominalDuration);
 }
 
 export function createNote(pitches: Pitch[], duration: TimeSpan): Note {
-    const note0: Note = {
-        pitches: pitches,
-        nominalDuration: duration,
-        duration: duration,
-        dotNo: 0,
-        direction: NoteDirection.Undefined
-    };
-
     const note: Note = {
         pitches: pitches,
         nominalDuration: duration,
-        direction: NoteDirection.Undefined,
-        duration: getRealDuration(note0),
-        dotNo: getDotNo(note0)
+        direction: NoteDirection.Undefined
     };
-
-    //return new NoteInst(pitches, duration);
 
     return note;
 }
@@ -217,12 +188,13 @@ export function getNominalDuration(note: Note): TimeSpan {
 }
 
 export function getUndottedDuration(note: Note): TimeSpan {
-    const nominalDuration = getNominalDuration(note);
+    /*const nominalDuration = getNominalDuration(note);
     if (nominalDuration.denominator === 1 && nominalDuration.numerator === 2) {
         return nominalDuration; // todo: what if 6/1? but we have no longa yet
     }
     return Time.scale(
         Time.addSpans(nominalDuration, Time.newSpan(1, nominalDuration.denominator)),
         1, 2
-    );
+    );*/
+    return getUndottedValue(getNominalDuration(note));
 }

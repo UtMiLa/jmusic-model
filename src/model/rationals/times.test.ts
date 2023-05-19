@@ -1,6 +1,6 @@
 import { AbsoluteTime, Time, TimeSpan } from './time';
 import { expect } from 'chai';
-import { Rational, RationalDef } from '~/model/rationals/rational';
+import { Rational, RationalDef } from '../../model/rationals/rational';
 
 describe('Times', ()=> {
     describe('Rational', ()=> {
@@ -191,12 +191,12 @@ describe('Times', ()=> {
             expect(Time.equals(t4, t3)).to.be.true;
         });
         
-        it('should calculate number of dots from numerator', () => {
+        /*it('should calculate number of dots from numerator', () => {
             expect(Time.getDotNo(1)).to.eq(0);
             expect(Time.getDotNo(3)).to.eq(1);
             expect(Time.getDotNo(7)).to.eq(2);
             expect(Time.getDotNo(15)).to.eq(3);
-        });
+        }); moved to dots.ts */
 
     });
 

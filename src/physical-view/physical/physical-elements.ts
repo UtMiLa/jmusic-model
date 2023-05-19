@@ -56,6 +56,20 @@ export interface PhysicalModel {
     elements: PhysicalElementBase[];
 }
 
+export const getPhysicalRect = (model: PhysicalModel): { xMin: number; xMax: number; yMin: number; yMax: number; } => {
+
+    return model.elements.reduce(
+        (prev, curr) => (
+            { 
+                xMin: Math.min(prev.xMin, curr.position.x), 
+                xMax: Math.max(prev.xMax, curr.position.x), 
+                yMin: Math.min(prev.yMin, curr.position.y), 
+                yMax: Math.max(prev.yMax, curr.position.y) 
+            }),
+        { xMin: Infinity, xMax: -Infinity, yMin: Infinity, yMax: -Infinity }
+    );    
+
+};
 
 /*
 export function ifLine<T>(element: PhysicalElementBase, (lineElem: PhysicalHorizVarSizeElement) => T): T {

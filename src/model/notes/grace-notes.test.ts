@@ -5,7 +5,7 @@ import { getAllBeats, MeterFactory, MeterMap } from './../states/meter';
 import { SimpleSequence } from './../score/sequence';
 import { expect } from 'chai';
 import { calcBeamGroups, __beaming_internal as __internal } from './beaming';
-import { setGraceNoteInSequence } from '~/tools/test-tools';
+import { setGraceNoteInSequence } from '../../tools/test-tools';
 
 describe('Grace notes', () => {
 

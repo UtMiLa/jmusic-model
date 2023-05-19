@@ -1,6 +1,6 @@
 import { GraceSequence } from './../../model/score/transformations';
 import { EventType } from './../../model/score/timing-order';
-import { getExtendedTime } from '~/model/score/timing-order';
+import { getExtendedTime } from '../../model/score/timing-order';
 import { Note, UpdateNote } from './../../model/notes/note';
 import { SimpleSequence, CompositeSequence } from './../../model/score/sequence';
 import { StateChange } from './../../model/states/state';

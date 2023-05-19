@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { addInterval, diffPitch, Interval } from './intervals';
+import { addInterval, diffPitch, Enharmonic, enharmonicChange, Interval } from './intervals';
 import { Pitch, PitchClass } from './pitch';
 describe('Intervals', () => {
     let pc: Pitch, pd: Pitch, pb: Pitch, pe: Pitch;
@@ -78,4 +78,22 @@ describe('Intervals', () => {
         expectAddInterval('a', 'b,', { interval: -6, alteration: 1 });
         expectAddInterval('bis,', 'ces', { interval: 1, alteration: -3 });
     });
+
+    
+    it('should change a pitch enharmonically', () => {
+        expect(enharmonicChange(Pitch.parseLilypond('c\''), Enharmonic.Sharpen)).to.deep.eq(Pitch.parseLilypond('bis'));
+        expect(enharmonicChange(Pitch.parseLilypond('c\''), Enharmonic.Flatten)).to.deep.eq(Pitch.parseLilypond('deses\''));
+        expect(enharmonicChange(Pitch.parseLilypond('c\''), Enharmonic.BestBet)).to.deep.eq(Pitch.parseLilypond('bis'));
+        expect(enharmonicChange(Pitch.parseLilypond('b\''), Enharmonic.Sharpen)).to.deep.eq(Pitch.parseLilypond('aisis\''));
+        expect(enharmonicChange(Pitch.parseLilypond('b\''), Enharmonic.Flatten)).to.deep.eq(Pitch.parseLilypond('ces\'\''));
+        expect(enharmonicChange(Pitch.parseLilypond('b\''), Enharmonic.BestBet)).to.deep.eq(Pitch.parseLilypond('ces\'\''));
+        expect(enharmonicChange(Pitch.parseLilypond('a'), Enharmonic.Sharpen)).to.deep.eq(Pitch.parseLilypond('gisis'));
+        expect(enharmonicChange(Pitch.parseLilypond('a'), Enharmonic.Flatten)).to.deep.eq(Pitch.parseLilypond('beses'));
+        expect(enharmonicChange(Pitch.parseLilypond('a'), Enharmonic.BestBet)).to.deep.eq(Pitch.parseLilypond('beses'));
+        expect(enharmonicChange(Pitch.parseLilypond('g'), Enharmonic.Sharpen)).to.deep.eq(Pitch.parseLilypond('fisis'));
+        expect(enharmonicChange(Pitch.parseLilypond('g'), Enharmonic.Flatten)).to.deep.eq(Pitch.parseLilypond('aeses'));
+        expect(enharmonicChange(Pitch.parseLilypond('g'), Enharmonic.BestBet)).to.deep.eq(Pitch.parseLilypond('fisis'));
+        expect(enharmonicChange(Pitch.parseLilypond('d'), Enharmonic.BestBet)).to.deep.eq(Pitch.parseLilypond('cisis'));
+    });
+
 });

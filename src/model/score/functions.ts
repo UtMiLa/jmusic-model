@@ -1,6 +1,6 @@
 import R = require('ramda');
-import { Note, setGrace, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
-import { addInterval, Interval } from '../pitches/intervals';
+import { Note, setGrace, setPitches, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
+import { addInterval, diffPitch, Interval } from '../pitches/intervals';
 import { Pitch } from '../pitches/pitch';
 import { RationalDef } from '../rationals/rational';
 import { TimeSpan, AbsoluteTime } from '../rationals/time';
@@ -77,7 +77,7 @@ export function isSeqFunction(test: unknown): test is SeqFunction {
     return !!(test as SeqFunction).function && !!(test as SeqFunction).args;
 }
 
-export type FuncDef = 'Reverse' | 'Repeat' | 'Grace' | 'Tuplet' | 'Transpose' | 'ModalTranspose';
+export type FuncDef = 'Relative' | 'Reverse' | 'Repeat' | 'Grace' | 'Tuplet' | 'Transpose' | 'ModalTranspose';
 
 type MusicFunc = (elements: MusicEvent[]) => MusicEvent[];
 type CurryMusicFunc = (...args: unknown[]) => MusicFunc;
@@ -112,7 +112,43 @@ const transposeNote = R.curry((interval: Interval, note: Note) => ({...note, pit
 
 const transpose = R.curry((interval, sequence: MusicEvent[]) => R.map(R.when(isNote, transposeNote(interval)))(sequence));
 
+
+const relativeOctave = (prevPitch: Pitch, currPitch: Pitch): number => {
+    const firstPitch = currPitch;
+    const fromOctave = prevPitch.octave;
+    const toOctave = firstPitch.octave;
+
+    const pcDiff = prevPitch.pitchClassNumber - firstPitch.pitchClassNumber;
+    const correctionNumber = Math.trunc(pcDiff / 4);
+    const octave = fromOctave + toOctave - 3 + correctionNumber;
+
+    return octave;
+};
+
+const relative = R.curry((pitch: Pitch, seq: MusicEvent[]) => seq.reduce<{accu: MusicEvent[], pitch: Pitch}>((prev: {accu: MusicEvent[], pitch: Pitch}, curr: MusicEvent) => {
+    if (isNote(curr) && curr.pitches.length) {
+        
+        const pitchesTemp = curr.pitches.reduce<{ accu: Pitch[], pitch: Pitch }>((prev1, curr1: Pitch) => {
+            const pitchOctave = relativeOctave(prev1.pitch, curr1);
+            const newPitch = new Pitch(curr1.pitchClassNumber, pitchOctave, curr1.alteration);
+            return {
+                accu: [... prev1.accu, newPitch],
+                pitch: newPitch
+            };
+        }, {
+            accu: [],
+            pitch: prev.pitch
+        });
+        const curr1 = setPitches(curr, pitchesTemp.accu);
+
+        return { accu: [...prev.accu, curr1], pitch: curr1.pitches[0] };
+    } else {
+        return { accu: [...prev.accu, curr], pitch: prev.pitch };
+    }
+}, { accu: [], pitch: typeof(pitch) === 'string' ? Pitch.parseLilypond(pitch) : pitch }).accu);
+
 const internal_functions: {[key: string]: MusicFunc | CurryMusicFunc } = {
+    'Relative': relative as CurryMusicFunc,
     'Reverse': R.pipe(R.reverse<MusicEvent>, R.map(reverseTuplets)),
     'Repeat': flattenedRepeater as CurryMusicFunc,
     'Grace': R.map(setGraceNote),

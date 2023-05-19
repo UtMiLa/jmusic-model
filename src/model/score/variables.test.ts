@@ -5,7 +5,8 @@ import { VariableDef, VariableRepository } from './variables';
 
 describe('Variables', () => {
     it('should insert variable in sequence', () => {
-        const var1: VariableDef = { id: 'var1', value: ['c4', 'd4'] };
+        //const var1: VariableDef = { id: 'var1', value: ['c4', 'd4'] };
+        const var1: VariableDef = { id: 'var1', value: new FlexibleSequence(['c4', 'd4']) };
         const vars = new VariableRepository([var1]);
         const seq1Text: FlexibleItem = ['f8', { variable: 'var1' }, 'g8'];
 
@@ -23,22 +24,28 @@ describe('Variables', () => {
     
 
     it('should map an element index to a path even when variables are present', () => {
-        const var1: VariableDef = { id: 'var1', value: ['c4', 'd4'] };
+        //const var1: VariableDef = { id: 'var1', value: ['c4', 'd4'] };
+        const var1: VariableDef = { id: 'var1', value: new FlexibleSequence(['c4', 'd4']) };
         const vars = new VariableRepository([var1]);
         const seq1Text: FlexibleItem = ['f8', { variable: 'var1' }, 'g8'];
 
         const seq1 = new FlexibleSequence(seq1Text, vars);
 
-        expect(seq1.indexToPath(0)).to.deep.eq([0, 0, 0]);
+        /*expect(seq1.indexToPath(0)).to.deep.eq([0, 0, 0]);
         expect(seq1.indexToPath(1)).to.deep.eq([1, 0, 0, 0]);
         expect(seq1.indexToPath(2)).to.deep.eq([1, 1, 0, 0]);
-        expect(seq1.indexToPath(3)).to.deep.eq([2, 0, 0]);
+        expect(seq1.indexToPath(3)).to.deep.eq([2, 0, 0]);*/
+        expect(seq1.indexToPath(0)).to.deep.eq([0, 0]);
+        expect(seq1.indexToPath(1)).to.deep.eq([1, 0, 0]);
+        expect(seq1.indexToPath(2)).to.deep.eq([1, 1, 0]);
+        expect(seq1.indexToPath(3)).to.deep.eq([2, 0]);
         expect(() => seq1.indexToPath(4)).to.throw();
     });
 
 
     it('should update sequence when variable changes', () => {
-        const var1: VariableDef = { id: 'var1', value: ['c4', 'd4'] };
+        //const var1: VariableDef = { id: 'var1', value: ['c4', 'd4'] };
+        const var1: VariableDef = { id: 'var1', value: new FlexibleSequence(['c4', 'd4']) };
         const vars = new VariableRepository([var1]);
         const seq1Text: FlexibleItem = ['f8', { variable: 'var1' }, 'g8'];
 
@@ -48,7 +55,8 @@ describe('Variables', () => {
 
         expect(result0).to.have.length(4);
 
-        vars.setVar('var1', ['e8']);
+        //vars.setVar('var1', ['e8']);
+        vars.setVar('var1', new FlexibleSequence(['e8']));
 
         const result = seq1.elements;
 

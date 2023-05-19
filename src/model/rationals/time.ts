@@ -121,18 +121,20 @@ export namespace Time {
         return t1.extended === t2.extended;
     };
 
-    export const getDotNo = (numerator: number): number => {
-        numerator++;
+
+    /*export const getDotNo = (numerator0: number): number => {
+        let numerator = numerator0 + 1;
         let res = -1;
         //console.log('dotNo', numerator);
         
         while (numerator > 1) {
+            if ((numerator & 0x01) === 1) throw `Numerator ${numerator0} cannot be written with dots`;
             numerator >>= 1;
             res++;
             //console.log('dotNo adding', numerator, res);
         }
         return res;
-    };
+    };*/
 
     export const StartTime = Time.newAbsolute(0, 1);
     export const StartTimeMinus = Time.newExtendedTime(0, 1, -Infinity);

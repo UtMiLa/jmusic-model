@@ -54,3 +54,23 @@ export function addInterval(pitch: Pitch, interval: Interval): Pitch {
 
     return new Pitch(newPitchClass.pitchClass, octave, newAccidentals);
 }
+
+
+export enum Enharmonic { 
+    BestBet,
+    Sharpen,
+    Flatten
+}
+
+export function enharmonicChange(pitch: Pitch, enharmonic: Enharmonic): Pitch {
+    if (enharmonic === Enharmonic.BestBet) {
+        enharmonic = pitch.pitchClass.circleOf5Number > 2 ? Enharmonic.Flatten : Enharmonic.Sharpen;
+    }
+    if (enharmonic === Enharmonic.Sharpen) {
+        return addInterval(pitch, { interval: -1, alteration: 2});
+    } else {
+        return addInterval(pitch, { interval: 1, alteration: -2});
+    }
+
+
+}

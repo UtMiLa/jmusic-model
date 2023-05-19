@@ -3,7 +3,7 @@ import { NoteDirection, ClefType, SimpleSequence, ScoreDef } from '../model';
 import { expect } from 'chai';
 import { InsertionPoint } from './insertion-point';
 
-describe('Sequence', () => {
+describe('Insertion point', () => {
     const seq1Text = 'c4 d8 e8 f4';
     const seq2Text = 'c,2 d,8 e,8 c4';
     const seq3Text = 'c,2 d,8 <e, c>4 f,8';
@@ -114,5 +114,26 @@ describe('Sequence', () => {
 
     });
 
+    it('should allow a position after last note', () => {
+   
+        const insP = new InsertionPoint(score);
+
+        insP.moveToTime(Time.newAbsolute(3, 4));
+        insP.moveToVoice(0, 1);
+
+        insP.moveRight();
+
+        expect(insP.time).to.deep.equal(Time.newAbsolute(1, 1));
+        expect(insP.staffNo).to.equal(0);
+        expect(insP.voiceNo).to.equal(1);
+
+        insP.moveRight();
+
+        expect(insP.time).to.deep.equal(Time.newAbsolute(1, 1));
+
+        insP.moveLeft();
+     
+        expect(insP.time).to.deep.equal(Time.newAbsolute(3, 4));
+    });
 
 });

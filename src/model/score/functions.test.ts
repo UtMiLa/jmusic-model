@@ -1,11 +1,14 @@
 import { Pitch } from './../pitches/pitch';
 import { createNoteFromLilypond, Note, NoteDirection, TupletState } from './../notes/note';
 import { Time } from '../rationals/time';
-import {  } from './sequence';
+import { getDuration } from './sequence';
 import { expect } from 'chai';
 import { LongDecorationType } from '../decorations/decoration-type';
 import { FlexibleSequence } from './flexible-sequence';
 import { createFunction, FuncDef, SeqFunction } from './functions';
+
+// Inspiration: Lilypond functions https://lilypond.org/doc/v2.25/Documentation/notation/available-music-functions
+
 describe('Functions', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';
@@ -24,7 +27,8 @@ describe('Functions', () => {
         const seq = new FlexibleSequence(seqWithFunction);
 
         expect(seq.count).to.eq(4);
-        expect(seq.def).to.deep.eq([['c4'], {function: 'Reverse', args: [['d4', 'e4', 'f4']]}]);
+        //expect(seq.def).to.deep.eq([['c4'], {function: 'Reverse', args: [['d4', 'e4', 'f4']]}]);
+        expect(seq.def).to.deep.eq(['c4', {function: 'Reverse', args: ['d4', 'e4', 'f4']}]);
         expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
         expect(seq.elements[1]).to.deep.eq(createNoteFromLilypond('f4'));
     });
@@ -38,7 +42,8 @@ describe('Functions', () => {
         const seq = new FlexibleSequence(seqWithFunction);
 
         expect(seq.count).to.eq(7);
-        expect(seq.def).to.deep.eq([['c4'], {function: 'Repeat', args: [['d4', 'e4', 'f4']], extraArgs: [2] }]);
+        //expect(seq.def).to.deep.eq([['c4'], {function: 'Repeat', args: [['d4', 'e4', 'f4']], extraArgs: [2] }]);
+        expect(seq.def).to.deep.eq(['c4', {function: 'Repeat', args: ['d4', 'e4', 'f4'], extraArgs: [2] }]);
         expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
         expect(seq.elements[1]).to.deep.eq(createNoteFromLilypond('d4'));
         expect(seq.elements[3]).to.deep.eq(createNoteFromLilypond('f4'));
@@ -53,7 +58,8 @@ describe('Functions', () => {
         const seq = new FlexibleSequence(seqWithFunction);
 
         expect(seq.count).to.eq(10);
-        expect(seq.def).to.deep.eq([['c4'], {function: 'Repeat', args: ['d4', 'e4', 'f4'], extraArgs: [3]}]);
+        //expect(seq.def).to.deep.eq([['c4'], {function: 'Repeat', args: ['d4', 'e4', 'f4'], extraArgs: [3]}]);
+        expect(seq.def).to.deep.eq(['c4', {function: 'Repeat', args: ['d4', 'e4', 'f4'], extraArgs: [3]}]);
         expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
         expect(seq.elements[1]).to.deep.eq(createNoteFromLilypond('d4'));
         expect(seq.elements[3]).to.deep.eq(createNoteFromLilypond('f4'));
@@ -103,9 +109,9 @@ describe('Flexible sequence transformations', () => {
         
         expect(tuplet.elements.length).to.equal(3);
         expect(tuplet.duration).to.deep.equal(Time.newSpan(1, 3));
-        expect(seq1.elements[0].duration).to.deep.equal(Time.newSpan(1, 4));
-        expect(tuplet.elements[0].duration).to.deep.equal(Time.newSpan(1, 6));
-        expect(tuplet.elements[2].duration).to.deep.equal(Time.newSpan(1, 12));
+        expect(getDuration(seq1.elements[0])).to.deep.equal(Time.newSpan(1, 4));
+        expect(getDuration(tuplet.elements[0])).to.deep.equal(Time.newSpan(1, 6));
+        expect(getDuration(tuplet.elements[2])).to.deep.equal(Time.newSpan(1, 12));
         
     });
 
@@ -228,6 +234,51 @@ describe('Flexible sequence transformations', () => {
             expect(res2[2]).to.deep.eq(createNoteFromLilypond('f8'));
             expect(res2[3]).to.deep.eq(createNoteFromLilypond('ges4.'));
         });
+
+
+        /*xit('should map inverse function', () => {
+            const seq = new FlexibleSequence('cis4 des4 e8 f4.');
+
+            const fun = createFunction('Transpose', [{ interval: 3, alteration: 0 }]);
+
+            const res = fun(seq.elements);
+
+            //const inverseFun = createInverseFunction('Transpose', [{ interval: 3, alteration: 0 }]);
+
+            // update(seq, elementNo, updater: (oldNote) => [newNotes])
+            // 
+            // ( R.promap(transpose(interval), transpose(-interval), updater)
+        });*/
+    });
+
+    describe('Relative', () => {
+        function expectRelative(fromseq: string, startNote: string, toSeq: string) {
+            const seq1 = new FlexibleSequence(fromseq);
+            const seq2 = new FlexibleSequence(toSeq);
+            const fun = createFunction('Relative', [Pitch.parseLilypond(startNote)]);
+            expect(fun(seq1.elements), `${fromseq} - ${startNote}`).to.deep.eq(seq2.elements);
+        }
+
+        it('should adjust octave the same way as Lilypond \\relative', () => {
+            expectRelative('c4', 'f', 'c4');
+            expectRelative('c4', 'f\'', 'c\'4');
+            expectRelative('c4', 'f,', 'c,4');
+            expectRelative('c,4', 'f', 'c,4');
+            expectRelative('c\'4', 'f', 'c\'4');
+            expectRelative('c,,4', 'f', 'c,,4');
+            expectRelative('b4', 'f', 'b4');
+            expectRelative('d8', 'g', 'd8');
+            expectRelative('c8', 'g', 'c\'8');
+            expectRelative('c4 e8 a16 d16 g1', 'c', 'c4 e8 a16 d\'16 g\'1');
+            expectRelative('cis4 ees8 ais16 des16 g1', 'c', 'cis4 ees8 ais16 des\'16 g\'1');
+        });
+
+
+        it('should adjust octaves after first note in chords', () => {
+            expectRelative('c\'4 <c e g>4 <c\' e g\'>4 <c, e, g\'\'>4', 'c', 'c\'4 <c\' e\' g\'>4 <c\'\' e\'\' g\'\'\'>4 <c\' e g\'\'>4');
+        });
+
+
     });
 
     describe('Retrograde', () => {

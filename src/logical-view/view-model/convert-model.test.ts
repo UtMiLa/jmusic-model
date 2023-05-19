@@ -1,4 +1,4 @@
-import { getExtendedTime, EventType } from '~/model/score/timing-order';
+import { getExtendedTime, EventType } from '../../model/score/timing-order';
 import { Note, UpdateNote } from './../../model/notes/note';
 import { InsertionPoint } from './../../editor/insertion-point';
 import { BarType } from './score-view-model';

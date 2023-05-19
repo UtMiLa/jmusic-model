@@ -35,7 +35,12 @@ export class Rational {
     }
 
     static lcd(i1: number, i2: number): number {
+        if (isNaN(i1) || isNaN(i2) || !isFinite(i1) || !isFinite(i2))
+            throw 'Illegal input to lcd ' + i1 + ',' + i1;
+        if (i1 !== Math.round(i1) || i2 !== Math.round(i2))
+            throw 'Illegal input to lcd ' + i1 + ',' + i1;
         if (i1 < 0) return this.lcd(-i1, i2);
+        if (i2 < 0) return this.lcd(i1, -i2);
         if (i1 < i2) [i1, i2] = [i2, i1];
         if (i2 === 0) return i1;
         return this.lcd(i2, i1 - i2);

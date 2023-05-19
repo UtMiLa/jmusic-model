@@ -1,4 +1,4 @@
-import { EventType, getExtendedTime } from '~/model/score/timing-order';
+import { EventType, getExtendedTime } from '../../model/score/timing-order';
 import { BarType } from './score-view-model';
 import { Time } from './../../model/rationals/time';
 import { RepeatDef } from './../../model/score/repeats';

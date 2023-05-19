@@ -1,161 +1,35 @@
-import { expect } from 'chai';
-import { ExtendedTime } from './../../model/rationals/time';
 import { RepeatDef } from './../../model/score/repeats';
 import { getStateAt, ScopedTimeKey } from './state-map';
-import { Rational, RationalDef } from './../../model/rationals/rational';
 import { StateChange } from './../../model/states/state';
-import { TimeMap, IndexedMap } from './../../tools/time-map';
+import { IndexedMap } from './../../tools/time-map';
 import { Meter, MeterMap } from './../../model/states/meter';
 import { BeamGroup, BeamDef } from './../../model/notes/beaming';
 import { AccidentalManager, displaceAccidentals } from './../../model/states/key';
-import { getAllBars, ScoreDef, setNoteDirection, TimeSlot, TupletState } from './../../model';
+import { getAllBars, getDuration, ScoreDef, setNoteDirection, TimeSlot, TupletState } from './../../model';
 import { MeterFactory } from './../../model';
 import { meterToView } from './convert-meter';
 import { AbsoluteTime, Time } from './../../model';
 import { keyToView } from './convert-key';
-import { FlagType, NoteViewModel, TupletViewModel, BeamingViewModel } from './note-view-model';
-import { Note, NoteDirection } from '../../model';
+import { FlagType, NoteViewModel, BeamingViewModel } from './note-view-model';
+import { NoteDirection } from '../../model';
 import { Clef } from '../../model';
-import { SimpleSequence } from '../../model';
 import { StaffDef } from '../../model';
 import { Key } from '../../model';
 import { calcBeamGroups } from '../../model';
 import { noteToView } from './convert-note';
 import { TimeSlotViewModel, ScoreViewModel, StaffViewModel, AccidentalViewModel, TieViewModel, BarType } from './score-view-model';
-import { VoiceDef } from '../../model/score/voice';
-import { createIdPrefix, createStateMap } from './state-map';
-import { convertKey } from '../../physical-view/physical/physical-key';
+import { createStateMap } from './state-map';
 import { repeatsToView } from './convert-repeat';
 import { LongDecoToView } from './convert-decoration';
 import { EventType, getExtendedTime } from '../../model/score/timing-order';
+import { State } from './running-state';
+
+
 
 export interface SubsetDef {
     startTime: AbsoluteTime;
     endTime: AbsoluteTime;
 }
-
-class State {
-    constructor (
-        public voiceBeamGroups: BeamGroup[], 
-        public staffNo: number, 
-        public voiceNo: number, 
-        public voice: VoiceDef, 
-        public clef: Clef
-    ) {
-        const voiceSequence = voice.content;
-        this.voiceTimeSlots = voiceSequence.groupByTimeSlots(createIdPrefix(staffNo, voiceNo));
-    }
-
-    public nextBarIterator: IterableIterator<AbsoluteTime> | undefined;
-    public nextBar = Time.EternityTime;
-    public tupletGroups = [] as TupletViewModel[];
-    public tupletGroup: TupletViewModel | undefined;
-    public voiceTimeSlots: TimeSlot[];
-
-    
-    findNoteTime(uniq: string): AbsoluteTime {
-        const slot = this.voiceTimeSlots.find(vts => vts.elements.find(elm => elm.uniq === uniq));
-        if (!slot) throw 'Note not found: ' + uniq;
-        return slot.time;
-    }
-
-
-    private _voiceTimeSlot: TimeSlot | undefined;
-    public get voiceTimeSlot(): TimeSlot {
-        if (!this._voiceTimeSlot) throw 'Internal error (voiceTimeSlot)';
-        return this._voiceTimeSlot;
-    }
-    public set voiceTimeSlot(value: TimeSlot) {
-        this._voiceTimeSlot = value;
-
-        if (this.nextBarIterator && Time.sortComparison(this.slot.absTime, this.nextBar) >= 0) {
-            this.newBar();
-            this.nextBar = this.nextBarIterator.next().value;
-        }
-
-    }
-
-    private _meter?: Meter;
-
-    private _key?: Key | undefined;
-    public get key(): Key | undefined {
-        return this._key;
-    }
-    public set key(value: Key | undefined) {
-        if (!value) throw 'Cannot set key to undefined';
-        this._key = value;
-        this.accidentalManager.setKey(value);
-    }
-    public slotNo = -1;
-    private _slot: TimeSlotViewModel | undefined;
-    public get slot(): TimeSlotViewModel {
-        if (!this._slot) throw 'Internal error (slot)';
-        return this._slot;
-    }
-    public set slot(value: TimeSlotViewModel) {
-        this._slot = value;
-    }
-
-    public accidentalManager = new AccidentalManager();
-
-    addNotes(elements: NoteViewModel[]): void {
-        this.slot.notes = this.slot.notes.concat(elements);
-    }
-
-    get meter(): Meter | undefined { 
-        return this._meter; 
-    }
-
-    setMeter(meter: Meter, atTime: AbsoluteTime): void {
-        this._meter = meter;
-        if(meter) {
-            this.nextBarIterator = getAllBars(meter, atTime);
-            this.nextBar = this.nextBarIterator.next().value;
-        }
-    }
-
-    newBar(): void {
-        this.accidentalManager.newBar();
-    }
-
-
-
-    updateTupletViewModel(): void {
-        this.voiceTimeSlot.elements.forEach((note) => {
-            switch (note.tupletGroup) {
-                case TupletState.Begin: 
-                    if (this.tupletGroup) throw 'Internal Error (createTupletViewModel)';
-                    this.tupletGroup = { noteRefs: [], tuplets: [] };
-                    if (!this.slot.tuplets) this.slot.tuplets = [];
-                    this.slot.tuplets.push(this.tupletGroup);
-                    this.tupletGroup.noteRefs.push({absTime: this.voiceTimeSlot.time, uniq: note.uniq + ''});
-                    this.tupletGroup.tuplets.push({
-                        fromIdx: 0,
-                        tuplet: '' + (note.tupletFactor as RationalDef).denominator,
-                        toIndex: undefined
-                    });
-                    break;
-                case TupletState.Inside:
-                    if (!this.tupletGroup) throw 'Internal Error (createTupletViewModel)';
-                    this.tupletGroup.noteRefs.push({absTime: this.voiceTimeSlot.time, uniq: note.uniq + ''});
-                    break;
-                case TupletState.End: 
-                    if (!this.tupletGroup) throw 'Internal Error (createTupletViewModel)';
-                    this.tupletGroup.noteRefs.push({absTime: this.voiceTimeSlot.time, uniq: note.uniq + ''});
-                    this.tupletGroup.tuplets[0].toIndex = this.tupletGroup.noteRefs.length - 1;
-                    this.tupletGroups.push(this.tupletGroup);
-                    this.tupletGroup = undefined;
-                    break;
-            }
-        });
-    }
-    
-    
-
-
-}
-
-
 
 
 function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSlotViewModel {
@@ -375,7 +249,7 @@ function createTieViewModel(state: State) {
                 ties.push({
                     position: pos,
                     direction: note.direction === NoteDirection.Undefined ? state.voice.noteDirection : note.direction,
-                    toTime: Time.addTime(state.voiceTimeSlot.time, note.duration)
+                    toTime: Time.addTime(state.voiceTimeSlot.time, getDuration(note))
                 } as TieViewModel);
             });
         }
@@ -387,7 +261,7 @@ function createTieViewModel(state: State) {
     }
 }
 
-function createAccidentalViewModel(state: State) {
+function createAccidentalViewModel(state: State) { // todo: this should be done per staff and not per voice, possibly in a second iteration
     const accidentals: AccidentalViewModel[] = [];
             
             
@@ -426,7 +300,7 @@ function createNoteViewModels(state: State): NoteViewModel[] {
                         absTime: state.findNoteTime(nt.uniq + ''),
                         uniq: nt.uniq + '' 
                     };
-                    noteTime = Time.addTime(noteTime, nt.duration);
+                    noteTime = Time.addTime(noteTime, getDuration(nt));
                     return res;
                 }
                 ),

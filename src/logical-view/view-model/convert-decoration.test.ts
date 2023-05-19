@@ -21,7 +21,7 @@ describe('View model: Decorations', () => {
 
         
         it('should convert a crescendo to view model', () => {
-            const decrescDeco = { longDeco: LongDecorationType.Decrescendo, length: Time.HalfTime, duration: Time.NoTime };
+            const decrescDeco = { longDeco: LongDecorationType.Decrescendo, length: Time.HalfTime };
             const ts1 = score.staves[0].voices[1].content.groupByTimeSlots('0-1');
             const view1 = LongDecoToView(decrescDeco, Time.newAbsolute(3, 4), ts1);
             expect(view1).to.deep.equal({ 
@@ -32,7 +32,7 @@ describe('View model: Decorations', () => {
                 ] 
             });
 
-            const crescDeco = { longDeco: LongDecorationType.Crescendo, length: Time.WholeTime, duration: Time.NoTime };
+            const crescDeco = { longDeco: LongDecorationType.Crescendo, length: Time.WholeTime };
             const ts2 = score.staves[0].voices[1].content.groupByTimeSlots('0-0');
             const view2 = LongDecoToView(crescDeco, Time.newAbsolute(1, 2), ts2);
             expect(view2).to.deep.equal({ 
@@ -46,7 +46,7 @@ describe('View model: Decorations', () => {
         });
 
         it('should convert a slur to view model', () => {
-            const slurDeco = { longDeco: LongDecorationType.Slur, length: Time.HalfTime, duration: Time.NoTime };
+            const slurDeco = { longDeco: LongDecorationType.Slur, length: Time.HalfTime };
             const ts1 = score.staves[0].voices[1].content.groupByTimeSlots('0-1');
             const view1 = LongDecoToView(slurDeco, Time.newAbsolute(3, 4), ts1);
             expect(view1).to.deep.equal({ 
