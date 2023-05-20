@@ -75,44 +75,7 @@ export class JMusic implements ScoreDef {
 
         this.vars = new VariableRepository(vars ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: new FlexibleSequence(pair[1]) })) : []);
 
-        if (typeof(voice) === 'string') {
-            this.staves.push({ 
-                initialClef: Clef.clefTreble.def,
-                initialKey: { count: 0, accidental: 0 },
-                initialMeter: { count: 4, value: 4 },
-                voices: [{ content: new FlexibleSequence(voice, this.vars) }]
-            });
-        } else if (isScoreDef(voice)) {
-            this.staves = [ ...voice.staves ]; 
-            this.repeats = voice.repeats ?? [];
-        } else if (typeof(voice) === 'object') {
-            const settings = voice as JMusicSettings;
-            settings.content.forEach((stf, idx) => {
-                
-                let clef: ClefDef;
-                if (settings.clefs) {
-                    clef = JMusic.makeClef(settings.clefs[idx]);
-                } else if (idx > 0 && idx === settings.content.length - 1) {
-                    clef = Clef.clefBass.def;
-                } else {
-                    clef = Clef.clefTreble.def;
-                }                
-
-                const key = settings.key ? JMusic.makeKey(settings.key) : { count: 0, accidental: 0 } as KeyDef;
-
-                const meter = settings.meter ? JMusic.makeMeter(settings.meter) : undefined;
-
-                this.staves.push({ 
-                    initialClef: clef,
-                    initialKey: key,
-                    initialMeter: meter,
-                    voices: stf.map((cnt, idx) => ({ 
-                        content: new FlexibleSequence(cnt, this.vars), 
-                        noteDirection: stf.length === 1 ? NoteDirection.Undefined : idx % 2 === 0 ? NoteDirection.Up : NoteDirection.Down 
-                    }))
-                });
-            });
-        }
+        this.makeScore(voice);
 
         this.staves.forEach(staff => {
             staff.voices.forEach(voice => {
@@ -139,6 +102,48 @@ export class JMusic implements ScoreDef {
     vars: VariableRepository;
 
     changeHandlers: ChangeHandler[] = [];
+
+    private makeScore(voice: string | JMusicSettings | ScoreDef | undefined) {
+        if (typeof (voice) === 'string') {
+            this.staves = [{
+                initialClef: Clef.clefTreble.def,
+                initialKey: { count: 0, accidental: 0 },
+                initialMeter: { count: 4, value: 4 },
+                voices: [{ content: new FlexibleSequence(voice, this.vars) }]
+            }];
+        } else if (isScoreDef(voice)) {
+            this.staves = [...voice.staves];
+            this.repeats = voice.repeats ?? [];
+        } else if (typeof (voice) === 'object') {
+            const settings = voice as JMusicSettings;
+            this.staves = [];
+            settings.content.forEach((stf, idx) => {
+
+                let clef: ClefDef;
+                if (settings.clefs) {
+                    clef = JMusic.makeClef(settings.clefs[idx]);
+                } else if (idx > 0 && idx === settings.content.length - 1) {
+                    clef = Clef.clefBass.def;
+                } else {
+                    clef = Clef.clefTreble.def;
+                }
+
+                const key = settings.key ? JMusic.makeKey(settings.key) : { count: 0, accidental: 0 } as KeyDef;
+
+                const meter = settings.meter ? JMusic.makeMeter(settings.meter) : undefined;
+
+                this.staves.push({
+                    initialClef: clef,
+                    initialKey: key,
+                    initialMeter: meter,
+                    voices: stf.map((cnt, idx) => ({
+                        content: new FlexibleSequence(cnt, this.vars),
+                        noteDirection: stf.length === 1 ? NoteDirection.Undefined : idx % 2 === 0 ? NoteDirection.Up : NoteDirection.Down
+                    }))
+                });
+            });
+        }
+    }
 
     static makeClef(input: ClefFlex): ClefDef {
         if (typeof (input) === 'string') {
@@ -233,6 +238,15 @@ export class JMusic implements ScoreDef {
         }
         
         return state.clef.mapPosition(ins.position);
+    }
+
+    clearScore(ins: InsertionPoint, voice?: string | JMusicSettings | ScoreDef): void {
+        //this.staves = 
+        this.makeScore(voice);
+
+        this.vars = new VariableRepository([]);
+
+        this.didChange();
     }
 
     appendNote(ins: InsertionPoint, noteInput: NoteFlex): void {

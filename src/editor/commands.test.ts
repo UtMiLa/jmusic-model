@@ -8,10 +8,11 @@ import { JMusic, Pitch, Time, createNoteFromLilypond } from '../model';
 describe('Commands', () => {
     describe('Delete pitch command', () => {
 
-        let model: Sinon.SinonStubbedInstance<JMusic>, ins: InsertionPoint;
+        let model: Sinon.SinonStubbedInstance<JMusic>, ins: Sinon.SinonStubbedInstance<InsertionPoint>;
 
         beforeEach(() => {
             model = Sinon.stub(new JMusic());
+            ins = Sinon.stub(new InsertionPoint(model));
         });
 
         afterEach(() => {
@@ -114,6 +115,7 @@ describe('Commands', () => {
             cmd.execute(model);
 
             Sinon.assert.calledOnceWithExactly(model.appendNote, ins, note);
+            Sinon.assert.calledOnce(ins.moveRight);
         });
     });
 });

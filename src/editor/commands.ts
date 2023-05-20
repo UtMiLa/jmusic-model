@@ -11,25 +11,7 @@ export class Command {
 
 export class FileNewCommand extends Command {
     execute(model: JMusic): void {
-        model.staves = [
-            {
-                voices: [
-                    { content: new FlexibleSequence('r4') },
-                    { content: new FlexibleSequence('r4') }
-                ], initialClef: Clef.clefTreble.def, initialKey: { accidental: 0, count: 0 } 
-            },
-            {
-                voices: [
-                    { content: new FlexibleSequence('r4') },
-                    { content: new FlexibleSequence('r4') }
-                ], initialClef: Clef.clefBass.def, initialKey: { accidental: 0, count: 0 } 
-            }
-
-        ];
-
-        //model.vars.clearVars();
-
-        model.didChange();
+        model.clearScore(this.args[0], { content: [[[]]]} );
     }
 }
 
@@ -64,6 +46,7 @@ export class AddNoteCommand extends Command {
         const pitches = this.args[1].map((p: number) => Pitch.fromMidi(p));
         const note = createNote(pitches, this.args[2]);
         model.appendNote(this.args[0], note);
+        this.args[0].moveRight();
     }
 }
 

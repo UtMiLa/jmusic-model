@@ -222,6 +222,25 @@ describe('Facade', () => {
             score.onChanged(() => { scoreChangeCalls++; });
         });
 
+        it('should clear the score', () => {
+            const ins = new InsertionPoint(score);
+            ins.staffNo = 0;
+            ins.voiceNo = 1;
+            
+            score.vars.setVar('teste', new FlexibleSequence('c4 e4'));
+            expect(score.vars.valueOf('teste')).to.not.be.undefined;
+            //expect(scoreChangeCalls).to.eq(1);
+
+            score.clearScore(ins, { content: [[[]], [[], []], [[]]]} );
+
+            expect(score.staves.length).to.eq(3);
+            expect(score.staves[0].voices.length).to.eq(1);
+            expect(score.staves[1].voices.length).to.eq(2);
+            expect(score.staves[0].voices[0].content.elements.length).to.eq(0);
+            expect(() => score.vars.valueOf('teste')).to.be.throw(/Undefined variable/);
+            expect(scoreChangeCalls).to.eq(1);
+        });
+
         it('should append a note to a voice', () => {
             const ins = new InsertionPoint(score);
             ins.staffNo = 0;
