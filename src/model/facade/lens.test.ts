@@ -3,15 +3,17 @@ import { InsertionPoint } from './../../editor/insertion-point';
 import { Time } from './../rationals/time';
 import { expect } from 'chai';
 import { JMusic, JMusicVars, initStateInSequence } from './jmusic';
-import { Lens, ProjectDef, view } from './lens';
+import { Lens, NoteLens, ProjectDef, noteLens, view } from './lens';
 import R = require('ramda');
 import { VariableDef } from '../score/variables';
 import { FlexibleSequence } from '../score/flexible-sequence';
+import { ISequence } from '../score/sequence';
+import { createNoteFromLilypond } from '../notes/note';
 
 describe('Lenses', () => {
 
 
-    describe('Read from lens', () => {
+    describe('Score lens', () => {
 
         let sc: JMusic;
         let projectDef: ProjectDef;
@@ -115,6 +117,56 @@ describe('Lenses', () => {
             });
         });
     
+    });
+
+    describe('Sequence lens', () => {
+
+        let seq1: ISequence;
+        let lens: NoteLens;
+        beforeEach(() => {
+            seq1 = new FlexibleSequence('c1 d4 e4 fis2. g4 a2 r2');
+            lens = noteLens(Time.newAbsolute(9, 4));
+        });
+
+
+        it('should get a note by time from a sequence', () => {
+            const res = R.view(lens, seq1);
+
+            expect(res).to.deep.eq(createNoteFromLilypond('g4'));
+        });
+
+        it('should change a note by time from a sequence', () => {
+            const res = R.set(lens, createNoteFromLilypond('b4'), seq1);
+
+            expect(res.elements).to.have.length(seq1.elements.length);
+            for (let i = 0; i < seq1.elements.length; i++) {
+                if (i === 4) {
+                    expect(res.elements[i], 'i = 4').to.deep.eq(createNoteFromLilypond('b4'));
+                } else {
+                    expect(res.elements[i], 'i = ' + i).to.deep.eq(seq1.elements[i]);
+                }
+            }
+            
+        });
+
+
+        it('should remove a note by time from a sequence', () => {
+            const res = R.set(lens, undefined, seq1);
+
+            expect(res.elements).to.have.length(seq1.elements.length - 1);
+            for (let i = 0; i < res.elements.length; i++) {
+                if (i < 4) {
+                    expect(res.elements[i], 'i = ' + i).to.deep.eq(seq1.elements[i]);
+                } else {
+                    expect(res.elements[i], 'i = ' + i).to.deep.eq(seq1.elements[i + 1]);
+                }
+            }
+            
+        });
+        
+        it('should get a note from a nested sequence');
+        it('should get a note from a sequence refering to a variable');
+        it('should get a note from a sequence refering to a function of a variable');
     });
 
 });

@@ -1,9 +1,10 @@
 import R = require('ramda');
-import { AbsoluteTime } from '../rationals/time';
+import { AbsoluteTime, Time } from '../rationals/time';
 import { ScoreDef } from '../score/score';
 import { StaffDef } from '../score/staff';
 import { VariableDef } from '../score/variables';
 import { FlexibleSequence } from '../score/flexible-sequence';
+import { ISequence, MusicEvent, isNote } from '../score/sequence';
 
 export interface ProjectDef {
     score: ScoreDef;
@@ -28,6 +29,23 @@ export class Lens {
                     ? ['vars', voicePath]
                     :['score', 'staves', voicePath[0], 'voices', voicePath[1]]));
     }
+}
+
+export type NoteLens = R.Lens<ISequence, MusicEvent | undefined>;
+
+export function noteLens(time: AbsoluteTime): NoteLens {
+    return R.lens(
+
+        (seq: ISequence) => seq.elements[seq.indexOfTime(time)], 
+
+        (event: MusicEvent | undefined, seq) => {
+            return new FlexibleSequence(seq.chainElements(
+                (ct, time1) => {
+                    return Time.equals(time, time1) && isNote(ct) ? (event ? [event] : []) : [ct];
+                }
+            ));
+        }
+    );
 }
 
 export function view(lens: Lens, project: ProjectDef): StaffDef[] {

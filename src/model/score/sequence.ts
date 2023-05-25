@@ -63,6 +63,7 @@ export interface ISequence {
     groupByTimeSlots(keyPrefix: string): TimeSlot[];
     insertElement(time: AbsoluteTime, elm: MusicEvent): void;
     appendElement(elm: MusicEvent): void;
+    indexOfTime(time: AbsoluteTime): number
 }
 
 export interface SequenceDef {
