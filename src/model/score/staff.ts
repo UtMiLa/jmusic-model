@@ -1,7 +1,7 @@
 import { RegularMeterDef } from './../states/meter';
 import { VoiceDef } from './voice';
 import { KeyDef } from './../states/key';
-import { SimpleSequence, SequenceDef } from './sequence';
+import { ISequence, SequenceDef } from './sequence';
 import { ClefDef } from '../states/clef';
 
 export interface StaffDef {
@@ -13,7 +13,7 @@ export interface StaffDef {
 
 
 export class Staff {
-    static setSequence(staffDef: StaffDef, seq: SimpleSequence): void {
+    static setSequence(staffDef: StaffDef, seq: ISequence): void {
         staffDef.voices = [{ content: seq }];
     }
 }

@@ -1,7 +1,8 @@
 import { ClefType } from './../states/clef';
 import { VoiceDef } from './voice';
-import { SimpleSequence, SequenceDef } from './sequence';
+import { SequenceDef } from './sequence';
 import { StaffDef } from './staff';
+import { FlexibleSequence as SimpleSequence } from '../../model';
 describe('Staff', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';

@@ -1,10 +1,11 @@
 import { TupletSequence } from './../score/transformations';
 import { Time } from './../rationals/time';
 import { getAllBeats, MeterFactory, MeterMap } from './../states/meter';
-import { SimpleSequence } from './../score/sequence';
+import { } from './../score/sequence';
 import { expect } from 'chai';
 import { calcBeamGroups, __beaming_internal as __internal } from './beaming';
 import { LyricsSequence } from './lyrics';
+import { FlexibleSequence as SimpleSequence } from '../../model';
 
 describe('Lyrics', () => {
 

@@ -347,4 +347,25 @@ export class CompositeSequence extends BaseSequence {
 }
 
 
+export function splitByNotes(def: string): string[] {
+    return def.split(' ').reduce((prev: string[], curr: string) => {
+        if (prev.length) {
+            if (prev[prev.length - 1].match(/^<[^>]*$/)) {
+                prev[prev.length - 1] += ` ${curr}`;
+                return prev;
+            } else if (prev[prev.length - 1].match(/^\\(clef)$/)) {
+                prev[prev.length - 1] += ` ${curr}`;
+                return prev;
+            } else if (prev[prev.length - 1].match(/^\\(meter)$/)) {
+                prev[prev.length - 1] += ` ${curr}`;
+                return prev;
+            } else if (prev[prev.length - 1].match(/^\\(key)( \w+)?$/)) {
+                prev[prev.length - 1] += ` ${curr}`;
+                return prev;
+            }
+        }
+        return prev.concat([curr]);
+    }, []);
+}
+
 export const __internal = { /*parseLilyClef, parseLilyKey,*/ parseLilyElement/*, parseLilyMeter*/ };

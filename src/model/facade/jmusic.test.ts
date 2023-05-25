@@ -8,9 +8,9 @@ import { JMusic, JMusicVars, initStateInSequence } from './jmusic';
 import { createNote, createNoteFromLilypond, Note, NoteDirection } from '../notes/note';
 import { Pitch } from '../pitches/pitch';
 import { Key, KeyDef } from '../states/key';
-import { SimpleSequence } from '../score/sequence';
 import { StaffDef } from '../score/staff';
 import { FlexibleSequence } from '../score/flexible-sequence';
+import { FlexibleSequence as SimpleSequence } from '../../model';
 
 describe('Facade', () => {
 

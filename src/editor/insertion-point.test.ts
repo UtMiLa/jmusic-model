@@ -1,5 +1,5 @@
 import { Time } from './../model/rationals/time';
-import { NoteDirection, ClefType, SimpleSequence, ScoreDef } from '../model';
+import { NoteDirection, ClefType, ScoreDef, FlexibleSequence } from '../model';
 import { expect } from 'chai';
 import { InsertionPoint } from './insertion-point';
 
@@ -16,11 +16,11 @@ describe('Insertion point', () => {
                 initialKey: {accidental: 1, count: 1 },
                 voices:[
                     {
-                        content: SimpleSequence.createFromString(seq1Text),
+                        content: new FlexibleSequence(seq1Text),
                         noteDirection: NoteDirection.Up
                     },
                     {
-                        content: SimpleSequence.createFromString(seq2Text),
+                        content: new FlexibleSequence(seq2Text),
                         noteDirection: NoteDirection.Down
                     }
                 ]
@@ -30,7 +30,7 @@ describe('Insertion point', () => {
                 initialKey: {accidental: 1, count: 1 },
                 voices:[
                     {
-                        content: SimpleSequence.createFromString(seq3Text),
+                        content: new FlexibleSequence(seq3Text),
                         noteDirection: NoteDirection.Undefined
                     }
                 ]
