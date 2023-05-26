@@ -92,6 +92,22 @@ export function createNoteFromLilypond(input: string): Note {
     return cloneNote(res, extra);
 }
 
+export function noteAsLilypond(note: Note): string {
+    const pitches = note.pitches.map(p => p.lilypond);
+    let pitchPart: string;
+    if (pitches.length === 0) {
+        pitchPart = 'r';
+    } else if (pitches.length === 1) {
+        pitchPart = pitches[0];
+    } else {
+        pitchPart = '<' + pitches.join(' ') + '>';
+    }
+    const durationPart = getUndottedDuration(note).denominator;
+    const dotNo = getDotNo(note);
+    const dots = R.repeat('.', dotNo).join('');
+    return pitchPart + durationPart + dots;
+}
+
 export function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
 
     const extra = R.mergeRight(note, changeProperties);

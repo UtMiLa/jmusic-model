@@ -1,13 +1,13 @@
-import { ScoreDef } from './../score/score';
-import { InsertionPoint } from './../../editor/insertion-point';
-import { Time } from './../rationals/time';
+import { ScoreDef } from './score';
+import { InsertionPoint } from '../../editor/insertion-point';
+import { Time } from '../rationals/time';
 import { expect } from 'chai';
-import { JMusic, JMusicVars, initStateInSequence } from './jmusic';
+import { JMusic, JMusicVars, initStateInSequence } from '../facade/jmusic';
 import { Lens, NoteLens, ProjectDef, noteLens, view } from './lens';
 import R = require('ramda');
-import { VariableDef } from '../score/variables';
-import { FlexibleSequence } from '../score/flexible-sequence';
-import { ISequence } from '../score/sequence';
+import { VariableDef } from './variables';
+import { FlexibleSequence } from './flexible-sequence';
+import { ISequence } from './sequence';
 import { createNoteFromLilypond } from '../notes/note';
 
 describe('Lenses', () => {
@@ -120,12 +120,19 @@ describe('Lenses', () => {
     });
 
     describe('Sequence lens', () => {
+        const seq1Text = 'c4 d8 e8';
+        const seq2Text = 'c,2 d,8 e,8 c4';
+        const seq3Text = 'c,2 d,8 <e, c>4';
+    
 
-        let seq1: ISequence;
+        let seq1: ISequence, seq2: ISequence;
         let lens: NoteLens;
         beforeEach(() => {
             seq1 = new FlexibleSequence('c1 d4 e4 fis2. g4 a2 r2');
             lens = noteLens(Time.newAbsolute(9, 4));
+
+            seq2 = new FlexibleSequence([seq1Text, [seq3Text, seq2Text]]);
+
         });
 
 
@@ -164,7 +171,19 @@ describe('Lenses', () => {
             
         });
         
-        it('should get a note from a nested sequence');
+        it('should get a note from a nested sequence', () => {
+            expect(seq2.elements.length).to.eq(10);            
+            expect(seq2.def).to.deep.eq([['c4', 'd8', 'e8'], [['c,2', 'd,8', '<e, c>4'], ['c,2', 'd,8', 'e,8', 'c4']]]);    
+
+            lens = noteLens(Time.newAbsolute(4, 4));
+
+            const res = R.view(lens, seq2);
+            expect(res, 'getter').to.deep.eq(createNoteFromLilypond('d,8'));
+
+            const seq2a = R.set(lens, createNoteFromLilypond('e4'), seq2);
+            expect(seq2a.def).to.deep.eq([['c4', 'd8', 'e8'], [['c,2', 'e4', '<e, c>4'], ['c,2', 'd,8', 'e,8', 'c4']]]);    
+
+        });
         it('should get a note from a sequence refering to a variable');
         it('should get a note from a sequence refering to a function of a variable');
     });

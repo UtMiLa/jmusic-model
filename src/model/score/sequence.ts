@@ -44,6 +44,7 @@ export function isNote(item: MusicEvent): item is Note {
     return (item as Note).pitches !== undefined;
 }
 
+
 export function isMusicEvent(item: unknown): item is MusicEvent {
     return isStateChange(item as MusicEvent) || isLongDecoration(item as MusicEvent) || isNote(item as MusicEvent);
 }
@@ -63,7 +64,8 @@ export interface ISequence {
     groupByTimeSlots(keyPrefix: string): TimeSlot[];
     insertElement(time: AbsoluteTime, elm: MusicEvent): void;
     appendElement(elm: MusicEvent): void;
-    indexOfTime(time: AbsoluteTime): number
+    indexOfTime(time: AbsoluteTime): number;
+    def: unknown;
 }
 
 export interface SequenceDef {
@@ -136,6 +138,8 @@ export abstract class BaseSequence implements ISequence {
 
     abstract insertElement(time: AbsoluteTime, elm: MusicEvent): void;
     appendElement(elm: MusicEvent): void { throw 'appendElement not implemented'; }
+    get def(): unknown { throw 'def not implemented'; }
+    set def(value: unknown) { throw 'def is readonly'; }
 
     getTimeSlots(): ExtendedTime[] {
         let time: ExtendedTime = Time.newAbsolute(0, 1);

@@ -204,6 +204,18 @@ describe('Flexible Sequence', () => {
         );
     });
 
+    describe('Serialisation', () => {
+        it('should simplify notes to lilypond strings', () => {
+            const seq = new FlexibleSequence([seq1Text, [seq3Text, seq2Text]]);
+            const seq2 = new FlexibleSequence(seq.elements);
+    
+            expect(seq2.count).to.eq(10);
+            expect(seq2.def).to.deep.eq(['c4', 'd8', 'e8', 'c,2', 'd,8', '<e, c>4', 'c,2', 'd,8', 'e,8', 'c4']);
+        });
+    
+    
+    });
+
     describe('Composite FlexibleSequence', () => {
         it('should combine the notes of several sequences', () => {
             const seqCombined = new FlexibleSequence([seq1Text, seq2Text]);

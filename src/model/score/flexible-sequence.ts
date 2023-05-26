@@ -2,10 +2,11 @@ import { isVariableRef, VariableRef, VariableRepository, VariableDef } from './v
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
 import { createFunction, isSeqFunction, SeqFunction } from './functions';
-import { BaseSequence, getDuration, isMusicEvent, MusicEvent, parseLilyElement, splitByNotes } from './sequence';
+import { BaseSequence, getDuration, isMusicEvent, isNote, MusicEvent, parseLilyElement, splitByNotes } from './sequence';
 
 // Fix for types for R.chain
 import * as _ from 'ts-toolbelt';
+import { Note, noteAsLilypond } from '../notes/note';
 type addIndexFix<T, U> = (
     fn: (f: (item: T) => U, list: readonly T[]) => U,
 ) => _.F.Curry<(a: (item: T, idx: number, list: T[]) => U, b: readonly T[]) => U>;
@@ -34,13 +35,15 @@ function simplifyDef(item: FlexibleItem): FlexibleItem {
     
     if (R.is(Array, item)) {
         if (item.length === 1)
-            return item[0];
+            return simplifyDef(item[0]);
         return item.map(simplifyDef);
     } else if (isSeqFunction(item)) {
         const x = R.modify('args', args => simplifyDef(args), item) as unknown as FlexibleItem[];
         return x;
     } else if (isVariableRef(item)) {
         return item;
+    } else if (isNote(item as MusicEvent)) {
+        return noteAsLilypond(item as Note);
     }
     return item;
     
