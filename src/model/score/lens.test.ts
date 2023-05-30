@@ -181,6 +181,7 @@ describe('Lenses', () => {
             expect(res, 'getter').to.deep.eq(createNoteFromLilypond('d,8'));
 
             const seq2a = R.set(lens, createNoteFromLilypond('e4'), seq2);
+            //expect((seq2 as FlexibleSequence).structuredElements).to.deep.eq([['c4', 'd8', 'e8'], [['c,2', 'd,8', '<e, c>4'], ['c,2', 'd,8', 'e,8', 'c4']]]);    
             expect(seq2a.def).to.deep.eq([['c4', 'd8', 'e8'], [['c,2', 'e4', '<e, c>4'], ['c,2', 'd,8', 'e,8', 'c4']]]);    
 
         });

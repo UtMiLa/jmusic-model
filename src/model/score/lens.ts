@@ -36,15 +36,10 @@ export type NoteLens = R.Lens<ISequence, MusicEvent | undefined>;
 export function noteLens(time: AbsoluteTime): NoteLens {
     return R.lens(
 
-        (seq: ISequence) => seq.elements[seq.indexOfTime(time)], 
+        (seq: ISequence) => R.view(seq.getElementLens(time), seq), 
 
-        (event: MusicEvent | undefined, seq) => {
-            return new FlexibleSequence(seq.chainElements(
-                (ct, time1) => {
-                    return Time.equals(time, time1) && isNote(ct) ? (event ? [event] : []) : [ct];
-                }
-            ));
-        }
+        (event: MusicEvent | undefined, seq) => R.set(seq.getElementLens(time), event, seq)
+        
     );
 }
 

@@ -3,6 +3,7 @@ import { Rational, RationalDef } from '../../model/rationals/rational';
 import { Note, setGrace, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
 import { TimeSpan } from '../rationals/time';
 import { isLongDecoration, isStateChange, BaseSequence, ISequence, MusicEvent, TimeSlot } from './sequence';
+import R = require('ramda');
 
 
 export class RetrogradeSequence extends BaseSequence {
@@ -25,6 +26,13 @@ export class RetrogradeSequence extends BaseSequence {
         }).reverse();
         return res;
     }
+
+    public getElementLens(time: AbsoluteTime): R.Lens<ISequence, MusicEvent | undefined> {
+        throw 'Lens unsupported';
+    }
+
+
+
     
     public insertElement(time: AbsoluteTime, element: MusicEvent): void {
         throw 'RetrogradeSequence does not support insertElement';
@@ -53,6 +61,12 @@ export class TupletSequence extends BaseSequence {
         });
     }
 
+    public getElementLens(time: AbsoluteTime): R.Lens<ISequence, MusicEvent | undefined> {
+        throw 'Lens unsupported';
+    }
+
+
+
     public insertElement(time: AbsoluteTime, element: MusicEvent): void {
         throw 'TupletSequence does not support insertElement';
     }
@@ -77,6 +91,12 @@ export class GraceSequence extends BaseSequence {
             }
         });
     }
+
+    public getElementLens(time: AbsoluteTime): R.Lens<ISequence, MusicEvent | undefined> {
+        throw 'Lens unsupported';
+    }
+
+
 
     public insertElement(time: AbsoluteTime, element: MusicEvent): void {
         throw 'TupletSequence does not support insertElement';

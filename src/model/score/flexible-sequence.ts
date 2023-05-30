@@ -2,7 +2,7 @@ import { isVariableRef, VariableRef, VariableRepository, VariableDef } from './v
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
 import { createFunction, isSeqFunction, SeqFunction } from './functions';
-import { BaseSequence, getDuration, isMusicEvent, isNote, MusicEvent, parseLilyElement, splitByNotes } from './sequence';
+import { BaseSequence, getDuration, ISequence, isMusicEvent, isNote, MusicEvent, parseLilyElement, splitByNotes } from './sequence';
 
 // Fix for types for R.chain
 import * as _ from 'ts-toolbelt';
@@ -53,6 +53,14 @@ function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEve
     return new FlexibleSequence(items, repo, true).elements;
 }
 
+function isSingleStringArray(test: unknown): test is string[] {
+    return (test as string[]).length === 1 && typeof ((test as string[])[0]) === 'string';
+}
+
+function isOtherFlexibleItemArray(test: unknown): test is FlexibleItem[] {
+    return true;
+}
+
 export class FlexibleSequence extends BaseSequence {
 
     constructor(init: FlexibleItem, private repo: VariableRepository = new VariableRepository([]), alreadySplit = false) {
@@ -70,6 +78,60 @@ export class FlexibleSequence extends BaseSequence {
         return R.flatten(this._elements.map((item) => isFlexibleSequence(item) ? item.elements : [item]));
     }
 
+    /*get structuredElements(): FlexibleItem[] {
+        return this.def.map((item) => isFlexibleSequence(item) ? [item.structuredElements] : simplifyDef(item));
+    }*/
+
+    private iterateDef(items: FlexibleItem[], modifier: (event: MusicEvent) => MusicEvent[], time: AbsoluteTime, startTime: AbsoluteTime = Time.StartTime): [AbsoluteTime, FlexibleItem] {
+        const transformed = items.map(item => {
+
+            return R.cond<FlexibleItem, string, SeqFunction, /*VariableRef,*/ string[], MusicEvent, FlexibleItem[], MusicEvent[]>([
+                [R.is(String), ((item: string) => {
+                    const event = parseLilyElement(item) as MusicEvent;
+                    if (Time.equals(startTime, time)) {
+                        startTime = Time.addTime(startTime, getDuration(event));
+                        return modifier(event);
+                    }
+                    startTime = Time.addTime(startTime, getDuration(event));
+                    return [event];
+                })],
+                [isSeqFunction, (item: SeqFunction) => createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))],
+                //[isVariableRef, (item: VariableRef) => calcElements([(this.repo.valueOf(item.variable)], this.repo)],
+                [isSingleStringArray, (item: string[]) => [parseLilyElement(item[0])]],
+                [isMusicEvent, (item: MusicEvent) => {
+                    if (Time.equals(startTime, time)) {
+                        startTime = Time.addTime(startTime, getDuration(item));
+                        return modifier(item);
+                    }
+                    startTime = Time.addTime(startTime, getDuration(item));
+                    return [item];
+                }],
+                [isOtherFlexibleItemArray, (elm) => {
+                    [startTime, item] = this.iterateDef(elm, modifier, time, startTime);
+                    return item as MusicEvent[];
+                }]
+            ])(item);  
+        }); 
+        return [startTime, transformed];
+    }
+
+    public getElementLens(time: AbsoluteTime): R.Lens<ISequence, MusicEvent | undefined> {
+        return R.lens(
+
+            (seq: ISequence) => this.elements[seq.indexOfTime(time)], 
+    
+            (event: MusicEvent | undefined, seq) => {
+                if (!(seq instanceof FlexibleSequence)) {
+                    throw 'Lens setter not supported';
+                } 
+
+                return new FlexibleSequence(seq.iterateDef(this.def, () => (event ? [event] : []), time)[1]);                
+            }
+        );
+    }
+
+
+
     get duration(): TimeSpan {
         return this._elements.reduce((prev, curr) => Time.addSpans(prev, getDuration(curr)), Time.NoTime);
     }
@@ -85,14 +147,6 @@ export class FlexibleSequence extends BaseSequence {
     public set def(init: FlexibleItem[]) {
         this._def = init;
 
-        function isSingleStringArray(test: unknown): test is string[] {
-            return (test as string[]).length === 1 && typeof ((test as string[])[0]) === 'string';
-        }
-        
-        function isOtherFlexibleItemArray(test: unknown): test is FlexibleItem[] {
-            return true;
-        }
-        
         this._elements = R.chain(
             R.cond<FlexibleItem, string, SeqFunction, /*VariableRef,*/ string[], MusicEvent, FlexibleItem[], MusicEvent[]>([
                 [R.is(String), ((item: string) => [parseLilyElement(item) as MusicEvent])],

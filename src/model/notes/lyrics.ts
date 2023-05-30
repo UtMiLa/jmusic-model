@@ -4,6 +4,7 @@ import { TimeSpan } from '../rationals/time';
 import { BaseSequence, ISequence } from '../score/sequence';
 import { StateChange } from '../states/state';
 import { Note, setNoteText } from './note';
+import R = require('ramda');
 
 export class LyricsSequence extends BaseSequence {
     /**
@@ -27,6 +28,11 @@ export class LyricsSequence extends BaseSequence {
             return elm;            
         });
     }
+
+    public getElementLens(time: AbsoluteTime): R.Lens<ISequence, MusicEvent | undefined> {
+        throw 'Lens unsupported';
+    }
+
 
     duration: TimeSpan = this.sequence.duration;
 

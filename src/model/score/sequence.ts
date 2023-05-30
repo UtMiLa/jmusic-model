@@ -10,6 +10,7 @@ import { createNoteFromLilypond, getRealDuration, Note, setNoteId } from '../not
 import { Time, TimeSpan } from '../rationals/time';
 import { Clef } from '../states/clef';
 import { EventType, getExtendedTime } from './timing-order';
+import R = require('ramda');
 
 export type MusicEvent = Note | StateChange | LongDecorationElement;
 
@@ -59,6 +60,7 @@ export function getDuration(item: MusicEvent): TimeSpan {
 export interface ISequence {
     elements: MusicEvent[];
     duration: TimeSpan;
+    getElementLens(time: AbsoluteTime): R.Lens<ISequence, MusicEvent | undefined>;
     chainElements<T>(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => T[], initState?: SeqEnumerationState): T[];
     filterElements(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => boolean, initState?: SeqEnumerationState): MusicEvent[];
     groupByTimeSlots(keyPrefix: string): TimeSlot[];
@@ -133,6 +135,7 @@ export function parseLilyElement(ly: string): Note | StateChange {
 export abstract class BaseSequence implements ISequence {
     abstract elements: MusicEvent[];
     abstract duration: TimeSpan;
+    abstract getElementLens(time: AbsoluteTime): R.Lens<ISequence, MusicEvent | undefined>;
 
     /*protected uniqueId = generateUniqueId();*/
 
@@ -283,6 +286,10 @@ export class SimpleSequence extends BaseSequence {
         return this._elements;
     }
 
+    public getElementLens(time: AbsoluteTime): R.Lens<ISequence, MusicEvent | undefined> {
+        throw 'Lens unsupported';
+    }
+
     public addElement(element: MusicEvent): void {
         this._elements.push(element);
     }
@@ -340,6 +347,11 @@ export class CompositeSequence extends BaseSequence {
         return this._sequences
             .reduce((prev: MusicEvent[], curr: ISequence) => prev.concat(curr.elements), []);
     }
+
+    public getElementLens(time: AbsoluteTime): R.Lens<ISequence, MusicEvent | undefined> {
+        throw 'Lens unsupported';
+    }
+
 
     public insertElement(time: AbsoluteTime, element: MusicEvent): void {
         throw 'CompositeSequence does not support insertElement';
