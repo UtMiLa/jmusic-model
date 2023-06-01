@@ -5,8 +5,8 @@ import { expect } from 'chai';
 import { JMusic, JMusicVars, initStateInSequence } from '../facade/jmusic';
 import { Lens, NoteLens, ProjectDef, noteLens, view } from './lens';
 import R = require('ramda');
-import { VariableDef } from './variables';
-import { FlexibleSequence } from './flexible-sequence';
+import { VariableDef, VariableRepository } from './variables';
+import { FlexibleItem, FlexibleSequence } from './flexible-sequence';
 import { ISequence } from './sequence';
 import { createNoteFromLilypond } from '../notes/note';
 
@@ -185,7 +185,37 @@ describe('Lenses', () => {
             expect(seq2a.def).to.deep.eq([['c4', 'd8', 'e8'], [['c,2', 'e4', '<e, c>4'], ['c,2', 'd,8', 'e,8', 'c4']]]);    
 
         });
-        it('should get a note from a sequence refering to a variable');
+        it('should get a note from a sequence refering to a variable', () => {
+            const var1: VariableDef = { id: 'var1', value: new FlexibleSequence(['c4', 'd4']) };
+            const vars = new VariableRepository([var1]);
+            const seq1Text: FlexibleItem = ['f8', { variable: 'var1' }, 'g8'];
+    
+            const seq1 = new FlexibleSequence(seq1Text, vars);
+
+            lens = noteLens(Time.newAbsolute(3, 8));
+
+            const res = R.view(lens, seq1);
+            expect(res, 'getter').to.deep.eq(createNoteFromLilypond('d4'));
+
+        });
+        it('should set a note from a sequence refering to a variable', () => {
+            const var1: VariableDef = { id: 'var1', value: new FlexibleSequence(['c4', 'd4']) };
+            const vars = new VariableRepository([var1]);
+            const seq1Text: FlexibleItem = ['f8', { variable: 'var1' }, 'g8'];
+    
+            const seq1 = new FlexibleSequence(seq1Text, vars);
+
+            lens = noteLens(Time.newAbsolute(3, 8));
+
+            const seq2a = R.set(lens, createNoteFromLilypond('e4'), seq1);
+
+            const result = seq2a.elements;
+    
+            expect(result[2]).to.deep.eq(createNoteFromLilypond('e4'));
+            //expect(vars.valueOf('var1').elements[1]).to.deep.eq(createNoteFromLilypond('e4'));
+
+        });
+
         it('should get a note from a sequence refering to a function of a variable');
     });
 
