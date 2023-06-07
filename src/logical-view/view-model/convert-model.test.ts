@@ -6,7 +6,7 @@ import { FlagType } from './note-view-model';
 import { RetrogradeSequence, TupletSequence } from './../../model/score/transformations';
 import { SimpleSequence, CompositeSequence } from './../../model/score/sequence';
 import { expect } from 'chai';
-import { JMusic, LongDecorationType, NoteDirection, NoteType, Time } from './../../model';
+import { FlexibleSequence, JMusic, LongDecorationType, NoteDirection, NoteType, Time } from './../../model';
 import { ClefType, StaffDef } from './../../model';
 import { Clef } from './../../model';
 import { scoreModelToViewModel, __internal } from './convert-model';
@@ -208,7 +208,7 @@ describe('View model', () => {
 
     it('should make correct beams in cloned notes', () => {
 
-        const baseSequence = new SimpleSequence( 'bes8 b8 c8');
+        const baseSequence = new FlexibleSequence( 'bes8 b8 c8');
         const retrogradeSequence = new RetrogradeSequence(baseSequence);
         const combinedSequence = new CompositeSequence(baseSequence, retrogradeSequence);
 
@@ -274,7 +274,7 @@ describe('View model', () => {
 
     it('should make correct beams in cloned tuplet notes', () => {
 
-        const baseSequence = new SimpleSequence('bes8 b8 c8 d8 e8 f8');
+        const baseSequence = new FlexibleSequence('bes8 b8 c8 d8 e8 f8');
         const tupletSequence = new TupletSequence(baseSequence, { numerator: 2, denominator: 3 });
         
 
@@ -332,7 +332,7 @@ describe('View model', () => {
 
     it('should make correct quintuplet brackets', () => {
 
-        const baseSequence = new SimpleSequence('bes8 b8 c8 d8 e8');
+        const baseSequence = new FlexibleSequence('bes8 b8 c8 d8 e8');
         const tupletSequence = new TupletSequence(baseSequence, { numerator: 4, denominator: 5 });
         
 
@@ -379,7 +379,7 @@ describe('View model', () => {
     
     xit('should make split sextuplets to triplets', () => {
 
-        const baseSequence = new SimpleSequence('bes8 b8 c8 d8 e8 f8');
+        const baseSequence = new FlexibleSequence('bes8 b8 c8 d8 e8 f8');
         const tupletSequence = new TupletSequence(baseSequence, { numerator: 2, denominator: 3 });
         
 

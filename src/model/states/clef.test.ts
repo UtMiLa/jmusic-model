@@ -1,8 +1,9 @@
 import { Time } from './../rationals/time';
-import { parseLilyClef, SimpleSequence } from './../score/sequence';
+import { parseLilyClef } from './../score/sequence';
 import { Pitch } from '../pitches/pitch';
 import { Clef, ClefType } from './clef';
 import { expect } from 'chai';
+import { FlexibleSequence } from '../score/flexible-sequence';
 
 describe('Clef', () => {
     let clefTreble: Clef, clefAlto: Clef, clefBass: Clef, clefTenor: Clef, clefTenorC: Clef;
@@ -62,7 +63,7 @@ describe('Clef', () => {
     });
 
     it('should parse a clef change', () => {
-        const seq = new SimpleSequence( 'c4 \\clef treble c4' );
+        const seq = new FlexibleSequence( 'c4 \\clef treble c4' );
 
         expect(seq.count).to.eq(3);
         expect(seq.elements[1]).to.deep.eq({
@@ -73,7 +74,7 @@ describe('Clef', () => {
             isState: true
         });
 
-        const seq2 = new SimpleSequence( 'c4 \\clef bass c4' );
+        const seq2 = new FlexibleSequence( 'c4 \\clef bass c4' );
 
         expect(seq2.count).to.eq(3);
         expect(seq2.elements[1]).to.deep.eq({

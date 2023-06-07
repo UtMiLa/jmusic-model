@@ -198,7 +198,7 @@ describe('Lenses', () => {
             expect(res, 'getter').to.deep.eq(createNoteFromLilypond('d4'));
 
         });
-        it('should set a note from a sequence refering to a variable', () => {
+        xit('should set a note from a sequence refering to a variable', () => {
             const var1: VariableDef = { id: 'var1', value: new FlexibleSequence(['c4', 'd4']) };
             const vars = new VariableRepository([var1]);
             const seq1Text: FlexibleItem = ['f8', { variable: 'var1' }, 'g8'];

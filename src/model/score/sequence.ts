@@ -11,6 +11,7 @@ import { Time, TimeSpan } from '../rationals/time';
 import { Clef } from '../states/clef';
 import { EventType, getExtendedTime } from './timing-order';
 import R = require('ramda');
+import { FlexibleSequence } from './flexible-sequence';
 
 export type MusicEvent = Note | StateChange | LongDecorationElement;
 
@@ -278,7 +279,7 @@ export class SimpleSequence extends BaseSequence {
     }
     public set def(value: string) {
         this._def = value;
-        this._elements = value ? SimpleSequence.splitByNotes(value).map(str => parseLilyElement(str)) : [];
+        this._elements = value ? splitByNotes(value).map(str => parseLilyElement(str)) : [];
     }
 
     private _elements: MusicEvent[] = [];
@@ -299,11 +300,11 @@ export class SimpleSequence extends BaseSequence {
         this._elements.splice(i, 0, element);
     }
 
-    static createFromString(def: string): SimpleSequence {
+    static createFromString(def: string): ISequence {
         return new SimpleSequence(def);
     }
 
-    static splitByNotes(def: string): string[] {
+    /*static splitByNotes(def: string): string[] {
         return def.split(' ').reduce((prev: string[], curr: string) => {
             if (prev.length) {
                 if (prev[prev.length - 1].match(/^<[^>]*$/)) {
@@ -322,7 +323,7 @@ export class SimpleSequence extends BaseSequence {
             }
             return prev.concat([curr]);
         }, []);
-    }
+    }*/
 
     get count(): number {
         return this.elements.length;

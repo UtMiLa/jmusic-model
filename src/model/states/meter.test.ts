@@ -1,9 +1,10 @@
 import { StateChange } from './state';
 import { TimeMap } from '~/tools/time-map';
 import { Time } from './../rationals/time';
-import { parseLilyMeter, SimpleSequence, __internal } from './../score/sequence';
+import { parseLilyMeter, __internal } from './../score/sequence';
 import { expect } from 'chai';
 import { getAllBars, Meter, MeterFactory, RegularMeterDef, MeterMap } from './meter';
+import { FlexibleSequence } from '../score/flexible-sequence';
 describe('Meter', () => {
     describe('Regular meter', () => {
         let meter1: RegularMeterDef, meter2: RegularMeterDef, meter3: RegularMeterDef;
@@ -70,7 +71,7 @@ describe('Meter', () => {
         });
 
         it('should parse a meter change', () => {
-            const seq = new SimpleSequence( 'c4 \\meter 3/4 c4' );
+            const seq = new FlexibleSequence( 'c4 \\meter 3/4 c4' );
     
             expect(seq.count).to.eq(3);
             expect(seq.elements[1]).to.deep.eq({
