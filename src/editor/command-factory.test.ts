@@ -3,7 +3,7 @@ import { BaseCommandFactory } from './command-factory';
 import { InsertionPoint } from './insertion-point';
 import { AddNoteCommand, DeleteNoteCommand, DeletePitchCommand } from './commands';
 import Sinon = require('sinon');
-import { createNoteFromLilypond } from '~/model';
+import { createNoteFromLilypond } from '../model';
 
 describe('Command factory', () => {
     describe('Command input', () => {

@@ -11,7 +11,7 @@ export class Command {
 
 export class FileNewCommand extends Command {
     execute(model: JMusic): void {
-        model.clearScore(this.args[0], { content: [[[]]]} );
+        model.clearScore(this.args[0], this.args[1]);
     }
 }
 

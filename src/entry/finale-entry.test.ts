@@ -1,4 +1,4 @@
-import { createNoteFromLilypond } from '~/model';
+import { createNoteFromLilypond } from '../model';
 import { Pitch } from './../model/pitches/pitch';
 import { JMusic } from './../model/facade/jmusic';
 import { expect } from 'chai';

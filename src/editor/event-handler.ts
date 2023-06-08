@@ -5,6 +5,7 @@ import { BaseCommandFactory } from './command-factory';
 import { Command } from './commands';
 import { InsertionPoint } from './insertion-point';
 import R = require('ramda');
+import { DialogProvider } from '../dialog/dialog-provider';
 
 export interface CommandExecuter {
     execute(command: Command): void;
@@ -17,6 +18,7 @@ export interface EventHandler {
     keyUp(keyName: string): boolean;
     actionSelected(action: string, additionalArgs?: any[]): void;
     onChordChange(handler: (noteMidi: number[]) => void): void;
+    registerDialogProvider(dialog: DialogProvider): void;
 }
 
 export class BaseEventHandler {
@@ -29,6 +31,7 @@ export class BaseEventHandler {
     $noteChange = new Subject<number>();
     //pressed: boolean[] = [];
     keysPressed: number[] = [];
+    dialogProvider?: DialogProvider;
 
     onNoteDown(handler: (noteMidi: number) => void): void {
         this.$noteChange.subscribe(handler);
@@ -55,6 +58,11 @@ export class BaseEventHandler {
     keyUp(keyName: string): boolean {
         return false;
     }
+    
+    registerDialogProvider(dialog: DialogProvider): void {
+        this.dialogProvider = dialog;
+    }
+
     async actionSelected(action: string, additionalArgs?: any[]): Promise<void> {
 
         const placeholderToArg = async (arg: any) => {
@@ -64,13 +72,14 @@ export class BaseEventHandler {
                     case 'clef': return await dialogProvider.getClef();
                     case 'meter': return await dialogProvider.getMeter();
                     case 'key': return await dialogProvider.getKey();
+                    case 'score': return await dialogProvider.getNewScore();
                 }
             }
             return arg;
         };
 
 
-        const dialogProvider = new BrowserPromptDialogProvider();
+        const dialogProvider = this.dialogProvider ?? new BrowserPromptDialogProvider();
         if (additionalArgs) {
             additionalArgs = await Promise.all(additionalArgs.map(placeholderToArg));
         }

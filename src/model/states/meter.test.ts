@@ -1,5 +1,4 @@
 import { StateChange } from './state';
-import { TimeMap } from '~/tools/time-map';
 import { Time } from './../rationals/time';
 import { parseLilyMeter, SimpleSequence, __internal } from './../score/sequence';
 import { expect } from 'chai';
