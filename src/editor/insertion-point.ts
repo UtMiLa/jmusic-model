@@ -1,4 +1,4 @@
-import { AbsoluteTime, getDuration } from '../model';
+import { AbsoluteTime, getDuration, voiceContentToSequence } from '../model';
 import { Time } from '../model';
 import { ScoreDef } from '../model';
 export class InsertionPoint {
@@ -21,7 +21,7 @@ export class InsertionPoint {
         const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
         let t = Time.StartTime;
         let i = 0;
-        const elements = currentVoice.content.elements;
+        const elements = voiceContentToSequence(currentVoice.content).elements;
         while(i < elements.length) {
             if (Time.equals(t, time) && getDuration(elements[i]).numerator) {
                 return(i);
@@ -38,7 +38,7 @@ export class InsertionPoint {
         const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
         if (index >= 0 && currentVoice.content.elements.length > index) {
             //index++;
-            this.time = Time.addTime(this.time, getDuration(currentVoice.content.elements[index]));
+            this.time = Time.addTime(this.time, getDuration(voiceContentToSequence(currentVoice.content).elements[index]));
         }
     }
 
@@ -46,15 +46,15 @@ export class InsertionPoint {
         let index = this.findIndex(this.time);
         const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
         if (this.isAtEnd()) {
-            index = currentVoice.content.elements.length;
+            index = voiceContentToSequence(currentVoice.content).elements.length;
         }
         if (index >= 0) {
-            this.time = Time.subtractTime(this.time, getDuration(currentVoice.content.elements[index-1]));
+            this.time = Time.subtractTime(this.time, getDuration(voiceContentToSequence(currentVoice.content).elements[index-1]));
         }
     }
 
     isAtEnd(): boolean {
         const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
-        return Time.equals(this.time, Time.fromStart(currentVoice.content.duration));
+        return Time.equals(this.time, Time.fromStart(voiceContentToSequence(currentVoice.content).duration));
     }
 }

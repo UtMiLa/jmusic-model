@@ -1,5 +1,5 @@
 import R = require('ramda');
-import { JMusic, isNote, Rational, getDuration, AbsoluteTime, TimeSlot, MusicEvent } from '../../model';
+import { JMusic, isNote, Rational, getDuration, AbsoluteTime, TimeSlot, MusicEvent, voiceContentToSequence } from '../../model';
 import { Subject } from 'rxjs';
 
 /* Todo:
@@ -81,7 +81,7 @@ export class MidiPerformer {
         model.staves.forEach(staff => {
   
             staff.voices.forEach(voice => {
-                const timeslots = combineTiedNotes(splitPitches(voice.content.groupByTimeSlots('')));
+                const timeslots = combineTiedNotes(splitPitches(voiceContentToSequence(voice.content).groupByTimeSlots('')));
 
                 //console.log('timeslots', timeslots[0]);
                 //let rememberTiedPitches = [];

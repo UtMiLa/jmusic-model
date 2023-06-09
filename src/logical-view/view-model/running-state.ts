@@ -2,13 +2,13 @@ import { RationalDef } from './../../model/rationals/rational';
 import { Meter } from './../../model/states/meter';
 import { BeamGroup } from './../../model/notes/beaming';
 import { AccidentalManager } from './../../model/states/key';
-import { getAllBars, TimeSlot, TupletState } from './../../model';
+import { FlexibleSequence, getAllBars, TimeSlot, TupletState } from './../../model';
 import { AbsoluteTime, Time } from './../../model';
 import { NoteViewModel, TupletViewModel } from './note-view-model';
 import { Clef } from '../../model';
 import { Key } from '../../model';
 import { TimeSlotViewModel } from './score-view-model';
-import { VoiceDef } from '../../model/score/voice';
+import { voiceContentToSequence, VoiceDef } from '../../model/score/voice';
 import { createIdPrefix } from './state-map';
 
 /** This object is created for each voice during processing. It keeps track of the current state:
@@ -27,7 +27,7 @@ export class State {
         public voice: VoiceDef, 
         public clef: Clef
     ) {
-        const voiceSequence = voice.content;
+        const voiceSequence = voiceContentToSequence(voice.content);
         this.voiceTimeSlots = voiceSequence.groupByTimeSlots(createIdPrefix(staffNo, voiceNo));
     }
 

@@ -5,7 +5,7 @@ import { IndexedMap } from './../../tools/time-map';
 import { Meter, MeterMap } from './../../model/states/meter';
 import { BeamDef } from './../../model/notes/beaming';
 import { displaceAccidentals } from './../../model/states/key';
-import { getDuration, ScoreDef, setNoteDirection, TimeSlot } from './../../model';
+import { getDuration, ScoreDef, setNoteDirection, TimeSlot, voiceContentToSequence } from './../../model';
 import { MeterFactory } from './../../model';
 import { meterToView } from './convert-meter';
 import { AbsoluteTime, Time } from './../../model';
@@ -160,7 +160,7 @@ function createViewModelsForVoice(def: StaffDef, staffNo: number, meter: Meter |
     let staffEndTime = Time.newAbsolute(0, 1);
 
     def.voices.forEach((voice, voiceNo) => {
-        const voiceSequence = voice.content;
+        const voiceSequence = voiceContentToSequence(voice.content);
         const voiceEndTime = Time.fromStart(voiceSequence.duration);
         const voiceBeamGroups = meter ? calcBeamGroups(voiceSequence, meterMap.getAllBeats(), `${staffNo}-${voiceNo}`) : [];
 

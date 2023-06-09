@@ -1,4 +1,4 @@
-import { NoteDirection, cloneNote } from '../../model';
+import { NoteDirection, cloneNote, voiceContentToSequence } from '../../model';
 import { FlexibleItem, FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
@@ -79,7 +79,7 @@ export class JMusic implements ScoreDef {
 
         this.staves.forEach(staff => {
             staff.voices.forEach(voice => {
-                const states = initStateInSequence(voice.content);
+                const states = initStateInSequence(voiceContentToSequence(voice.content));
                 if (states.clef) {
                     //console.log('changing clef', staff.initialClef, states.clef);
                     staff.initialClef = states.clef.def;
@@ -188,11 +188,11 @@ export class JMusic implements ScoreDef {
     }
 
     sequenceFromInsertionPoint(ins: InsertionPoint): ISequence {
-        return this.staves[ins.staffNo].voices[ins.voiceNo].content;
+        return voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content);
     }
 
     noteFromInsertionPoint(ins: InsertionPoint): Note {
-        return this.staves[ins.staffNo].voices[ins.voiceNo].content.groupByTimeSlots('0').filter(ts => Time.equals(ts.time, ins.time))[0].elements[0];
+        return voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).groupByTimeSlots('0').filter(ts => Time.equals(ts.time, ins.time))[0].elements[0];
     }
 
     /*noteEquals(note1: MusicEvent, note2: Note): boolean {
@@ -202,7 +202,7 @@ export class JMusic implements ScoreDef {
     }*/
 
     InsertElementAtInsertionPoint(ins: InsertionPoint, element: MusicEvent, checkType: (e: MusicEvent) => boolean): void {
-        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content.chainElements(
+        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).chainElements(
             (ct, time) => {
                 if (!Time.equals(time, ins.time)) return [ct];
                 if (checkType(ct)) return [];
@@ -212,7 +212,7 @@ export class JMusic implements ScoreDef {
     }
 
     replaceNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note, toNote: Note): void {
-        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content.chainElements(
+        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).chainElements(
             (ct, time) => {
                 return [Time.equals(time, ins.time) && isNote(ct) ? toNote : ct];
             }
@@ -220,7 +220,7 @@ export class JMusic implements ScoreDef {
     }
 
     deleteNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note): void {
-        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content.filterElements(
+        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).filterElements(
             (ct, time) => {
                 return !(Time.equals(time, ins.time) && isNote(ct));
             }
