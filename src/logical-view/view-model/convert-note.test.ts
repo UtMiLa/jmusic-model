@@ -10,6 +10,7 @@ import { expect } from 'chai';
 import { FlagType } from './note-view-model';
 import { noteToView } from './convert-note';
 import { scoreModelToViewModel, __internal } from './convert-model';
+import { voiceSequenceToDef } from '../../model';
 
 describe('View model, note', () => {
 
@@ -185,7 +186,7 @@ describe('View model, note', () => {
 
         const seq1 = SimpleSequence.createFromString(seq1Text);
         const tuplet = new TupletSequence(seq1, { numerator: 2, denominator: 3 });
-        const state = new __internal.State([], 0, 0, { content: tuplet }, new Clef({ clefType: ClefType.G, line: -2 }));
+        const state = new __internal.State([], 0, 0, { content: voiceSequenceToDef(tuplet) }, new Clef({ clefType: ClefType.G, line: -2 }));
         const timeSlots = tuplet.groupByTimeSlots('bb');
         state.voiceTimeSlot = timeSlots[0];
 

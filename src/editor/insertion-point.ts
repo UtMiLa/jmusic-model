@@ -36,7 +36,7 @@ export class InsertionPoint {
     moveRight(): void {
         const index = this.findIndex(this.time);
         const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
-        if (index >= 0 && currentVoice.content.elements.length > index) {
+        if (index >= 0 && voiceContentToSequence(currentVoice.content).elements.length > index) {
             //index++;
             this.time = Time.addTime(this.time, getDuration(voiceContentToSequence(currentVoice.content).elements[index]));
         }

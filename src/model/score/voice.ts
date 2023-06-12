@@ -1,14 +1,19 @@
 import { NoteDirection } from './../notes/note';
-import { FlexibleSequence } from './flexible-sequence';
+import { FlexibleItem, FlexibleSequence } from './flexible-sequence';
 import { ISequence, SequenceDef } from './sequence';
 
 
+export type VoiceContentDef = ISequence;
 
 export interface VoiceDef {
-    content: ISequence;
+    content: VoiceContentDef;
     noteDirection?: NoteDirection;
 }
 
-export function voiceContentToSequence(content: ISequence): ISequence {
-    return content; // new FlexibleSequence(content.elements);
+export function voiceContentToSequence(content: VoiceContentDef): ISequence {
+    return content; // ideal: new FlexibleSequence(content);
+}
+
+export function voiceSequenceToDef(seq: ISequence): VoiceContentDef {
+    return seq; // ideal: (seq as FlexibleSequence).def;
 }

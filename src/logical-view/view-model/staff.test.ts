@@ -12,6 +12,7 @@ import { ClefType } from '../../model/states/clef';
 import { __internal } from './convert-model';
 import { TimeMap } from '../../tools/time-map';
 import { createScopedTimeMap } from './state-map';
+import { voiceSequenceToDef } from '../../model';
 describe('Staff view model', () => {
     let staffClef: StaffDef;
 
@@ -142,7 +143,7 @@ describe('Staff view model', () => {
     });
 
     it('should convert a staff with one voice to view model', () => {
-        staffClef.voices = [ {content: new SimpleSequence( 'c\'1 d\'4 e\'2' )}];
+        staffClef.voices = [ {content: voiceSequenceToDef(new SimpleSequence( 'c\'1 d\'4 e\'2' ))}];
         
         staffClef.initialKey.count = 0;
 
@@ -208,8 +209,8 @@ describe('Staff view model', () => {
 
     it('should convert a staff with two voices to view model', () => {
         staffClef.voices = [ 
-            { content: new SimpleSequence( 'c\'1' ), noteDirection: NoteDirection.Down },
-            { content: new SimpleSequence( 'e\'2 f\'2' ), noteDirection: NoteDirection.Up }
+            { content: voiceSequenceToDef(new SimpleSequence( 'c\'1' )), noteDirection: NoteDirection.Down },
+            { content: voiceSequenceToDef(new SimpleSequence( 'e\'2 f\'2' )), noteDirection: NoteDirection.Up }
         ];
 
         staffClef.initialKey.count = 0;
@@ -282,7 +283,7 @@ describe('Staff view model', () => {
 
 
     it('should add bar lines', () => {
-        staffClef.voices = [ {content: new SimpleSequence( 'c\'4 d\'4 e\'4 c\'2. d\'4' )}];
+        staffClef.voices = [ {content: voiceSequenceToDef(new SimpleSequence( 'c\'4 d\'4 e\'4 c\'2. d\'4' ))}];
         
         staffClef.initialKey.count = 0;
         staffClef.initialMeter = {count: 3, value: 4};
@@ -301,7 +302,7 @@ describe('Staff view model', () => {
     });
 
     it('should add bar lines even when no other events at time', () => {
-        staffClef.voices = [ {content: new SimpleSequence( 'c\'1' )}];
+        staffClef.voices = [ {content: voiceSequenceToDef(new SimpleSequence( 'c\'1' ))}];
         
         staffClef.initialKey.count = 0;
         staffClef.initialMeter = {count: 2, value: 4};
@@ -320,7 +321,7 @@ describe('Staff view model', () => {
 
 
     it('should add bar lines when an upbeat is defined', () => {
-        staffClef.voices = [ {content: new SimpleSequence( 'c\'4 d\'4 e\'4 c\'4 d\'4 e\'4 e\'4' )}];
+        staffClef.voices = [ {content: voiceSequenceToDef(new SimpleSequence( 'c\'4 d\'4 e\'4 c\'4 d\'4 e\'4 e\'4' ))}];
         
         staffClef.initialKey.count = 0;
         staffClef.initialMeter = {count: 3, value: 4, upBeat: Time.QuarterTime};
@@ -339,7 +340,7 @@ describe('Staff view model', () => {
     });
 
     it('should convert a tied note to view model', () => {
-        staffClef.voices = [ {content: new SimpleSequence( 'c\'2~ c\'8' )}];
+        staffClef.voices = [ {content: voiceSequenceToDef(new SimpleSequence( 'c\'2~ c\'8' ))}];
         staffClef.voices[0].noteDirection = NoteDirection.Up;
         
         const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
@@ -354,8 +355,8 @@ describe('Staff view model', () => {
     
     it('should make two-chord ties to view model', () => {
         staffClef.voices = [ 
-            {content: new SimpleSequence( 'e\'2~ e\'8' )},
-            {content: new SimpleSequence( 'c\'2~ c\'8' )}
+            {content: voiceSequenceToDef(new SimpleSequence( 'e\'2~ e\'8' ))},
+            {content: voiceSequenceToDef(new SimpleSequence( 'c\'2~ c\'8' ))}
         ];
         staffClef.voices[0].noteDirection = NoteDirection.Up;
         staffClef.voices[1].noteDirection = NoteDirection.Down;

@@ -1,4 +1,4 @@
-import { NoteDirection, cloneNote, voiceContentToSequence } from '../../model';
+import { NoteDirection, cloneNote, voiceContentToSequence, voiceSequenceToDef } from '../../model';
 import { FlexibleItem, FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
@@ -109,7 +109,7 @@ export class JMusic implements ScoreDef {
                 initialClef: Clef.clefTreble.def,
                 initialKey: { count: 0, accidental: 0 },
                 initialMeter: { count: 4, value: 4 },
-                voices: [{ content: new FlexibleSequence(voice, this.vars) }]
+                voices: [{ content: voiceSequenceToDef(new FlexibleSequence(voice, this.vars)) }]
             }];
         } else if (isScoreDef(voice)) {
             this.staves = [...voice.staves];
@@ -137,7 +137,7 @@ export class JMusic implements ScoreDef {
                     initialKey: key,
                     initialMeter: meter,
                     voices: stf.map((cnt, idx) => ({
-                        content: new FlexibleSequence(cnt, this.vars),
+                        content: voiceSequenceToDef(new FlexibleSequence(cnt, this.vars)),
                         noteDirection: stf.length === 1 ? NoteDirection.Undefined : idx % 2 === 0 ? NoteDirection.Up : NoteDirection.Down
                     }))
                 });
@@ -202,29 +202,29 @@ export class JMusic implements ScoreDef {
     }*/
 
     InsertElementAtInsertionPoint(ins: InsertionPoint, element: MusicEvent, checkType: (e: MusicEvent) => boolean): void {
-        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).chainElements(
+        this.staves[ins.staffNo].voices[ins.voiceNo].content = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).chainElements(
             (ct, time) => {
                 if (!Time.equals(time, ins.time)) return [ct];
                 if (checkType(ct)) return [];
                 return isNote(ct) ? [element, ct] : [ct];
             }
-        ));
+        )));
     }
 
     replaceNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note, toNote: Note): void {
-        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).chainElements(
+        this.staves[ins.staffNo].voices[ins.voiceNo].content = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).chainElements(
             (ct, time) => {
                 return [Time.equals(time, ins.time) && isNote(ct) ? toNote : ct];
             }
-        ));
+        )));
     }
 
     deleteNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note): void {
-        this.staves[ins.staffNo].voices[ins.voiceNo].content = new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).filterElements(
+        this.staves[ins.staffNo].voices[ins.voiceNo].content = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).filterElements(
             (ct, time) => {
                 return !(Time.equals(time, ins.time) && isNote(ct));
             }
-        ));
+        )));
     }
 
     pitchFromInsertionPoint(ins: InsertionPoint): Pitch {

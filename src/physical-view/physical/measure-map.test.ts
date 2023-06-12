@@ -15,6 +15,7 @@ import { StaffViewModel } from '../../logical-view/view-model/score-view-model';
 import { TimeMap } from '../../tools/time-map';
 import { createTestScoreVM, setGraceNoteInStaff } from '../../tools/test-tools';
 import { createScopedTimeMap } from '../../logical-view/view-model/state-map';
+import { voiceSequenceToDef } from '../../model';
 
 describe('Physical model, measure map', () => {
     let defaultMetrics: Metrics;
@@ -29,7 +30,7 @@ describe('Physical model, measure map', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0 },
             voices: [{
-                content: new SimpleSequence('c4 d2 e4 f1')
+                content: voiceSequenceToDef(new SimpleSequence('c4 d2 e4 f1'))
             }]
         } as StaffDef;
 
@@ -115,11 +116,11 @@ describe('Physical model, measure map', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0 },
             voices: [{
-                content: new CompositeSequence(
+                content: voiceSequenceToDef(new CompositeSequence(
                     new GraceSequence( new SimpleSequence('d\'16')),
                     new SimpleSequence( 'f\'4'),
                     new GraceSequence( new SimpleSequence( 'e\'\'16')),
-                    new SimpleSequence( 'f\'\'4')
+                    new SimpleSequence( 'f\'\'4'))
                 )
             }]
         } as StaffDef;
@@ -223,7 +224,7 @@ describe('Physical model, measure map', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0 },
             voices: [{
-                content: new SimpleSequence('c4 d8 e4 f2')
+                content: voiceSequenceToDef(new SimpleSequence('c4 d8 e4 f2'))
             }]
         } as StaffDef;
 
@@ -438,7 +439,7 @@ describe('Physical model, measure map', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0 },
             voices: [{
-                content: new SimpleSequence('c4 <fis, ais, cis dis>2')
+                content: voiceSequenceToDef(new SimpleSequence('c4 <fis, ais, cis dis>2'))
             }]
         } as StaffDef;
 

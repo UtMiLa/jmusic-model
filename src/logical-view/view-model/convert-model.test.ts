@@ -6,7 +6,7 @@ import { FlagType } from './note-view-model';
 import { RetrogradeSequence, TupletSequence } from './../../model/score/transformations';
 import { SimpleSequence, CompositeSequence } from './../../model/score/sequence';
 import { expect } from 'chai';
-import { JMusic, LongDecorationType, NoteDirection, NoteType, Time } from './../../model';
+import { JMusic, LongDecorationType, NoteDirection, NoteType, Time, voiceSequenceToDef } from './../../model';
 import { ClefType, StaffDef } from './../../model';
 import { Clef } from './../../model';
 import { scoreModelToViewModel, __internal } from './convert-model';
@@ -216,7 +216,7 @@ describe('View model', () => {
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4 },
-            voices:[{ content: combinedSequence }]
+            voices:[{ content: voiceSequenceToDef(combinedSequence) }]
         };
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
@@ -282,7 +282,7 @@ describe('View model', () => {
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4 },
-            voices:[{ content: tupletSequence }]
+            voices:[{ content: voiceSequenceToDef(tupletSequence) }]
         };
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
@@ -340,7 +340,7 @@ describe('View model', () => {
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4 },
-            voices:[{ content: tupletSequence }]
+            voices:[{ content: voiceSequenceToDef(tupletSequence) }]
         };
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
@@ -387,7 +387,7 @@ describe('View model', () => {
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4 },
-            voices:[{ content: tupletSequence }]
+            voices:[{ content: voiceSequenceToDef(tupletSequence) }]
         };
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
