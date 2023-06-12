@@ -1,4 +1,4 @@
-import { MusicEvent } from './../score/sequence';
+import { MusicEvent, SequenceDef } from './../score/sequence';
 import { Time, AbsoluteTime } from './../rationals/time';
 import { TimeSpan } from '../rationals/time';
 import { BaseSequence, ISequence } from '../score/sequence';
@@ -14,6 +14,8 @@ export class LyricsSequence extends BaseSequence {
     constructor(private sequence: ISequence, public lyricsText: string) {
         super();
     }
+
+    asObject: SequenceDef = [];
 
     get elements(): MusicEvent[] {
         const lyricsSplit = this.lyricsText.split(' ');

@@ -2,7 +2,7 @@ import { isVariableRef, VariableRef, VariableRepository, VariableDef } from './v
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
 import { createFunction, isSeqFunction, SeqFunction } from './functions';
-import { BaseSequence, getDuration, isMusicEvent, MusicEvent, parseLilyElement, SimpleSequence } from './sequence';
+import { BaseSequence, getDuration, isMusicEvent, MusicEvent, parseLilyElement, SequenceDef, SimpleSequence } from './sequence';
 
 // Fix for types for R.chain
 import * as _ from 'ts-toolbelt';
@@ -74,6 +74,8 @@ export class FlexibleSequence extends BaseSequence {
     get count(): number {
         return this._elements.reduce((prev, curr) => isFlexibleSequence(curr) ? prev + curr.count : prev + 1, 0);
     }
+
+    asObject: SequenceDef = [];
 
     private _def!: FlexibleItem[];
     public get def(): FlexibleItem[] {

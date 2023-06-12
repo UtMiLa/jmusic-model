@@ -2,13 +2,15 @@ import { AbsoluteTime, Time } from './../rationals/time';
 import { Rational, RationalDef } from '../../model/rationals/rational';
 import { Note, setGrace, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
 import { TimeSpan } from '../rationals/time';
-import { isLongDecoration, isStateChange, BaseSequence, ISequence, MusicEvent, TimeSlot } from './sequence';
+import { isLongDecoration, isStateChange, BaseSequence, ISequence, MusicEvent, TimeSlot, SequenceDef } from './sequence';
 
 
 export class RetrogradeSequence extends BaseSequence {
     constructor(private sequence: ISequence) {
         super();
     }
+
+    asObject: SequenceDef = [];
     
     public get elements(): MusicEvent[] {
         const res = this.sequence.elements.map(n => {
@@ -41,6 +43,8 @@ export class TupletSequence extends BaseSequence {
     constructor(private sequence: ISequence, private fraction: RationalDef) {
         super();
     }
+
+    asObject: SequenceDef = [];
     
     public get elements(): MusicEvent[] {
         return this.sequence.elements.map((ele, i, arr) => {
@@ -66,6 +70,8 @@ export class GraceSequence extends BaseSequence {
     constructor(private sequence: ISequence) {
         super();
     }
+
+    asObject: SequenceDef = [];
     
     public get elements(): MusicEvent[] {
         return this.sequence.elements.map((ele, i, arr) => {

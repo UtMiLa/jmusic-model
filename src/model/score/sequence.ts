@@ -10,6 +10,7 @@ import { createNoteFromLilypond, getRealDuration, Note, setNoteId } from '../not
 import { Time, TimeSpan } from '../rationals/time';
 import { Clef } from '../states/clef';
 import { EventType, getExtendedTime } from './timing-order';
+import R = require('ramda');
 
 export type MusicEvent = Note | StateChange | LongDecorationElement;
 
@@ -63,11 +64,15 @@ export interface ISequence {
     groupByTimeSlots(keyPrefix: string): TimeSlot[];
     insertElement(time: AbsoluteTime, elm: MusicEvent): void;
     appendElement(elm: MusicEvent): void;
+    asObject: SequenceDef;
 }
 
-export interface SequenceDef {
+export type SequenceDefItem = {
     elements: string;
-}
+} | SequenceDef[] 
+  | { function: string; args: SequenceDef[] };
+
+export type SequenceDef = SequenceDefItem[];
 
 export interface TimeSlot {
     time: AbsoluteTime;
@@ -130,6 +135,7 @@ export function parseLilyElement(ly: string): Note | StateChange {
 export abstract class BaseSequence implements ISequence {
     abstract elements: MusicEvent[];
     abstract duration: TimeSpan;
+    abstract asObject: SequenceDef;
 
     /*protected uniqueId = generateUniqueId();*/
 
@@ -261,16 +267,20 @@ export class SimpleSequence extends BaseSequence {
     constructor(def: string) {
         super();
 
-        this.def = def;
+        this.asObject = [{ elements: def }];
     }
 
     private _def!: string;
-    public get def(): string {
-        return this._def;
+    public get asObject(): SequenceDef {
+        return [{ elements: this._def }];
     }
-    public set def(value: string) {
-        this._def = value;
-        this._elements = value ? SimpleSequence.splitByNotes(value).map(str => parseLilyElement(str)) : [];
+    public set asObject(value: SequenceDef) {
+        const val = value[0];
+        if (!val || typeof val !== 'object' || R.is(Array, val) || R.has('function', val) || val.elements === undefined ) {
+            throw 'Illegal argument to new SimpleSequence()';
+        }
+        this._def = val.elements;
+        this._elements = val.elements ? SimpleSequence.splitByNotes(val.elements).map(str => parseLilyElement(str)) : [];
     }
 
     private _elements: MusicEvent[] = [];
@@ -328,6 +338,8 @@ export class CompositeSequence extends BaseSequence {
         super();
         this._sequences = sequences;
     }
+
+    asObject: SequenceDef = [];
 
     private _sequences: ISequence[];
 
