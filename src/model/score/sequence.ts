@@ -72,7 +72,7 @@ export type SequenceDefItem = {
 } | SequenceDef[] 
   | { function: string; args: SequenceDef[] };
 
-export type SequenceDef = SequenceDefItem[];
+export type SequenceDef = string | SequenceDefItem[];
 
 export interface TimeSlot {
     time: AbsoluteTime;
@@ -267,20 +267,19 @@ export class SimpleSequence extends BaseSequence {
     constructor(def: string) {
         super();
 
-        this.asObject = [{ elements: def }];
+        this.asObject = def;
     }
 
     private _def!: string;
     public get asObject(): SequenceDef {
-        return [{ elements: this._def }];
+        return this._def;
     }
     public set asObject(value: SequenceDef) {
-        const val = value[0];
-        if (!val || typeof val !== 'object' || R.is(Array, val) || R.has('function', val) || val.elements === undefined ) {
+        if (typeof value !== 'string') {
             throw 'Illegal argument to new SimpleSequence()';
         }
-        this._def = val.elements;
-        this._elements = val.elements ? SimpleSequence.splitByNotes(val.elements).map(str => parseLilyElement(str)) : [];
+        this._def = value;
+        this._elements = value ? SimpleSequence.splitByNotes(value).map(str => parseLilyElement(str)) : [];
     }
 
     private _elements: MusicEvent[] = [];

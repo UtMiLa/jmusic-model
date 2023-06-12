@@ -5,6 +5,7 @@ import { parseLilyClef } from './sequence';
 import { expect } from 'chai';
 import { LongDecorationType } from '../decorations/decoration-type';
 import { FlexibleSequence } from './flexible-sequence';
+import { VariableRepository } from './variables';
 describe('Flexible Sequence', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';
@@ -305,6 +306,23 @@ describe('Flexible Sequence', () => {
         //        (or insert or delete)
 
 
+    });
+
+    describe('asObject', () => {
+        it('should serialize an empty sequence correctly', () => {
+            expect(new FlexibleSequence([]).asObject).to.deep.eq([]);
+        });
+        it('should serialize an ordinary sequence correctly', () => {
+            expect(new FlexibleSequence('c4. e8').asObject).to.deep.eq(['c4.', 'e8']);
+        });
+        xit('should serialize a variable reference correctly', () => {
+            expect(
+                new FlexibleSequence(
+                    [{ variable: 'test'}], 
+                    new VariableRepository([{id: 'test', value: new FlexibleSequence('d4 e4')}])
+                ).asObject
+            ).to.deep.eq([{ variable: 'test'}]);
+        });
     });
 });
 

@@ -75,7 +75,13 @@ export class FlexibleSequence extends BaseSequence {
         return this._elements.reduce((prev, curr) => isFlexibleSequence(curr) ? prev + curr.count : prev + 1, 0);
     }
 
-    asObject: SequenceDef = [];
+    private _asObject: SequenceDef = [];
+    public get asObject(): SequenceDef {
+        return this._def as SequenceDef;
+    }
+    public set asObject(value: SequenceDef) {
+        this.def = value as FlexibleItem[];
+    }
 
     private _def!: FlexibleItem[];
     public get def(): FlexibleItem[] {
