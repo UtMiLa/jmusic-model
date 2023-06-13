@@ -1,3 +1,4 @@
+import { ScoreDef } from './score';
 import { MusicEvent } from './sequence';
 
 export interface VariableDef {
@@ -17,4 +18,18 @@ export interface SeqFunction {
     function: FuncDef;
     args: FlexibleItem;
     extraArgs?: unknown[];
+}
+
+export function isSeqFunction(test: unknown): test is SeqFunction {
+    return !!test && !!(test as SeqFunction).function && !!(test as SeqFunction).args;
+}
+
+
+export interface ProjectDef {
+    score: ScoreDef;
+    vars: VariableDef[];
+}
+
+export function isProjectDef(test: unknown): test is ProjectDef {
+    return !!test && !!(test as ProjectDef).score && !!(test as ProjectDef).vars;
 }

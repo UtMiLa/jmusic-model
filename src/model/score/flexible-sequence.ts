@@ -1,12 +1,12 @@
 import { isVariableRef, VariableRepository } from './variables';
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
-import { createFunction, isSeqFunction } from './functions';
+import { createFunction } from './functions';
 import { BaseSequence, getDuration, isMusicEvent, MusicEvent, parseLilyElement, SequenceDef, SimpleSequence } from './sequence';
 
 // Fix for types for R.chain
 import * as _ from 'ts-toolbelt';
-import { FlexibleItem, SeqFunction } from './types';
+import { FlexibleItem, isSeqFunction, SeqFunction } from './types';
 type addIndexFix<T, U> = (
     fn: (f: (item: T) => U, list: readonly T[]) => U,
 ) => _.F.Curry<(a: (item: T, idx: number, list: T[]) => U, b: readonly T[]) => U>;

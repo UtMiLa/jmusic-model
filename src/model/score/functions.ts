@@ -68,9 +68,6 @@ import { mapLyricsToMusic } from '../notes/lyrics';
             others -> skip
 */
 
-export function isSeqFunction(test: unknown): test is SeqFunction {
-    return !!(test as SeqFunction).function && !!(test as SeqFunction).args;
-}
 
 type MusicFunc = (elements: MusicEvent[]) => MusicEvent[];
 type CurryMusicFunc = (...args: unknown[]) => MusicFunc;

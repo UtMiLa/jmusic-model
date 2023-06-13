@@ -20,7 +20,7 @@ import { VariableRepository } from '../score/variables';
 import R = require('ramda');
 import { Enharmonic, addInterval, enharmonicChange } from '../pitches/intervals';
 import { StateChange } from '../states/state';
-import { FlexibleItem } from '../score/types';
+import { FlexibleItem, ProjectDef, isProjectDef } from '../score/types';
 
 export interface JMusicSettings {
     content: FlexibleItem[][];
@@ -72,9 +72,14 @@ export const initStateInSequence = (s: ISequence) => {
 /** Facade object for music scores */
 export class JMusic implements ScoreDef {
 
-    constructor(voice?: string | JMusicSettings | ScoreDef, vars?: JMusicVars) {
+    constructor(voice?: string | JMusicSettings | ScoreDef | ProjectDef, vars?: JMusicVars) {
 
-        this.vars = new VariableRepository(vars ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: pair[1] })) : []);
+        this.vars = new VariableRepository(
+            vars
+                ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: pair[1] }))
+                : isProjectDef(voice)
+                    ? voice.vars
+                    : []);
 
         this.makeScore(voice);
 
@@ -104,7 +109,7 @@ export class JMusic implements ScoreDef {
 
     changeHandlers: ChangeHandler[] = [];
 
-    private makeScore(voice: string | JMusicSettings | ScoreDef | undefined) {
+    private makeScore(voice: string | JMusicSettings | ScoreDef | ProjectDef | undefined) {
         if (typeof (voice) === 'string') {
             this.staves = [{
                 initialClef: Clef.clefTreble.def,
@@ -112,6 +117,9 @@ export class JMusic implements ScoreDef {
                 initialMeter: { count: 4, value: 4 },
                 voices: [{ content: voiceSequenceToDef(new FlexibleSequence(voice, this.vars)) }]
             }];
+        } else if (isProjectDef(voice)) {
+            this.staves = [...voice.score.staves];
+            this.repeats = voice.score.repeats ?? [];
         } else if (isScoreDef(voice)) {
             this.staves = [...voice.staves];
             this.repeats = voice.repeats ?? [];
