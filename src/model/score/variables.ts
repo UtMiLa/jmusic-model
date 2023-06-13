@@ -1,14 +1,7 @@
 import R = require('ramda');
 import { Subject } from 'rxjs';
 import { FlexibleSequence } from './flexible-sequence';
-export interface VariableDef {
-    id: string;
-    value: FlexibleSequence;
-}
-
-export interface VariableRef {
-    variable: string;
-}
+import { FlexibleItem, VariableDef, VariableRef } from './types';
 
 export class VariableRepository {
     constructor(private vars: VariableDef[]) {}
@@ -18,10 +11,10 @@ export class VariableRepository {
     valueOf(id: string): FlexibleSequence {
         const theVar = this.vars.find(vd => vd.id === id);
         if (!theVar) throw 'Undefined variable: ' + id;
-        return theVar.value;
+        return new FlexibleSequence(theVar.value);
     }
 
-    setVar(id: string, value: FlexibleSequence): void {
+    setVar(id: string, value: FlexibleItem): void {
         this.vars = R.uniqBy(R.prop('id'), [{id, value}, ...this.vars]);
         this.observer$.next(this);
     }

@@ -1,6 +1,7 @@
 import { NoteDirection } from './../notes/note';
-import { FlexibleItem, FlexibleSequence } from './flexible-sequence';
+import { FlexibleSequence } from './flexible-sequence';
 import { ISequence, SequenceDef } from './sequence';
+import { FlexibleItem } from './types';
 
 
 export type VoiceContentDef = SequenceDef; 

@@ -1,11 +1,12 @@
 import { expect } from 'chai';
 import { createNoteFromLilypond } from '../notes/note';
-import { FlexibleItem, FlexibleSequence } from './flexible-sequence';
-import { VariableDef, VariableRepository } from './variables';
+import { FlexibleSequence } from './flexible-sequence';
+import { VariableRepository } from './variables';
+import { VariableDef, FlexibleItem } from './types';
 
 describe('Variables', () => {
     it('should insert variable in sequence', () => {
-        const var1: VariableDef = { id: 'var1', value: new FlexibleSequence(['c4', 'd4']) };
+        const var1: VariableDef = { id: 'var1', value:['c4', 'd4'] };
         const vars = new VariableRepository([var1]);
         const seq1Text: FlexibleItem = ['f8', { variable: 'var1' }, 'g8'];
 
@@ -23,7 +24,7 @@ describe('Variables', () => {
     
 
     it('should map an element index to a path even when variables are present', () => {
-        const var1: VariableDef = { id: 'var1', value: new FlexibleSequence(['c4', 'd4']) };
+        const var1: VariableDef = { id: 'var1', value: ['c4', 'd4'] };
         const vars = new VariableRepository([var1]);
         const seq1Text: FlexibleItem = ['f8', { variable: 'var1' }, 'g8'];
 
@@ -38,7 +39,7 @@ describe('Variables', () => {
 
 
     it('should update sequence when variable changes', () => {
-        const var1: VariableDef = { id: 'var1', value: new FlexibleSequence(['c4', 'd4']) };
+        const var1: VariableDef = { id: 'var1', value: ['c4', 'd4'] };
         const vars = new VariableRepository([var1]);
         const seq1Text: FlexibleItem = ['f8', { variable: 'var1' }, 'g8'];
 
@@ -48,7 +49,7 @@ describe('Variables', () => {
 
         expect(result0).to.have.length(4);
 
-        vars.setVar('var1', new FlexibleSequence(['e8']));
+        vars.setVar('var1', 'e8');
 
         const result = seq1.elements;
 

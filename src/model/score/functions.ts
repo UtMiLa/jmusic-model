@@ -4,13 +4,9 @@ import { addInterval, diffPitch, Interval } from '../pitches/intervals';
 import { Pitch } from '../pitches/pitch';
 import { RationalDef } from '../rationals/rational';
 import { TimeSpan, AbsoluteTime } from '../rationals/time';
-import { FlexibleItem, FlexibleSequence } from './flexible-sequence';
+import { FlexibleSequence } from './flexible-sequence';
 import { BaseSequence, ISequence, isNote, MusicEvent, TimeSlot } from './sequence';
-export interface SeqFunction {
-    function: FuncDef;
-    args: FlexibleItem;
-    extraArgs?: unknown[];
-}
+import { SeqFunction, FuncDef } from './types';
 
 /* todo functions:
     repeatFor       [# of times]            repeat for a timespan
@@ -76,8 +72,6 @@ export interface SeqFunction {
 export function isSeqFunction(test: unknown): test is SeqFunction {
     return !!(test as SeqFunction).function && !!(test as SeqFunction).args;
 }
-
-export type FuncDef = 'Relative' | 'Reverse' | 'Repeat' | 'Grace' | 'Tuplet' | 'Transpose' | 'ModalTranspose';
 
 type MusicFunc = (elements: MusicEvent[]) => MusicEvent[];
 type CurryMusicFunc = (...args: unknown[]) => MusicFunc;

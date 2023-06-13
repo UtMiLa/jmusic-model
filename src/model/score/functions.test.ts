@@ -5,7 +5,8 @@ import { getDuration } from './sequence';
 import { expect } from 'chai';
 import { LongDecorationType } from '../decorations/decoration-type';
 import { FlexibleSequence } from './flexible-sequence';
-import { createFunction, FuncDef, SeqFunction } from './functions';
+import { createFunction } from './functions';
+import { FuncDef, SeqFunction } from './types';
 
 // Inspiration: Lilypond functions https://lilypond.org/doc/v2.25/Documentation/notation/available-music-functions
 

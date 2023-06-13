@@ -15,7 +15,14 @@ export class LyricsSequence extends BaseSequence {
         super();
     }
 
-    asObject: SequenceDef = [];
+    
+    public get asObject(): SequenceDef {
+        return this.sequence.asObject; //[{ function: 'AddLyrics', args: [this.sequence.asObject], extraArgs: [this.lyricsText] }];
+    }
+    public set asObject(value: SequenceDef) {
+        throw 'Not supported';
+    }
+    
 
     get elements(): MusicEvent[] {
         const lyricsSplit = this.lyricsText.split(' ');

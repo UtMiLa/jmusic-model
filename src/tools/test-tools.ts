@@ -1,5 +1,6 @@
+import { FlexibleItem } from './../model/score/types';
 import { scoreModelToViewModel, ScoreViewModel } from '../logical-view';
-import { ClefType, FlexibleItem, FlexibleSequence, Note, RegularMeterDef, ScoreDef, setGrace, SimpleSequence, StaffDef, Time, UpdateNote, voiceContentToSequence, voiceSequenceToDef } from './../model';
+import { ClefType, FlexibleSequence, Note, RegularMeterDef, ScoreDef, setGrace, SimpleSequence, StaffDef, Time, UpdateNote, voiceContentToSequence, voiceSequenceToDef } from './../model';
 
 export function createTestScore(staves: string[][], meter: number[], key: number[], clefs: string[] | undefined = undefined): ScoreDef {
     return {

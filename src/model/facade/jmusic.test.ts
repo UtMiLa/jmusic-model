@@ -228,7 +228,7 @@ describe('Facade', () => {
             ins.staffNo = 0;
             ins.voiceNo = 1;
             
-            score.vars.setVar('teste', new FlexibleSequence('c4 e4'));
+            score.vars.setVar('teste', 'c4 e4');
             expect(score.vars.valueOf('teste')).to.not.be.undefined;
             //expect(scoreChangeCalls).to.eq(1);
 

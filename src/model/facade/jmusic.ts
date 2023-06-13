@@ -1,5 +1,5 @@
 import { NoteDirection, cloneNote, voiceContentToSequence, voiceSequenceToDef } from '../../model';
-import { FlexibleItem, FlexibleSequence } from './../score/flexible-sequence';
+import { FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
 import { ISequence, MusicEvent, isClefChange, isKeyChange, isMeterChange, isNote, isStateChange } from './../score/sequence';
@@ -20,6 +20,7 @@ import { VariableRepository } from '../score/variables';
 import R = require('ramda');
 import { Enharmonic, addInterval, enharmonicChange } from '../pitches/intervals';
 import { StateChange } from '../states/state';
+import { FlexibleItem } from '../score/types';
 
 export interface JMusicSettings {
     content: FlexibleItem[][];
@@ -73,7 +74,7 @@ export class JMusic implements ScoreDef {
 
     constructor(voice?: string | JMusicSettings | ScoreDef, vars?: JMusicVars) {
 
-        this.vars = new VariableRepository(vars ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: new FlexibleSequence(pair[1]) })) : []);
+        this.vars = new VariableRepository(vars ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: pair[1] })) : []);
 
         this.makeScore(voice);
 

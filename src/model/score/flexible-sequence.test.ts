@@ -322,7 +322,7 @@ describe('Flexible Sequence', () => {
             expect(
                 new FlexibleSequence(
                     [{ variable: 'test'}], 
-                    new VariableRepository([{id: 'test', value: new FlexibleSequence('d4 e4')}])
+                    new VariableRepository([{id: 'test', value: 'd4 e4'}])
                 ).asObject
             ).to.deep.eq([{ variable: 'test'}]);
         });
