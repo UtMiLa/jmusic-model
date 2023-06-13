@@ -5,6 +5,19 @@ import { BaseSequence, ISequence } from '../score/sequence';
 import { StateChange } from '../states/state';
 import { Note, setNoteText } from './note';
 
+export function mapLyricsToMusic(lyrics: string, music: MusicEvent[]): MusicEvent[] {
+    const lyricsSplit = lyrics.split(' ');
+    let i = 0;
+    return music.map(elm => { 
+        const note = elm as Note;
+        if (note.pitches && note.pitches.length) {
+            const theText = note.text ? [...note.text, lyricsSplit[i++]] :  [lyricsSplit[i++]];
+            return setNoteText(note, theText);
+        }
+        return elm;            
+    });    
+}
+
 export class LyricsSequence extends BaseSequence {
     /**
      * @param seq Sequence to bind lyrics to
@@ -17,7 +30,7 @@ export class LyricsSequence extends BaseSequence {
 
     
     public get asObject(): SequenceDef {
-        return this.sequence.asObject; //[{ function: 'AddLyrics', args: [this.sequence.asObject], extraArgs: [this.lyricsText] }];
+        return [{ function: 'AddLyrics', args: [this.sequence.asObject], extraArgs: [this.lyricsText] }];
     }
     public set asObject(value: SequenceDef) {
         throw 'Not supported';
@@ -25,16 +38,8 @@ export class LyricsSequence extends BaseSequence {
     
 
     get elements(): MusicEvent[] {
-        const lyricsSplit = this.lyricsText.split(' ');
-        let i = 0;
-        return this.sequence.elements.map(elm => { 
-            const note = elm as Note;
-            if (note.pitches && note.pitches.length) {
-                const theText = note.text ? [...note.text, lyricsSplit[i++]] :  [lyricsSplit[i++]];
-                return setNoteText(note, theText);
-            }
-            return elm;            
-        });
+        return mapLyricsToMusic(this.lyricsText, this.sequence.elements);
+
     }
 
     duration: TimeSpan = this.sequence.duration;

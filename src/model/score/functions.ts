@@ -1,12 +1,11 @@
 import R = require('ramda');
 import { Note, setGrace, setPitches, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
-import { addInterval, diffPitch, Interval } from '../pitches/intervals';
+import { addInterval, Interval } from '../pitches/intervals';
 import { Pitch } from '../pitches/pitch';
 import { RationalDef } from '../rationals/rational';
-import { TimeSpan, AbsoluteTime } from '../rationals/time';
-import { FlexibleSequence } from './flexible-sequence';
-import { BaseSequence, ISequence, isNote, MusicEvent, TimeSlot } from './sequence';
+import { isNote, MusicEvent } from './sequence';
 import { SeqFunction, FuncDef } from './types';
+import { mapLyricsToMusic } from '../notes/lyrics';
 
 /* todo functions:
     repeatFor       [# of times]            repeat for a timespan
@@ -106,6 +105,8 @@ const transposeNote = R.curry((interval: Interval, note: Note) => ({...note, pit
 
 const transpose = R.curry((interval, sequence: MusicEvent[]) => R.map(R.when(isNote, transposeNote(interval)))(sequence));
 
+const addLyrics = R.curry((lyrics: string, sequence: MusicEvent[]) => mapLyricsToMusic(lyrics, sequence));
+
 const relativeOctave = (prevPitch: Pitch, currPitch: Pitch): number => {
     const firstPitch = currPitch;
     const fromOctave = prevPitch.octave;
@@ -147,7 +148,8 @@ const internal_functions: {[key: string]: MusicFunc | CurryMusicFunc } = {
     'Grace': R.map(setGraceNote),
     'Tuplet': R.curry(setTupletNotes) as CurryMusicFunc,
     'Transpose': transpose as CurryMusicFunc,
-    'ModalTranspose': R.identity
+    'ModalTranspose': R.identity,
+    'AddLyrics': addLyrics as CurryMusicFunc
 };
 
 export function createFunction(funcDef: FuncDef, extraArgs?: unknown[]): (elements: MusicEvent[]) => MusicEvent[] {

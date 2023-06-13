@@ -8,6 +8,7 @@ export * from './states/key';
 export * from './states/meter';
 export * from './score/score';
 export * from './score/sequence';
+export * from './score/types';
 export * from './score/flexible-sequence';
 export * from './score/functions';
 export * from './score/variables';
