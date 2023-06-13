@@ -2,7 +2,7 @@ import { NoteDirection, cloneNote, voiceContentToSequence, voiceSequenceToDef } 
 import { FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
-import { ISequence, MusicEvent, isClefChange, isKeyChange, isMeterChange, isNote, isStateChange } from './../score/sequence';
+import { ISequence, MusicEvent, isClefChange, isKeyChange, isLongDecoration, isMeterChange, isNote, isStateChange } from './../score/sequence';
 import { InsertionPoint } from './../../editor/insertion-point';
 import { RegularMeterDef, MeterFactory } from './../states/meter';
 import { Key, KeyDef } from './../states/key';
@@ -330,9 +330,10 @@ export class JMusic implements ScoreDef {
     }
 
     addLongDecoration(decorationType: LongDecorationType, ins: InsertionPoint, length: TimeSpan): void {
-        const seq = this.sequenceFromInsertionPoint(ins);
+        //const seq = this.sequenceFromInsertionPoint(ins);
 
-        seq.insertElement(ins.time, { longDeco: decorationType, length });
+        //seq.insertElement(ins.time, { longDeco: decorationType, length });
+        this.InsertElementAtInsertionPoint(ins, { longDeco: decorationType, length }, isLongDecoration);
         this.didChange();
     }
 
