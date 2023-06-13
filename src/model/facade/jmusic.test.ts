@@ -12,6 +12,7 @@ import { SimpleSequence } from '../score/sequence';
 import { StaffDef } from '../score/staff';
 import { FlexibleSequence } from '../score/flexible-sequence';
 import { voiceContentToSequence, voiceSequenceToDef } from '../score/voice';
+import R = require('ramda');
 
 describe('Facade', () => {
 
@@ -262,7 +263,7 @@ describe('Facade', () => {
             ins.time = Time.newAbsolute(3, 4);
             score.addPitch(ins, Pitch.parseLilypond('e'));
             const seq = voiceContentToSequence(score.staves[0].voices[1].content);
-            expect(seq.elements[3]).to.deep.eq(createNoteFromLilypond('<c e>4'));
+            expect(R.dissoc('uniq', seq.elements[3] as Note)).to.deep.eq(createNoteFromLilypond('<c e>4'));
             expect(scoreChangeCalls).to.eq(1);
         });
 
@@ -289,7 +290,7 @@ describe('Facade', () => {
             ins.time = Time.newAbsolute(3, 4);
             score.addPitch(ins);
             const seq = voiceContentToSequence(score.staves[0].voices[1].content);
-            expect(seq.elements[3]).to.deep.eq(createNoteFromLilypond('<c e\'\'>4'));
+            expect(R.dissoc('uniq', seq.elements[3] as Note)).to.deep.eq(createNoteFromLilypond('<c e\'\'>4'));
             expect(scoreChangeCalls).to.eq(1);
         });
 
@@ -543,7 +544,8 @@ describe('Facade', () => {
             expect(score.vars.valueOf('var1').elements[0]).to.deep.eq(createNoteFromLilypond('f8'));
 
             v.addPitch(ins, Pitch.parseLilypond('g'));
-            expect(voiceContentToSequence(v.staves[0].voices[0].content).elements[0]).to.deep.eq(createNoteFromLilypond('<f g>8'));
+            expect(R.dissoc('uniq', voiceContentToSequence(v.staves[0].voices[0].content).elements[0] as Note))
+                .to.deep.eq(createNoteFromLilypond('<f g>8'));
             expect(score.vars.valueOf('var1').elements[0]).to.deep.eq(createNoteFromLilypond('<f g>8'));
         });
 

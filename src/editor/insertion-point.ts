@@ -1,7 +1,15 @@
 import { AbsoluteTime, getDuration, voiceContentToSequence } from '../model';
 import { Time } from '../model';
 import { ScoreDef } from '../model';
-export class InsertionPoint {
+
+export interface InsertionPointDef {
+    score: ScoreDef;
+    time: AbsoluteTime;
+    voiceNo: number;
+    staffNo: number;
+    position: number;
+}
+export class InsertionPoint implements InsertionPointDef {
     constructor(public score: ScoreDef) {}
 
     time = Time.StartTime;
