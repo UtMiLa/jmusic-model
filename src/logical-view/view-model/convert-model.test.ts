@@ -506,6 +506,34 @@ describe('View model', () => {
             ]);
         });
     
+        it('should convert two long decos at the same time', () => {
+            const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], meter: '4/4' });
+            const ins1 = new InsertionPoint(score);
+            ins1.staffNo = 0;
+            ins1.voiceNo = 0;
+            ins1.time = Time.StartTime;
+            score.addLongDecoration(LongDecorationType.Crescendo, ins1, Time.newSpan(2, 1));
+            score.addLongDecoration(LongDecorationType.Slur, ins1, Time.newSpan(2, 1));
+    
+            const log2 = scoreModelToViewModel(score);
+            expect(log2.staves[0].timeSlots[1].decorations).to.deep.eq([
+                { 
+                    type: LongDecorationType.Crescendo, 
+                    noteRefs: [
+                        { uniq: '0-0-2', absTime: Time.newAbsolute(0, 1) },
+                        { uniq: '0-0-4', absTime: Time.newAbsolute(2, 1) }
+                    ]
+                },
+                { 
+                    type: LongDecorationType.Slur, 
+                    noteRefs: [
+                        { uniq: '0-0-2', absTime: Time.newAbsolute(0, 1) },
+                        { uniq: '0-0-4', absTime: Time.newAbsolute(2, 1) }
+                    ]
+                }
+            ]);
+        });
+    
     });
 
 });

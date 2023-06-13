@@ -333,7 +333,7 @@ export class JMusic implements ScoreDef {
         //const seq = this.sequenceFromInsertionPoint(ins);
 
         //seq.insertElement(ins.time, { longDeco: decorationType, length });
-        this.InsertElementAtInsertionPoint(ins, { longDeco: decorationType, length }, isLongDecoration);
+        this.InsertElementAtInsertionPoint(ins, { longDeco: decorationType, length }, () => false);
         this.didChange();
     }
 
