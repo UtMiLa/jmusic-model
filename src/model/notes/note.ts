@@ -73,7 +73,9 @@ export function createNoteFromLilypond(input: string): Note {
         }
     } else {
         const match = matcher.exec(input);
-        if (!match || match.length < 4) throw 'Illegal note: ' + input;
+        if (!match || match.length < 4) {
+            throw 'Illegal note: ' + input;
+        }
         pitches = (match[1] === 'r') ? [] : [match[1]];
         durationString = match[3];    
         if (match[4]) {

@@ -88,6 +88,10 @@ export class FlexibleSequence extends BaseSequence {
         return this._def.map(simplifyDef);
     }
     public set def(init: FlexibleItem[]) {
+        if (!init) init = [];
+
+        //if (isSeqFunction(init) || R.is(String, init)) init = [init];
+
         this._def = init;
 
         function isSingleStringArray(test: unknown): test is string[] {
@@ -100,12 +104,26 @@ export class FlexibleSequence extends BaseSequence {
         
         this._elements = R.chain(
             R.cond<FlexibleItem, string, SeqFunction, /*VariableRef,*/ string[], MusicEvent, FlexibleItem[], MusicEvent[]>([
-                [R.is(String), ((item: string) => [parseLilyElement(item) as MusicEvent])],
-                [isSeqFunction, (item: SeqFunction) => createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))],
+                [
+                    R.is(String), 
+                    ((item: string) => item ? [parseLilyElement(item) as MusicEvent] : [])
+                ],
+                [
+                    isSeqFunction, 
+                    (item: SeqFunction) => 
+                        createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))
+                ],
                 //[isVariableRef, (item: VariableRef) => calcElements([(this.repo.valueOf(item.variable)], this.repo)],
-                [isSingleStringArray, (item: string[]) => [parseLilyElement(item[0])]],
-                [isMusicEvent, (item: MusicEvent) => [item]],
-                [isOtherFlexibleItemArray, (elm) => calcElements(elm, this.repo)]
+                [
+                    isSingleStringArray, 
+                    (item: string[]) => [parseLilyElement(item[0])]
+                ],
+                [
+                    isMusicEvent, (item: MusicEvent) => [item]
+                ],
+                [
+                    isOtherFlexibleItemArray, (elm) => calcElements(elm, this.repo)
+                ]
             ])            
             , init);
     }

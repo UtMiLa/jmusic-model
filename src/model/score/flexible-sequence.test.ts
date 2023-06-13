@@ -312,6 +312,9 @@ describe('Flexible Sequence', () => {
         it('should serialize an empty sequence correctly', () => {
             expect(new FlexibleSequence([]).asObject).to.deep.eq([]);
         });
+        it('should serialize an empty sequence correctly', () => {
+            expect(new FlexibleSequence('').asObject).to.deep.eq(['']);
+        });
         it('should serialize an ordinary sequence correctly', () => {
             expect(new FlexibleSequence('c4. e8').asObject).to.deep.eq(['c4.', 'e8']);
         });

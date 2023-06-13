@@ -13,7 +13,7 @@ import { Metrics, StandardMetrics } from './metrics';
 import { findSystemSplits, generateMeasureMap, MeasureMap, MeasureMapItem, MeasureMapXValueItem } from './measure-map';
 import { StaffViewModel } from '../../logical-view/view-model/score-view-model';
 import { TimeMap } from '../../tools/time-map';
-import { createTestScoreVM, setGraceNoteInStaff } from '../../tools/test-tools';
+import { createTestScoreVM } from '../../tools/test-tools';
 import { createScopedTimeMap } from '../../logical-view/view-model/state-map';
 import { voiceSequenceToDef } from '../../model';
 
@@ -219,16 +219,16 @@ describe('Physical model, measure map', () => {
 
     it('should order and lookup extended times', () => {
 
-        let staff = {
+        const staff = {
             initialClef: { clefType: ClefType.G, line: -2 },
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0 },
             voices: [{
-                content: voiceSequenceToDef(new SimpleSequence('c4 d8 e4 f2'))
+                content: ['c4', {function: 'Grace', args: 'd8' }, 'e4 f2']
             }]
         } as StaffDef;
 
-        staff = setGraceNoteInStaff(staff, 0, 1);
+        //staff = setGraceNoteInStaff(staff, 0, 1);
 
         staffViewModel = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 

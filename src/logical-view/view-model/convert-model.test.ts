@@ -10,7 +10,7 @@ import { JMusic, LongDecorationType, NoteDirection, NoteType, Time, voiceSequenc
 import { ClefType, StaffDef } from './../../model';
 import { Clef } from './../../model';
 import { scoreModelToViewModel, __internal } from './convert-model';
-import { createTestStaff, setGraceNoteInStaff } from '../../tools/test-tools';
+import { createTestStaff } from '../../tools/test-tools';
 import { createScopedTimeMap } from './state-map';
 /* eslint-disable comma-dangle */
 
@@ -110,10 +110,10 @@ describe('View model', () => {
 
 
     it('should mark grace note beams as such', () => {
-        let staff: StaffDef = createTestStaff(['bes4 r4 bes16 b16 b4'], [4, 4], [-1, 3]);
+        const staff: StaffDef = createTestStaff([['bes4 r4', { function: 'Grace', args: 'bes16 b16'}, 'b4']], [4, 4], [-1, 3]);
 
-        staff = setGraceNoteInStaff(staff, 0, 2);
-        staff = setGraceNoteInStaff(staff, 0, 3);
+        /*staff = setGraceNoteInStaff(staff, 0, 2);
+        staff = setGraceNoteInStaff(staff, 0, 3);*/
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
@@ -139,10 +139,10 @@ describe('View model', () => {
     });
 
     it('should beam grace notes even if starting off-beat', () => {
-        let staff: StaffDef = createTestStaff(['bes8 bes16 b16 b4'], [4, 4], [-1, 3]);
+        const staff: StaffDef = createTestStaff([['bes8', { function: 'Grace', args: 'bes16 b16' }, 'b4']], [4, 4], [-1, 3]);
 
-        staff = setGraceNoteInStaff(staff, 0, 1);
-        staff = setGraceNoteInStaff(staff, 0, 2);
+        /*staff = setGraceNoteInStaff(staff, 0, 1);
+        staff = setGraceNoteInStaff(staff, 0, 2);*/
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
@@ -168,12 +168,12 @@ describe('View model', () => {
 
     
     it('should beam grace notes with different values', () => {
-        let staff: StaffDef = createTestStaff(['bes8 bes16 b32 a32 g16 b4'], [4, 4], [-1, 3]);
+        const staff: StaffDef = createTestStaff([['bes8', { function: 'Grace', args: 'bes16 b32 a32 g16'}, 'b4']], [4, 4], [-1, 3]);
 
-        staff = setGraceNoteInStaff(staff, 0, 1);
+        /*staff = setGraceNoteInStaff(staff, 0, 1);
         staff = setGraceNoteInStaff(staff, 0, 2);
         staff = setGraceNoteInStaff(staff, 0, 3);
-        staff = setGraceNoteInStaff(staff, 0, 4);
+        staff = setGraceNoteInStaff(staff, 0, 4);*/
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 

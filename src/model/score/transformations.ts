@@ -10,7 +10,12 @@ export class RetrogradeSequence extends BaseSequence {
         super();
     }
 
-    asObject: SequenceDef = [];
+    public get asObject(): SequenceDef {
+        return [{ function: 'Reverse', args: [this.sequence.asObject] }];
+    }
+    public set asObject(value: SequenceDef) {
+        throw 'Not supported';
+    }
     
     public get elements(): MusicEvent[] {
         const res = this.sequence.elements.map(n => {
@@ -44,7 +49,14 @@ export class TupletSequence extends BaseSequence {
         super();
     }
 
-    asObject: SequenceDef = [];
+    
+    public get asObject(): SequenceDef {
+        return [{ function: 'Tuplet', args: [this.sequence.asObject], extraArgs: [this.fraction] }];
+    }
+    public set asObject(value: SequenceDef) {
+        throw 'Not supported';
+    }
+    
     
     public get elements(): MusicEvent[] {
         return this.sequence.elements.map((ele, i, arr) => {
@@ -71,7 +83,14 @@ export class GraceSequence extends BaseSequence {
         super();
     }
 
-    asObject: SequenceDef = [];
+    //private _asObject: SequenceDef = [];
+    public get asObject(): SequenceDef {
+        return [{ function: 'Grace', args: [this.sequence.asObject] }];
+    }
+    public set asObject(value: SequenceDef) {
+        throw 'Not supported';
+        //this._asObject = value;
+    }
     
     public get elements(): MusicEvent[] {
         return this.sequence.elements.map((ele, i, arr) => {

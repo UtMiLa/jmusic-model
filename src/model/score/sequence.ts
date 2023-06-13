@@ -69,8 +69,8 @@ export interface ISequence {
 
 export type SequenceDefItem = {
     elements: string;
-} | SequenceDef[] 
-  | { function: string; args: SequenceDef[] };
+} | SequenceDef 
+  | { function: string; args: SequenceDef[], extraArgs?: any[] };
 
 export type SequenceDef = string | SequenceDefItem[];
 
@@ -338,7 +338,12 @@ export class CompositeSequence extends BaseSequence {
         this._sequences = sequences;
     }
 
-    asObject: SequenceDef = [];
+    public get asObject(): SequenceDef {
+        return this._sequences.map(s => s.asObject);
+    }
+    public set asObject(value: SequenceDef) {
+        throw 'Not supported';
+    }
 
     private _sequences: ISequence[];
 

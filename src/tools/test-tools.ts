@@ -1,5 +1,5 @@
 import { scoreModelToViewModel, ScoreViewModel } from '../logical-view';
-import { ClefType, Note, RegularMeterDef, ScoreDef, setGrace, SimpleSequence, StaffDef, Time, UpdateNote, voiceContentToSequence, voiceSequenceToDef } from './../model';
+import { ClefType, FlexibleItem, FlexibleSequence, Note, RegularMeterDef, ScoreDef, setGrace, SimpleSequence, StaffDef, Time, UpdateNote, voiceContentToSequence, voiceSequenceToDef } from './../model';
 
 export function createTestScore(staves: string[][], meter: number[], key: number[], clefs: string[] | undefined = undefined): ScoreDef {
     return {
@@ -13,7 +13,7 @@ export function createTestScore(staves: string[][], meter: number[], key: number
     } as ScoreDef;
 }
 
-export function createTestStaff(staff: string[], meter: number[], key: number[], clef = 0): StaffDef {
+export function createTestStaff(staff: FlexibleItem[], meter: number[], key: number[], clef = 0): StaffDef {
     let meterVal = undefined;
     if (meter && meter.length >= 2) {
         meterVal = { count: meter[0], value: meter[1] } as RegularMeterDef;
@@ -26,7 +26,7 @@ export function createTestStaff(staff: string[], meter: number[], key: number[],
         initialClef: clef ? { clefType: ClefType.F, line: 2 } : { clefType: ClefType.G, line: -2 },
         initialKey: { accidental: key[0], count: key[1] },
         initialMeter: meterVal,
-        voices: staff.map(v => ({ content: voiceSequenceToDef(new SimpleSequence(v)) }))
+        voices: staff.map(v => ({ content: voiceSequenceToDef(new FlexibleSequence(v)) }))
     } as StaffDef;
 }
 
@@ -39,7 +39,7 @@ export function setGraceNoteInSequence(seq: SimpleSequence, elementNo: number): 
     return seq;
 }
 
-export function setGraceNoteInStaff(staff: StaffDef, voiceNo: number, elementNo: number): StaffDef {
+/*export function setGraceNoteInStaff(staff: StaffDef, voiceNo: number, elementNo: number): StaffDef {
     voiceContentToSequence(staff.voices[voiceNo].content).elements[elementNo] = setGrace(voiceContentToSequence(staff.voices[voiceNo].content).elements[elementNo] as Note, true);
     return staff;
-}
+}*/
