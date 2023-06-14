@@ -215,12 +215,12 @@ export class JMusic implements ScoreDef {
     }
 
     appendElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent): void {
-        this.staves[ins.staffNo].voices[ins.voiceNo].content = voiceSequenceToDef(new FlexibleSequence(
+        this.staves[ins.staffNo].voices[ins.voiceNo].content = 
             [
                 ...voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).elements,
                 element
             ]
-        ));
+        ;
     }
 
     replaceNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note, toNote: Note): void {

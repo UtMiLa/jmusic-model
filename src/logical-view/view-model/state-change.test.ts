@@ -11,7 +11,6 @@ import { StaffDef } from '../../model/score/staff';
 import { expect } from 'chai';
 import { ClefType } from '../../model/states/clef';
 import { scoreModelToViewModel } from './convert-model';
-import { voiceSequenceToDef } from 'model';
 
 describe('State change view model', () => {
 
@@ -41,7 +40,7 @@ describe('State change view model', () => {
     
         it('should also change positions in another voice after a clef change', () => {
             Staff.setSequence(staffClef, new SimpleSequence( 'c\'4 \\clef alto c\'4 \\clef bass c\'4'));
-            staffClef.voices.push({content: voiceSequenceToDef(new SimpleSequence('b4 b4 b4'))});
+            staffClef.voices.push({content: 'b4 b4 b4'});
     
             const vm = scoreModelToViewModel({staves: [staffClef]}).staves[0];
     
@@ -89,7 +88,7 @@ describe('State change view model', () => {
 
         it('should also change positions in another voice after a clef change', () => {
             Staff.setSequence(staffClef, new SimpleSequence( 'c\'4 \\clef alto c\'4 \\clef bass c\'4'));
-            staffClef.voices.push({content: voiceSequenceToDef(new SimpleSequence('b4 b4 b4'))});
+            staffClef.voices.push({content: 'b4 b4 b4'});
 
             const vm = scoreModelToViewModel({staves: [staffClef]}).staves[0];
 
@@ -108,10 +107,10 @@ describe('State change view model', () => {
             const staff2 = {...staffClef};
 
             Staff.setSequence(staffClef, new SimpleSequence( 'c\'4 \\clef alto c\'4 \\clef bass c\'4'));
-            staffClef.voices.push({content: voiceSequenceToDef(new SimpleSequence('b4 b4 b4'))});
+            staffClef.voices.push({content: 'b4 b4 b4'});
 
             Staff.setSequence(staff2, new SimpleSequence( 'c\'4 \\clef bass c\'4 \\clef bass c\'4'));
-            staff2.voices.push({content: voiceSequenceToDef(new SimpleSequence('b4 b4 b4'))});
+            staff2.voices.push({content: 'b4 b4 b4'});
 
             const scoreDef = {staves: [staffClef, staff2]};
 
@@ -130,8 +129,8 @@ describe('State change view model', () => {
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\clef treble c4 c4 c4 c4 c1')},
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1')}
+                        {content: 'c8 c4 c4 c4 \\clef treble c4 c4 c4 c4 c1')},
+                        {content: 'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1')}
                     ]
                 }]
             };*/
@@ -151,8 +150,8 @@ describe('State change view model', () => {
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1')},
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1')}
+                        {content: 'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1')},
+                        {content: 'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1')}
                     ]
                 }]
             };*/
@@ -177,7 +176,7 @@ describe('State change view model', () => {
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
-                    voices: [{content: voiceSequenceToDef(new SimpleSequence( 'c1 \\key g \\major c1'))}]
+                    voices: [{content: 'c1 \\key g \\major c1'}]
                 }]
             });
     
@@ -192,7 +191,7 @@ describe('State change view model', () => {
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
-                    voices: [{content: voiceSequenceToDef(new SimpleSequence( '<c e f>1 \\key d \\major <c e f>1'))}]
+                    voices: [{content: '<c e f>1 \\key d \\major <c e f>1'}]
                 }]
             });
     
@@ -223,8 +222,8 @@ describe('State change view model', () => {
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( '<c e f>2 \\key d \\major <c e f>1.'))},
-                        {content: voiceSequenceToDef(new SimpleSequence( '<c, e, f,>1 <c, e, f,>1'))}
+                        {content: '<c e f>2 \\key d \\major <c e f>1.'},
+                        {content: '<c, e, f,>1 <c, e, f,>1'}
                     ]
                 }]
             });
@@ -288,13 +287,13 @@ describe('State change view model', () => {
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( '<c e f>2 \\key d \\major <c e f>1.'))}
+                        {content: '<c e f>2 \\key d \\major <c e f>1.'}
                     ]
                 },{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( '<c e f>2 <c e f>1.'))}
+                        {content: '<c e f>2 <c e f>1.'}
                     ]
                 }]
             });
@@ -378,13 +377,13 @@ describe('State change view model', () => {
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( '<c e f>2 \\key d \\major <c e f>1.'))}
+                        {content: '<c e f>2 \\key d \\major <c e f>1.'}
                     ]
                 },{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( '<c e f>1 <c e f>2'))}
+                        {content: '<c e f>1 <c e f>2'}
                     ]
                 }]
             });
@@ -461,14 +460,14 @@ describe('State change view model', () => {
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\key d \\major c4 c4 c4 c4 c1'))}
+                        {content: 'c8 c4 c4 c4 \\key d \\major c4 c4 c4 c4 c1'}
                     ]
                 },{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\key e \\minor c4 c4 c4 c4 c1'))}
+                        {content: 'c8 c4 c4 c4 \\key e \\minor c4 c4 c4 c4 c1'}
                     ]
                 }]
             };
@@ -484,14 +483,14 @@ describe('State change view model', () => {
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\key d \\major c4 c4 c4 c4 c1'))}
+                        {content: 'c8 c4 c4 c4 \\key d \\major c4 c4 c4 c4 c1'}
                     ]
                 },{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\key d \\major c4 c4 c4 c4 c1'))}
+                        {content: 'c8 c4 c4 c4 \\key d \\major c4 c4 c4 c4 c1'}
                     ]
                 }]
             };
@@ -512,7 +511,7 @@ describe('State change view model', () => {
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\meter 5/8 c4 c4 c4 c4 c1'))}
+                        {content: 'c8 c4 c4 c4 \\meter 5/8 c4 c4 c4 c4 c1'}
                     ]
                 }]
             });
@@ -530,7 +529,7 @@ describe('State change view model', () => {
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\meter 4/4 c4 c4 c4 c4 c1'))}
+                        {content: 'c8 c4 c4 c4 \\meter 4/4 c4 c4 c4 c4 c1'}
                     ]
                 }]
             });
@@ -552,7 +551,7 @@ describe('State change view model', () => {
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c8 c8 c8 c8 c8 \\meter 6/8 c8 c8 c8 c8 c8 c8'))}
+                        {content: 'c8 c8 c8 c8 c8 c8 \\meter 6/8 c8 c8 c8 c8 c8 c8'}
                     ]
                 }]
             });
@@ -574,7 +573,7 @@ describe('State change view model', () => {
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c2. \\meter 6/8 c8 c8 c8 c8 c8 c8'))}
+                        {content: 'c2. \\meter 6/8 c8 c8 c8 c8 c8 c8'}
                     ]
                 }]
             });
@@ -596,14 +595,14 @@ describe('State change view model', () => {
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\meter 4/4 c4 c4 c4 c4 c1'))}
+                        {content: 'c8 c4 c4 c4 \\meter 4/4 c4 c4 c4 c4 c1'}
                     ]
                 },{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c1 c4 c4 c4 c1'))}
+                        {content: 'c8 c1 c4 c4 c4 c1'}
                     ]
                 }]
             });
@@ -620,14 +619,14 @@ describe('State change view model', () => {
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\meter 4/4 c4 c4 c4 c4 c1'))}
+                        {content: 'c8 c4 c4 c4 \\meter 4/4 c4 c4 c4 c4 c1'}
                     ]
                 },{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\meter 6/8 c4 c4 c4 c4 c1'))}
+                        {content: 'c8 c4 c4 c4 \\meter 6/8 c4 c4 c4 c4 c1'}
                     ]
                 }]
             };
@@ -643,14 +642,14 @@ describe('State change view model', () => {
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\meter 6/8 c4 c4 c4 c4 c1'))}
+                        {content: 'c8 c4 c4 c4 \\meter 6/8 c4 c4 c4 c4 c1'}
                     ]
                 },{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
                     initialMeter: { count: 3, value: 4, upBeat: Time.newSpan(1, 8)},
                     voices: [
-                        {content: voiceSequenceToDef(new SimpleSequence( 'c8 c4 c4 c4 \\meter 6/8 c4 c4 c4 c4 c1'))}
+                        {content: 'c8 c4 c4 c4 \\meter 6/8 c4 c4 c4 c4 c1'}
                     ]
                 }]
             };

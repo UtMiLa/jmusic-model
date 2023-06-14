@@ -7,7 +7,7 @@ import { Key, KeyDef } from './../model/states/key';
 import { JMusic } from './../model/facade/jmusic';
 import { DialogProvider } from './dialog-provider';
 import R = require('ramda');
-import { FlexibleSequence, voiceSequenceToDef } from '../model';
+import { FlexibleSequence } from '../model';
 
 export class BrowserPromptDialogProvider implements DialogProvider {
     getKey(): Promise<KeyDef> {
@@ -38,7 +38,7 @@ export class BrowserPromptDialogProvider implements DialogProvider {
                 const [clefStr, voiceNo] = sd.split(' ');
                 
                 return { 
-                    voices: R.range(1, +voiceNo).map(() => ({ content: voiceSequenceToDef(new FlexibleSequence('')) })), 
+                    voices: R.range(1, +voiceNo).map(() => ({ content: '' })), 
                     initialClef: JMusic.makeClef(clefStr), 
                     initialKey: key,
                     initialMeter: meter

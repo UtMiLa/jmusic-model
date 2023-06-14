@@ -1,6 +1,6 @@
 import { FlexibleItem } from './../model/score/types';
 import { scoreModelToViewModel, ScoreViewModel } from '../logical-view';
-import { ClefType, FlexibleSequence, Note, RegularMeterDef, ScoreDef, setGrace, SimpleSequence, StaffDef, Time, UpdateNote, voiceContentToSequence, voiceSequenceToDef } from './../model';
+import { ClefType, Note, RegularMeterDef, ScoreDef, setGrace, SimpleSequence, StaffDef, Time } from './../model';
 
 export function createTestScore(staves: string[][], meter: number[], key: number[], clefs: string[] | undefined = undefined): ScoreDef {
     return {
@@ -27,7 +27,7 @@ export function createTestStaff(staff: FlexibleItem[], meter: number[], key: num
         initialClef: clef ? { clefType: ClefType.F, line: 2 } : { clefType: ClefType.G, line: -2 },
         initialKey: { accidental: key[0], count: key[1] },
         initialMeter: meterVal,
-        voices: staff.map(v => ({ content: voiceSequenceToDef(new FlexibleSequence(v)) }))
+        voices: staff.map(v => ({ content: v }))
     } as StaffDef;
 }
 

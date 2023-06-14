@@ -30,7 +30,7 @@ describe('Physical model, measure map', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0 },
             voices: [{
-                content: voiceSequenceToDef(new SimpleSequence('c4 d2 e4 f1'))
+                content: 'c4 d2 e4 f1'
             }]
         } as StaffDef;
 
@@ -439,7 +439,7 @@ describe('Physical model, measure map', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0 },
             voices: [{
-                content: voiceSequenceToDef(new SimpleSequence('c4 <fis, ais, cis dis>2'))
+                content: 'c4 <fis, ais, cis dis>2'
             }]
         } as StaffDef;
 

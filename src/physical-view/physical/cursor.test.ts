@@ -11,7 +11,6 @@ import { Metrics, StandardMetrics } from './metrics';
 import { StaffViewModel } from '../../logical-view/view-model/score-view-model';
 import { viewModelToPhysical } from './viewmodel-to-physical';
 import { createScopedTimeMap } from '../../logical-view/view-model/state-map';
-import { voiceSequenceToDef } from '../../model';
 
 describe('Physical model, cursor', () => {
     let defaultMetrics: Metrics;
@@ -26,7 +25,7 @@ describe('Physical model, cursor', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0},
             voices: [{
-                content: voiceSequenceToDef(new SimpleSequence( 'c\'4 d\'2 e\'4 f\'1'))
+                content: 'c\'4 d\'2 e\'4 f\'1'
             }]
         } as StaffDef;
 
