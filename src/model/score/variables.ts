@@ -24,3 +24,9 @@ export class VariableRepository {
 export function isVariableRef(test: unknown): test is VariableRef {
     return typeof ((test as VariableRef).variable) === 'string';
 }
+
+export function lookupVariable(repo: VariableDef[], varName: string): FlexibleItem {
+    const item = repo.find(v => v.id === varName);
+    if (!item) throw 'Variable not found';
+    return item.value;
+}

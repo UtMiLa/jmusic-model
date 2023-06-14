@@ -19,3 +19,4 @@ export * from './notes/beaming';
 export * from './notes/lyrics';
 export * from './decorations/decoration-type';
 export * from './facade/jmusic';
+export * from './optics/lens';
