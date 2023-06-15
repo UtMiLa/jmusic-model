@@ -12,6 +12,11 @@
         eventFromVoiceLens
     The problem with this is the possiblilty of references to variables defined outside the score.
 
+    Things to do:
+        Evaluating (nested) references to variables
+        Lens by time (+ voice index or var name)
+        Lens by query
+    and these could in reality be Traversals or Optionals rather than Lenses.
 */
 
 import { Time } from '../rationals/time';
@@ -20,15 +25,15 @@ import { JMusic, JMusicVars, initStateInSequence } from '../facade/jmusic';
 import R = require('ramda');
 import { createNoteFromLilypond } from '../notes/note';
 import { FlexibleSequence } from '../score/flexible-sequence';
-import { ISequence } from '../score/sequence';
+import { ISequence, isNote } from '../score/sequence';
 import { ProjectDef, VariableDef, FlexibleItem } from '../score/types';
 import { VariableRepository } from '../score/variables';
-import { projectLensByIndex } from './lens';
+import { projectLensByIndex, projectLensByTime } from './lens';
 
 describe('Lenses', () => {
 
 
-    describe('Score lens', () => {
+    describe('Lens by index', () => {
 
         let sc: JMusic;
         let projectDef: ProjectDef;
@@ -44,13 +49,13 @@ describe('Lenses', () => {
             sc.vars.setVar('theVar', 'aes4 ges4 ees4 des4');
 
             const vars1 = R.prop('vars', sc.vars) as unknown as VariableDef[];
-            const toPairFunc = R.props<string, FlexibleSequence>(['id', 'value']) as unknown as  ((x: VariableDef) => [string, FlexibleSequence]);
-            const varPairs = R.map(toPairFunc, vars1) as unknown as readonly [string, FlexibleSequence][];
-            const varObj = R.fromPairs<FlexibleSequence>(varPairs);
+            //const toPairFunc = R.props<string, FlexibleSequence>(['id', 'value']) as unknown as  ((x: VariableDef) => [string, FlexibleSequence]);
+            //const varPairs = R.map(toPairFunc, vars1) as unknown as readonly [string, FlexibleSequence][];
+            //const varObj = R.fromPairs<FlexibleSequence>(varPairs);
 
             projectDef = {
                 score: R.pick(['staves'], sc),
-                vars: [{id: 'theVar', value: 'aes4 ges4 ees4 des4' }]
+                vars: vars1//[{id: 'theVar', value: 'aes4 ges4 ees4 des4' }]
             };
         });
 
@@ -104,6 +109,84 @@ describe('Lenses', () => {
                 value: ['aes4', 'ges4', 'fis4', 'des4'].map(createNoteFromLilypond).map(x => [x])
             }]);
         });
+
+    });
+
+    
+    describe('Lens by time', () => {
+
+        let sc: JMusic;
+        let projectDef: ProjectDef;
+
+        beforeEach(() => {
+            sc = new JMusic({ 
+                content: [['g4 a4 b4 bes4', 'c4 d4 e4 f4'], ['c,4 d,4 e,4 f,4']],
+                meter: '6/8',
+                clefs: [ 'alto', 'tenor' ],
+                key: 'g \\minor'
+            });
+
+            sc.vars.setVar('theVar', 'aes4 ges4 ees4 des4');
+
+            const vars1 = R.prop('vars', sc.vars) as unknown as VariableDef[];
+
+            projectDef = {
+                score: R.pick(['staves'], sc),
+                vars: vars1
+            };
+        });
+
+        it('should read an element at a time lens', () => {
+            const lens = projectLensByTime({
+                staff: 0,
+                voice: 1,
+                time: Time.newAbsolute(3, 4),
+                eventFilter: isNote
+            });
+
+            const res = R.view(lens, projectDef);
+
+            expect(res).to.deep.eq(createNoteFromLilypond('f4'));
+        });
+
+        /*it('should write an element at an index lens', () => {
+            const lens = projectLensByIndex({
+                staff: 0,
+                voice: 1,
+                element: 3
+            });
+
+            const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
+
+            //expect(res.score.staves[0].voices[1].content).to.deep.eq(['c4', 'd4', 'e4', 'fis4']);
+            expect(res.score.staves[0].voices[1].content).to.deep.eq(['c4', 'd4', 'e4', 'fis4'].map(createNoteFromLilypond).map(x => [x]));
+        });
+
+        it('should read an element from a variable', () => {
+            const lens = projectLensByIndex({
+                variable: 'theVar',
+                element: 2
+            });
+
+            const res = R.view(lens, projectDef);
+
+            expect(res).to.deep.eq(createNoteFromLilypond('ees4'));
+        });
+
+        it('should write an element at a variable lens', () => {
+            const lens = projectLensByIndex({
+                variable: 'theVar',
+                element: 2
+            });
+
+            const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
+
+            expect(res.vars).to.deep.eq([{
+                id: 'theVar',
+                //value: ['aes4', 'ges4', 'fis4', 'des4']
+                value: ['aes4', 'ges4', 'fis4', 'des4'].map(createNoteFromLilypond).map(x => [x])
+            }]);
+        });*/
 
     });
 

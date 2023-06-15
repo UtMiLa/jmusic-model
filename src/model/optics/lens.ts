@@ -1,4 +1,4 @@
-import { MusicEvent, isNote } from '../score/sequence';
+import { ISequence, MusicEvent, isNote } from '../score/sequence';
 import R = require('ramda');
 import { ProjectDef } from '../score/types';
 import { voiceContentToSequence, voiceSequenceToDef } from '../score/voice';
@@ -21,6 +21,13 @@ export interface NaturalLensIndexVariable {
 
 export type NaturalLensIndex = NaturalLensIndexScore | NaturalLensIndexVariable
 
+export interface TimeLensIndex {
+    staff: number;
+    voice: number;
+    time: AbsoluteTime;
+    eventFilter: (event: MusicEvent) => boolean;
+}
+
 function isVarIndex(idx: NaturalLensIndex): idx is NaturalLensIndexVariable {
     return !!(idx as NaturalLensIndexVariable).variable;
 }
@@ -34,6 +41,23 @@ const modifySequenceByTime = (seq: FlexibleSequence, atTime: AbsoluteTime, item:
         return [Time.equals(time, atTime) && isNote(ct) ? item : ct];
     }
 );
+
+function getElementIndex(seq: ISequence, time: AbsoluteTime, eventFilter: (event: MusicEvent) => boolean): number {
+    //seq.chainElements((elm, time, state) => [], )
+    return 3;
+}
+
+function timedToIndex(pd: ProjectDef, timed: TimeLensIndex): NaturalLensIndex {
+    return {
+        staff: timed.staff,
+        voice: timed.voice,
+        element: getElementIndex(
+            new FlexibleSequence(pd.score.staves[timed.staff].voices[timed.voice].content), 
+            timed.time, 
+            timed.eventFilter
+        )
+    };
+}
 
 
 /*
@@ -93,4 +117,15 @@ export function projectLensByIndex(index: NaturalLensIndex): ProjectLens {
     
     }
 
+}
+
+
+export function projectLensByTime(index: TimeLensIndex): ProjectLens {
+    // get seq
+    // find index from time
+    // call projectLensByIndex
+    return R.lens(
+        (pd: ProjectDef) => R.view(projectLensByIndex(timedToIndex(pd, index)), pd),
+        (a: MusicEvent, pd: ProjectDef) => R.set(projectLensByIndex(timedToIndex(pd, index)), a, pd)
+    ) ;
 }
