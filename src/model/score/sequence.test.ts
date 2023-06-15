@@ -1,7 +1,7 @@
 import { Pitch } from './../pitches/pitch';
 import { createNoteFromLilypond, Note, NoteDirection, setDuration } from './../notes/note';
 import { Time } from '../rationals/time';
-import { SimpleSequence, CompositeSequence, getDuration, BaseSequence, ISequence } from './sequence';
+import { SimpleSequence, CompositeSequence, getDuration, BaseSequence, ISequence, splitByNotes } from './sequence';
 import { expect } from 'chai';
 import { LongDecorationType } from '../decorations/decoration-type';
 import { SinonSpy } from 'sinon';
@@ -40,7 +40,7 @@ describe('Sequence', () => {
     });
 
     it('should parse chords in chunks', () => {
-        const seq1 = SimpleSequence.splitByNotes(seq3Text);
+        const seq1 = splitByNotes(seq3Text);
         expect(seq1).to.deep.equal(['c,2', 'd,8', '<e, c>4']);
     });
 

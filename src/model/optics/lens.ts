@@ -43,8 +43,7 @@ const modifySequenceByTime = (seq: FlexibleSequence, atTime: AbsoluteTime, item:
 );
 
 function getElementIndex(seq: ISequence, time: AbsoluteTime, eventFilter: (event: MusicEvent) => boolean): number {
-    //seq.chainElements((elm, time, state) => [], )
-    return 3;
+    return seq.indexOfTime(time);
 }
 
 function timedToIndex(pd: ProjectDef, timed: TimeLensIndex): NaturalLensIndex {

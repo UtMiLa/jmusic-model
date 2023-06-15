@@ -149,11 +149,12 @@ describe('Lenses', () => {
             expect(res).to.deep.eq(createNoteFromLilypond('f4'));
         });
 
-        /*it('should write an element at an index lens', () => {
-            const lens = projectLensByIndex({
+        it('should write an element at an index lens', () => {
+            const lens = projectLensByTime({
                 staff: 0,
                 voice: 1,
-                element: 3
+                time: Time.newAbsolute(3, 4),
+                eventFilter: isNote
             });
 
             const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
@@ -162,7 +163,7 @@ describe('Lenses', () => {
             expect(res.score.staves[0].voices[1].content).to.deep.eq(['c4', 'd4', 'e4', 'fis4'].map(createNoteFromLilypond).map(x => [x]));
         });
 
-        it('should read an element from a variable', () => {
+        /*it('should read an element from a variable', () => {
             const lens = projectLensByIndex({
                 variable: 'theVar',
                 element: 2

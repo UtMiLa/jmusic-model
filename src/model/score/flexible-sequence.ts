@@ -2,7 +2,7 @@ import { isVariableRef, VariableRepository } from './variables';
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
 import { createFunction } from './functions';
-import { BaseSequence, getDuration, isMusicEvent, MusicEvent, parseLilyElement, SequenceDef, SimpleSequence } from './sequence';
+import { BaseSequence, getDuration, isMusicEvent, MusicEvent, parseLilyElement, SequenceDef, SimpleSequence, splitByNotes } from './sequence';
 
 // Fix for types for R.chain
 import * as _ from 'ts-toolbelt';
@@ -16,7 +16,7 @@ export type PathElement = string | number;
 
 function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository): FlexibleItem[] {
     if (typeof item === 'string') {
-        return SimpleSequence.splitByNotes(item);
+        return splitByNotes(item);
     } else if (isSeqFunction(item)) {
         const x = R.modify('args', args => recursivelySplitStringsIn(args, repo), item) as unknown as FlexibleItem[];
         return x;
@@ -137,7 +137,7 @@ export class FlexibleSequence extends BaseSequence {
 
         const itemsToPaths = (item: FlexibleItem): PathElement[][] => {
             if (typeof item === 'string') {
-                const no = SimpleSequence.splitByNotes(item).length;
+                const no = splitByNotes(item).length;
                 return R.range(0, no).map(n => [n]);
             } else if (isSeqFunction(item)) {
                 return createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo)).map((a, i) => ['args', i]);

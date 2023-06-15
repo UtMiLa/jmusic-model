@@ -65,6 +65,7 @@ export interface ISequence {
     groupByTimeSlots(keyPrefix: string): TimeSlot[];
     insertElement(time: AbsoluteTime, elm: MusicEvent): void;
     appendElement(elm: MusicEvent): void;
+    indexOfTime(time: AbsoluteTime): number;
     asObject: SequenceDef;
 }
 
@@ -276,7 +277,7 @@ export class SimpleSequence extends BaseSequence {
             throw 'Illegal argument to new SimpleSequence()';
         }
         this._def = value;
-        this._elements = value ? SimpleSequence.splitByNotes(value).map(str => parseLilyElement(str)) : [];
+        this._elements = value ? splitByNotes(value).map(str => parseLilyElement(str)) : [];
     }
 
     private _elements: MusicEvent[] = [];
@@ -297,7 +298,7 @@ export class SimpleSequence extends BaseSequence {
         return new SimpleSequence(def);
     }
 
-    static splitByNotes(def: string): string[] {
+    /*static splitByNotes(def: string): string[] {
         return def.split(' ').reduce((prev: string[], curr: string) => {
             if (prev.length) {
                 if (prev[prev.length - 1].match(/^<[^>]*$/)) {
@@ -316,7 +317,7 @@ export class SimpleSequence extends BaseSequence {
             }
             return prev.concat([curr]);
         }, []);
-    }
+    }*/
 
     get count(): number {
         return this.elements.length;
@@ -359,5 +360,26 @@ export class CompositeSequence extends BaseSequence {
 
 }
 
+
+export function splitByNotes(def: string): string[] {
+    return def.split(' ').reduce((prev: string[], curr: string) => {
+        if (prev.length) {
+            if (prev[prev.length - 1].match(/^<[^>]*$/)) {
+                prev[prev.length - 1] += ` ${curr}`;
+                return prev;
+            } else if (prev[prev.length - 1].match(/^\\(clef)$/)) {
+                prev[prev.length - 1] += ` ${curr}`;
+                return prev;
+            } else if (prev[prev.length - 1].match(/^\\(meter)$/)) {
+                prev[prev.length - 1] += ` ${curr}`;
+                return prev;
+            } else if (prev[prev.length - 1].match(/^\\(key)( \w+)?$/)) {
+                prev[prev.length - 1] += ` ${curr}`;
+                return prev;
+            }
+        }
+        return prev.concat([curr]);
+    }, []);
+}
 
 export const __internal = { /*parseLilyClef, parseLilyKey,*/ parseLilyElement/*, parseLilyMeter*/ };
