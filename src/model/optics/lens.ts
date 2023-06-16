@@ -1,3 +1,4 @@
+import { VariableRepository } from './../score/variables';
 import { ISequence, MusicEvent, isNote } from '../score/sequence';
 import R = require('ramda');
 import { ProjectDef } from '../score/types';
@@ -51,7 +52,7 @@ function timedToIndex(pd: ProjectDef, timed: TimeLensIndex): NaturalLensIndex {
         staff: timed.staff,
         voice: timed.voice,
         element: getElementIndex(
-            new FlexibleSequence(pd.score.staves[timed.staff].voices[timed.voice].content), 
+            new FlexibleSequence(pd.score.staves[timed.staff].voices[timed.voice].content, new VariableRepository(pd.vars)), 
             timed.time, 
             timed.eventFilter
         )
@@ -73,7 +74,7 @@ export function projectLensByIndex(index: NaturalLensIndex): ProjectLens {
 
     if (isVarIndex(index)) {
         return R.lens(
-            (pd: ProjectDef) => voiceContentToSequence(new FlexibleSequence(lookupVariable(pd.vars, index.variable)).asObject).elements[index.element],
+            (pd: ProjectDef) => voiceContentToSequence(new FlexibleSequence(lookupVariable(pd.vars, index.variable)).asObject, new VariableRepository(pd.vars)).elements[index.element],
             (a: MusicEvent, pd: ProjectDef) => (
                 {
                     ...pd, 
@@ -83,7 +84,7 @@ export function projectLensByIndex(index: NaturalLensIndex): ProjectLens {
                                 return {
                                     id: index.variable,
                                     value: voiceSequenceToDef(
-                                        new FlexibleSequence(voiceContentToSequence(new FlexibleSequence(v.value).asObject).elements.map((value, i) => i === index.element ? a : value))
+                                        new FlexibleSequence(voiceContentToSequence(new FlexibleSequence(v.value).asObject, new VariableRepository(pd.vars)).elements.map((value, i) => i === index.element ? a : value))
                                     )
                                 };
                             } else {
@@ -97,13 +98,22 @@ export function projectLensByIndex(index: NaturalLensIndex): ProjectLens {
     
     } else {
         return R.lens(
-            (pd: ProjectDef) => voiceContentToSequence(pd.score.staves[index.staff].voices[index.voice].content).elements[index.element],
+            (pd: ProjectDef) => voiceContentToSequence(pd.score.staves[index.staff].voices[index.voice].content, new VariableRepository(pd.vars)).elements[index.element],
             (a: MusicEvent, pd: ProjectDef) => {
-                const seq = new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].content);
+                const seq = new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].content, new VariableRepository(pd.vars));
                 const path = seq.indexToPath(index.element);
-                console.log(path);
+                //console.log(path);
 
                 path.pop();
+
+                if (path.length && typeof path[0] === 'string') {
+                    // var reference
+                    const val = pd.vars.map(item => item.id === path[0] 
+                        ? { id: item.id, value: R.assocPath(path.slice(1), simplifyDef(a), new FlexibleSequence(item.value).asObject) }
+                        : item);
+                    return R.assoc('vars', val, pd);
+                }
+
                 return R.assocPath(['score', 'staves', index.staff, 'voices', index.voice, 'content', ...path], simplifyDef(a), pd);
 
                 /*return {

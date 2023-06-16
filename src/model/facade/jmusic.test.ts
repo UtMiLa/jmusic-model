@@ -201,9 +201,9 @@ describe('Facade', () => {
             expect(sc.staves[0].initialKey).to.deep.eq({ count: 0, accidental: 0 });
             expect(sc.staves[0].initialMeter).to.be.undefined;
             expect(sc.staves[0].voices).to.have.length(1);
-            expect(voiceContentToSequence(sc.staves[0].voices[0].content).duration).to.deep.eq(Time.newSpan(3, 4));
-            expect(voiceContentToSequence(sc.staves[0].voices[0].content).elements).to.have.length(3);
-            expect(voiceContentToSequence(sc.staves[0].voices[0].content).elements[2]).to.deep.eq(createNoteFromLilypond('d4'));
+            expect(new FlexibleSequence(sc.staves[0].voices[0].content, sc.vars).duration).to.deep.eq(Time.newSpan(3, 4));
+            expect(voiceContentToSequence(sc.staves[0].voices[0].content, sc.vars).elements).to.have.length(3);
+            expect(voiceContentToSequence(sc.staves[0].voices[0].content, sc.vars).elements[2]).to.deep.eq(createNoteFromLilypond('d4'));
             expect(sc.repeats).to.be.undefined;
         });
     

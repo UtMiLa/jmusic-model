@@ -6,7 +6,7 @@ import { BaseSequence, getDuration, isMusicEvent, isNote, MusicEvent, parseLilyE
 
 // Fix for types for R.chain
 import * as _ from 'ts-toolbelt';
-import { FlexibleItem, isSeqFunction, SeqFunction } from './types';
+import { FlexibleItem, isSeqFunction, SeqFunction, VariableRef } from './types';
 import { Note, noteAsLilypond } from '../notes/note';
 type addIndexFix<T, U> = (
     fn: (f: (item: T) => U, list: readonly T[]) => U,
@@ -22,7 +22,7 @@ function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository)
         const x = R.modify('args', args => recursivelySplitStringsIn(args, repo), item) as unknown as FlexibleItem[];
         return x;
     } else if (isVariableRef(item)) {
-        return repo.valueOf(item.variable).elements;
+        return [item];//repo.valueOf(item.variable).elements;
     } else if (isMusicEvent(item)) {
         return [item];
     } else {
@@ -105,7 +105,7 @@ export class FlexibleSequence extends BaseSequence {
         }
         
         this._elements = R.chain(
-            R.cond<FlexibleItem, string, SeqFunction, /*VariableRef,*/ string[], MusicEvent, FlexibleItem[], MusicEvent[]>([
+            R.cond<FlexibleItem, string, SeqFunction, VariableRef, string[], MusicEvent, FlexibleItem[], MusicEvent[]>([
                 [
                     R.is(String), 
                     ((item: string) => item ? [parseLilyElement(item) as MusicEvent] : [])
@@ -115,7 +115,10 @@ export class FlexibleSequence extends BaseSequence {
                     (item: SeqFunction) => 
                         createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))
                 ],
-                //[isVariableRef, (item: VariableRef) => calcElements([(this.repo.valueOf(item.variable)], this.repo)],
+                [
+                    isVariableRef, 
+                    (item: VariableRef) => calcElements(this.repo.valueOf(item.variable).elements, this.repo)/*.map(timify)*/
+                ],
                 [
                     isSingleStringArray, 
                     (item: string[]) => [parseLilyElement(item[0])]
@@ -145,11 +148,16 @@ export class FlexibleSequence extends BaseSequence {
             } else if (isSeqFunction(item)) {
                 return createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo)).map((a, i) => ['args', i]);
             } else if (isVariableRef(item)) {
-                return [];//new FlexibleSequence(repo.valueOf(item.variable)).def;
+                const varSeq = this.repo.valueOf(item.variable);
+                return varSeq.elements.map((e, i) => [item.variable, ...varSeq.indexToPath(i)]);
             } else if (isMusicEvent(item)) {
                 return [[0]];
             } else {
-                return (R.addIndex as addIndexFix<FlexibleItem, PathElement[][]>)(R.chain<FlexibleItem, PathElement[]>)((s: FlexibleItem, idx: number) => itemsToPaths(s).map(x => [idx, ...x]), item);
+                return (R.addIndex as addIndexFix<FlexibleItem, PathElement[][]>)(R.chain<FlexibleItem, PathElement[]>)(
+                    (s: FlexibleItem, idx: number) => itemsToPaths(s).map(
+                        x => x.length > 1 && typeof x[0] === 'string' ? x : [idx, ...x]
+                    ), item
+                );
             }
         };
         

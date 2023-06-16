@@ -225,7 +225,7 @@ describe('Lenses', () => {
             expect(res).to.deep.eq(createNoteFromLilypond('ges4'));
         });
 
-        xit('should write an element to a variable using a time lens', () => {
+        it('should write an element to a variable using a time lens', () => {
             const lens = projectLensByTime({
                 staff: 0,
                 voice: 1,
@@ -237,7 +237,7 @@ describe('Lenses', () => {
 
             expect(res.vars).to.deep.eq([{
                 id: 'theVar',
-                value: ['aes4', 'ges4', 'fis4', 'des4']
+                value: ['aes4', 'fis4', 'ees4', 'des4']
                 //value: ['aes4', 'fis4', 'ees4', 'des4'].map(createNoteFromLilypond).map(x => [x])
             }]);
         });

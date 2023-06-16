@@ -10,7 +10,8 @@ export class VariableRepository {
 
     valueOf(id: string): FlexibleSequence {
         const theVar = this.vars.find(vd => vd.id === id);
-        if (!theVar) throw 'Undefined variable: ' + id;
+        if (!theVar) 
+            throw 'Undefined variable: ' + id;
         return new FlexibleSequence(theVar.value);
     }
 

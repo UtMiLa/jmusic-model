@@ -85,7 +85,7 @@ export class JMusic implements ScoreDef {
 
         this.staves.forEach(staff => {
             staff.voices.forEach(voice => {
-                const states = initStateInSequence(voiceContentToSequence(voice.content));
+                const states = initStateInSequence(new FlexibleSequence(voice.content, this.vars));
                 if (states.clef) {
                     //console.log('changing clef', staff.initialClef, states.clef);
                     staff.initialClef = states.clef.def;
