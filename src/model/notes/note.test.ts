@@ -1,6 +1,6 @@
 import { TimeSpan } from './../rationals/time';
 import { Time } from '../rationals/time';
-import { createNote, createNoteFromLilypond, getDotNo, getNominalDuration, getNoteType, getUndottedDuration, Note, NoteType, setTupletFactor } from './note';
+import { createNote, createNoteFromLilypond, getDotNo, getNominalDuration, getNoteType, getUndottedDuration, Note, noteAsLilypond, NoteType, setTupletFactor } from './note';
 import { expect } from 'chai';
 import { Pitch } from '../pitches/pitch';
 import { getDuration } from '../score/sequence';
@@ -139,6 +139,28 @@ describe('Note', () => {
     it('should create a note with two expressions', ()=> {
         const note = createNoteFromLilypond('c4\\fermata\\marcato');
         expect(note.expressions).to.deep.eq(['fermata', 'marcato']);
+    });
+
+    describe('To Lilypond', () => {
+        it('should convert a simple note to Lilypond', () => {
+            expect(noteAsLilypond(createNoteFromLilypond('e\'4'))).to.eq('e\'4');
+        });
+        it('should convert a chord to Lilypond', () => {
+            expect(noteAsLilypond(createNoteFromLilypond('<e\' g\' bes\'>4'))).to.eq('<e\' g\' bes\'>4');
+        });
+        it('should convert a rest to Lilypond', () => {
+            expect(noteAsLilypond(createNoteFromLilypond('r4'))).to.eq('r4');
+        });
+        it('should convert durations to Lilypond', () => {
+            expect(noteAsLilypond(createNoteFromLilypond('e\'1'))).to.eq('e\'1');
+            expect(noteAsLilypond(createNoteFromLilypond('e\'128'))).to.eq('e\'128');
+            expect(noteAsLilypond(createNoteFromLilypond('e\'8'))).to.eq('e\'8');
+        });
+        it('should convert dotted notes to Lilypond', () => {
+            expect(noteAsLilypond(createNoteFromLilypond('e\'1...'))).to.eq('e\'1...');
+            expect(noteAsLilypond(createNoteFromLilypond('e\'128.'))).to.eq('e\'128.');
+            expect(noteAsLilypond(createNoteFromLilypond('e\'8..'))).to.eq('e\'8..');
+        });
     });
 
 });

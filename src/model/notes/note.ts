@@ -73,9 +73,7 @@ export function createNoteFromLilypond(input: string): Note {
         }
     } else {
         const match = matcher.exec(input);
-        if (!match || match.length < 4) {
-            throw 'Illegal note: ' + input;
-        }
+        if (!match || match.length < 4) throw 'Illegal note: ' + input;
         pitches = (match[1] === 'r') ? [] : [match[1]];
         durationString = match[3];    
         if (match[4]) {
@@ -92,6 +90,22 @@ export function createNoteFromLilypond(input: string): Note {
     if (expressions.length) extra.expressions = expressions.map(expression => parseLilyNoteExpression(expression));
     
     return cloneNote(res, extra);
+}
+
+export function noteAsLilypond(note: Note): string {
+    const pitches = note.pitches.map(p => p.lilypond);
+    let pitchPart: string;
+    if (pitches.length === 0) {
+        pitchPart = 'r';
+    } else if (pitches.length === 1) {
+        pitchPart = pitches[0];
+    } else {
+        pitchPart = '<' + pitches.join(' ') + '>';
+    }
+    const durationPart = getUndottedDuration(note).denominator;
+    const dotNo = getDotNo(note);
+    const dots = R.repeat('.', dotNo).join('');
+    return pitchPart + durationPart + dots;
 }
 
 export function cloneNote(note: Note,  changeProperties: UpdateNote): Note {

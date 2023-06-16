@@ -50,6 +50,20 @@ describe('Flexible Sequence', () => {
         expect(seq2.def).to.deep.eq([['c4', 'd8', 'e8'], [['c,2', 'd,8', '<e, c>4'], ['c,2', 'd,8', 'e,8', 'c4']]]);
     });
 
+    /*it('should calculate an internal structure including correct times', () => {
+        const seq2 = new FlexibleSequence([seq1Text.split(' '), [seq3Text, seq2Text.split(' ')]]);
+
+        expect(seq2.def).to.deep.eq([['c4', 'd8', 'e8'], [['c,2', 'd,8', '<e, c>4'], ['c,2', 'd,8', 'e,8', 'c4']]]);
+        expect(seq2.internalElements).to.have.length(10);
+        expect(seq2.internalElements[0].time).to.eq(Time.StartTime);
+        expect(seq2.internalElements[1].time).to.deep.eq(Time.newAbsolute(1, 4));
+        expect(seq2.internalElements[2].time).to.deep.eq(Time.newAbsolute(3, 8));
+        expect(seq2.internalElements[3].time).to.deep.eq(Time.newAbsolute(1, 2));
+        expect(seq2.internalElements[5].time).to.deep.eq(Time.newAbsolute(9, 8));
+        expect(seq2.internalElements[6].time).to.deep.eq(Time.newAbsolute(11, 8));
+        expect(seq2.internalElements[7].time).to.deep.eq(Time.newAbsolute(15, 8));
+    });*/
+
     it('should accept a MusicEvent object', () => {
         const clefChg = { 
             clef: parseLilyClef('treble'), 
@@ -203,6 +217,18 @@ describe('Flexible Sequence', () => {
                 { longDeco: LongDecorationType.Slur, length: Time.QuarterTime }
             ]}
         );
+    });
+
+    describe('Serialisation', () => {
+        it('should simplify notes to lilypond strings', () => {
+            const seq = new FlexibleSequence([seq1Text, [seq3Text, seq2Text]]);
+            const seq2 = new FlexibleSequence(seq.elements);
+    
+            expect(seq2.count).to.eq(10);
+            expect(seq2.def).to.deep.eq(['c4', 'd8', 'e8', 'c,2', 'd,8', '<e, c>4', 'c,2', 'd,8', 'e,8', 'c4']);
+        });
+    
+    
     });
 
     describe('Composite FlexibleSequence', () => {
