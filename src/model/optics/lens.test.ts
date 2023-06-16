@@ -40,7 +40,7 @@ describe('Lenses', () => {
 
         beforeEach(() => {
             sc = new JMusic({ 
-                content: [['g4 a4 b4 bes4', 'c4 d4 e4 f4'], ['c,4 d,4 e,4 f,4']],
+                content: [['g4 a4 b4 bes4', 'c4 d4 e4 f4'], [[['c,4 d,4'], ['e,4'], 'f,4']]],
                 meter: '6/8',
                 clefs: [ 'alto', 'tenor' ],
                 key: 'g \\minor'
@@ -49,9 +49,6 @@ describe('Lenses', () => {
             sc.vars.setVar('theVar', 'aes4 ges4 ees4 des4');
 
             const vars1 = R.prop('vars', sc.vars) as unknown as VariableDef[];
-            //const toPairFunc = R.props<string, FlexibleSequence>(['id', 'value']) as unknown as  ((x: VariableDef) => [string, FlexibleSequence]);
-            //const varPairs = R.map(toPairFunc, vars1) as unknown as readonly [string, FlexibleSequence][];
-            //const varObj = R.fromPairs<FlexibleSequence>(varPairs);
 
             projectDef = {
                 score: R.pick(['staves'], sc),
@@ -81,7 +78,30 @@ describe('Lenses', () => {
             const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
 
             expect(res.score.staves[0].voices[1].content).to.deep.eq(['c4', 'd4', 'e4', 'fis4']);
-            //expect(res.score.staves[0].voices[1].content).to.deep.eq(['c4', 'd4', 'e4', 'fis4'].map(createNoteFromLilypond).map(x => [x]));
+        });
+
+        it('should read a nested element at an index lens', () => {
+            const lens = projectLensByIndex({
+                staff: 1,
+                voice: 0,
+                element: 2
+            });
+
+            const res = R.view(lens, projectDef);
+
+            expect(res).to.deep.eq(createNoteFromLilypond('e,4'));
+        });
+
+        it('should write a nested element at an index lens', () => {
+            const lens = projectLensByIndex({
+                staff: 1,
+                voice: 0,
+                element: 1
+            });
+
+            const res = R.set(lens, createNoteFromLilypond('des,4'), projectDef);
+
+            expect(res.score.staves[1].voices[0].content).to.deep.eq([['c,4', 'des,4'], 'e,4', 'f,4']);
         });
 
         it('should read an element from a variable', () => {
@@ -106,7 +126,6 @@ describe('Lenses', () => {
             expect(res.vars).to.deep.eq([{
                 id: 'theVar',
                 value: ['aes4', 'ges4', 'fis4', 'des4']
-                //value: ['aes4', 'ges4', 'fis4', 'des4'].map(createNoteFromLilypond).map(x => [x])
             }]);
         });
 
@@ -120,7 +139,7 @@ describe('Lenses', () => {
 
         beforeEach(() => {
             sc = new JMusic({ 
-                content: [['g4 a4 b4 bes4', ['c4 d4 e4 f4', { variable: 'theVar' }]], ['c,4 d,4 e,4 f,4']],
+                content: [['g4 a4 b4 bes4', ['c4 d4 e4 f4', { variable: 'theVar' }]], [[['c,4 d,4'], ['e,4'], 'f,4']]],
                 meter: '6/8',
                 clefs: [ 'alto', 'tenor' ],
                 key: 'g \\minor'
@@ -153,7 +172,7 @@ describe('Lenses', () => {
             expect(res).to.deep.eq(createNoteFromLilypond('f4'));
         });
 
-        it('should write an element at an index lens', () => {
+        it('should write an element at an time lens', () => {
             const lens = projectLensByTime({
                 staff: 0,
                 voice: 0,
@@ -164,10 +183,36 @@ describe('Lenses', () => {
             const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
 
             expect(res.score.staves[0].voices[0].content).to.deep.eq(['g4', 'a4', 'b4', 'fis4']);
-            //expect(res.score.staves[0].voices[0].content).to.deep.eq(['g4', 'a4', 'b4', 'fis4'].map(createNoteFromLilypond).map(x => [x]));
         });
 
-        it('should read an element from a variable', () => {
+        
+        it('should read a nested element at a time lens', () => {
+            const lens = projectLensByTime({
+                staff: 1,
+                voice: 0,
+                time: Time.newAbsolute(1, 2),
+                eventFilter: isNote
+            });
+
+            const res = R.view(lens, projectDef);
+
+            expect(res).to.deep.eq(createNoteFromLilypond('e,4'));
+        });
+
+        it('should write a nested element at a time lens', () => {
+            const lens = projectLensByTime({
+                staff: 1,
+                voice: 0,
+                time: Time.newAbsolute(1, 4),
+                eventFilter: isNote
+            });
+
+            const res = R.set(lens, createNoteFromLilypond('fis,4'), projectDef);
+
+            expect(res.score.staves[1].voices[0].content).to.deep.eq([['c,4', 'fis,4'], 'e,4', 'f,4']);
+        });
+
+        it('should read an element from a variable using a time lens', () => {
             const lens = projectLensByTime({
                 staff: 0,
                 voice: 1,
@@ -180,7 +225,7 @@ describe('Lenses', () => {
             expect(res).to.deep.eq(createNoteFromLilypond('ges4'));
         });
 
-        xit('should write an element at a variable lens', () => {
+        xit('should write an element to a variable using a time lens', () => {
             const lens = projectLensByTime({
                 staff: 0,
                 voice: 1,
@@ -192,8 +237,8 @@ describe('Lenses', () => {
 
             expect(res.vars).to.deep.eq([{
                 id: 'theVar',
-                //value: ['aes4', 'ges4', 'fis4', 'des4']
-                value: ['aes4', 'fis4', 'ees4', 'des4'].map(createNoteFromLilypond).map(x => [x])
+                value: ['aes4', 'ges4', 'fis4', 'des4']
+                //value: ['aes4', 'fis4', 'ees4', 'des4'].map(createNoteFromLilypond).map(x => [x])
             }]);
         });
 

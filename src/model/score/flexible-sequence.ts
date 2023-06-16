@@ -30,7 +30,7 @@ function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository)
     }
 }
 
-function simplifyDef(item: FlexibleItem): FlexibleItem {
+export function simplifyDef(item: FlexibleItem): FlexibleItem {
     
     if (R.is(Array, item)) {
         if (item.length === 1)

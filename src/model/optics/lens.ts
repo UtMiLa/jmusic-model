@@ -2,7 +2,7 @@ import { ISequence, MusicEvent, isNote } from '../score/sequence';
 import R = require('ramda');
 import { ProjectDef } from '../score/types';
 import { voiceContentToSequence, voiceSequenceToDef } from '../score/voice';
-import { FlexibleSequence } from '../score/flexible-sequence';
+import { FlexibleSequence, simplifyDef } from '../score/flexible-sequence';
 import { AbsoluteTime, Time } from '../rationals/time';
 import { lookupVariable } from '../score/variables';
 
@@ -98,8 +98,15 @@ export function projectLensByIndex(index: NaturalLensIndex): ProjectLens {
     } else {
         return R.lens(
             (pd: ProjectDef) => voiceContentToSequence(pd.score.staves[index.staff].voices[index.voice].content).elements[index.element],
-            (a: MusicEvent, pd: ProjectDef) => (
-                {
+            (a: MusicEvent, pd: ProjectDef) => {
+                const seq = new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].content);
+                const path = seq.indexToPath(index.element);
+                console.log(path);
+
+                path.pop();
+                return R.assocPath(['score', 'staves', index.staff, 'voices', index.voice, 'content', ...path], simplifyDef(a), pd);
+
+                /*return {
                     ...pd, 
                     score: { 
                         ...pd.score, 
@@ -111,8 +118,12 @@ export function projectLensByIndex(index: NaturalLensIndex): ProjectLens {
                                     new FlexibleSequence(voiceContentToSequence(voice.content).elements.map((value, i) => i === index.element ? a : value))
                                 )
                             } : voice)
-                        } : staff) }})
+                        } : staff) 
+                    }
+                };*/
+            }
         );
+                    
     
     }
 
