@@ -476,7 +476,7 @@ describe('View model', () => {
 
     it('should add repeats', () => {
         const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1']], meter: '4/4' });
-        score.repeats = [{from: Time.newAbsolute(1,1), to: Time.newAbsolute(2,1)}];
+        score.addRepeat({from: Time.newAbsolute(1,1), to: Time.newAbsolute(2,1)});
 
         
         const log2 = scoreModelToViewModel(score);

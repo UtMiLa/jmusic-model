@@ -24,7 +24,8 @@ import { ClefFlex, makeClef } from './clef-flex';
 import { KeyFlex, makeKey } from './key-flex';
 import { MeterFlex, makeMeter } from './meter-flex';
 import { NoteFlex, makeNote } from './note-flex';
-import { ScoreFlex, makeScore } from './score.flex';
+import { ScoreFlex, makeScore } from './score-flex';
+import { ProjectFlex, makeProject } from './project-flex';
 
 export interface JMusicSettings {
     content: FlexibleItem[][];
@@ -60,44 +61,46 @@ export const initStateInSequence = (s: ISequence) => {
 };
 
 
-
-export function makeProject(scoreFlex?: ScoreFlex, vars?: JMusicVars): ProjectDef {
-    const vars1 = 
-        vars
-            ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: pair[1] }))
-            : isProjectDef(scoreFlex)
-                ? scoreFlex.vars
-                : [];
-
-    const score = makeScore(scoreFlex, createRepo(vars1));
-
-    return {
-        score,
-        vars: vars1
-    };
-}
-
 /** Facade object for music scores */
 export class JMusic implements ScoreDef {
 
-    constructor(scoreFlex?: string | JMusicSettings | ScoreDef | ProjectDef, vars?: JMusicVars) {
+    constructor(scoreFlex?: ProjectFlex, vars?: JMusicVars) {
 
-        const project = makeProject(scoreFlex, vars);
+        this.project = makeProject(scoreFlex, vars);
 
-        this.vars = createRepo(project.vars);
+/*        this.vars = createRepo(project.vars);
         this.staves = project.score.staves;
         this.repeats = project.score.repeats;
-
+*/
     }
 
-    staves: StaffDef[] = [];
-    repeats?: RepeatDef[] | undefined;
-    vars: VariableRepository;
+    project: ProjectDef;
+    //private _staves: StaffDef[] = [];
+    public get staves(): StaffDef[] {
+        return this.project.score.staves;
+    }
+    /*public set staves(value: StaffDef[]) {
+        this._staves = value;
+    }*/
+    //private _repeats?: RepeatDef[] | undefined;
+    public get repeats(): RepeatDef[] | undefined {
+        return this.project.score.repeats;
+    }
+    /*public set repeats(value: RepeatDef[] | undefined) {
+        this._repeats = value;
+    }*/
+    //private _vars: VariableRepository;
+    public get vars(): VariableRepository {
+        return createRepo(this.project.vars);
+    }
+    /*public set vars(value: VariableRepository) {
+        this._vars = value;
+    }*/
 
     changeHandlers: ChangeHandler[] = [];
 
     setVar(id: string, value: FlexibleItem): void {
-        this.vars = setVar(this.vars, id, value);
+        this.project.vars = setVar(this.vars, id, value).vars;
     }
 
     sequenceFromInsertionPoint(ins: InsertionPoint): ISequence {
@@ -158,13 +161,15 @@ export class JMusic implements ScoreDef {
 
     clearScore(ins: InsertionPoint, voice?: string | JMusicSettings | ScoreDef): void {
         //this.staves = 
-        const score = makeScore(voice, this.vars);
-        this.staves =  score.staves;
-        this.repeats = score.repeats;
-
-        this.vars = createRepo([]);
+        this.project = makeProject(voice);
 
         this.didChange();
+    }
+
+    addRepeat(repeat: RepeatDef): void {
+        if (!this.project.score.repeats)
+            this.project.score.repeats = [];
+        this.project.score.repeats?.push(repeat);
     }
 
     appendNote(ins: InsertionPoint, noteInput: NoteFlex): void {
