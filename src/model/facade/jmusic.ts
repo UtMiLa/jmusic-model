@@ -21,6 +21,10 @@ import R = require('ramda');
 import { Enharmonic, addInterval, enharmonicChange } from '../pitches/intervals';
 import { StateChange } from '../states/state';
 import { FlexibleItem, ProjectDef, isProjectDef } from '../score/types';
+import { ClefFlex, makeClef } from './clef-flex';
+import { KeyFlex, makeKey } from './key-flex';
+import { MeterFlex, makeMeter } from './meter-flex';
+import { NoteFlex, makeNote } from './note-flex';
 
 export interface JMusicSettings {
     content: FlexibleItem[][];
@@ -33,20 +37,6 @@ export interface JMusicVars {
     [key: string]: FlexibleItem;
 }
 
-/** Tolerant input type for notes: a Note object, or a string in Lilypond format */
-export type NoteFlex = Note | string;
-
-/** Tolerant input type for meters: a Meter object, a RegularMeterDef definition, or a string in Lilypond format */
-export type MeterFlex = Meter | RegularMeterDef | string;
-
-/** Tolerant input type for clefs: a Clef object, a ClefDef definition, or a string in Lilypond format */
-export type ClefFlex = Clef | ClefDef | string;
-
-/** Tolerant input type for key: a Key object, a KeyDef definition, or a string in Lilypond format */
-export type KeyFlex = Key | KeyDef | string;
-
-/** Tolerant input type for sequences: a ISequence object, or a string in Lilypond format */
-export type SequenceFlex = ISequence | string;
 
 export type ChangeHandler = () => void;
 
@@ -130,16 +120,16 @@ export class JMusic implements ScoreDef {
 
                 let clef: ClefDef;
                 if (settings.clefs) {
-                    clef = JMusic.makeClef(settings.clefs[idx]);
+                    clef = makeClef(settings.clefs[idx]);
                 } else if (idx > 0 && idx === settings.content.length - 1) {
                     clef = Clef.clefBass.def;
                 } else {
                     clef = Clef.clefTreble.def;
                 }
 
-                const key = settings.key ? JMusic.makeKey(settings.key) : { count: 0, accidental: 0 } as KeyDef;
+                const key = settings.key ? makeKey(settings.key) : { count: 0, accidental: 0 } as KeyDef;
 
-                const meter = settings.meter ? JMusic.makeMeter(settings.meter) : undefined;
+                const meter = settings.meter ? makeMeter(settings.meter) : undefined;
 
                 this.staves.push({
                     initialClef: clef,
@@ -154,47 +144,7 @@ export class JMusic implements ScoreDef {
         }
     }
 
-    static makeClef(input: ClefFlex): ClefDef {
-        if (typeof (input) === 'string') {
-            return parseLilyClef(input).def;
-        }
-        const cd = input as ClefDef;
-        if (cd.clefType !== undefined && cd.line !== undefined ) {
-            return cd;
-        }
-        return (input as Clef).def;
-    }
 
-    static makeKey(input: KeyFlex): KeyDef {
-        if (typeof (input) === 'string') {
-            return parseLilyKey('\\key ' + input.replace(' major', ' \\major').replace(' minor', ' \\minor')).def;
-        }
-        const cd = input as KeyDef;
-        if (cd.accidental !== undefined && cd.count !== undefined ) {
-            return cd;
-        }
-        return (input as Key).def;
-    }
-
-    static makeMeter(input: MeterFlex): RegularMeterDef {
-
-        if (typeof (input) === 'string') {
-            return parseLilyMeter('\\meter ' + input).def as RegularMeterDef;
-        }
-        const cd = input as RegularMeterDef;
-        if (cd.value !== undefined && cd.count !== undefined ) {
-            return cd;
-        }
-        return (input as Meter).def as RegularMeterDef;
-    }
-
-    static makeNote(input: NoteFlex): Note {
-
-        if (typeof (input) === 'string') {
-            return createNoteFromLilypond(input);
-        }
-        return input as Note;
-    }
 
     sequenceFromInsertionPoint(ins: InsertionPoint): ISequence {
         return voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content);
@@ -262,7 +212,7 @@ export class JMusic implements ScoreDef {
     }
 
     appendNote(ins: InsertionPoint, noteInput: NoteFlex): void {
-        const note = JMusic.makeNote(noteInput);
+        const note = makeNote(noteInput);
         this.appendElementAtInsertionPoint(ins, note);
         this.didChange();
     }
@@ -350,21 +300,21 @@ export class JMusic implements ScoreDef {
     }
 
     addMeterChg(ins: InsertionPoint, meter: MeterFlex): void {
-        const m = JMusic.makeMeter(meter);
+        const m = makeMeter(meter);
         
         this.insertElementAtInsertionPoint(ins, StateChange.newMeterChange(MeterFactory.createRegularMeter(m)), isMeterChange);
         this.didChange();
     }
 
     addKeyChg(ins: InsertionPoint, key: KeyFlex): void {
-        const m = JMusic.makeKey(key);
+        const m = makeKey(key);
         
         this.insertElementAtInsertionPoint(ins, StateChange.newKeyChange(new Key(m)), isKeyChange);
         this.didChange();
     }
 
     addClefChg(ins: InsertionPoint, clef: ClefFlex): void {
-        const m = JMusic.makeClef(clef);
+        const m = makeClef(clef);
         
         this.insertElementAtInsertionPoint(ins, StateChange.newClefChange(new Clef(m)), isClefChange);
         this.didChange();

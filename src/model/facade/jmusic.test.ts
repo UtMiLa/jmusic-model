@@ -13,32 +13,36 @@ import { StaffDef } from '../score/staff';
 import { FlexibleSequence } from '../score/flexible-sequence';
 import { voiceContentToSequence } from '../score/voice';
 import R = require('ramda');
+import { makeClef } from './clef-flex';
+import { makeKey } from './key-flex';
+import { makeMeter } from './meter-flex';
+import { makeNote } from './note-flex';
 
 describe('Facade', () => {
 
 
     describe('Flex methods', () => {
         it('should read a meter in different types', () => {
-            expect(JMusic.makeMeter('5/8')).to.deep.eq({ count: 5, value: 8 });
-            expect(JMusic.makeMeter({ count: 5, value: 8 })).to.deep.eq({ count: 5, value: 8 });
-            expect(JMusic.makeMeter(MeterFactory.createRegularMeter({ count: 5, value: 8 }))).to.deep.eq({ count: 5, value: 8 });
+            expect(makeMeter('5/8')).to.deep.eq({ count: 5, value: 8 });
+            expect(makeMeter({ count: 5, value: 8 })).to.deep.eq({ count: 5, value: 8 });
+            expect(makeMeter(MeterFactory.createRegularMeter({ count: 5, value: 8 }))).to.deep.eq({ count: 5, value: 8 });
         });
 
         it('should read a clef in different types', () => {
-            expect(JMusic.makeClef('treble')).to.deep.eq({ clefType: ClefType.G, line: -2 });
-            expect(JMusic.makeClef({ clefType: ClefType.G, line: -2 })).to.deep.eq({ clefType: ClefType.G, line: -2 });
-            expect(JMusic.makeClef(new Clef({ clefType: ClefType.G, line: -2 }))).to.deep.eq({ clefType: ClefType.G, line: -2 });
+            expect(makeClef('treble')).to.deep.eq({ clefType: ClefType.G, line: -2 });
+            expect(makeClef({ clefType: ClefType.G, line: -2 })).to.deep.eq({ clefType: ClefType.G, line: -2 });
+            expect(makeClef(new Clef({ clefType: ClefType.G, line: -2 }))).to.deep.eq({ clefType: ClefType.G, line: -2 });
         });
 
         it('should read a key in different types', () => {
-            expect(JMusic.makeKey('a \\major')).to.deep.eq({ accidental: 1, count: 3 });
-            expect(JMusic.makeKey({ accidental: 1, count: 3 })).to.deep.eq({ accidental: 1, count: 3 });
-            expect(JMusic.makeKey(new Key({ accidental: 1, count: 3 }))).to.deep.eq({ accidental: 1, count: 3 });
+            expect(makeKey('a \\major')).to.deep.eq({ accidental: 1, count: 3 });
+            expect(makeKey({ accidental: 1, count: 3 })).to.deep.eq({ accidental: 1, count: 3 });
+            expect(makeKey(new Key({ accidental: 1, count: 3 }))).to.deep.eq({ accidental: 1, count: 3 });
         });
 
         it('should read a note in different types', () => {
-            expect(JMusic.makeNote('a,4')).to.deep.eq(createNote([Pitch.fromScientific('a', 2)], Time.QuarterTime));
-            expect(JMusic.makeNote(createNote([Pitch.fromScientific('a', 2)], Time.QuarterTime))).to.deep.eq(createNote([Pitch.fromScientific('a', 2)], Time.QuarterTime));
+            expect(makeNote('a,4')).to.deep.eq(createNote([Pitch.fromScientific('a', 2)], Time.QuarterTime));
+            expect(makeNote(createNote([Pitch.fromScientific('a', 2)], Time.QuarterTime))).to.deep.eq(createNote([Pitch.fromScientific('a', 2)], Time.QuarterTime));
         });
     });
 
