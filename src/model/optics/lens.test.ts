@@ -27,7 +27,7 @@ import { createNoteFromLilypond } from '../notes/note';
 import { FlexibleSequence } from '../score/flexible-sequence';
 import { ISequence, isNote } from '../score/sequence';
 import { ProjectDef, VariableDef, FlexibleItem } from '../score/types';
-import { VariableRepository } from '../score/variables';
+import { VariableRepository, setVar } from '../score/variables';
 import { projectLensByIndex, projectLensByTime } from './lens';
 
 describe('Lenses', () => {
@@ -46,7 +46,7 @@ describe('Lenses', () => {
                 key: 'g \\minor'
             });
 
-            sc.vars.setVar('theVar', 'aes4 ges4 ees4 des4');
+            sc.setVar('theVar', 'aes4 ges4 ees4 des4');
 
             const vars1 = R.prop('vars', sc.vars) as unknown as VariableDef[];
 

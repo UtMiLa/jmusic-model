@@ -1,30 +1,30 @@
-import { NoteDirection, cloneNote, voiceContentToSequence, voiceSequenceToDef } from '../../model';
+import { cloneNote, voiceContentToSequence, voiceSequenceToDef } from '../../model';
 import { FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
-import { ISequence, MusicEvent, isClefChange, isKeyChange, isLongDecoration, isMeterChange, isNote, isStateChange } from './../score/sequence';
+import { ISequence, MusicEvent, isClefChange, isKeyChange, isMeterChange, isNote } from './../score/sequence';
 import { InsertionPoint, InsertionPointDef } from './../../editor/insertion-point';
-import { RegularMeterDef, MeterFactory } from './../states/meter';
-import { Key, KeyDef } from './../states/key';
-import { Clef, ClefDef } from './../states/clef';
+import { MeterFactory } from './../states/meter';
+import { Key } from './../states/key';
+import { Clef } from './../states/clef';
 import { RepeatDef } from '../score/repeats';
-import { parseLilyClef, parseLilyKey, parseLilyMeter } from '../score/sequence';
 import { StaffDef } from '../score/staff';
-import { isScoreDef, ScoreDef } from './../score/score';
+import { ScoreDef } from './../score/score';
 import { Meter } from '../states/meter';
-import { createNoteFromLilypond, Note } from '../notes/note';
+import { Note } from '../notes/note';
 import { Alteration, Pitch } from '../pitches/pitch';
 import { Time } from '../rationals/time';
 import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
-import { VariableRepository } from '../score/variables';
+import { VariableRepository, createRepo, setVar, valueOf } from '../score/variables';
 import R = require('ramda');
-import { Enharmonic, addInterval, enharmonicChange } from '../pitches/intervals';
+import { Enharmonic, enharmonicChange } from '../pitches/intervals';
 import { StateChange } from '../states/state';
 import { FlexibleItem, ProjectDef, isProjectDef } from '../score/types';
 import { ClefFlex, makeClef } from './clef-flex';
 import { KeyFlex, makeKey } from './key-flex';
 import { MeterFlex, makeMeter } from './meter-flex';
 import { NoteFlex, makeNote } from './note-flex';
+import { ScoreFlex, makeScore } from './score.flex';
 
 export interface JMusicSettings {
     content: FlexibleItem[][];
@@ -59,38 +59,35 @@ export const initStateInSequence = (s: ISequence) => {
     return res;
 };
 
+
+
+export function makeProject(scoreFlex?: ScoreFlex, vars?: JMusicVars): ProjectDef {
+    const vars1 = 
+        vars
+            ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: pair[1] }))
+            : isProjectDef(scoreFlex)
+                ? scoreFlex.vars
+                : [];
+
+    const score = makeScore(scoreFlex, createRepo(vars1));
+
+    return {
+        score,
+        vars: vars1
+    };
+}
+
 /** Facade object for music scores */
 export class JMusic implements ScoreDef {
 
-    constructor(voice?: string | JMusicSettings | ScoreDef | ProjectDef, vars?: JMusicVars) {
+    constructor(scoreFlex?: string | JMusicSettings | ScoreDef | ProjectDef, vars?: JMusicVars) {
 
-        this.vars = new VariableRepository(
-            vars
-                ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: pair[1] }))
-                : isProjectDef(voice)
-                    ? voice.vars
-                    : []);
+        const project = makeProject(scoreFlex, vars);
 
-        this.makeScore(voice);
+        this.vars = createRepo(project.vars);
+        this.staves = project.score.staves;
+        this.repeats = project.score.repeats;
 
-        this.staves.forEach(staff => {
-            staff.voices.forEach(voice => {
-                const states = initStateInSequence(new FlexibleSequence(voice.content, this.vars));
-                if (states.clef) {
-                    //console.log('changing clef', staff.initialClef, states.clef);
-                    staff.initialClef = states.clef.def;
-                }
-                if (states.meter) {
-                    //console.log('changing meter', staff.initialMeter, states.meter);
-                    this.staves.forEach(staff1 => (staff1.initialMeter = states.meter.def));
-                }
-                if (states.key) {
-                    //console.log('changing key', staff.initialKey, states.key);
-                    this.staves.forEach(staff1 => (staff1.initialKey = states.key.def));
-                }
-            });
-        });
-        //console.log('staves', this.staves);
     }
 
     staves: StaffDef[] = [];
@@ -99,52 +96,9 @@ export class JMusic implements ScoreDef {
 
     changeHandlers: ChangeHandler[] = [];
 
-    private makeScore(voice: string | JMusicSettings | ScoreDef | ProjectDef | undefined) {
-        if (typeof (voice) === 'string') {
-            this.staves = [{
-                initialClef: Clef.clefTreble.def,
-                initialKey: { count: 0, accidental: 0 },
-                initialMeter: { count: 4, value: 4 },
-                voices: [{ content: voiceSequenceToDef(new FlexibleSequence(voice, this.vars)) }]
-            }];
-        } else if (isProjectDef(voice)) {
-            this.staves = [...voice.score.staves];
-            this.repeats = voice.score.repeats ?? [];
-        } else if (isScoreDef(voice)) {
-            this.staves = [...voice.staves];
-            this.repeats = voice.repeats ?? [];
-        } else if (typeof (voice) === 'object') {
-            const settings = voice as JMusicSettings;
-            this.staves = [];
-            settings.content.forEach((stf, idx) => {
-
-                let clef: ClefDef;
-                if (settings.clefs) {
-                    clef = makeClef(settings.clefs[idx]);
-                } else if (idx > 0 && idx === settings.content.length - 1) {
-                    clef = Clef.clefBass.def;
-                } else {
-                    clef = Clef.clefTreble.def;
-                }
-
-                const key = settings.key ? makeKey(settings.key) : { count: 0, accidental: 0 } as KeyDef;
-
-                const meter = settings.meter ? makeMeter(settings.meter) : undefined;
-
-                this.staves.push({
-                    initialClef: clef,
-                    initialKey: key,
-                    initialMeter: meter,
-                    voices: stf.map((cnt, idx) => ({
-                        content: voiceSequenceToDef(new FlexibleSequence(cnt, this.vars)),
-                        noteDirection: stf.length === 1 ? NoteDirection.Undefined : idx % 2 === 0 ? NoteDirection.Up : NoteDirection.Down
-                    }))
-                });
-            });
-        }
+    setVar(id: string, value: FlexibleItem): void {
+        this.vars = setVar(this.vars, id, value);
     }
-
-
 
     sequenceFromInsertionPoint(ins: InsertionPoint): ISequence {
         return voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content);
@@ -204,9 +158,11 @@ export class JMusic implements ScoreDef {
 
     clearScore(ins: InsertionPoint, voice?: string | JMusicSettings | ScoreDef): void {
         //this.staves = 
-        this.makeScore(voice);
+        const score = makeScore(voice, this.vars);
+        this.staves =  score.staves;
+        this.repeats = score.repeats;
 
-        this.vars = new VariableRepository([]);
+        this.vars = createRepo([]);
 
         this.didChange();
     }
@@ -330,7 +286,7 @@ export class JMusic implements ScoreDef {
 
     getView(varname?: string): JMusic {
         if (varname) {
-            return new JMusic({content: [[this.vars.valueOf(varname).elements]]});
+            return new JMusic({content: [[valueOf(this.vars, varname).elements]]});
         }
         return this;
     }

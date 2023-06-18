@@ -5,7 +5,7 @@ import { parseLilyClef } from './sequence';
 import { expect } from 'chai';
 import { LongDecorationType } from '../decorations/decoration-type';
 import { FlexibleSequence } from './flexible-sequence';
-import { VariableRepository } from './variables';
+import { createRepo, VariableRepository } from './variables';
 describe('Flexible Sequence', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';
@@ -348,7 +348,7 @@ describe('Flexible Sequence', () => {
             expect(
                 new FlexibleSequence(
                     [{ variable: 'test'}], 
-                    new VariableRepository([{id: 'test', value: 'd4 e4'}])
+                    createRepo([{id: 'test', value: 'd4 e4'}])
                 ).asObject
             ).to.deep.eq([{ variable: 'test'}]);
         });

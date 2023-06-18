@@ -3,22 +3,9 @@ import { Subject } from 'rxjs';
 import { FlexibleSequence } from './flexible-sequence';
 import { FlexibleItem, VariableDef, VariableRef } from './types';
 
-export class VariableRepository {
-    constructor(private vars: VariableDef[]) {}
-
-    observer$ = new Subject<VariableRepository>();
-
-    valueOf(id: string): FlexibleSequence {
-        const theVar = this.vars.find(vd => vd.id === id);
-        if (!theVar) 
-            throw 'Undefined variable: ' + id;
-        return new FlexibleSequence(theVar.value);
-    }
-
-    setVar(id: string, value: FlexibleItem): void {
-        this.vars = R.uniqBy(R.prop('id'), [{id, value}, ...this.vars]);
-        this.observer$.next(this);
-    }
+export interface VariableRepository {
+    vars: VariableDef[];
+    observer$: Subject<VariableRepository>;
 }
 
 
@@ -30,4 +17,25 @@ export function lookupVariable(repo: VariableDef[], varName: string): FlexibleIt
     const item = repo.find(v => v.id === varName);
     if (!item) throw 'Variable not found';
     return item.value;
+}
+
+export function createRepo(vars: VariableDef[]): VariableRepository {
+    return {
+        vars,
+        observer$: new Subject<VariableRepository>()
+    };
+}
+
+export function valueOf(vars: VariableRepository, id: string): FlexibleSequence {
+    //return vars.valueOf(id);
+    const theVar = vars.vars.find(vd => vd.id === id);
+    if (!theVar) 
+        throw 'Undefined variable: ' + id;
+    return new FlexibleSequence(theVar.value);
+}
+
+export function setVar(vars: VariableRepository, id: string, value: FlexibleItem): VariableRepository {
+    vars.vars = R.uniqBy(R.prop('id'), [{id, value}, ...vars.vars]);
+    vars.observer$.next(vars);
+    return vars;
 }

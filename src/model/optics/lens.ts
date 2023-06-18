@@ -1,4 +1,4 @@
-import { VariableRepository } from './../score/variables';
+import { VariableRepository, createRepo } from './../score/variables';
 import { ISequence, MusicEvent, isNote } from '../score/sequence';
 import R = require('ramda');
 import { FlexibleItem, ProjectDef, VariableDef } from '../score/types';
@@ -53,7 +53,7 @@ function timedToIndex(pd: ProjectDef, timed: TimeLensIndex): NaturalLensIndex {
         staff: timed.staff,
         voice: timed.voice,
         element: getElementIndex(
-            new FlexibleSequence(pd.score.staves[timed.staff].voices[timed.voice].content, new VariableRepository(pd.vars)), 
+            new FlexibleSequence(pd.score.staves[timed.staff].voices[timed.voice].content, createRepo(pd.vars)), 
             timed.time, 
             timed.eventFilter
         )
@@ -86,7 +86,7 @@ function isVarPath(path: PathElement[]): boolean
 
 function sequencsElementSetter(index: NaturalLensIndexScore): (a: MusicEvent, s: ProjectDef) => ProjectDef {
     return (a: MusicEvent, pd: ProjectDef) => {
-        const seq = new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].content, new VariableRepository(pd.vars));
+        const seq = new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].content, createRepo(pd.vars));
         const path = seq.indexToPath(index.element);
         //console.log(path);
         path.pop(); // todo: remove annoying last 0 from path
@@ -105,7 +105,7 @@ function sequencsElementSetter(index: NaturalLensIndexScore): (a: MusicEvent, s:
 }
 
 function sequencsElementGetter(index: NaturalLensIndexScore): (s: ProjectDef) => MusicEvent {
-    return (pd: ProjectDef) => voiceContentToSequence(pd.score.staves[index.staff].voices[index.voice].content, new VariableRepository(pd.vars)).elements[index.element];
+    return (pd: ProjectDef) => voiceContentToSequence(pd.score.staves[index.staff].voices[index.voice].content, createRepo(pd.vars)).elements[index.element];
 }
 
 function varLensByIndex(index: NaturalLensIndexVariable): ProjectLens {
@@ -140,7 +140,7 @@ function elementsToDef(elements: MusicEvent[]): FlexibleItem {
 
 function setModifiedVar(index: NaturalLensIndexVariable, value: FlexibleItem, pd: ProjectDef, a: MusicEvent): FlexibleItem {
     return elementsToDef(
-        new FlexibleSequence(value, new VariableRepository(pd.vars))
+        new FlexibleSequence(value, createRepo(pd.vars))
             .elements.map(
                 (value, i) => i === index.element ? a : value
             )
@@ -148,7 +148,7 @@ function setModifiedVar(index: NaturalLensIndexVariable, value: FlexibleItem, pd
 }
 
 function varGetter(index: NaturalLensIndexVariable): (s: { vars: VariableDef[]; score: ScoreDef; }) => MusicEvent {
-    return (pd: ProjectDef) => voiceContentToSequence(new FlexibleSequence(lookupVariable(pd.vars, index.variable)).asObject, new VariableRepository(pd.vars)).elements[index.element];
+    return (pd: ProjectDef) => voiceContentToSequence(new FlexibleSequence(lookupVariable(pd.vars, index.variable)).asObject, createRepo(pd.vars)).elements[index.element];
 }
 
 export function projectLensByTime(index: TimeLensIndex): ProjectLens {

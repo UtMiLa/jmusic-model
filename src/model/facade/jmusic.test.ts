@@ -17,6 +17,7 @@ import { makeClef } from './clef-flex';
 import { makeKey } from './key-flex';
 import { makeMeter } from './meter-flex';
 import { makeNote } from './note-flex';
+import { setVar, valueOf } from '../score/variables';
 
 describe('Facade', () => {
 
@@ -233,8 +234,8 @@ describe('Facade', () => {
             ins.staffNo = 0;
             ins.voiceNo = 1;
             
-            score.vars.setVar('teste', 'c4 e4');
-            expect(score.vars.valueOf('teste')).to.not.be.undefined;
+            score.setVar('teste', 'c4 e4');
+            expect(valueOf(score.vars, 'teste')).to.not.be.undefined;
             //expect(scoreChangeCalls).to.eq(1);
 
             score.clearScore(ins, { content: [[[]], [[], []], [[]]]} );
@@ -243,7 +244,7 @@ describe('Facade', () => {
             expect(score.staves[0].voices.length).to.eq(1);
             expect(score.staves[1].voices.length).to.eq(2);
             expect(voiceContentToSequence(score.staves[0].voices[0].content).elements.length).to.eq(0);
-            expect(() => score.vars.valueOf('teste')).to.be.throw(/Undefined variable/);
+            expect(() => valueOf(score.vars, 'teste')).to.be.throw(/Undefined variable/);
             expect(scoreChangeCalls).to.eq(1);
         });
 
@@ -545,7 +546,7 @@ describe('Facade', () => {
                 position: 0
             } as InsertionPoint;
 
-            expect(score.vars.valueOf('var1').elements[0]).to.deep.eq(createNoteFromLilypond('f8'));
+            expect(valueOf(score.vars, 'var1').elements[0]).to.deep.eq(createNoteFromLilypond('f8'));
 
             v.addPitch(ins, Pitch.parseLilypond('g'));
             expect(R.dissoc('uniq', voiceContentToSequence(v.staves[0].voices[0].content).elements[0] as Note))

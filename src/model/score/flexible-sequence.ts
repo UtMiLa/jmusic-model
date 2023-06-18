@@ -1,4 +1,4 @@
-import { isVariableRef, VariableRepository } from './variables';
+import { createRepo, isVariableRef, valueOf, VariableRepository } from './variables';
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
 import { createFunction } from './functions';
@@ -54,7 +54,7 @@ function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEve
 
 export class FlexibleSequence extends BaseSequence {
 
-    constructor(init: FlexibleItem, private repo: VariableRepository = new VariableRepository([]), alreadySplit = false) {
+    constructor(init: FlexibleItem, private repo: VariableRepository = createRepo([]), alreadySplit = false) {
         super();
 
         if (!alreadySplit) repo.observer$.subscribe(newRepo => {
@@ -117,7 +117,7 @@ export class FlexibleSequence extends BaseSequence {
                 ],
                 [
                     isVariableRef, 
-                    (item: VariableRef) => calcElements(this.repo.valueOf(item.variable).elements, this.repo)/*.map(timify)*/
+                    (item: VariableRef) => calcElements(valueOf(this.repo, item.variable).elements, this.repo)/*.map(timify)*/
                 ],
                 [
                     isSingleStringArray, 
@@ -148,7 +148,7 @@ export class FlexibleSequence extends BaseSequence {
             } else if (isSeqFunction(item)) {
                 return createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo)).map((a, i) => ['args', i]);
             } else if (isVariableRef(item)) {
-                const varSeq = this.repo.valueOf(item.variable);
+                const varSeq = valueOf(this.repo, item.variable);
                 return varSeq.elements.map((e, i) => [item.variable, ...varSeq.indexToPath(i)]);
             } else if (isMusicEvent(item)) {
                 return [[0]];
