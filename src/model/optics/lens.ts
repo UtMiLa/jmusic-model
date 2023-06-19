@@ -74,21 +74,21 @@ export function projectLensByIndex(index: NaturalLensIndex): ProjectLens {
 
 function voiceLensByIndex(index: NaturalLensIndexScore): ProjectLens {
     return R.lens(
-        sequencsElementGetter(index),
-        sequencsElementSetter(index)
+        sequenceElementGetter(index),
+        sequenceElementSetter(index)
     );
 }
 
 function isVarPath(path: PathElement[]): boolean
 {
-    return !!path.length && typeof path[0] === 'string';
+    return !!path.length && typeof path[0] === 'string' && path[0] !== '@args';
 }
 
-function sequencsElementSetter(index: NaturalLensIndexScore): (a: MusicEvent | undefined, s: ProjectDef) => ProjectDef {
+function sequenceElementSetter(index: NaturalLensIndexScore): (a: MusicEvent | undefined, s: ProjectDef) => ProjectDef {
     return (a: MusicEvent | undefined, pd: ProjectDef) => {
         const seq = new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].content, createRepo(pd.vars));
         const path = seq.indexToPath(index.element);
-        //console.log(path);
+        console.log(path);
         path.pop(); // todo: remove annoying last 0 from path
 
         if (isVarPath(path)) {
@@ -99,12 +99,14 @@ function sequencsElementSetter(index: NaturalLensIndexScore): (a: MusicEvent | u
             return R.assoc('vars', val, pd);
         }
 
-        return R.assocPath(['score', 'staves', index.staff, 'voices', index.voice, 'content', ...path], a ? simplifyDef(a) : [], pd);
+        const path1 = (path.length) ? path.map(item => item === '@args' ? 'args' : item) : path;
+
+        return R.assocPath(['score', 'staves', index.staff, 'voices', index.voice, 'content', ...path1], a ? simplifyDef(a) : [], pd);
 
     };
 }
 
-function sequencsElementGetter(index: NaturalLensIndexScore): (s: ProjectDef) => MusicEvent | undefined {
+function sequenceElementGetter(index: NaturalLensIndexScore): (s: ProjectDef) => MusicEvent | undefined {
     return (pd: ProjectDef) => new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].content, createRepo(pd.vars)).elements[index.element];
 }
 
