@@ -3,10 +3,10 @@ import { getExtendedTime } from '../../model/score/timing-order';
 import { createTestScore, createTestScoreVM } from '../../tools/test-tools';
 import { SimpleSequence } from './../../model/score/sequence';
 import { MeterFactory } from './../../model/states/meter';
-import { ScoreDef } from './../../model/score/score';
+import { ScoreDef, scoreDefToScore } from './../../model/score/score';
 import { Time } from './../../model/rationals/time';
 import { Clef } from './../../model/states/clef';
-import { Staff } from './../../model/score/staff';
+import { setStaffSequence, staffDefToStaff } from './../../model/score/staff';
 import { StaffDef } from '../../model/score/staff';
 import { expect } from 'chai';
 import { ClefType } from '../../model/states/clef';
@@ -26,9 +26,9 @@ describe('State change view model', () => {
 
     describe('clef changes', () => {
         it('should change positions after a clef change', () => {
-            Staff.setSequence(staffClef, new SimpleSequence( 'c\'4 \\clef alto c\'4 \\clef bass c\'4'));
+            setStaffSequence(staffClef, new SimpleSequence( 'c\'4 \\clef alto c\'4 \\clef bass c\'4'));
     
-            const vm = scoreModelToViewModel({staves: [staffClef]}).staves[0];
+            const vm = scoreModelToViewModel(scoreDefToScore({staves: [staffClef]})).staves[0];
     
             expect(vm.timeSlots.length).to.eq(6);
             expect(vm.timeSlots[1].notes[0]).to.deep.include({ positions: [-6] });
@@ -39,10 +39,10 @@ describe('State change view model', () => {
                
     
         it('should also change positions in another voice after a clef change', () => {
-            Staff.setSequence(staffClef, new SimpleSequence( 'c\'4 \\clef alto c\'4 \\clef bass c\'4'));
+            setStaffSequence(staffClef, new SimpleSequence( 'c\'4 \\clef alto c\'4 \\clef bass c\'4'));
             staffClef.voices.push({content: 'b4 b4 b4'});
     
-            const vm = scoreModelToViewModel({staves: [staffClef]}).staves[0];
+            const vm = scoreModelToViewModel(scoreDefToScore({staves: [staffClef]})).staves[0];
     
             expect(vm.timeSlots.length).to.eq(6);
             expect(vm.timeSlots[1].notes[0]).to.deep.include({ positions: [-6] });
@@ -87,10 +87,10 @@ describe('State change view model', () => {
     
 
         it('should also change positions in another voice after a clef change', () => {
-            Staff.setSequence(staffClef, new SimpleSequence( 'c\'4 \\clef alto c\'4 \\clef bass c\'4'));
+            setStaffSequence(staffClef, new SimpleSequence( 'c\'4 \\clef alto c\'4 \\clef bass c\'4'));
             staffClef.voices.push({content: 'b4 b4 b4'});
 
-            const vm = scoreModelToViewModel({staves: [staffClef]}).staves[0];
+            const vm = scoreModelToViewModel(scoreDefToScore({staves: [staffClef]})).staves[0];
 
             expect(vm.timeSlots.length).to.eq(6);
             expect(vm.timeSlots[1].notes[0]).to.deep.include({ positions: [-6] });
@@ -106,15 +106,15 @@ describe('State change view model', () => {
         it('should allow different clef changes at different staves at same time', () => {
             const staff2 = {...staffClef};
 
-            Staff.setSequence(staffClef, new SimpleSequence( 'c\'4 \\clef alto c\'4 \\clef bass c\'4'));
+            setStaffSequence(staffClef, new SimpleSequence( 'c\'4 \\clef alto c\'4 \\clef bass c\'4'));
             staffClef.voices.push({content: 'b4 b4 b4'});
 
-            Staff.setSequence(staff2, new SimpleSequence( 'c\'4 \\clef bass c\'4 \\clef bass c\'4'));
+            setStaffSequence(staff2, new SimpleSequence( 'c\'4 \\clef bass c\'4 \\clef bass c\'4'));
             staff2.voices.push({content: 'b4 b4 b4'});
 
             const scoreDef = {staves: [staffClef, staff2]};
 
-            const vm = scoreModelToViewModel(scoreDef);
+            const vm = scoreModelToViewModel(scoreDefToScore(scoreDef));
 
             expect(vm.staves[0].timeSlots).to.have.length(6);
 
@@ -139,7 +139,7 @@ describe('State change view model', () => {
                 'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1'
             ]], [3, 4, 1, 8], [-1, 3], ['bass']);
 
-            expect(() => scoreModelToViewModel(scoreModel)).to.throw('Two clef changes in the same staff');
+            expect(() => scoreModelToViewModel(scoreDefToScore(scoreModel))).to.throw('Two clef changes in the same staff');
     
         });
 
@@ -161,7 +161,7 @@ describe('State change view model', () => {
                 'c8 c4 c4 c4 \\clef bass c4 c4 c4 c4 c1'
             ]], [3, 4, 1, 8], [-1, 3], ['bass']);
 
-            expect(() => scoreModelToViewModel(scoreModel)).to.not.throw();
+            expect(() => scoreModelToViewModel(scoreDefToScore(scoreModel))).to.not.throw();
     
         });
 
@@ -172,13 +172,13 @@ describe('State change view model', () => {
 
     describe('key changes', () => {
         it('should show a key change', () => {
-            const score = scoreModelToViewModel({
+            const score = scoreModelToViewModel(scoreDefToScore({
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
                     voices: [{content: 'c1 \\key g \\major c1'}]
                 }]
-            });
+            }));
     
             expect(score.staves[0].timeSlots).to.have.length(4);
             expect(score.staves[0].timeSlots[2]).to.deep.include({
@@ -187,13 +187,13 @@ describe('State change view model', () => {
         });
     
         it('should correctly set accidentals after a key change', () => {
-            const score = scoreModelToViewModel({
+            const score = scoreModelToViewModel(scoreDefToScore({
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
                     voices: [{content: '<c e f>1 \\key d \\major <c e f>1'}]
                 }]
-            });
+            }));
     
             expect(score.staves[0].timeSlots).to.have.length(4);
             expect(score.staves[0].timeSlots[1]).to.deep.include({
@@ -217,7 +217,7 @@ describe('State change view model', () => {
         });
     
         it('should change key for all voices, even if they dont share the timeslot of the key change', () => {
-            const score = scoreModelToViewModel({
+            const score = scoreModelToViewModel(scoreDefToScore({
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
@@ -226,7 +226,7 @@ describe('State change view model', () => {
                         {content: '<c, e, f,>1 <c, e, f,>1'}
                     ]
                 }]
-            });
+            }));
     
             expect(score.staves[0].timeSlots).to.have.length(5);
     
@@ -282,7 +282,7 @@ describe('State change view model', () => {
         });
     
         it('should change key for all staves', () => {
-            const score = scoreModelToViewModel({
+            const score = scoreModelToViewModel(scoreDefToScore({
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
@@ -296,7 +296,7 @@ describe('State change view model', () => {
                         {content: '<c e f>2 <c e f>1.'}
                     ]
                 }]
-            });
+            }));
     
             // First staff
             expect(score.staves[0].timeSlots).to.have.length(4);
@@ -372,7 +372,7 @@ describe('State change view model', () => {
         });
     
         it('should show a key change on all staves, even if they dont share the timeslot of the key change', () => {
-            const score = scoreModelToViewModel({
+            const score = scoreModelToViewModel(scoreDefToScore({
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
@@ -386,7 +386,7 @@ describe('State change view model', () => {
                         {content: '<c e f>1 <c e f>2'}
                     ]
                 }]
-            });
+            }));
     
             // First staff
             expect(score.staves[0].timeSlots).to.have.length(4);
@@ -472,7 +472,7 @@ describe('State change view model', () => {
                 }]
             };
 
-            expect(() => scoreModelToViewModel(scoreModel)).to.throw('Two key changes in the same staff');
+            expect(() => scoreModelToViewModel(scoreDefToScore(scoreModel))).to.throw('Two key changes in the same staff');
     
         });
 
@@ -495,7 +495,7 @@ describe('State change view model', () => {
                 }]
             };
 
-            expect(() => scoreModelToViewModel(scoreModel)).to.not.throw();
+            expect(() => scoreModelToViewModel(scoreDefToScore(scoreModel))).to.not.throw();
     
         });
 
@@ -505,7 +505,7 @@ describe('State change view model', () => {
 
     describe('meter changes', () => {
         it('should show a meter change', () => {
-            const score = scoreModelToViewModel({
+            const score = scoreModelToViewModel(scoreDefToScore({
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
@@ -514,7 +514,7 @@ describe('State change view model', () => {
                         {content: 'c8 c4 c4 c4 \\meter 5/8 c4 c4 c4 c4 c1'}
                     ]
                 }]
-            });
+            }));
 
             //expect(score.staves[0].timeSlots).to.have.length(10);
 
@@ -523,7 +523,7 @@ describe('State change view model', () => {
         });
 
         it('should change bar lines after a meter change', () => {
-            const score = scoreModelToViewModel({
+            const score = scoreModelToViewModel(scoreDefToScore({
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
@@ -532,7 +532,7 @@ describe('State change view model', () => {
                         {content: 'c8 c4 c4 c4 \\meter 4/4 c4 c4 c4 c4 c1'}
                     ]
                 }]
-            });
+            }));
     
             expect(score.staves[0].timeSlots).to.have.length(14);
 
@@ -545,7 +545,7 @@ describe('State change view model', () => {
         });               
     
         it('should change beaming after a meter change', () => {
-            const score = scoreModelToViewModel({
+            const score = scoreModelToViewModel(scoreDefToScore({
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
@@ -554,7 +554,7 @@ describe('State change view model', () => {
                         {content: 'c8 c8 c8 c8 c8 c8 \\meter 6/8 c8 c8 c8 c8 c8 c8'}
                     ]
                 }]
-            });
+            }));
     
             expect(score.staves[0].timeSlots).to.have.length(15);
 
@@ -567,7 +567,7 @@ describe('State change view model', () => {
         });               
     
         it('should change beaming after a meter change with longer notes before change', () => {
-            const score = scoreModelToViewModel({
+            const score = scoreModelToViewModel(scoreDefToScore({
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
@@ -576,7 +576,7 @@ describe('State change view model', () => {
                         {content: 'c2. \\meter 6/8 c8 c8 c8 c8 c8 c8'}
                     ]
                 }]
-            });
+            }));
     
             expect(score.staves[0].timeSlots).to.have.length(10);
 
@@ -589,7 +589,7 @@ describe('State change view model', () => {
         });               
     
         it('should change meter for all staves, even if they dont share the timeslot of the meter change', () => {
-            const score = scoreModelToViewModel({
+            const score = scoreModelToViewModel(scoreDefToScore({
                 staves: [{
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: -1, count: 3 },
@@ -605,7 +605,7 @@ describe('State change view model', () => {
                         {content: 'c8 c1 c4 c4 c4 c1'}
                     ]
                 }]
-            });
+            }));
 
             expect(score.staves[1].timeSlots.find(ts => Time.equals(ts.absTime, getExtendedTime(Time.newAbsolute(7, 8), EventType.MeterChg)))).to.exist;
             expect(score.staves[1].timeSlots.find(ts => Time.equals(ts.absTime, getExtendedTime(Time.newAbsolute(7, 8), EventType.MeterChg)))).to.deep.include({ meter: { meterText: ['4', '4']}});
@@ -631,7 +631,7 @@ describe('State change view model', () => {
                 }]
             };
 
-            expect(() => scoreModelToViewModel(scoreModel)).to.throw('Two meter changes in the same staff');
+            expect(() => scoreModelToViewModel(scoreDefToScore(scoreModel))).to.throw('Two meter changes in the same staff');
     
         });
 
@@ -654,7 +654,7 @@ describe('State change view model', () => {
                 }]
             };
 
-            expect(() => scoreModelToViewModel(scoreModel)).to.not.throw();
+            expect(() => scoreModelToViewModel(scoreDefToScore(scoreModel))).to.not.throw();
     
         });
 

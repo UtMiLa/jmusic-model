@@ -81,7 +81,7 @@ export class MidiPerformer {
         model.staves.forEach(staff => {
   
             staff.voices.forEach(voice => {
-                const timeslots = combineTiedNotes(splitPitches(voiceContentToSequence(voice.content).groupByTimeSlots('')));
+                const timeslots = combineTiedNotes(splitPitches(voice.content.groupByTimeSlots('')));
 
                 //console.log('timeslots', timeslots[0]);
                 //let rememberTiedPitches = [];

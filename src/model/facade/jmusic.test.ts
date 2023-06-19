@@ -64,8 +64,8 @@ describe('Facade', () => {
             expect(sc.staves[0].initialKey).to.deep.eq({ count: 0, accidental: 0 });
             expect(sc.staves[0].initialMeter).to.deep.eq({ count: 4, value: 4 });
             expect(sc.staves[0].voices).to.have.length(1);
-            expect(voiceContentToSequence(sc.staves[0].voices[0].content).duration).to.deep.eq(Time.WholeTime);
-            expect(voiceContentToSequence(sc.staves[0].voices[0].content).elements).to.have.length(4);
+            expect(sc.staves[0].voices[0].content.duration).to.deep.eq(Time.WholeTime);
+            expect(sc.staves[0].voices[0].content.elements).to.have.length(4);
             expect(sc.repeats).to.be.undefined;
         });
     
@@ -77,8 +77,8 @@ describe('Facade', () => {
             expect(sc.staves[0].initialKey).to.deep.eq({ count: 0, accidental: 0 });
             expect(sc.staves[0].initialMeter).to.be.undefined;
             expect(sc.staves[0].voices).to.have.length(1);
-            expect(voiceContentToSequence(sc.staves[0].voices[0].content).duration).to.deep.eq(Time.WholeTime);
-            expect(voiceContentToSequence(sc.staves[0].voices[0].content).elements).to.have.length(4);
+            expect(sc.staves[0].voices[0].content.duration).to.deep.eq(Time.WholeTime);
+            expect(sc.staves[0].voices[0].content.elements).to.have.length(4);
             expect(sc.repeats).to.be.undefined;
         });
     
@@ -91,15 +91,15 @@ describe('Facade', () => {
             expect(sc.staves[0].initialKey).to.deep.eq({ count: 0, accidental: 0 });
             expect(sc.staves[0].initialMeter).to.be.undefined;
             expect(sc.staves[0].voices).to.have.length(2);
-            expect(voiceContentToSequence(sc.staves[0].voices[0].content).duration).to.deep.eq(Time.WholeTime);
-            expect(voiceContentToSequence(sc.staves[0].voices[0].content).elements).to.have.length(4);
+            expect(sc.staves[0].voices[0].content.duration).to.deep.eq(Time.WholeTime);
+            expect(sc.staves[0].voices[0].content.elements).to.have.length(4);
             
             expect(sc.staves[1].initialClef).to.deep.eq({ clefType: ClefType.F, line: 2 });
             expect(sc.staves[1].initialKey).to.deep.eq({ count: 0, accidental: 0 });
             expect(sc.staves[1].initialMeter).to.be.undefined;
             expect(sc.staves[1].voices).to.have.length(1);
-            expect(voiceContentToSequence(sc.staves[1].voices[0].content).duration).to.deep.eq(Time.WholeTime);
-            expect(voiceContentToSequence(sc.staves[1].voices[0].content).elements).to.have.length(4);
+            expect(sc.staves[1].voices[0].content.duration).to.deep.eq(Time.WholeTime);
+            expect(sc.staves[1].voices[0].content.elements).to.have.length(4);
             expect(sc.repeats).to.be.undefined;
         });
     
@@ -119,15 +119,15 @@ describe('Facade', () => {
             expect(sc.staves[0].initialKey).to.deep.eq({ count: 2, accidental: -1 });
             expect(sc.staves[0].initialMeter).to.deep.eq({ count: 6, value: 8 });
             expect(sc.staves[0].voices).to.have.length(2);
-            expect(voiceContentToSequence(sc.staves[0].voices[0].content).duration).to.deep.eq(Time.WholeTime);
-            expect(voiceContentToSequence(sc.staves[0].voices[0].content).elements).to.have.length(4);
+            expect(sc.staves[0].voices[0].content.duration).to.deep.eq(Time.WholeTime);
+            expect(sc.staves[0].voices[0].content.elements).to.have.length(4);
             
             expect(sc.staves[1].initialClef).to.deep.eq({ clefType: ClefType.C, line: 2 });
             expect(sc.staves[1].initialKey).to.deep.eq({ count: 2, accidental: -1 });
             expect(sc.staves[1].initialMeter).to.deep.eq({ count: 6, value: 8 });
             expect(sc.staves[1].voices).to.have.length(1);
-            expect(voiceContentToSequence(sc.staves[1].voices[0].content).duration).to.deep.eq(Time.WholeTime);
-            expect(voiceContentToSequence(sc.staves[1].voices[0].content).elements).to.have.length(4);
+            expect(sc.staves[1].voices[0].content.duration).to.deep.eq(Time.WholeTime);
+            expect(sc.staves[1].voices[0].content.elements).to.have.length(4);
             expect(sc.repeats).to.be.undefined;
         });
 
@@ -206,9 +206,9 @@ describe('Facade', () => {
             expect(sc.staves[0].initialKey).to.deep.eq({ count: 0, accidental: 0 });
             expect(sc.staves[0].initialMeter).to.be.undefined;
             expect(sc.staves[0].voices).to.have.length(1);
-            expect(new FlexibleSequence(sc.staves[0].voices[0].content, sc.vars).duration).to.deep.eq(Time.newSpan(3, 4));
-            expect(voiceContentToSequence(sc.staves[0].voices[0].content, sc.vars).elements).to.have.length(3);
-            expect(voiceContentToSequence(sc.staves[0].voices[0].content, sc.vars).elements[2]).to.deep.eq(createNoteFromLilypond('d4'));
+            expect(sc.staves[0].voices[0].content.duration).to.deep.eq(Time.newSpan(3, 4));
+            expect(sc.staves[0].voices[0].content.elements).to.have.length(3);
+            expect(sc.staves[0].voices[0].content.elements[2]).to.deep.eq(createNoteFromLilypond('d4'));
             expect(sc.repeats).to.be.undefined;
         });
     
@@ -243,7 +243,7 @@ describe('Facade', () => {
             expect(score.staves.length).to.eq(3);
             expect(score.staves[0].voices.length).to.eq(1);
             expect(score.staves[1].voices.length).to.eq(2);
-            expect(voiceContentToSequence(score.staves[0].voices[0].content).elements.length).to.eq(0);
+            expect(score.staves[0].voices[0].content.elements.length).to.eq(0);
             expect(() => valueOf(score.vars, 'teste')).to.be.throw(/Undefined variable/);
             expect(scoreChangeCalls).to.eq(1);
         });
@@ -253,7 +253,7 @@ describe('Facade', () => {
             ins.staffNo = 0;
             ins.voiceNo = 1;
             score.appendNote(ins, 'e4');
-            const seq = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq = score.staves[0].voices[1].content;
             expect(seq.duration).to.deep.eq(Time.newSpan(9, 4));
             expect(seq.elements[8]).to.deep.eq(createNoteFromLilypond('e4'));
             expect(scoreChangeCalls).to.eq(1);
@@ -267,7 +267,7 @@ describe('Facade', () => {
             ins.voiceNo = 1;
             ins.time = Time.newAbsolute(3, 4);
             score.addPitch(ins, Pitch.parseLilypond('e'));
-            const seq = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq = score.staves[0].voices[1].content;
             expect(R.dissoc('uniq', seq.elements[3] as Note)).to.deep.eq(createNoteFromLilypond('<c e>4'));
             expect(scoreChangeCalls).to.eq(1);
         });
@@ -294,7 +294,7 @@ describe('Facade', () => {
             ins.position = 3;
             ins.time = Time.newAbsolute(3, 4);
             score.addPitch(ins);
-            const seq = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq = score.staves[0].voices[1].content;
             expect(R.dissoc('uniq', seq.elements[3] as Note)).to.deep.eq(createNoteFromLilypond('<c e\'\'>4'));
             expect(scoreChangeCalls).to.eq(1);
         });
@@ -306,7 +306,7 @@ describe('Facade', () => {
             ins.position = 3;
             ins.time = Time.newAbsolute(3, 4);
             score.setPitches(ins, [Pitch.parseLilypond('e\'\''), Pitch.parseLilypond('aes\'\''), Pitch.parseLilypond('b\'\'')]);
-            const seq = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq = score.staves[0].voices[1].content;
             expect(seq.elements[3]).to.deep.include(createNoteFromLilypond('<e\'\' aes\'\' b\'\'>4'));
             expect(scoreChangeCalls).to.eq(1);
         });
@@ -318,7 +318,7 @@ describe('Facade', () => {
             ins.position = 1 - 14;
             ins.time = Time.newAbsolute(3, 4);
             score.removePitch(ins);
-            const seq = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq = score.staves[0].voices[1].content;
             expect(seq.elements[3]).to.deep.include(createNoteFromLilypond('r4'));
             expect(scoreChangeCalls).to.eq(1);
         });
@@ -330,7 +330,7 @@ describe('Facade', () => {
             ins.position = 1;
             ins.time = Time.newAbsolute(3, 2);
             score.deleteNote(ins);
-            const seq = voiceContentToSequence(score.staves[0].voices[0].content);
+            const seq = score.staves[0].voices[0].content;
             expect(seq.elements[7]).to.deep.include(createNoteFromLilypond('ais4'));
             expect(scoreChangeCalls).to.eq(1);
         });
@@ -342,7 +342,7 @@ describe('Facade', () => {
             ins.position = 1;
             ins.time = Time.newAbsolute(3, 2);
             score.setNoteValue(ins, Time.HalfTime);
-            const seq = voiceContentToSequence(score.staves[0].voices[0].content);
+            const seq = score.staves[0].voices[0].content;
             expect(seq.elements[7]).to.deep.include(createNoteFromLilypond('a2'));
             expect(scoreChangeCalls).to.eq(1);
         });
@@ -355,7 +355,7 @@ describe('Facade', () => {
             ins.position = 1;
             ins.time = Time.newAbsolute(3, 2);
             score.setNoteDots(ins, 2);
-            const seq = voiceContentToSequence(score.staves[0].voices[0].content);
+            const seq = score.staves[0].voices[0].content);
             expect(seq.elements[7]).to.deep.include(createNoteFromLilypond('a4..'));
             expect(scoreChangeCalls).to.eq(1);
         });*/
@@ -367,7 +367,7 @@ describe('Facade', () => {
             ins.position = 1;
             ins.time = Time.newAbsolute(3, 4);
             score.changePitchEnharm(ins);
-            const seq = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq = score.staves[0].voices[1].content;
             expect(seq.elements[3]).to.deep.include(createNoteFromLilypond('bis,4'));
             expect(scoreChangeCalls).to.eq(1);
         });
@@ -379,12 +379,12 @@ describe('Facade', () => {
             ins.position = 1;
             ins.time = Time.newAbsolute(3, 4);
             score.alterPitch(ins, 1);
-            const seq = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq = score.staves[0].voices[1].content;
             expect(seq.elements[3]).to.deep.include(createNoteFromLilypond('cis4'));
             expect(scoreChangeCalls).to.eq(1);
 
             score.alterPitch(ins, -1);
-            const seq2 = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq2 = score.staves[0].voices[1].content;
             expect(seq2.elements[3]).to.deep.include(createNoteFromLilypond('c4'));
             expect(scoreChangeCalls).to.eq(2);
         });
@@ -396,19 +396,19 @@ describe('Facade', () => {
             ins.position = 1;
             ins.time = Time.newAbsolute(3, 4);
             score.alterPitch(ins, -2);
-            const seq = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq = score.staves[0].voices[1].content;
             expect(seq.elements[3]).to.deep.include(createNoteFromLilypond('ceses4'));
             expect(scoreChangeCalls).to.eq(1);
 
             score.alterPitch(ins, -1);
-            const seq2 = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq2 = score.staves[0].voices[1].content;
             expect(seq2.elements[3]).to.deep.include(createNoteFromLilypond('b,4'));
             expect(scoreChangeCalls).to.eq(2);
 
             
             score.alterPitch(ins, 2);
             score.alterPitch(ins, 1);
-            const seq3 = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq3 = score.staves[0].voices[1].content;
             expect(seq3.elements[3]).to.deep.include(createNoteFromLilypond('c4'));
             expect(scoreChangeCalls).to.eq(4);
         });
@@ -423,7 +423,7 @@ describe('Facade', () => {
             ins.position = 3;
             ins.time = Time.newAbsolute(1, 1);
             score.addMeterChg(ins, '3/4');
-            const seq = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq = score.staves[0].voices[1].content;
             expect(seq.elements[4]).to.deep.include({meter: MeterFactory.createRegularMeter({ count: 3, value: 4})});
             expect(scoreChangeCalls).to.eq(1);
         });
@@ -436,7 +436,7 @@ describe('Facade', () => {
             ins.time = Time.newAbsolute(1, 1);
             score.addMeterChg(ins, '3/4');
             score.addMeterChg(ins, '5/8');
-            const seq = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq = score.staves[0].voices[1].content;
             expect(seq.elements[4]).to.deep.include({meter: MeterFactory.createRegularMeter({ count: 5, value: 8})});
             expect(seq.elements[5]).to.deep.include(createNoteFromLilypond('c4'));
             expect(scoreChangeCalls).to.eq(2);
@@ -449,7 +449,7 @@ describe('Facade', () => {
             ins.position = 3;
             ins.time = Time.newAbsolute(1, 1);
             score.addKeyChg(ins, 'f major');
-            const seq = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq = score.staves[0].voices[1].content;
             expect(seq.elements[4]).to.deep.include({key: new Key({ accidental: -1, count: 1 })});
             expect(scoreChangeCalls).to.eq(1);
         });
@@ -460,7 +460,7 @@ describe('Facade', () => {
             ins.position = 3;
             ins.time = Time.newAbsolute(1, 1);
             score.addClefChg(ins, 'alto');
-            const seq = voiceContentToSequence(score.staves[0].voices[1].content);
+            const seq = score.staves[0].voices[1].content;
             expect(seq.elements[4]).to.deep.include({clef: new Clef({ line: 0, clefType: ClefType.C })});
             expect(scoreChangeCalls).to.eq(1);
 
@@ -495,14 +495,14 @@ describe('Facade', () => {
             score.addLongDecoration(LongDecorationType.Crescendo, ins, Time.WholeTime);
 
             let voice = score.staves[0].voices[1];
-            expect(voiceContentToSequence(voice.content).elements[3]).to.deep.equal({ longDeco: LongDecorationType.Crescendo, length: Time.WholeTime });
+            expect(voice.content.elements[3]).to.deep.equal({ longDeco: LongDecorationType.Crescendo, length: Time.WholeTime });
             expect(scoreChangeCalls).to.eq(1);
 
             ins.time = Time.newAbsolute(5, 4);
             score.addLongDecoration(LongDecorationType.Decrescendo, ins, Time.HalfTime);
 
             voice = score.staves[0].voices[1];
-            expect(voiceContentToSequence(voice.content).elements[6]).to.deep.equal({ longDeco: LongDecorationType.Decrescendo, length: Time.HalfTime });
+            expect(voice.content.elements[6]).to.deep.equal({ longDeco: LongDecorationType.Decrescendo, length: Time.HalfTime });
             expect(scoreChangeCalls).to.eq(2);
 
         });
@@ -549,7 +549,7 @@ describe('Facade', () => {
             expect(valueOf(score.vars, 'var1').elements[0]).to.deep.eq(createNoteFromLilypond('f8'));
 
             v.addPitch(ins, Pitch.parseLilypond('g'));
-            expect(R.dissoc('uniq', voiceContentToSequence(v.staves[0].voices[0].content).elements[0] as Note))
+            expect(R.dissoc('uniq', v.staves[0].voices[0].content.elements[0] as Note))
                 .to.deep.eq(createNoteFromLilypond('<f g>8'));
             //expect(score.vars.valueOf('var1').elements[0]).to.deep.eq(createNoteFromLilypond('<f g>8'));
         });

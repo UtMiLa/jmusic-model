@@ -1,5 +1,6 @@
+import { VariableRepository, createRepo } from './../model/score/variables';
 import { Time } from './../model/rationals/time';
-import { NoteDirection, ClefType, SimpleSequence, ScoreDef } from '../model';
+import { NoteDirection, ClefType, SimpleSequence, ScoreDef, scoreDefToScore, Score } from '../model';
 import { expect } from 'chai';
 import { InsertionPoint } from './insertion-point';
 
@@ -7,10 +8,10 @@ describe('Insertion point', () => {
     const seq1Text = 'c4 d8 e8 f4';
     const seq2Text = 'c,2 d,8 e,8 c4';
     const seq3Text = 'c,2 d,8 <e, c>4 f,8';
-    let score: ScoreDef;
+    let score: Score;
 
     beforeEach(() => { 
-        score = {staves: [
+        score = scoreDefToScore({staves: [
             {
                 initialClef: {clefType: ClefType.G, line: -2},
                 initialKey: {accidental: 1, count: 1 },
@@ -35,7 +36,7 @@ describe('Insertion point', () => {
                     }
                 ]
             }
-        ]};
+        ]}, createRepo([]));
     });
 
     it('should create an insertion point', () => {

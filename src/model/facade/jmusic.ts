@@ -1,4 +1,4 @@
-import { cloneNote, voiceContentToSequence, voiceSequenceToDef } from '../../model';
+import { cloneNote, projectLensByTime, voiceContentToSequence, voiceSequenceToDef } from '../../model';
 import { FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
@@ -8,8 +8,8 @@ import { MeterFactory } from './../states/meter';
 import { Key } from './../states/key';
 import { Clef } from './../states/clef';
 import { RepeatDef } from '../score/repeats';
-import { StaffDef } from '../score/staff';
-import { ScoreDef } from './../score/score';
+import { Staff, StaffDef, staffDefToStaff } from '../score/staff';
+import { Score, ScoreDef } from './../score/score';
 import { Meter } from '../states/meter';
 import { Note } from '../notes/note';
 import { Alteration, Pitch } from '../pitches/pitch';
@@ -62,40 +62,27 @@ export const initStateInSequence = (s: ISequence) => {
 
 
 /** Facade object for music scores */
-export class JMusic implements ScoreDef {
+export class JMusic implements Score {
 
     constructor(scoreFlex?: ProjectFlex, vars?: JMusicVars) {
 
         this.project = makeProject(scoreFlex, vars);
 
-/*        this.vars = createRepo(project.vars);
-        this.staves = project.score.staves;
-        this.repeats = project.score.repeats;
-*/
     }
 
     project: ProjectDef;
-    //private _staves: StaffDef[] = [];
-    public get staves(): StaffDef[] {
-        return this.project.score.staves;
+
+    public get staves(): Staff[] {
+        return this.project.score.staves.map(sd => staffDefToStaff(sd, this.vars));
     }
-    /*public set staves(value: StaffDef[]) {
-        this._staves = value;
-    }*/
-    //private _repeats?: RepeatDef[] | undefined;
+
     public get repeats(): RepeatDef[] | undefined {
         return this.project.score.repeats;
     }
-    /*public set repeats(value: RepeatDef[] | undefined) {
-        this._repeats = value;
-    }*/
-    //private _vars: VariableRepository;
+
     public get vars(): VariableRepository {
         return createRepo(this.project.vars);
     }
-    /*public set vars(value: VariableRepository) {
-        this._vars = value;
-    }*/
 
     changeHandlers: ChangeHandler[] = [];
 
@@ -104,15 +91,15 @@ export class JMusic implements ScoreDef {
     }
 
     sequenceFromInsertionPoint(ins: InsertionPoint): ISequence {
-        return voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content);
+        return this.staves[ins.staffNo].voices[ins.voiceNo].content;
     }
 
     noteFromInsertionPoint(ins: InsertionPoint): Note {
-        return voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).groupByTimeSlots('0').filter(ts => Time.equals(ts.time, ins.time))[0].elements[0];
+        return this.staves[ins.staffNo].voices[ins.voiceNo].content.groupByTimeSlots('0').filter(ts => Time.equals(ts.time, ins.time))[0].elements[0];
     }
 
     insertElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent, checkType: (e: MusicEvent) => boolean): void {
-        this.staves[ins.staffNo].voices[ins.voiceNo].content = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).chainElements(
+        this.project.score.staves[ins.staffNo].voices[ins.voiceNo].content = voiceSequenceToDef(new FlexibleSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content.chainElements(
             (ct, time) => {
                 if (!Time.equals(time, ins.time)) return [ct];
                 if (checkType(ct)) return [];
@@ -122,28 +109,34 @@ export class JMusic implements ScoreDef {
     }
 
     appendElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent): void {
-        this.staves[ins.staffNo].voices[ins.voiceNo].content = 
+        this.project.score.staves[ins.staffNo].voices[ins.voiceNo].content = 
             [
-                ...voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).elements,
+                ...this.staves[ins.staffNo].voices[ins.voiceNo].content.elements,
                 element
             ]
         ;
     }
 
     replaceNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note, toNote: Note): void {
-        this.staves[ins.staffNo].voices[ins.voiceNo].content = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).chainElements(
+        /*this.staves[ins.staffNo].voices[ins.voiceNo].content = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).chainElements(
             (ct, time) => {
                 return [Time.equals(time, ins.time) && isNote(ct) ? toNote : ct];
             }
-        )));
+        )));*/
+        const lens = projectLensByTime({ staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
+        this.project = R.set(lens, toNote, this.project);
+
     }
 
     deleteNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note): void {
-        this.staves[ins.staffNo].voices[ins.voiceNo].content = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).filterElements(
+        /*this.staves[ins.staffNo].voices[ins.voiceNo].content = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).filterElements(
             (ct, time) => {
                 return !(Time.equals(time, ins.time) && isNote(ct));
             }
-        )));
+        )));*/
+        const lens = projectLensByTime({ staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
+        this.project = R.set(lens, undefined, this.project);
+
     }
 
     pitchFromInsertionPoint(ins: InsertionPoint): Pitch {
@@ -188,6 +181,8 @@ export class JMusic implements ScoreDef {
         const note = this.noteFromInsertionPoint(ins);
         const note1 = cloneNote(note, { nominalDuration: time });
         this.replaceNoteAtInsertionPoint(ins, note, note1);
+        /*const lens = projectLensByTime({ staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
+        this.project = R.set(lens, note1, this.project);*/
         this.didChange();
     }
 

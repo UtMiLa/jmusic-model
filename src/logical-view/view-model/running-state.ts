@@ -8,7 +8,7 @@ import { NoteViewModel, TupletViewModel } from './note-view-model';
 import { Clef } from '../../model';
 import { Key } from '../../model';
 import { TimeSlotViewModel } from './score-view-model';
-import { voiceContentToSequence, VoiceDef } from '../../model/score/voice';
+import { Voice, voiceContentToSequence, VoiceDef } from '../../model/score/voice';
 import { createIdPrefix } from './state-map';
 
 /** This object is created for each voice during processing. It keeps track of the current state:
@@ -24,10 +24,10 @@ export class State {
         public voiceBeamGroups: BeamGroup[], 
         public staffNo: number, 
         public voiceNo: number, 
-        public voice: VoiceDef, 
+        public voice: Voice, 
         public clef: Clef
     ) {
-        const voiceSequence = voiceContentToSequence(voice.content);
+        const voiceSequence = voice.content;
         this.voiceTimeSlots = voiceSequence.groupByTimeSlots(createIdPrefix(staffNo, voiceNo));
     }
 

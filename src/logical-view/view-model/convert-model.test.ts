@@ -6,7 +6,7 @@ import { FlagType } from './note-view-model';
 import { RetrogradeSequence, TupletSequence } from './../../model/score/transformations';
 import { SimpleSequence, CompositeSequence } from './../../model/score/sequence';
 import { expect } from 'chai';
-import { JMusic, LongDecorationType, NoteDirection, NoteType, Time, voiceSequenceToDef } from './../../model';
+import { JMusic, LongDecorationType, NoteDirection, NoteType, Staff, Time, createRepo, staffDefToStaff, voiceSequenceToDef } from './../../model';
 import { ClefType, StaffDef } from './../../model';
 import { Clef } from './../../model';
 import { scoreModelToViewModel, __internal } from './convert-model';
@@ -25,7 +25,7 @@ describe('View model', () => {
     it('should remember accidentals within the same measure', () => {
         const staff: StaffDef = createTestStaff(['bes8 r4 bes8 b8 b8. b16 bes8'], [4, 4, 1, 8], [-1, 3]);
 
-        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+        const staffView = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
 
         expect(staffView.timeSlots.length).to.eq(9);
         expect(staffView.timeSlots[1].accidentals).to.be.undefined;
@@ -41,7 +41,7 @@ describe('View model', () => {
     it('should make correct beaming', () => {
         const staff: StaffDef = createTestStaff(['bes8 r4 bes8 b8 b8. b16 bes8'], [4, 4, 1, 8], [-1, 3]);
 
-        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+        const staffView = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
 
         expect(staffView.timeSlots.length).to.eq(9);
         expect(staffView.timeSlots[1].beamings, 'note 1').to.be.undefined;
@@ -79,7 +79,7 @@ describe('View model', () => {
     it('should make correct broken beams', () => {
         const staff: StaffDef = createTestStaff(['bes16 bes8 b16'], [4, 4], [-1, 3]);
 
-        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+        const staffView = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
 
         //console.log(Time.StartTime, Time.StartTimeMinus);
 
@@ -115,7 +115,7 @@ describe('View model', () => {
         /*staff = setGraceNoteInStaff(staff, 0, 2);
         staff = setGraceNoteInStaff(staff, 0, 3);*/
 
-        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+        const staffView = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
 
         expect(staffView.timeSlots.length).to.eq(6);
         expect(staffView.timeSlots[1].beamings, 'note 1').to.be.undefined;
@@ -144,7 +144,7 @@ describe('View model', () => {
         /*staff = setGraceNoteInStaff(staff, 0, 1);
         staff = setGraceNoteInStaff(staff, 0, 2);*/
 
-        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+        const staffView = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
 
         expect(staffView.timeSlots.length).to.eq(5);
         expect(staffView.timeSlots[2].beamings, 'note 1').to.deep.eq([{
@@ -175,7 +175,7 @@ describe('View model', () => {
         staff = setGraceNoteInStaff(staff, 0, 3);
         staff = setGraceNoteInStaff(staff, 0, 4);*/
 
-        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+        const staffView = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
 
         expect(staffView.timeSlots.length).to.eq(7);
         expect(staffView.timeSlots[2].beamings, 'note 1').to.deep.eq([{
@@ -219,7 +219,7 @@ describe('View model', () => {
             voices:[{ content: voiceSequenceToDef(combinedSequence) }]
         };
 
-        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+        const staffView = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
 
         expect(staffView.timeSlots.length).to.eq(7);
         expect(staffView.timeSlots[1].beamings, 'note 1').to.deep.eq([{
@@ -285,7 +285,7 @@ describe('View model', () => {
             voices:[{ content: voiceSequenceToDef(tupletSequence) }]
         };
 
-        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+        const staffView = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
 
         expect(staffView.timeSlots.length).to.eq(7);
         expect(staffView.timeSlots[1].beamings, 'note 1').to.deep.eq([{
@@ -336,12 +336,12 @@ describe('View model', () => {
         const tupletSequence = new TupletSequence(baseSequence, { numerator: 4, denominator: 5 });
         
 
-        const staff: StaffDef = { 
+        const staff: Staff = staffDefToStaff({ 
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4 },
             voices:[{ content: voiceSequenceToDef(tupletSequence) }]
-        };
+        }, createRepo([]));
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 
@@ -390,7 +390,7 @@ describe('View model', () => {
             voices:[{ content: voiceSequenceToDef(tupletSequence) }]
         };
 
-        const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+        const staffView = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
         
         expect(staffView.timeSlots.length).to.eq(7);
 

@@ -5,7 +5,7 @@ import { Pitch } from '../../model/pitches/pitch';
 import { Time } from '../../model/rationals/time';
 import { expect } from 'chai';
 import { ClefType } from '../../model/states/clef';
-import { StaffDef } from '../../model/score/staff';
+import { StaffDef, staffDefToStaff } from '../../model/score/staff';
 import { __internal } from '../../logical-view/view-model/convert-model';
 import { Metrics, StandardMetrics } from './metrics';
 import { StaffViewModel } from '../../logical-view/view-model/score-view-model';
@@ -29,7 +29,7 @@ describe('Physical model, cursor', () => {
             }]
         } as StaffDef;
 
-        staffViewModel = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+        staffViewModel = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
 
     });
 

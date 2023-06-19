@@ -1,6 +1,6 @@
 import { FlexibleItem } from './../model/score/types';
 import { scoreModelToViewModel, ScoreViewModel } from '../logical-view';
-import { ClefType, Note, RegularMeterDef, ScoreDef, setGrace, SimpleSequence, StaffDef, Time } from './../model';
+import { ClefType, Note, RegularMeterDef, ScoreDef, scoreDefToScore, setGrace, SimpleSequence, StaffDef, staffDefToStaff, Time } from './../model';
 
 export function createTestScore(staves: string[][], meter: number[], key: number[], clefs: string[] | undefined = undefined): ScoreDef {
     return {
@@ -32,7 +32,7 @@ export function createTestStaff(staff: FlexibleItem[], meter: number[], key: num
 }
 
 export function createTestScoreVM(staves: string[][], meter: number[], key: number[], clefs: string[] | undefined = undefined): ScoreViewModel {
-    return scoreModelToViewModel(createTestScore(staves, meter, key, clefs));
+    return scoreModelToViewModel(scoreDefToScore(createTestScore(staves, meter, key, clefs)));
 }
 
 export function setGraceNoteInSequence(seq: SimpleSequence, elementNo: number): SimpleSequence {

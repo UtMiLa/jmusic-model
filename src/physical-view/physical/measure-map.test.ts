@@ -7,7 +7,7 @@ import { StateChange } from './../../model/states/state';
 import { Time } from './../../model/rationals/time';
 import { expect } from 'chai';
 import { ClefType } from './../../model/states/clef';
-import { StaffDef } from './../../model/score/staff';
+import { StaffDef, staffDefToStaff } from './../../model/score/staff';
 import { __internal } from './../../logical-view/view-model/convert-model';
 import { Metrics, StandardMetrics } from './metrics';
 import { findSystemSplits, generateMeasureMap, MeasureMap, MeasureMapItem, MeasureMapXValueItem } from './measure-map';
@@ -34,7 +34,7 @@ describe('Physical model, measure map', () => {
             }]
         } as StaffDef;
 
-        staffViewModel = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+        staffViewModel = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
         //measureMapMaster = new MeasureMap();
     });
 
@@ -126,7 +126,7 @@ describe('Physical model, measure map', () => {
         } as StaffDef;
 
 
-        staffViewModel = __internal.staffModelToViewModel(staffGrace, createScopedTimeMap());
+        staffViewModel = __internal.staffModelToViewModel(staffDefToStaff(staffGrace), createScopedTimeMap());
         const res = MeasureMap.generate(staffViewModel, defaultMetrics);
 
         expect(res.measureMap.length).to.eq(5); // 4 notes and start bar line
@@ -230,7 +230,7 @@ describe('Physical model, measure map', () => {
 
         //staff = setGraceNoteInStaff(staff, 0, 1);
 
-        staffViewModel = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+        staffViewModel = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
 
         const measureMap = MeasureMap.generate(staffViewModel, defaultMetrics);
 
@@ -443,7 +443,7 @@ describe('Physical model, measure map', () => {
             }]
         } as StaffDef;
 
-        const staffViewModel1 = __internal.staffModelToViewModel(staff, createScopedTimeMap());
+        const staffViewModel1 = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
 
         expect((staffViewModel1.timeSlots[2].accidentals as any)[0].displacement).to.eq(-3);
         expect((staffViewModel1.timeSlots[2].accidentals as any)[1].displacement).to.eq(-2);

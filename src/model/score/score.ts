@@ -1,8 +1,22 @@
 import { RepeatDef } from './repeats';
-import { StaffDef } from './staff';
+import { Staff, StaffDef, staffDefToStaff } from './staff';
+import { VariableRepository, createRepo } from './variables';
 export interface ScoreDef {
     staves: StaffDef[]
     repeats?: RepeatDef[];
+}
+
+export interface Score {
+    staves: Staff[]
+    repeats?: RepeatDef[];
+}
+
+export function scoreDefToScore(def: ScoreDef, repo?: VariableRepository): Score {
+    if (!repo) repo = createRepo([]);
+    return {
+        repeats: def.repeats,
+        staves: def.staves.map(sd => staffDefToStaff(sd, repo))
+    };
 }
 
 export function isScoreDef(item: unknown): item is ScoreDef {

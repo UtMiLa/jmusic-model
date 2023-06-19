@@ -5,7 +5,7 @@ import { IndexedMap } from './../../tools/time-map';
 import { Meter, MeterMap } from './../../model/states/meter';
 import { BeamDef } from './../../model/notes/beaming';
 import { displaceAccidentals } from './../../model/states/key';
-import { getDuration, ScoreDef, setNoteDirection, TimeSlot, voiceContentToSequence } from './../../model';
+import { getDuration, Score, ScoreDef, setNoteDirection, Staff, TimeSlot, voiceContentToSequence } from './../../model';
 import { MeterFactory } from './../../model';
 import { meterToView } from './convert-meter';
 import { AbsoluteTime, Time } from './../../model';
@@ -44,7 +44,7 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
 }
 
 
-export function scoreModelToViewModel(def: ScoreDef, restrictions: SubsetDef = { startTime: Time.StartTimeMinus, endTime: Time.EternityTime }): ScoreViewModel {
+export function scoreModelToViewModel(def: Score, restrictions: SubsetDef = { startTime: Time.StartTimeMinus, endTime: Time.EternityTime }): ScoreViewModel {
     const stateMap = createStateMap(def);
     //console.log('scoreModelToViewModel', def);    
 
@@ -53,7 +53,7 @@ export function scoreModelToViewModel(def: ScoreDef, restrictions: SubsetDef = {
     }), staffNo, restrictions, def.repeats)) };
 }
 
-function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef, repeats: RepeatDef[] | undefined = undefined): StaffViewModel {
+function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef, repeats: RepeatDef[] | undefined = undefined): StaffViewModel {
 
     //console.log(def, stateMap, staffNo);
     //(restrictions.startTime as ExtendedTime).extended = -Infinity;
@@ -156,11 +156,11 @@ function staffModelToViewModel(def: StaffDef, stateMap: IndexedMap<StateChange, 
 }
 
 
-function createViewModelsForVoice(def: StaffDef, staffNo: number, meter: Meter | undefined, meterMap: MeterMap, clef: Clef, timeSlots: TimeSlotViewModel[], stateMap: IndexedMap<StateChange, ScopedTimeKey>) {
+function createViewModelsForVoice(def: Staff, staffNo: number, meter: Meter | undefined, meterMap: MeterMap, clef: Clef, timeSlots: TimeSlotViewModel[], stateMap: IndexedMap<StateChange, ScopedTimeKey>) {
     let staffEndTime = Time.newAbsolute(0, 1);
 
     def.voices.forEach((voice, voiceNo) => {
-        const voiceSequence = voiceContentToSequence(voice.content);
+        const voiceSequence = voice.content;
         const voiceEndTime = Time.fromStart(voiceSequence.duration);
         const voiceBeamGroups = meter ? calcBeamGroups(voiceSequence, meterMap.getAllBeats(), `${staffNo}-${voiceNo}`) : [];
 
@@ -332,4 +332,4 @@ function createNoteViewModels(state: State): NoteViewModel[] {
 }
 
 export const __internal = { 
-    staffModelToViewModel: (def: StaffDef, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef = { startTime: Time.StartTime, endTime: Time.EternityTime }) => staffModelToViewModel(def, stateMap, staffNo, restrictions), createNoteViewModels, State };
+    staffModelToViewModel: (def: Staff, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef = { startTime: Time.StartTime, endTime: Time.EternityTime }) => staffModelToViewModel(def, stateMap, staffNo, restrictions), createNoteViewModels, State };

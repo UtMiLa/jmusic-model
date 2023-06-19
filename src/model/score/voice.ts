@@ -11,8 +11,20 @@ export interface VoiceDef {
     noteDirection?: NoteDirection;
 }
 
+export interface Voice {
+    content: ISequence;
+    noteDirection?: NoteDirection;
+}
+
 export function voiceContentToSequence(content: VoiceContentDef, repo?: VariableRepository): ISequence {
     return new FlexibleSequence(content as FlexibleItem, repo);
+}
+
+export function voiceDefToVoice(voiceDef: VoiceDef, repo?: VariableRepository): Voice {
+    return {
+        content: voiceContentToSequence(voiceDef.content, repo),
+        noteDirection: voiceDef.noteDirection
+    };
 }
 
 export function voiceSequenceToDef(seq: ISequence): VoiceContentDef {

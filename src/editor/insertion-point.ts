@@ -1,16 +1,16 @@
-import { AbsoluteTime, getDuration, voiceContentToSequence } from '../model';
+import { AbsoluteTime, Score, getDuration, voiceContentToSequence } from '../model';
 import { Time } from '../model';
 import { ScoreDef } from '../model';
 
 export interface InsertionPointDef {
-    score: ScoreDef;
+    score: Score;
     time: AbsoluteTime;
     voiceNo: number;
     staffNo: number;
     position: number;
 }
 export class InsertionPoint implements InsertionPointDef {
-    constructor(public score: ScoreDef) {}
+    constructor(public score: Score) {}
 
     time = Time.StartTime;
     public voiceNo = 0;
@@ -29,7 +29,7 @@ export class InsertionPoint implements InsertionPointDef {
         const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
         let t = Time.StartTime;
         let i = 0;
-        const elements = voiceContentToSequence(currentVoice.content).elements;
+        const elements = currentVoice.content.elements;
         while(i < elements.length) {
             if (Time.equals(t, time) && getDuration(elements[i]).numerator) {
                 return(i);
@@ -44,9 +44,9 @@ export class InsertionPoint implements InsertionPointDef {
     moveRight(): void {
         const index = this.findIndex(this.time);
         const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
-        if (index >= 0 && voiceContentToSequence(currentVoice.content).elements.length > index) {
+        if (index >= 0 && currentVoice.content.elements.length > index) {
             //index++;
-            this.time = Time.addTime(this.time, getDuration(voiceContentToSequence(currentVoice.content).elements[index]));
+            this.time = Time.addTime(this.time, getDuration(currentVoice.content.elements[index]));
         }
     }
 
@@ -54,15 +54,15 @@ export class InsertionPoint implements InsertionPointDef {
         let index = this.findIndex(this.time);
         const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
         if (this.isAtEnd()) {
-            index = voiceContentToSequence(currentVoice.content).elements.length;
+            index = currentVoice.content.elements.length;
         }
         if (index >= 0) {
-            this.time = Time.subtractTime(this.time, getDuration(voiceContentToSequence(currentVoice.content).elements[index-1]));
+            this.time = Time.subtractTime(this.time, getDuration(currentVoice.content.elements[index-1]));
         }
     }
 
     isAtEnd(): boolean {
         const currentVoice = this.score.staves[this.staffNo].voices[this.voiceNo];
-        return Time.equals(this.time, Time.fromStart(voiceContentToSequence(currentVoice.content).duration));
+        return Time.equals(this.time, Time.fromStart(currentVoice.content.duration));
     }
 }

@@ -2,7 +2,7 @@ import { BarType } from './score-view-model';
 import { SimpleSequence } from './../../model/score/sequence';
 import { IndexedMap } from './../../tools/time-map';
 import { StateChange } from './../../model/states/state';
-import { Staff } from './../../model/score/staff';
+import { setStaffSequence, staffDefToStaff } from './../../model/score/staff';
 import { Time } from './../../model/rationals/time';
 import { FlagType } from './note-view-model';
 import { NoteType, NoteDirection } from '../../model/notes/note';
@@ -27,9 +27,9 @@ describe('Staff view model', () => {
 
     it('should convert an empty staff to view model', () => {
 
-        Staff.setSequence(staffClef, new SimpleSequence(''));
+        setStaffSequence(staffClef, new SimpleSequence(''));
 
-        const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
+        const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
 
         expect(vm).to.deep.equal({
             timeSlots: [
@@ -67,9 +67,9 @@ describe('Staff view model', () => {
     });
 
     it('should convert a staff with notes to view model', () => {
-        Staff.setSequence(staffClef, new SimpleSequence( 'c\'1 des\'4 ees\'2'));
+        setStaffSequence(staffClef, new SimpleSequence( 'c\'1 des\'4 ees\'2'));
 
-        const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
+        const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
 
         expect(vm).to.deep.equal({
             timeSlots: [
@@ -146,7 +146,7 @@ describe('Staff view model', () => {
         
         staffClef.initialKey.count = 0;
 
-        const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
+        const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
 
         expect(vm).to.deep.equal({
             timeSlots: [
@@ -214,7 +214,7 @@ describe('Staff view model', () => {
 
         staffClef.initialKey.count = 0;
         
-        const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
+        const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
 
         expect(vm).to.deep.equal({
             timeSlots: [
@@ -268,10 +268,10 @@ describe('Staff view model', () => {
 
     it('should convert a staff with a meter to view model', () => {
         
-        Staff.setSequence(staffClef, new SimpleSequence( 'c\'1 d\'4 e\'2' ));
+        setStaffSequence(staffClef, new SimpleSequence( 'c\'1 d\'4 e\'2' ));
         staffClef.initialMeter = { count: 12, value: 8 };
 
-        const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
+        const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
 
         expect(vm.timeSlots[0].meter).to.deep.equal({
                     
@@ -287,7 +287,7 @@ describe('Staff view model', () => {
         staffClef.initialKey.count = 0;
         staffClef.initialMeter = {count: 3, value: 4};
 
-        const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
+        const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
         expect(vm.timeSlots.length).to.equal(8);
 
         for (let i = 0; i < 5; i++) {
@@ -306,7 +306,7 @@ describe('Staff view model', () => {
         staffClef.initialKey.count = 0;
         staffClef.initialMeter = {count: 2, value: 4};
 
-        const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
+        const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
         expect(vm.timeSlots.length).to.equal(4);
 
         for (let i = 0; i < 3; i++) {
@@ -325,7 +325,7 @@ describe('Staff view model', () => {
         staffClef.initialKey.count = 0;
         staffClef.initialMeter = {count: 3, value: 4, upBeat: Time.QuarterTime};
 
-        const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
+        const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
         expect(vm.timeSlots.length).to.equal(11);
 
         for (let i = 0; i < 8; i++) {
@@ -342,7 +342,7 @@ describe('Staff view model', () => {
         staffClef.voices = [ {content:  'c\'2~ c\'8' }];
         staffClef.voices[0].noteDirection = NoteDirection.Up;
         
-        const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
+        const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
         expect(vm.timeSlots.length).to.equal(3);
 
         expect(vm.timeSlots[1].ties).to.deep.equal([
@@ -360,7 +360,7 @@ describe('Staff view model', () => {
         staffClef.voices[0].noteDirection = NoteDirection.Up;
         staffClef.voices[1].noteDirection = NoteDirection.Down;
         
-        const vm = __internal.staffModelToViewModel(staffClef, createScopedTimeMap());
+        const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
         expect(vm.timeSlots.length).to.equal(3);
 
         expect(vm.timeSlots[1].ties).to.deep.equal([

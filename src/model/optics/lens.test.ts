@@ -21,13 +21,11 @@
 
 import { Time } from '../rationals/time';
 import { expect } from 'chai';
-import { JMusic, JMusicVars, initStateInSequence } from '../facade/jmusic';
+import { JMusic } from '../facade/jmusic';
 import R = require('ramda');
 import { createNoteFromLilypond } from '../notes/note';
-import { FlexibleSequence } from '../score/flexible-sequence';
 import { ISequence, isNote } from '../score/sequence';
-import { ProjectDef, VariableDef, FlexibleItem } from '../score/types';
-import { VariableRepository, setVar } from '../score/variables';
+import { ProjectDef, VariableDef } from '../score/types';
 import { projectLensByIndex, projectLensByTime } from './lens';
 
 describe('Lenses', () => {
@@ -51,7 +49,7 @@ describe('Lenses', () => {
             const vars1 = R.prop('vars', sc.vars) as unknown as VariableDef[];
 
             projectDef = {
-                score: R.pick(['staves'], sc),
+                score: sc.project.score,//R.pick(['staves'], sc),
                 vars: vars1//[{id: 'theVar', value: 'aes4 ges4 ees4 des4' }]
             };
         });
@@ -154,7 +152,7 @@ describe('Lenses', () => {
             const vars1 = R.prop('vars', sc.vars) as unknown as VariableDef[];
 
             projectDef = {
-                score: R.pick(['staves'], sc),
+                score: sc.project.score,//R.pick(['staves'], sc),
                 vars: vars1
             };
         });

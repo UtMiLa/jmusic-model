@@ -1,6 +1,6 @@
 import { StateChange } from '../../model/states/state';
 import { IndexedMap } from '../../tools/time-map';
-import { AbsoluteTime, ScoreDef, Time, voiceContentToSequence } from './../../model';
+import { AbsoluteTime, Score, ScoreDef, Time, voiceContentToSequence } from './../../model';
 
 
 export interface ScopedTimeKey {
@@ -24,13 +24,13 @@ export function createScopedTimeMap(): IndexedMap<StateChange, ScopedTimeKey> {
 }
 
 
-export function createStateMap(score: ScoreDef):  IndexedMap<StateChange, ScopedTimeKey> {
+export function createStateMap(score: Score):  IndexedMap<StateChange, ScopedTimeKey> {
     const stateMap = createScopedTimeMap();
 
 
     score.staves.forEach((staff, staffNo) => {
         staff.voices.forEach((voice, voiceNo) => {
-            const voiceSequence = voiceContentToSequence(voice.content);
+            const voiceSequence = voice.content;
             const voiceTimeSlots = voiceSequence.groupByTimeSlots(createIdPrefix(staffNo, voiceNo));
             //console.log(voiceTimeSlots);
             
