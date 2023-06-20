@@ -15,7 +15,7 @@ import { Note } from '../notes/note';
 import { Alteration, Pitch } from '../pitches/pitch';
 import { Time } from '../rationals/time';
 import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
-import { VariableRepository, createRepo, setVar, valueOf } from '../score/variables';
+import { VariableRepository, createRepo, setVar, valueOf, varDefArrayToVarDict, varDictToVarDefArray } from '../score/variables';
 import R = require('ramda');
 import { Enharmonic, enharmonicChange } from '../pitches/intervals';
 import { StateChange } from '../states/state';
@@ -81,13 +81,13 @@ export class JMusic implements Score {
     }
 
     public get vars(): VariableRepository {
-        return createRepo(this.project.vars);
+        return createRepo(varDictToVarDefArray(this.project.vars));
     }
 
     changeHandlers: ChangeHandler[] = [];
 
     setVar(id: string, value: FlexibleItem): void {
-        this.project.vars = setVar(this.vars, id, value).vars;
+        this.project.vars = varDefArrayToVarDict(setVar(this.vars, id, value).vars);
     }
 
     sequenceFromInsertionPoint(ins: InsertionPoint): ISequence {

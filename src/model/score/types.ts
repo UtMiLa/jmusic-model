@@ -6,6 +6,11 @@ export interface VariableDef {
     value: FlexibleItem;
 }
 
+export interface VarDict {
+    [key: string]: FlexibleItem
+}
+
+
 export interface VariableRef {
     variable: string;
 }
@@ -27,7 +32,7 @@ export function isSeqFunction(test: unknown): test is SeqFunction {
 
 export interface ProjectDef {
     score: ScoreDef;
-    vars: VariableDef[];
+    vars: VarDict;
 }
 
 export function isProjectDef(test: unknown): test is ProjectDef {

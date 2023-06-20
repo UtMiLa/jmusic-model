@@ -28,6 +28,7 @@ import { createNoteFromLilypond } from '../notes/note';
 import { ISequence, isNote } from '../score/sequence';
 import { ProjectDef, VariableDef } from '../score/types';
 import { lensFromLensDef, projectLensByIndex, projectLensByTime } from './lens';
+import { varDefArrayToVarDict, varDictToVarDefArray } from '../score/variables';
 
 describe('Lenses', () => {
 
@@ -138,7 +139,7 @@ describe('Lenses', () => {
 
             projectDef = {
                 score: sc.project.score,
-                vars: vars1
+                vars: varDefArrayToVarDict(vars1)
             };
         });
 
@@ -209,10 +210,9 @@ describe('Lenses', () => {
 
             const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
 
-            expect(res.vars).to.deep.eq([{
-                id: 'theVar',
-                value: ['aes4', 'ges4', 'fis4', 'des4']
-            }]);
+            expect(res.vars).to.deep.eq({
+                theVar: ['aes4', 'ges4', 'fis4', 'des4']
+            });
         });
 
         
@@ -274,7 +274,7 @@ describe('Lenses', () => {
 
             projectDef = {
                 score: sc.project.score,
-                vars: vars1
+                vars: varDefArrayToVarDict(vars1)
             };
         });
 
@@ -354,10 +354,9 @@ describe('Lenses', () => {
 
             const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
 
-            expect(res.vars).to.deep.eq([{
-                id: 'theVar',
-                value: ['aes4', 'fis4', 'ees4', 'des4']
-            }]);
+            expect(res.vars).to.deep.eq({
+                theVar: ['aes4', 'fis4', 'ees4', 'des4']
+            });
         });
 
     });
