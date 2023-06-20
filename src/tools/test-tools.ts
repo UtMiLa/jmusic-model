@@ -27,7 +27,7 @@ export function createTestStaff(staff: FlexibleItem[], meter: number[], key: num
         initialClef: clef ? { clefType: ClefType.F, line: 2 } : { clefType: ClefType.G, line: -2 },
         initialKey: { accidental: key[0], count: key[1] },
         initialMeter: meterVal,
-        voices: staff.map(v => ({ content: v }))
+        voices: staff.map(v => ({ contentDef: v }))
     } as StaffDef;
 }
 

@@ -30,7 +30,7 @@ describe('Physical model, measure map', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0 },
             voices: [{
-                content: 'c4 d2 e4 f1'
+                contentDef: 'c4 d2 e4 f1'
             }]
         } as StaffDef;
 
@@ -116,7 +116,7 @@ describe('Physical model, measure map', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0 },
             voices: [{
-                content: voiceSequenceToDef(new CompositeSequence(
+                contentDef: voiceSequenceToDef(new CompositeSequence(
                     new GraceSequence( new SimpleSequence('d\'16')),
                     new SimpleSequence( 'f\'4'),
                     new GraceSequence( new SimpleSequence( 'e\'\'16')),
@@ -224,7 +224,7 @@ describe('Physical model, measure map', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0 },
             voices: [{
-                content: ['c4', {function: 'Grace', args: 'd8' }, 'e4 f2']
+                contentDef: ['c4', {function: 'Grace', args: 'd8' }, 'e4 f2']
             }]
         } as StaffDef;
 
@@ -439,7 +439,7 @@ describe('Physical model, measure map', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0 },
             voices: [{
-                content: 'c4 <fis, ais, cis dis>2'
+                contentDef: 'c4 <fis, ais, cis dis>2'
             }]
         } as StaffDef;
 

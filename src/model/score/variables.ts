@@ -39,3 +39,11 @@ export function setVar(vars: VariableRepository, id: string, value: FlexibleItem
     return vars;
 }
 
+
+export function varDefArrayToVarDict(vars: VariableDef[]): VarDict {
+    return R.fromPairs(vars.map(vd => [vd.id, vd.value]));
+}
+
+export function varDictToVarDefArray(vars: VarDict): VariableDef[] {
+    return R.toPairs(vars).map((v: [string, FlexibleItem]) => ({ id: v[0], value: v[1] } as VariableDef));
+}

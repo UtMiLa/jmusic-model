@@ -107,11 +107,11 @@ describe('Facade', () => {
                     voices:[
                         {
                             noteDirection: NoteDirection.Up,
-                            content: 'c\'1'
+                            contentDef: 'c\'1'
                         },
                         {
                             noteDirection: NoteDirection.Down,
-                            content: 'c1'
+                            contentDef: 'c1'
                         }
                     ]
                 } as StaffDef,
@@ -122,7 +122,7 @@ describe('Facade', () => {
                     voices:[
                         {
                             noteDirection: NoteDirection.Up,
-                            content: 'c,1'
+                            contentDef: 'c,1'
                         }
                     ]
                 } as StaffDef
@@ -150,7 +150,7 @@ describe('Facade', () => {
                        voices:[
                            {
                                noteDirection: NoteDirection.Down,
-                               content: 'c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1'}
+                               contentDef: 'c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1 c,1'}
                        ]
                    } as StaffDef
                 ]

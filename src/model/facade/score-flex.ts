@@ -22,7 +22,7 @@ export function makeScore(voice: string | JMusicSettings | ScoreDef | ProjectDef
             initialClef: Clef.clefTreble.def,
             initialKey: { count: 0, accidental: 0 },
             initialMeter: { count: 4, value: 4 },
-            voices: [{ content: voiceSequenceToDef(new FlexibleSequence(voice, vars)) }]
+            voices: [{ contentDef: voiceSequenceToDef(new FlexibleSequence(voice, vars)) }]
         }];
     } else if (isProjectDef(voice)) {
         score.staves = [...voice.score.staves];
@@ -53,7 +53,7 @@ export function makeScore(voice: string | JMusicSettings | ScoreDef | ProjectDef
                 initialKey: key,
                 initialMeter: meter,
                 voices: stf.map((cnt, idx) => ({
-                    content: voiceSequenceToDef(new FlexibleSequence(cnt, vars)),
+                    contentDef: voiceSequenceToDef(new FlexibleSequence(cnt, vars)),
                     noteDirection: stf.length === 1 ? NoteDirection.Undefined : idx % 2 === 0 ? NoteDirection.Up : NoteDirection.Down
                 }))
             });
@@ -64,7 +64,7 @@ export function makeScore(voice: string | JMusicSettings | ScoreDef | ProjectDef
 
     score.staves.forEach(staff => {
         staff.voices.forEach(voice => {
-            const states = initStateInSequence(new FlexibleSequence(voice.content, vars));
+            const states = initStateInSequence(new FlexibleSequence(voice.contentDef, vars));
             if (states.clef) {
                 //console.log('changing clef', staff.initialClef, states.clef);
                 staff.initialClef = states.clef.def;

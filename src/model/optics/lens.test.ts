@@ -163,7 +163,7 @@ describe('Lenses', () => {
 
             const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
 
-            expect(res.score.staves[0].voices[1].content).to.deep.eq([['c4', 'd4', 'e4', 'fis4'], {variable: 'theVar'}]);
+            expect(res.score.staves[0].voices[1].contentDef).to.deep.eq([['c4', 'd4', 'e4', 'fis4'], {variable: 'theVar'}]);
         });
 
         it('should read a nested element at an index lens', () => {
@@ -187,7 +187,7 @@ describe('Lenses', () => {
 
             const res = R.set(lens, createNoteFromLilypond('des,4'), projectDef);
 
-            expect(res.score.staves[1].voices[0].content).to.deep.eq([['c,4', 'des,4'], 'e,4', 'f,4']);
+            expect(res.score.staves[1].voices[0].contentDef).to.deep.eq([['c,4', 'des,4'], 'e,4', 'f,4']);
         });
 
         it('should read an element from a variable', () => {
@@ -252,7 +252,7 @@ describe('Lenses', () => {
             const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
 
             expect(res).to.deep.eq(projectDef);
-            expect(res.score.staves[0].voices[2].content).to.deep.eq({
+            expect(res.score.staves[0].voices[2].contentDef).to.deep.eq({
                 function: 'Transpose',
                 args: ['c2', 'dis4'],
                 extraArgs: [{
@@ -315,7 +315,7 @@ describe('Lenses', () => {
 
             const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
 
-            expect(res.score.staves[0].voices[0].content).to.deep.eq(['g4', 'a4', 'b4', 'fis4']);
+            expect(res.score.staves[0].voices[0].contentDef).to.deep.eq(['g4', 'a4', 'b4', 'fis4']);
         });
 
         
@@ -342,7 +342,7 @@ describe('Lenses', () => {
 
             const res = R.set(lens, createNoteFromLilypond('fis,4'), projectDef);
 
-            expect(res.score.staves[1].voices[0].content).to.deep.eq([['c,4', 'fis,4'], 'e,4', 'f,4']);
+            expect(res.score.staves[1].voices[0].contentDef).to.deep.eq([['c,4', 'fis,4'], 'e,4', 'f,4']);
         });
 
         it('should read an element from a variable using a time lens', () => {

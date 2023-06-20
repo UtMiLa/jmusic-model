@@ -41,7 +41,7 @@ export class BrowserPromptDialogProvider implements DialogProvider {
                 const [clefStr, voiceNo] = sd.split(' ');
                 
                 return { 
-                    voices: R.range(1, +voiceNo).map(() => ({ content: '' })), 
+                    voices: R.range(1, +voiceNo).map(() => ({ contentDef: '' })), 
                     initialClef: makeClef(clefStr), 
                     initialKey: key,
                     initialMeter: meter

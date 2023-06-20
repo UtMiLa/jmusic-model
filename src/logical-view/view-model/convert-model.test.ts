@@ -216,7 +216,7 @@ describe('View model', () => {
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4 },
-            voices:[{ content: voiceSequenceToDef(combinedSequence) }]
+            voices:[{ contentDef: voiceSequenceToDef(combinedSequence) }]
         };
 
         const staffView = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
@@ -282,7 +282,7 @@ describe('View model', () => {
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4 },
-            voices:[{ content: voiceSequenceToDef(tupletSequence) }]
+            voices:[{ contentDef: voiceSequenceToDef(tupletSequence) }]
         };
 
         const staffView = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());
@@ -340,7 +340,7 @@ describe('View model', () => {
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4 },
-            voices:[{ content: voiceSequenceToDef(tupletSequence) }]
+            voices:[{ contentDef: voiceSequenceToDef(tupletSequence) }]
         }, createRepo({}));
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
@@ -387,7 +387,7 @@ describe('View model', () => {
             initialClef: { clefType: ClefType.G, line: 2 },
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4 },
-            voices:[{ content: voiceSequenceToDef(tupletSequence) }]
+            voices:[{ contentDef: voiceSequenceToDef(tupletSequence) }]
         };
 
         const staffView = __internal.staffModelToViewModel(staffDefToStaff(staff), createScopedTimeMap());

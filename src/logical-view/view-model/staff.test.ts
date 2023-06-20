@@ -142,7 +142,7 @@ describe('Staff view model', () => {
     });
 
     it('should convert a staff with one voice to view model', () => {
-        staffClef.voices = [ {content:  'c\'1 d\'4 e\'2' }];
+        staffClef.voices = [ {contentDef:  'c\'1 d\'4 e\'2' }];
         
         staffClef.initialKey.count = 0;
 
@@ -208,8 +208,8 @@ describe('Staff view model', () => {
 
     it('should convert a staff with two voices to view model', () => {
         staffClef.voices = [ 
-            { content:  'c\'1', noteDirection: NoteDirection.Down },
-            { content:  'e\'2 f\'2', noteDirection: NoteDirection.Up }
+            { contentDef:  'c\'1', noteDirection: NoteDirection.Down },
+            { contentDef:  'e\'2 f\'2', noteDirection: NoteDirection.Up }
         ];
 
         staffClef.initialKey.count = 0;
@@ -282,7 +282,7 @@ describe('Staff view model', () => {
 
 
     it('should add bar lines', () => {
-        staffClef.voices = [ {content:  'c\'4 d\'4 e\'4 c\'2. d\'4' }];
+        staffClef.voices = [ {contentDef:  'c\'4 d\'4 e\'4 c\'2. d\'4' }];
         
         staffClef.initialKey.count = 0;
         staffClef.initialMeter = {count: 3, value: 4};
@@ -301,7 +301,7 @@ describe('Staff view model', () => {
     });
 
     it('should add bar lines even when no other events at time', () => {
-        staffClef.voices = [ {content:  'c\'1' }];
+        staffClef.voices = [ {contentDef:  'c\'1' }];
         
         staffClef.initialKey.count = 0;
         staffClef.initialMeter = {count: 2, value: 4};
@@ -320,7 +320,7 @@ describe('Staff view model', () => {
 
 
     it('should add bar lines when an upbeat is defined', () => {
-        staffClef.voices = [ {content:  'c\'4 d\'4 e\'4 c\'4 d\'4 e\'4 e\'4' }];
+        staffClef.voices = [ {contentDef:  'c\'4 d\'4 e\'4 c\'4 d\'4 e\'4 e\'4' }];
         
         staffClef.initialKey.count = 0;
         staffClef.initialMeter = {count: 3, value: 4, upBeat: Time.QuarterTime};
@@ -339,7 +339,7 @@ describe('Staff view model', () => {
     });
 
     it('should convert a tied note to view model', () => {
-        staffClef.voices = [ {content:  'c\'2~ c\'8' }];
+        staffClef.voices = [ {contentDef:  'c\'2~ c\'8' }];
         staffClef.voices[0].noteDirection = NoteDirection.Up;
         
         const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
@@ -354,8 +354,8 @@ describe('Staff view model', () => {
     
     it('should make two-chord ties to view model', () => {
         staffClef.voices = [ 
-            {content:  'e\'2~ e\'8' },
-            {content:  'c\'2~ c\'8' }
+            {contentDef:  'e\'2~ e\'8' },
+            {contentDef:  'c\'2~ c\'8' }
         ];
         staffClef.voices[0].noteDirection = NoteDirection.Up;
         staffClef.voices[1].noteDirection = NoteDirection.Down;

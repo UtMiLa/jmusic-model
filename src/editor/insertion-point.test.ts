@@ -17,11 +17,11 @@ describe('Insertion point', () => {
                 initialKey: {accidental: 1, count: 1 },
                 voices:[
                     {
-                        content: seq1Text,
+                        contentDef: seq1Text,
                         noteDirection: NoteDirection.Up
                     },
                     {
-                        content: seq2Text,
+                        contentDef: seq2Text,
                         noteDirection: NoteDirection.Down
                     }
                 ]
@@ -31,7 +31,7 @@ describe('Insertion point', () => {
                 initialKey: {accidental: 1, count: 1 },
                 voices:[
                     {
-                        content: seq3Text,
+                        contentDef: seq3Text,
                         noteDirection: NoteDirection.Undefined
                     }
                 ]

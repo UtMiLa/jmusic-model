@@ -7,8 +7,8 @@ describe('Staff', () => {
     const seq2Text = 'c,2 d,8 e,8 c4';
 
     it('should accept two voices', () => {
-        const voice1: VoiceDef = { content: seq1Text };
-        const voice2: VoiceDef = { content: seq2Text };
+        const voice1: VoiceDef = { contentDef: seq1Text };
+        const voice2: VoiceDef = { contentDef: seq2Text };
         const staff: StaffDef = { 
             initialClef: { clefType: ClefType.G, line: 4 },
             initialKey: { accidental: -1, count: 1 },
@@ -16,7 +16,7 @@ describe('Staff', () => {
         };
     });
     it('should accept a meter', () => {
-        const voice1: VoiceDef = { content: seq1Text };
+        const voice1: VoiceDef = { contentDef: seq1Text };
         const staff: StaffDef = { 
             initialClef: { clefType: ClefType.G, line: 4 },
             initialKey: { accidental: -1, count: 1 },

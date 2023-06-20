@@ -94,7 +94,7 @@ export class JMusic implements Score {
     }
 
     insertElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent, checkType: (e: MusicEvent) => boolean): void {
-        this.project.score.staves[ins.staffNo].voices[ins.voiceNo].content = voiceSequenceToDef(new FlexibleSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content.chainElements(
+        this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = voiceSequenceToDef(new FlexibleSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content.chainElements(
             (ct, time) => {
                 if (!Time.equals(time, ins.time)) return [ct];
                 if (checkType(ct)) return [];
@@ -104,7 +104,7 @@ export class JMusic implements Score {
     }
 
     appendElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent): void {
-        this.project.score.staves[ins.staffNo].voices[ins.voiceNo].content = 
+        this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = 
             [
                 ...this.staves[ins.staffNo].voices[ins.voiceNo].content.elements,
                 element

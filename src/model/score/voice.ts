@@ -7,7 +7,7 @@ import { VariableRepository } from './variables';
 
 export type VoiceContentDef = SequenceDef; 
 export interface VoiceDef {
-    content: VoiceContentDef;
+    contentDef: VoiceContentDef;
     noteDirection?: NoteDirection;
 }
 
@@ -22,7 +22,7 @@ export function voiceContentToSequence(content: VoiceContentDef, repo?: Variable
 
 export function voiceDefToVoice(voiceDef: VoiceDef, repo?: VariableRepository): Voice {
     return {
-        content: voiceContentToSequence(voiceDef.content, repo),
+        content: voiceContentToSequence(voiceDef.contentDef, repo),
         noteDirection: voiceDef.noteDirection
     };
 }

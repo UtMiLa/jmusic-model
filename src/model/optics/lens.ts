@@ -100,7 +100,7 @@ function timedToIndex(pd: ProjectDef, timed: TimeLensIndex): NaturalLensIndex {
         staff: timed.staff,
         voice: timed.voice,
         element: getElementIndex(
-            new FlexibleSequence(pd.score.staves[timed.staff].voices[timed.voice].content, createRepo(pd.vars)), 
+            new FlexibleSequence(pd.score.staves[timed.staff].voices[timed.voice].contentDef, createRepo(pd.vars)), 
             timed.time, 
             timed.eventFilter
         )
@@ -133,19 +133,11 @@ function isVarPath<T>(path: PathElement<T>[]): boolean
 
 
 
-/*
-function varDefArrayToVarDict(vars: VariableDef[]): VarDict {
-    return R.fromPairs(vars.map(vd => [vd.id, vd.value]));
-}
 
-function varDictToVarDefArray(vars: VarDict): VariableDef[] {
-    return R.toPairs(vars).map((v: [string, FlexibleItem]) => ({ id: v[0], value: v[1] } as VariableDef));
-}
-*/
 
 function sequenceElementSetter(index: NaturalLensIndexScore): (a: MusicEvent | undefined, s: ProjectDef) => ProjectDef {
     return (a: MusicEvent | undefined, pd: ProjectDef) => {
-        const seq = new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].content, createRepo(pd.vars));
+        const seq = new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].contentDef, createRepo(pd.vars));
         const path = seq.indexToPath(index.element);
         //console.log(path);
         path.pop(); // todo: remove annoying last 0 from path
@@ -163,7 +155,7 @@ function sequenceElementSetter(index: NaturalLensIndexScore): (a: MusicEvent | u
 
         const value: FlexibleItem = a ? simplifyDef(a) : [];
 
-        return R.set(lensFromLensDef(['score', 'staves', index.staff, 'voices', index.voice, 'content', ...path]) as unknown as R.Lens<ProjectDef, FlexibleItem>, value, pd);
+        return R.set(lensFromLensDef(['score', 'staves', index.staff, 'voices', index.voice, 'contentDef', ...path]) as unknown as R.Lens<ProjectDef, FlexibleItem>, value, pd);
 
 
         /*const path1 = ((path.length) ? path.map(item => item === '@args' ? 'args' : item) : path) as (string | number)[];
@@ -176,7 +168,7 @@ function sequenceElementSetter(index: NaturalLensIndexScore): (a: MusicEvent | u
 }
 
 function sequenceElementGetter(index: NaturalLensIndexScore): (s: ProjectDef) => MusicEvent | undefined {
-    return (pd: ProjectDef) => new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].content, createRepo(pd.vars)).elements[index.element];
+    return (pd: ProjectDef) => new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].contentDef, createRepo(pd.vars)).elements[index.element];
 }
 
 function varLensByIndex(index: NaturalLensIndexVariable): ProjectLens {

@@ -22,7 +22,7 @@ export interface Staff {
 
 
 export function setStaffSequence(staffDef: StaffDef, seq: ISequence): void {
-    staffDef.voices = [{ content: voiceSequenceToDef(seq) }];
+    staffDef.voices = [{ contentDef: voiceSequenceToDef(seq) }];
 }
 
 

@@ -25,7 +25,7 @@ describe('Physical model, cursor', () => {
             initialMeter: { count: 4, value: 4 },
             initialKey: { accidental: -1, count: 0},
             voices: [{
-                content: 'c\'4 d\'2 e\'4 f\'1'
+                contentDef: 'c\'4 d\'2 e\'4 f\'1'
             }]
         } as StaffDef;
 
