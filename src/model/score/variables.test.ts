@@ -7,7 +7,7 @@ import { VariableDef, FlexibleItem } from './types';
 describe('Variables', () => {
     it('should insert variable in sequence', () => {
         const var1: VariableDef = { id: 'var1', value:['c4', 'd4'] };
-        const vars = createRepo([var1]);
+        const vars = createRepo({ var1:['c4', 'd4'] });
         const seq1Text: FlexibleItem = ['f8', { variable: 'var1' }, 'g8'];
 
         const seq1 = new FlexibleSequence(seq1Text, vars);
@@ -25,7 +25,7 @@ describe('Variables', () => {
 
     it('should map an element index to a path even when variables are present', () => {
         const var1: VariableDef = { id: 'var1', value: ['c4', 'd4'] };
-        const vars = createRepo([var1]);
+        const vars = createRepo({ var1: ['c4', 'd4'] });
         const seq1Text: FlexibleItem = ['f8', { variable: 'var1' }, 'g8'];
 
         const seq1 = new FlexibleSequence(seq1Text, vars);
@@ -40,7 +40,7 @@ describe('Variables', () => {
 
     it('should update sequence when variable changes', () => {
         const var1: VariableDef = { id: 'var1', value: ['c4', 'd4'] };
-        const vars = createRepo([var1]);
+        const vars = createRepo({ var1: ['c4', 'd4'] });
         const seq1Text: FlexibleItem = ['f8', { variable: 'var1' }, 'g8'];
 
         const seq1 = new FlexibleSequence(seq1Text, vars);

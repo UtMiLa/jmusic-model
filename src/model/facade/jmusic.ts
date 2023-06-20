@@ -1,4 +1,4 @@
-import { cloneNote, projectLensByTime, voiceContentToSequence, voiceSequenceToDef } from '../../model';
+import { cloneNote, projectLensByTime, voiceSequenceToDef } from '../../model';
 import { FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
@@ -8,23 +8,22 @@ import { MeterFactory } from './../states/meter';
 import { Key } from './../states/key';
 import { Clef } from './../states/clef';
 import { RepeatDef } from '../score/repeats';
-import { Staff, StaffDef, staffDefToStaff } from '../score/staff';
+import { Staff, staffDefToStaff } from '../score/staff';
 import { Score, ScoreDef } from './../score/score';
 import { Meter } from '../states/meter';
 import { Note } from '../notes/note';
 import { Alteration, Pitch } from '../pitches/pitch';
 import { Time } from '../rationals/time';
 import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
-import { VariableRepository, createRepo, setVar, valueOf, varDefArrayToVarDict, varDictToVarDefArray } from '../score/variables';
+import { VariableRepository, createRepo, setVar, valueOf } from '../score/variables';
 import R = require('ramda');
 import { Enharmonic, enharmonicChange } from '../pitches/intervals';
 import { StateChange } from '../states/state';
-import { FlexibleItem, ProjectDef, isProjectDef } from '../score/types';
+import { FlexibleItem, ProjectDef, VarDict } from '../score/types';
 import { ClefFlex, makeClef } from './clef-flex';
 import { KeyFlex, makeKey } from './key-flex';
 import { MeterFlex, makeMeter } from './meter-flex';
 import { NoteFlex, makeNote } from './note-flex';
-import { ScoreFlex, makeScore } from './score-flex';
 import { ProjectFlex, makeProject } from './project-flex';
 
 export interface JMusicSettings {
@@ -32,10 +31,6 @@ export interface JMusicSettings {
     clefs?: (Clef | string)[];
     meter?: Meter | string;
     key?: Key | string;
-}
-
-export interface JMusicVars {
-    [key: string]: FlexibleItem;
 }
 
 
@@ -64,7 +59,7 @@ export const initStateInSequence = (s: ISequence) => {
 /** Facade object for music scores */
 export class JMusic implements Score {
 
-    constructor(scoreFlex?: ProjectFlex, vars?: JMusicVars) {
+    constructor(scoreFlex?: ProjectFlex, vars?: VarDict) {
 
         this.project = makeProject(scoreFlex, vars);
 
@@ -81,13 +76,13 @@ export class JMusic implements Score {
     }
 
     public get vars(): VariableRepository {
-        return createRepo(varDictToVarDefArray(this.project.vars));
+        return createRepo(this.project.vars);
     }
 
     changeHandlers: ChangeHandler[] = [];
 
     setVar(id: string, value: FlexibleItem): void {
-        this.project.vars = varDefArrayToVarDict(setVar(this.vars, id, value).vars);
+        this.project.vars = setVar(this.vars, id, value).vars;
     }
 
     sequenceFromInsertionPoint(ins: InsertionPoint): ISequence {

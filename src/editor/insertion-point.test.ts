@@ -36,7 +36,7 @@ describe('Insertion point', () => {
                     }
                 ]
             }
-        ]}, createRepo([]));
+        ]}, createRepo({}));
     });
 
     it('should create an insertion point', () => {

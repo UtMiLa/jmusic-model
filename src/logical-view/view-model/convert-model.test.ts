@@ -341,7 +341,7 @@ describe('View model', () => {
             initialKey: { accidental: -1, count: 3 },
             initialMeter: { count: 4, value: 4 },
             voices:[{ content: voiceSequenceToDef(tupletSequence) }]
-        }, createRepo([]));
+        }, createRepo({}));
 
         const staffView = __internal.staffModelToViewModel(staff, createScopedTimeMap());
 

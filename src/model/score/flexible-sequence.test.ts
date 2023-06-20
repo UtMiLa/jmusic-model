@@ -348,7 +348,7 @@ describe('Flexible Sequence', () => {
             expect(
                 new FlexibleSequence(
                     [{ variable: 'test'}], 
-                    createRepo([{id: 'test', value: 'd4 e4'}])
+                    createRepo({test: 'd4 e4'})
                 ).asObject
             ).to.deep.eq([{ variable: 'test'}]);
         });

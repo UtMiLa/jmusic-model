@@ -28,7 +28,6 @@ import { createNoteFromLilypond } from '../notes/note';
 import { ISequence, isNote } from '../score/sequence';
 import { ProjectDef, VariableDef } from '../score/types';
 import { lensFromLensDef, projectLensByIndex, projectLensByTime } from './lens';
-import { varDefArrayToVarDict, varDictToVarDefArray } from '../score/variables';
 
 describe('Lenses', () => {
 
@@ -139,7 +138,7 @@ describe('Lenses', () => {
 
             projectDef = {
                 score: sc.project.score,
-                vars: varDefArrayToVarDict(vars1)
+                vars: sc.vars.vars
             };
         });
 
@@ -270,11 +269,11 @@ describe('Lenses', () => {
 
             //sc.vars.setVar('theVar', 'aes4 ges4 ees4 des4');
 
-            const vars1 = R.prop('vars', sc.vars) as unknown as VariableDef[];
+            //const vars1 = R.prop('vars', sc.vars) as unknown as VariableDef[];
 
             projectDef = {
                 score: sc.project.score,
-                vars: varDefArrayToVarDict(vars1)
+                vars: sc.vars.vars
             };
         });
 

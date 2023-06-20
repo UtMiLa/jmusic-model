@@ -1,24 +1,24 @@
 import R = require('ramda');
-import { JMusicSettings, JMusicVars, ScoreDef } from '..';
-import { ProjectDef, FlexibleItem, isProjectDef } from '../score/types';
-import { createRepo, varDefArrayToVarDict, varDictToVarDefArray } from '../score/variables';
+import { JMusicSettings, ScoreDef } from '..';
+import { ProjectDef, FlexibleItem, isProjectDef, VariableDef, VarDict } from '../score/types';
+import { createRepo } from '../score/variables';
 import { ScoreFlex, makeScore } from './score-flex';
 
 export type ProjectFlex = string | JMusicSettings | ScoreDef | ProjectDef;
 
 
-export function makeProject(scoreFlex?: ScoreFlex, vars?: JMusicVars): ProjectDef {
+export function makeProject(scoreFlex?: ScoreFlex, vars?: VarDict): ProjectDef {
     const vars1 = 
         vars
-            ? R.toPairs<FlexibleItem>(vars).map(pair => ({ id: pair[0], value: pair[1] }))
+            ? vars
             : isProjectDef(scoreFlex)
-                ? varDictToVarDefArray(scoreFlex.vars)
-                : [];
+                ? scoreFlex.vars
+                : {};
 
     const score = makeScore(scoreFlex, createRepo(vars1));
 
     return {
         score,
-        vars: varDefArrayToVarDict(vars1)
+        vars: vars1
     };
 }

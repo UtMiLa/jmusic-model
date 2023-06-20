@@ -12,7 +12,7 @@ export interface Score {
 }
 
 export function scoreDefToScore(def: ScoreDef, repo?: VariableRepository): Score {
-    if (!repo) repo = createRepo([]);
+    if (!repo) repo = createRepo({});
     return {
         repeats: def.repeats,
         staves: def.staves.map(sd => staffDefToStaff(sd, repo))

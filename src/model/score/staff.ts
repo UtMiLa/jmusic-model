@@ -28,7 +28,7 @@ export function setStaffSequence(staffDef: StaffDef, seq: ISequence): void {
 
 
 export function staffDefToStaff(def: StaffDef, repo?: VariableRepository): Staff {
-    if (!repo) repo = createRepo([]);
+    if (!repo) repo = createRepo({});
     return {
         initialClef: def.initialClef,
         initialKey: def.initialKey,

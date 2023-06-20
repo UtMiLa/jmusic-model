@@ -64,7 +64,7 @@ function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEve
 
 export class FlexibleSequence extends BaseSequence {
 
-    constructor(init: FlexibleItem, private repo: VariableRepository = createRepo([]), alreadySplit = false) {
+    constructor(init: FlexibleItem, private repo: VariableRepository = createRepo({}), alreadySplit = false) {
         super();
 
         if (!alreadySplit) repo.observer$.subscribe(newRepo => {
