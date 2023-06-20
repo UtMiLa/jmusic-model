@@ -3,7 +3,7 @@ import { ISequence, MusicEvent, isNote } from '../score/sequence';
 import R = require('ramda');
 import { FlexibleItem, ProjectDef, VariableDef } from '../score/types';
 import { voiceSequenceToDef } from '../score/voice';
-import { FlexibleSequence, PathElement, simplifyDef } from '../score/flexible-sequence';
+import { FlexibleSequence, FunctionPathElement, PathElement, VarablePathElement, isFunctionPathElement, isVarablePathElement, simplifyDef } from '../score/flexible-sequence';
 import { AbsoluteTime, Time } from '../rationals/time';
 import { lookupVariable } from '../score/variables';
 import { ScoreDef } from '../score/score';
@@ -44,6 +44,49 @@ const modifySequenceByTime = (seq: FlexibleSequence, atTime: AbsoluteTime, item:
     }
 );
 
+function composeLenses<T1, T2, T3>(lens1: R.Lens<T1, T2>, lens2: R.Lens<T2, T3>): R.Lens<T1, T3> {
+    return R.compose(lens1, lens2);
+    /*return R.lens(
+        R.view(lens1, R.view(lens2)),
+        R.set(lens1)
+    )/*/
+}
+
+function functionLens<T>(fp: FunctionPathElement<T>): R.Lens<Record<string, any>, any> {
+    /*return R.lens(
+        obj => obj, //.args.map(fp.function),
+        (value, obj) => R.assoc('args', value, obj)
+    );*/
+    return R.lens(
+        obj => R.prop('args', obj), //.args.map(fp.function),
+        (value, obj) => R.assoc('args', value, obj)
+    );
+    //return R.lensProp('args');
+}
+
+function pathElementToLens<T>(pathElm: PathElement<T>) {
+    return R.cond<PathElement<T>, string, number, FunctionPathElement<T>, VarablePathElement, R.Lens<Record<string, any>, any>>([
+        [R.is(String), R.lensProp],
+        [R.is(Number), R.lensIndex],
+        [isFunctionPathElement<T>, functionLens],
+        [isVarablePathElement<T>, (v) => R.lensPath(['vars', v.variable])]
+    ])(pathElm);
+}
+
+export function lensFromLensDef<T, X, Y>(lensDef: PathElement<T>[]): R.Lens<Record<string, X>, Y> {
+    return R.reduce<PathElement<T>, R.Lens<Record<string, any>, any>>(
+        (lens1: R.Lens<Record<string, any>, any>, pathElm: PathElement<T>) => R.ifElse(
+            isVarablePathElement,
+            pathElementToLens,
+            (pathElm) => composeLenses(lens1, pathElementToLens(pathElm))
+        )(pathElm), 
+
+        R.lens(R.identity, R.identity), 
+
+        lensDef
+    );
+}
+
 function getElementIndex(seq: ISequence, time: AbsoluteTime, eventFilter: (event: MusicEvent) => boolean): number {
     return seq.indexOfTime(time);
 }
@@ -79,29 +122,39 @@ function voiceLensByIndex(index: NaturalLensIndexScore): ProjectLens {
     );
 }
 
-function isVarPath(path: PathElement[]): boolean
+function isVarPath<T>(path: PathElement<T>[]): boolean
 {
-    return !!path.length && typeof path[0] === 'string' && path[0] !== '@args';
+    return path.some(isVarablePathElement);
 }
 
 function sequenceElementSetter(index: NaturalLensIndexScore): (a: MusicEvent | undefined, s: ProjectDef) => ProjectDef {
     return (a: MusicEvent | undefined, pd: ProjectDef) => {
         const seq = new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].content, createRepo(pd.vars));
         const path = seq.indexToPath(index.element);
-        console.log(path);
+        //console.log(path);
         path.pop(); // todo: remove annoying last 0 from path
 
-        if (isVarPath(path)) {
+        if (isVarPath(path)) { // todo: should be handled by lensFromLensDef
             // var reference
-            const val = pd.vars.map(item => item.id === path[0]
-                ? { id: item.id, value: R.assocPath(path.slice(1), a ? simplifyDef(a) : [], new FlexibleSequence(item.value).asObject) }
+            const lastVarIndex = path.findIndex(isVarablePathElement);
+            const restPath = path.slice(lastVarIndex);
+            const varName = (restPath[0] as VarablePathElement).variable;
+            const val = pd.vars.map(item => item.id === varName
+                ? { id: item.id, value: R.assocPath((restPath as (string | number)[]).slice(1), a ? simplifyDef(a) : [], new FlexibleSequence(item.value).asObject) }
                 : item);
             return R.assoc('vars', val, pd);
         }
 
-        const path1 = (path.length) ? path.map(item => item === '@args' ? 'args' : item) : path;
+        const value: FlexibleItem = a ? simplifyDef(a) : [];
 
-        return R.assocPath(['score', 'staves', index.staff, 'voices', index.voice, 'content', ...path1], a ? simplifyDef(a) : [], pd);
+        return R.set(lensFromLensDef(['score', 'staves', index.staff, 'voices', index.voice, 'content', ...path]) as unknown as R.Lens<ProjectDef, FlexibleItem>, value, pd);
+
+
+        /*const path1 = ((path.length) ? path.map(item => item === '@args' ? 'args' : item) : path) as (string | number)[];
+
+
+        return R.assocPath(['score', 'staves', index.staff, 'voices', index.voice, 'content', ...path1], value, pd);*/
+
 
     };
 }

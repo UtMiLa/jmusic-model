@@ -12,8 +12,18 @@ type addIndexFix<T, U> = (
     fn: (f: (item: T) => U, list: readonly T[]) => U,
 ) => _.F.Curry<(a: (item: T, idx: number, list: T[]) => U, b: readonly T[]) => U>;
 
+export interface FunctionPathElement<T> { function: (item: T) => T }
+export interface VarablePathElement { variable: string }
 
-export type PathElement = string | number;
+export type PathElement<T> = string | number | FunctionPathElement<T> | VarablePathElement;
+
+export function isFunctionPathElement<T>(test: PathElement<T>): test is FunctionPathElement<T> {
+    return !!test && (typeof (test as FunctionPathElement<T>).function) === 'function';
+}
+
+export function isVarablePathElement<T>(test: PathElement<T>): test is VarablePathElement {
+    return !!test && (typeof (test as VarablePathElement).variable) === 'string';
+}
 
 function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository): FlexibleItem[] {
     if (typeof item === 'string') {
@@ -139,9 +149,9 @@ export class FlexibleSequence extends BaseSequence {
     }
 
 
-    indexToPath(index: number): PathElement[] {
+    indexToPath(index: number): PathElement<MusicEvent>[] {
 
-        const itemsToPaths = (item: FlexibleItem): PathElement[][] => {
+        const itemsToPaths = (item: FlexibleItem): PathElement<MusicEvent>[][] => {
             if (typeof item === 'string') {
                 const no = splitByNotes(item).length;
                 return R.range(0, no).map(n => [n]);
@@ -149,11 +159,11 @@ export class FlexibleSequence extends BaseSequence {
                 return createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo)).map((a, i) => ['@args', i, 0]);
             } else if (isVariableRef(item)) {
                 const varSeq = valueOf(this.repo, item.variable);
-                return varSeq.elements.map((e, i) => [item.variable, ...varSeq.indexToPath(i)]);
+                return varSeq.elements.map((e, i) => [{ variable: item.variable }, ...varSeq.indexToPath(i)]); //{ variable: item.variable }
             } else if (isMusicEvent(item)) {
                 return [[0]];
             } else {
-                return (R.addIndex as addIndexFix<FlexibleItem, PathElement[][]>)(R.chain<FlexibleItem, PathElement[]>)(
+                return (R.addIndex as addIndexFix<FlexibleItem, PathElement<MusicEvent>[][]>)(R.chain<FlexibleItem, PathElement<MusicEvent>[]>)(
                     (s: FlexibleItem, idx: number) => itemsToPaths(s).map(
                         x => x.length > 1 && typeof x[0] === 'string' ? x : [idx, ...x]
                     ), item
