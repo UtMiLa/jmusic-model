@@ -124,15 +124,15 @@ describe('Lenses', () => {
         beforeEach(() => {
             sc = new JMusic({ 
                 content: [
-                    ['g4 a4 b4 bes4', 'c4 d4 e4 f4', [{ function: 'Transpose', args: ['c2 e2'], extraArgs: [{interval: 2, alteration: -1}] }]], 
+                    ['g4 a4 b4 bes4', ['c4 d4 e4 f4', {variable: 'theVar'}], [{ function: 'Transpose', args: ['c2 e2'], extraArgs: [{interval: 2, alteration: -1}] }]], 
                     [[['c,4 d,4'], ['e,4'], 'f,4']]
                 ],
                 meter: '6/8',
                 clefs: [ 'alto', 'tenor' ],
                 key: 'g \\minor'
-            });
+            }, {'theVar': 'aes4 ges4 ees4 des4'});
 
-            sc.setVar('theVar', 'aes4 ges4 ees4 des4');
+            //sc.setVar('theVar', 'aes4 ges4 ees4 des4');
 
             const vars1 = R.prop('vars', sc.vars) as unknown as VariableDef[];
 
@@ -163,7 +163,7 @@ describe('Lenses', () => {
 
             const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
 
-            expect(res.score.staves[0].voices[1].content).to.deep.eq(['c4', 'd4', 'e4', 'fis4']);
+            expect(res.score.staves[0].voices[1].content).to.deep.eq([['c4', 'd4', 'e4', 'fis4'], {variable: 'theVar'}]);
         });
 
         it('should read a nested element at an index lens', () => {
@@ -214,6 +214,21 @@ describe('Lenses', () => {
             });
         });
 
+        it('should write an element to a variable using an index lens', () => {
+            const lens = projectLensByIndex({
+                staff: 0,
+                voice: 1,
+                element: 5
+            });
+
+            const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
+
+            expect(res.vars).to.deep.eq({
+                theVar: ['aes4', 'fis4', 'ees4', 'des4']
+            });
+        });
+
+
         
         it('should read an element from a function', () => {
             const lens = projectLensByIndex({
@@ -263,7 +278,7 @@ describe('Lenses', () => {
                 key: 'g \\minor'
             }, 
             { 
-                theVar: 'aes4 ges4 ees4 des4' 
+                theVar: 'aes4 ges4 ees4 des4'
             }
             );
 
@@ -342,6 +357,7 @@ describe('Lenses', () => {
 
             expect(res).to.deep.eq(createNoteFromLilypond('ges4'));
         });
+
 
         it('should write an element to a variable using a time lens', () => {
             const lens = projectLensByTime({

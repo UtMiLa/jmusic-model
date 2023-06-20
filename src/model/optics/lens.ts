@@ -3,7 +3,7 @@ import { ISequence, MusicEvent, isNote } from '../score/sequence';
 import R = require('ramda');
 import { FlexibleItem, ProjectDef, VarDict, VariableDef } from '../score/types';
 import { voiceSequenceToDef } from '../score/voice';
-import { FlexibleSequence, FunctionPathElement, PathElement, VarablePathElement, isFunctionPathElement, isVarablePathElement, simplifyDef } from '../score/flexible-sequence';
+import { FlexibleSequence, FunctionPathElement, PathElement, VarablePathElement, isFunctionPathElement, isVarablePathElement as isVariablePathElement, simplifyDef } from '../score/flexible-sequence';
 import { AbsoluteTime, Time } from '../rationals/time';
 import { lookupVariable } from '../score/variables';
 import { ScoreDef } from '../score/score';
@@ -64,19 +64,23 @@ function functionLens<T>(fp: FunctionPathElement<T>): R.Lens<Record<string, any>
     //return R.lensProp('args');
 }
 
+function variableLens<T>(vp: VarablePathElement): R.Lens<Record<string, any>, any> {
+    return R.lensPath(['vars', vp.variable]);
+}
+
 function pathElementToLens<T>(pathElm: PathElement<T>) {
     return R.cond<PathElement<T>, string, number, FunctionPathElement<T>, VarablePathElement, R.Lens<Record<string, any>, any>>([
         [R.is(String), R.lensProp],
         [R.is(Number), R.lensIndex],
         [isFunctionPathElement<T>, functionLens],
-        [isVarablePathElement<T>, (v) => R.lensPath(['vars', v.variable])]
+        [isVariablePathElement<T>, variableLens]//R.lensPath(['vars', v.variable])]
     ])(pathElm);
 }
 
 export function lensFromLensDef<T, X, Y>(lensDef: PathElement<T>[]): R.Lens<Record<string, X>, Y> {
     return R.reduce<PathElement<T>, R.Lens<Record<string, any>, any>>(
         (lens1: R.Lens<Record<string, any>, any>, pathElm: PathElement<T>) => R.ifElse(
-            isVarablePathElement,
+            isVariablePathElement,
             pathElementToLens,
             (pathElm) => composeLenses(lens1, pathElementToLens(pathElm))
         )(pathElm), 
@@ -124,12 +128,12 @@ function voiceLensByIndex(index: NaturalLensIndexScore): ProjectLens {
 
 function isVarPath<T>(path: PathElement<T>[]): boolean
 {
-    return path.some(isVarablePathElement);
+    return path.some(isVariablePathElement);
 }
 
 
 
-
+/*
 function varDefArrayToVarDict(vars: VariableDef[]): VarDict {
     return R.fromPairs(vars.map(vd => [vd.id, vd.value]));
 }
@@ -137,7 +141,7 @@ function varDefArrayToVarDict(vars: VariableDef[]): VarDict {
 function varDictToVarDefArray(vars: VarDict): VariableDef[] {
     return R.toPairs(vars).map((v: [string, FlexibleItem]) => ({ id: v[0], value: v[1] } as VariableDef));
 }
-
+*/
 
 function sequenceElementSetter(index: NaturalLensIndexScore): (a: MusicEvent | undefined, s: ProjectDef) => ProjectDef {
     return (a: MusicEvent | undefined, pd: ProjectDef) => {
@@ -146,7 +150,7 @@ function sequenceElementSetter(index: NaturalLensIndexScore): (a: MusicEvent | u
         //console.log(path);
         path.pop(); // todo: remove annoying last 0 from path
 
-        if (isVarPath(path)) { // todo: should be handled by lensFromLensDef
+        /*if (isVarPath(path)) { // todo: should be handled by lensFromLensDef
             // var reference
             const lastVarIndex = path.findIndex(isVarablePathElement);
             const restPath = path.slice(lastVarIndex);
@@ -155,7 +159,7 @@ function sequenceElementSetter(index: NaturalLensIndexScore): (a: MusicEvent | u
                 ? { id: item.id, value: R.assocPath((restPath as (string | number)[]).slice(1), a ? simplifyDef(a) : [], new FlexibleSequence(item.value).asObject) }
                 : item);
             return R.assoc('vars', varDefArrayToVarDict(val), pd);
-        }
+        }*/
 
         const value: FlexibleItem = a ? simplifyDef(a) : [];
 
