@@ -15,7 +15,7 @@ export interface VariableRef {
     variable: string;
 }
 
-export type FuncDef = 'Relative' | 'Reverse' | 'Repeat' | 'Grace' | 'Tuplet' | 'Transpose' | 'ModalTranspose' | 'AddLyrics';
+export type FuncDef = 'Identity' | 'Relative' | 'Reverse' | 'Repeat' | 'Grace' | 'Tuplet' | 'Transpose' | 'ModalTranspose' | 'AddLyrics';
 
 export type FlexibleItem = string | SeqFunction | VariableRef | FlexibleItem[] | MusicEvent;
 

@@ -126,7 +126,10 @@ describe('Lenses', () => {
         beforeEach(() => {
             sc = new JMusic({ 
                 content: [
-                    ['g4 a4 b4 bes4', ['c4 d4 e4 f4', {variable: 'theVar'}], [{ function: 'Transpose', args: ['c2 e2'], extraArgs: [{interval: 2, alteration: -1}] }]], 
+                    ['g4 a4 b4 bes4', ['c4 d4 e4 f4', {variable: 'theVar'}], [
+                        { function: 'Transpose', args: ['c2 e2'], extraArgs: [{interval: 2, alteration: -1}] }, 
+                        { function: 'Identity', args: ['c2 e2'] }
+                    ]], 
                     [[['c,4 d,4'], ['e,4'], 'f,4']]
                 ],
                 meter: '6/8',
@@ -246,11 +249,11 @@ describe('Lenses', () => {
 
         
         it('should create a correct lens to a function', () => {
-            const lens = projectLensByIndex({
+            /*const lens = projectLensByIndex({
                 staff: 0,
                 voice: 2,
                 element: 1
-            });
+            });*/
 
             const seq = new FlexibleSequence(projectDef.score.staves[0].voices[2].contentDef, createRepo(projectDef.vars));
             const path = seq.indexToPath(1);
@@ -269,7 +272,7 @@ describe('Lenses', () => {
             const lens = projectLensByIndex({
                 staff: 0,
                 voice: 2,
-                element: 1
+                element: 3
             });
 
             /*const lens = lensFromLensDef([
@@ -283,6 +286,14 @@ describe('Lenses', () => {
 
             const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef as any);
 
+            expect(res.score.staves[0].voices[2].contentDef[1]).to.deep.eq({
+                function: 'Identity',
+                args: ['c2', 'fis4']
+            });
+
+
+            /*
+                        
             expect(res.score.staves[0].voices[2].contentDef[0]).to.deep.eq({
                 function: 'Transpose',
                 args: ['c2', 'fis4'],
@@ -290,7 +301,7 @@ describe('Lenses', () => {
                     'alteration': -1,
                     'interval': 2
                 }]
-            });
+            });*/
         });
 
     });

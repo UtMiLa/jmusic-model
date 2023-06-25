@@ -139,6 +139,7 @@ const relative = R.curry((pitch: Pitch, seq: MusicEvent[]) => seq.reduce<{accu: 
 }, { accu: [], pitch: typeof(pitch) === 'string' ? Pitch.parseLilypond(pitch) : pitch }).accu);
 
 const internal_functions: {[key: string]: MusicFunc | CurryMusicFunc } = {
+    'Identity': R.identity,
     'Relative': relative as CurryMusicFunc,
     'Reverse': R.pipe(R.reverse<MusicEvent>, R.map(reverseTuplets)),
     'Repeat': flattenedRepeater as CurryMusicFunc,
