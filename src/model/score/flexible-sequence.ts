@@ -156,7 +156,7 @@ export class FlexibleSequence extends BaseSequence {
                 const no = splitByNotes(item).length;
                 return R.range(0, no).map(n => [n]);
             } else if (isSeqFunction(item)) {
-                return createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo)).map((a, i) => ['@args', i, 0]);
+                return createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo)).map((a, i) => [{ function: R.identity }, i, 0]);
             } else if (isVariableRef(item)) {
                 const varSeq = valueOf(this.repo, item.variable);
                 return varSeq.elements.map((e, i) => [{ variable: item.variable }, ...varSeq.indexToPath(i)]); //{ variable: item.variable }

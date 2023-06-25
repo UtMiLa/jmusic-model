@@ -28,6 +28,8 @@ import { createNoteFromLilypond } from '../notes/note';
 import { ISequence, isNote } from '../score/sequence';
 import { ProjectDef, VariableDef } from '../score/types';
 import { lensFromLensDef, projectLensByIndex, projectLensByTime } from './lens';
+import { FlexibleSequence } from '../score/flexible-sequence';
+import { createRepo } from '../score/variables';
 
 describe('Lenses', () => {
 
@@ -242,19 +244,48 @@ describe('Lenses', () => {
             expect(res).to.deep.eq(createNoteFromLilypond('g2'));
         });
 
-        xit('should write an element at a function lens', () => {
+        
+        it('should create a correct lens to a function', () => {
             const lens = projectLensByIndex({
                 staff: 0,
                 voice: 2,
                 element: 1
             });
 
-            const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
+            const seq = new FlexibleSequence(projectDef.score.staves[0].voices[2].contentDef, createRepo(projectDef.vars));
+            const path = seq.indexToPath(1);
+            expect(path).to.deep.equal(
+                [
+                    0,
+                    { 
+                        'function': R.identity
+                        //'inverse': (s: string) => s.toLocaleLowerCase() 
+                    }, 1, 0
+                ]
+            );
+        });
 
-            expect(res).to.deep.eq(projectDef);
-            expect(res.score.staves[0].voices[2].contentDef).to.deep.eq({
+        it('should write an element at a function lens', () => {
+            const lens = projectLensByIndex({
+                staff: 0,
+                voice: 2,
+                element: 1
+            });
+
+            /*const lens = lensFromLensDef([
+                'score', 'staves', 0, 'voices', 2, 'contentDef', 0,
+                { 
+                    'function': (s: string) => s.toLocaleUpperCase(),
+                    //'inverse': (s: string) => s.toLocaleLowerCase() 
+                }, 1
+            ]);*/
+
+
+            const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef as any);
+
+            expect(res.score.staves[0].voices[2].contentDef[0]).to.deep.eq({
                 function: 'Transpose',
-                args: ['c2', 'dis4'],
+                args: ['c2', 'fis4'],
                 extraArgs: [{
                     'alteration': -1,
                     'interval': 2

@@ -1,4 +1,4 @@
-import { cloneNote, projectLensByTime, voiceSequenceToDef } from '../../model';
+import { cloneNote, projectLensByTime, voiceContentToSequence, voiceSequenceToDef } from '../../model';
 import { FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
@@ -90,7 +90,23 @@ export class JMusic implements Score {
     }
 
     noteFromInsertionPoint(ins: InsertionPoint): Note {
-        return this.staves[ins.staffNo].voices[ins.voiceNo].content.groupByTimeSlots('0').filter(ts => Time.equals(ts.time, ins.time))[0].elements[0];
+        try {
+            const a = this.staves;
+            const b = a[ins.staffNo];
+            const c = b.voices;
+            const d = c[ins.voiceNo];
+            const e = d.content;
+            const f = e.groupByTimeSlots('0');
+            const g = f.filter(ts => Time.equals(ts.time, ins.time));
+            const h = g[0];
+            const i = h.elements;
+            const j = i[0];
+            return j;
+        } catch (e) {
+            console.error(e);
+            throw(e);
+        }
+        //return this.staves[ins.staffNo].voices[ins.voiceNo].content.groupByTimeSlots('0').filter(ts => Time.equals(ts.time, ins.time))[0].elements[0];
     }
 
     insertElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent, checkType: (e: MusicEvent) => boolean): void {
@@ -113,13 +129,27 @@ export class JMusic implements Score {
     }
 
     replaceNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note, toNote: Note): void {
-        /*this.staves[ins.staffNo].voices[ins.voiceNo].content = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content).chainElements(
+        
+        const a = this.project.score.staves;
+        const b = a[ins.staffNo];
+        const c = b.voices;
+        const d = c[ins.voiceNo];
+        const e = d.contentDef;
+        const f = voiceContentToSequence(e);
+        const g = f.chainElements((ct, time) => {
+            return [Time.equals(time, ins.time) && isNote(ct) ? toNote : ct];
+        });
+        const h = new FlexibleSequence(g);
+        const i = voiceSequenceToDef(h);
+        this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = i;
+        return;
+        this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef).chainElements(
             (ct, time) => {
                 return [Time.equals(time, ins.time) && isNote(ct) ? toNote : ct];
             }
-        )));*/
-        const lens = projectLensByTime({ staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
-        this.project = R.set(lens, toNote, this.project);
+        )));
+        /*const lens = projectLensByTime({ staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
+        this.project = R.set(lens, toNote, this.project);*/
 
     }
 
