@@ -62,6 +62,14 @@ function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEve
     return new FlexibleSequence(items, repo, true).elements;
 }
 
+function isSingleStringArray(test: unknown): test is string[] {
+    return (test as string[]).length === 1 && typeof ((test as string[])[0]) === 'string';
+}
+
+function isOtherFlexibleItemArray(test: unknown): test is FlexibleItem[] {
+    return true;
+}
+
 export class FlexibleSequence extends BaseSequence {
 
     constructor(init: FlexibleItem, private repo: VariableRepository = createRepo({}), alreadySplit = false) {
@@ -73,18 +81,21 @@ export class FlexibleSequence extends BaseSequence {
         this.def = alreadySplit ? init as FlexibleItem[] : recursivelySplitStringsIn(init, repo);
     }
 
-    private _elements: MusicEvent[] = [];
+    private _elements: MusicEvent[] | undefined = undefined
 
     get elements(): MusicEvent[] {
-        return R.flatten(this._elements.map((item) => isFlexibleSequence(item) ? item.elements : [item]));
+        const elm = this.requireElements(isSingleStringArray, isOtherFlexibleItemArray, this._def);
+        return R.flatten(elm.map((item) => isFlexibleSequence(item) ? item.elements : [item]));
     }
 
     get duration(): TimeSpan {
-        return this._elements.reduce((prev, curr) => Time.addSpans(prev, getDuration(curr)), Time.NoTime);
+        const elm = this.requireElements(isSingleStringArray, isOtherFlexibleItemArray, this._def);
+        return elm.reduce((prev, curr) => Time.addSpans(prev, getDuration(curr)), Time.NoTime);
     }
 
     get count(): number {
-        return this._elements.reduce((prev, curr) => isFlexibleSequence(curr) ? prev + curr.count : prev + 1, 0);
+        const elm = this.requireElements(isSingleStringArray, isOtherFlexibleItemArray, this._def);
+        return elm.reduce((prev, curr) => isFlexibleSequence(curr) ? prev + curr.count : prev + 1, 0);
     }
 
     private _asObject: SequenceDef = [];
@@ -102,47 +113,42 @@ export class FlexibleSequence extends BaseSequence {
     public set def(init: FlexibleItem[]) {
         if (!init) init = [];
 
-        //if (isSeqFunction(init) || R.is(String, init)) init = [init];
-
         this._def = init;
-
-        function isSingleStringArray(test: unknown): test is string[] {
-            return (test as string[]).length === 1 && typeof ((test as string[])[0]) === 'string';
-        }
-        
-        function isOtherFlexibleItemArray(test: unknown): test is FlexibleItem[] {
-            return true;
-        }
-        
-        this._elements = R.chain(
-            R.cond<FlexibleItem, string, SeqFunction, VariableRef, string[], MusicEvent, FlexibleItem[], MusicEvent[]>([
-                [
-                    R.is(String), 
-                    ((item: string) => item ? [parseLilyElement(item) as MusicEvent] : [])
-                ],
-                [
-                    isSeqFunction, 
-                    (item: SeqFunction) => 
-                        createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))
-                ],
-                [
-                    isVariableRef, 
-                    (item: VariableRef) => calcElements(valueOf(this.repo, item.variable).elements, this.repo)/*.map(timify)*/
-                ],
-                [
-                    isSingleStringArray, 
-                    (item: string[]) => [parseLilyElement(item[0])]
-                ],
-                [
-                    isMusicEvent, (item: MusicEvent) => [item]
-                ],
-                [
-                    isOtherFlexibleItemArray, (elm) => calcElements(elm, this.repo)
-                ]
-            ])            
-            , init);
+        this._elements = undefined;
     }
 
+
+    private requireElements(isSingleStringArray: (test: unknown) => test is string[], isOtherFlexibleItemArray: (test: unknown) => test is FlexibleItem[], init: FlexibleItem[]) {
+        if (this._elements === undefined) {
+            this._elements = R.chain(
+                R.cond<FlexibleItem, string, SeqFunction, VariableRef, string[], MusicEvent, FlexibleItem[], MusicEvent[]>([
+                    [
+                        R.is(String),
+                        ((item: string) => item ? [parseLilyElement(item) as MusicEvent] : [])
+                    ],
+                    [
+                        isSeqFunction,
+                        (item: SeqFunction) => createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))
+                    ],
+                    [
+                        isVariableRef,
+                        (item: VariableRef) => calcElements(valueOf(this.repo, item.variable).elements, this.repo) /*.map(timify)*/
+                    ],
+                    [
+                        isSingleStringArray,
+                        (item: string[]) => [parseLilyElement(item[0])]
+                    ],
+                    [
+                        isMusicEvent, (item: MusicEvent) => [item]
+                    ],
+                    [
+                        isOtherFlexibleItemArray, (elm) => calcElements(elm, this.repo)
+                    ]
+                ]),
+                init);
+        }
+        return this._elements;
+    }
 
     modifyItem(lens: R.Lens<FlexibleItem, FlexibleItem>, changer: (x: FlexibleItem) => FlexibleItem): void {
         R.over(lens, changer);

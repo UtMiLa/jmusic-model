@@ -8,6 +8,20 @@ export interface VariableRepository {
     observer$: Subject<VariableRepository>;
 }
 
+export class VariableRepositoryProxy implements VariableRepository {
+    constructor() {
+        //
+    }
+
+    vars: VarDict = {};
+
+    assignVarDict(vars: VarDict): void {
+        this.vars = vars;
+    }
+    
+    observer$ = new Subject<VariableRepository>;
+}
+
 export function isVariableRef(test: unknown): test is VariableRef {
     return typeof ((test as VariableRef).variable) === 'string';
 }
@@ -30,7 +44,7 @@ export function valueOf(vars: VariableRepository, id: string): FlexibleSequence 
     const theVar = vars.vars[id];
     if (!theVar) 
         throw 'Undefined variable: ' + id;
-    return new FlexibleSequence(theVar);
+    return new FlexibleSequence(theVar, vars);
 }
 
 export function setVar(vars: VariableRepository, id: string, value: FlexibleItem): VariableRepository {

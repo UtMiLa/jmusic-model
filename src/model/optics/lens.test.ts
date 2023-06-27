@@ -418,6 +418,58 @@ describe('Lenses', () => {
 
     });
 
+
+    describe('Nested variables', () => {
+
+        let sc: JMusic;
+        let projectDef: ProjectDef;
+
+        beforeEach(() => {
+            sc = new JMusic({ 
+                content: [[{ variable: 'theVar1' }, ['c4 d4 e4 f4', { variable: 'theVar2' }]], [[['c,4 d,4'], ['e,4'], 'f,4']]],
+                meter: '6/8',
+                clefs: [ 'alto', 'tenor' ],
+                key: 'g \\minor'
+            }, 
+            { 
+                theVar1: 'a4 g4 e4 d4',
+                theVar2: ['aes4 ges4', { variable: 'theVar3' }, 'ees4 des4'],
+                theVar3: { variable: 'theVar4' },
+                theVar4: 'fis4 gis4 cis4 dis4'
+            }
+            );
+
+            projectDef = {
+                score: sc.project.score,
+                vars: sc.vars.vars
+            };
+        });
+
+        it('should get a note from a variable', () => {
+            const lens = projectLensByIndex({
+                staff: 0,
+                voice: 0,
+                element: 3
+            });
+
+            const res = R.view(lens, projectDef);
+
+            expect(res).to.deep.eq(createNoteFromLilypond('d4'));
+        });
+        it('should get a note from a nested variable', () => {
+            const lens = projectLensByIndex({
+                staff: 0,
+                voice: 1,
+                element: 7
+            });
+
+            const res = R.view(lens, projectDef);
+
+            expect(res).to.deep.eq(createNoteFromLilypond('gis4'));
+        });
+    });
+
+
     describe('Sequence lens', () => {
         const seq1Text = 'c4 d8 e8';
         const seq2Text = 'c,2 d,8 e,8 c4';
