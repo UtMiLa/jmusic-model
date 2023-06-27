@@ -456,6 +456,19 @@ describe('Lenses', () => {
 
             expect(res).to.deep.eq(createNoteFromLilypond('d4'));
         });
+
+        it('should write an element to a variable', () => {
+            const lens = projectLensByIndex({
+                staff: 0,
+                voice: 0,
+                element: 3
+            });
+
+            const res = R.set(lens, createNoteFromLilypond('fis16'), projectDef);
+
+            expect(res.vars.theVar1).to.deep.eq( ['a4', 'g4', 'e4', 'fis16']);
+        });
+
         it('should get a note from a nested variable', () => {
             const lens = projectLensByIndex({
                 staff: 0,
@@ -467,6 +480,20 @@ describe('Lenses', () => {
 
             expect(res).to.deep.eq(createNoteFromLilypond('gis4'));
         });
+
+        
+        it('should write an element to a nested variable', () => {
+            const lens = projectLensByIndex({
+                staff: 0,
+                voice: 1,
+                element: 7
+            });
+
+            const res = R.set(lens, createNoteFromLilypond('fis16'), projectDef);
+
+            expect(res.vars.theVar4).to.deep.eq( ['fis4', 'fis16', 'cis4', 'dis4']);
+        });
+
     });
 
 
