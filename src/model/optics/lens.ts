@@ -10,6 +10,15 @@ import { ScoreDef } from '../score/score';
 import { Note } from '../notes/note';
 
 /*
+Different takes on LensItem. First is MusicEvent | undefined and could be better implemented with the functional Maybe class.
+This can be used to replace one MusicEvent with one or zero MusicEvents.
+
+The other is MusicEvent[] which has the potential benefit of allowing to replace one MusicEvent with one or zero or several MusicEvents.
+
+It could be nice if the LensItem type and accompanying functions were encapsulated, so other code was not able to access it internal workings.
+*/
+
+/*
 export type LensItem = MusicEvent | undefined;
 
 export const lensItemOf = (event: MusicEvent): LensItem => event;//R.of(Array);
@@ -40,14 +49,12 @@ export const lensItemValue = (item: LensItem): MusicEvent => {
 
 export const lensItemHasValue = (item: LensItem): boolean => !!item.length;
 
-
 export function doWithNote(lensItem: LensItem, transform: (note: Note) => LensItem): LensItem {
     if (!lensItem.length) return lensItem;
-    if (lensItem.length !== 1) return lensItem;
-    if (!isNote(lensItem[0])) return lensItem;
-    return transform(lensItem[0]);
+    return R.chain(item => isNote(item) ? transform(item) : [item], lensItem);
 }
 
+// LensItem special functions to here
 
 
 export type ProjectLens = R.Lens<ProjectDef, LensItem>;
