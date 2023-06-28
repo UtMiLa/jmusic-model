@@ -112,15 +112,15 @@ export class JMusic implements Score {
         ;
     }
 
-    replaceNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note, toNote: Note): void {
+    replaceNoteAtInsertionPoint(ins: InsertionPoint, noteConverter: (fromNote: MusicEvent | undefined) => MusicEvent | undefined): void {
         
-        this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef).chainElements(
+        /*this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef).chainElements(
             (ct, time) => {
                 return [Time.equals(time, ins.time) && isNote(ct) ? toNote : ct];
             }
-        )));
-        /*const lens = projectLensByTime({ staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
-        this.project = R.set(lens, toNote, this.project);*/
+        )));*/
+        const lens = projectLensByTime({ staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
+        this.project = R.over(lens, noteConverter, this.project);
 
     }
 
@@ -174,11 +174,7 @@ export class JMusic implements Score {
     }
 
     setNoteValue(ins: InsertionPoint, time: TimeSpan): void {
-        const note = this.noteFromInsertionPoint(ins);
-        const note1 = cloneNote(note, { nominalDuration: time });
-        this.replaceNoteAtInsertionPoint(ins, note, note1);
-        /*const lens = projectLensByTime({ staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
-        this.project = R.set(lens, note1, this.project);*/
+        this.replaceNoteAtInsertionPoint(ins, note => note && isNote(note) ? cloneNote(note, { nominalDuration: time }) : undefined);
         this.didChange();
     }
 
@@ -186,17 +182,12 @@ export class JMusic implements Score {
         if (!pitch) {
             pitch = this.pitchFromInsertionPoint(ins);
         }
-        const note = this.noteFromInsertionPoint(ins);
-        const pitches = R.append(pitch, note.pitches);
-        const note1 = cloneNote(note, {pitches});
-        this.replaceNoteAtInsertionPoint(ins, note, note1);
+        this.replaceNoteAtInsertionPoint(ins, note => note && isNote(note) ? cloneNote(note, { pitches : R.append<Pitch>(pitch as Pitch, note.pitches) }) : undefined);
         this.didChange();
     }
 
     setPitches(ins: InsertionPoint, pitches: Pitch[]): void {
-        const note = this.noteFromInsertionPoint(ins);
-        const note1 = cloneNote(note, { pitches });
-        this.replaceNoteAtInsertionPoint(ins, note, note1);
+        this.replaceNoteAtInsertionPoint(ins, note => note && isNote(note) ? cloneNote(note, { pitches }) : undefined);
         this.didChange();
     }
 
@@ -204,10 +195,8 @@ export class JMusic implements Score {
         if (!pitch) {
             pitch = this.pitchFromInsertionPoint(ins);
         }
-        //const seq = this.sequenceFromInsertionPoint(ins);
-        const note = this.noteFromInsertionPoint(ins);
-        const note1 = cloneNote(note, { pitches: note.pitches.filter(p => p.diatonicNumber !== pitch?.diatonicNumber) });
-        this.replaceNoteAtInsertionPoint(ins, note, note1);
+
+        this.replaceNoteAtInsertionPoint(ins, note => note && isNote(note) ? cloneNote(note, { pitches: note.pitches.filter(p => p.diatonicNumber !== pitch?.diatonicNumber) }) : undefined);
         this.didChange();
     }
 
@@ -215,12 +204,10 @@ export class JMusic implements Score {
         if (!pitch) {
             pitch = this.pitchFromInsertionPoint(ins);
         }
-        const note = this.noteFromInsertionPoint(ins);
-        //const seq = this.sequenceFromInsertionPoint(ins);
-        const note1 = cloneNote(note, { pitches: note.pitches.map(p => {
+
+        this.replaceNoteAtInsertionPoint(ins, note => note && isNote(note) ? cloneNote(note, { pitches: note.pitches.map(p => {
             return enharmonicChange(p, Enharmonic.BestBet);
-        }) });
-        this.replaceNoteAtInsertionPoint(ins, note, note1);
+        }) }) : undefined);
         this.didChange();
     }
 
@@ -228,18 +215,18 @@ export class JMusic implements Score {
         if (!pitch) {
             pitch = this.pitchFromInsertionPoint(ins);
         }
-        const note = this.noteFromInsertionPoint(ins);
-        //const seq = this.sequenceFromInsertionPoint(ins);
-        const note1 = cloneNote(note, { pitches: note.pitches.map(p => {
-            if (Math.abs(p.alteration + alteration) >= 3) {
-                const pitch = p.pitchClassNumber + alteration;
-                if (pitch < 0) return new Pitch(pitch + 7, p.octave - 1, 0);    
-                if (pitch >= 7) return new Pitch(pitch - 7, p.octave + 1, 0);    
-                return new Pitch(( + 7) % 7, p.octave, 0);    
-            }
-            return new Pitch(p.pitchClassNumber, p.octave, (p.alteration + alteration) as Alteration);
-        }) });
-        this.replaceNoteAtInsertionPoint(ins, note, note1);
+
+        this.replaceNoteAtInsertionPoint(ins, note => note && isNote(note) ? 
+            cloneNote(note, { pitches: note.pitches.map(p => {
+                if (Math.abs(p.alteration + alteration) >= 3) {
+                    const pitch = p.pitchClassNumber + alteration;
+                    if (pitch < 0) return new Pitch(pitch + 7, p.octave - 1, 0);    
+                    if (pitch >= 7) return new Pitch(pitch - 7, p.octave + 1, 0);    
+                    return new Pitch(( + 7) % 7, p.octave, 0);    
+                }
+                return new Pitch(p.pitchClassNumber, p.octave, (p.alteration + alteration) as Alteration);
+            }) })
+            : undefined);
         this.didChange();
     }
 
