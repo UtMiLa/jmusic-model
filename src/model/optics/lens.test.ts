@@ -27,7 +27,7 @@ import R = require('ramda');
 import { createNoteFromLilypond } from '../notes/note';
 import { ISequence, isNote } from '../score/sequence';
 import { ProjectDef, VariableDef } from '../score/types';
-import { lensFromLensDef, projectLensByIndex, projectLensByTime } from './lens';
+import { lensFromLensDef, lensItemOf, projectLensByIndex, projectLensByTime } from './lens';
 import { FlexibleSequence } from '../score/flexible-sequence';
 import { createRepo } from '../score/variables';
 
@@ -117,7 +117,7 @@ describe('Lenses', () => {
         });
 
     });
-
+    
     describe('Lens by index', () => {
 
         let sc: JMusic;
@@ -156,7 +156,7 @@ describe('Lenses', () => {
 
             const res = R.view(lens, projectDef);
 
-            expect(res).to.deep.eq(createNoteFromLilypond('f4'));
+            expect(res).to.deep.eq(lensItemOf(createNoteFromLilypond('f4')));
         });
 
         it('should write an element at an index lens', () => {
@@ -166,7 +166,7 @@ describe('Lenses', () => {
                 element: 3
             });
 
-            const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
+            const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef);
 
             expect(res.score.staves[0].voices[1].contentDef).to.deep.eq([['c4', 'd4', 'e4', 'fis4'], {variable: 'theVar'}]);
         });
@@ -180,7 +180,7 @@ describe('Lenses', () => {
 
             const res = R.view(lens, projectDef);
 
-            expect(res).to.deep.eq(createNoteFromLilypond('e,4'));
+            expect(res).to.deep.eq(lensItemOf(createNoteFromLilypond('e,4')));
         });
 
         it('should write a nested element at an index lens', () => {
@@ -190,7 +190,7 @@ describe('Lenses', () => {
                 element: 1
             });
 
-            const res = R.set(lens, createNoteFromLilypond('des,4'), projectDef);
+            const res = R.set(lens, lensItemOf(createNoteFromLilypond('des,4')), projectDef);
 
             expect(res.score.staves[1].voices[0].contentDef).to.deep.eq([['c,4', 'des,4'], 'e,4', 'f,4']);
         });
@@ -203,7 +203,7 @@ describe('Lenses', () => {
 
             const res = R.view(lens, projectDef);
 
-            expect(res).to.deep.eq(createNoteFromLilypond('ees4'));
+            expect(res).to.deep.eq(lensItemOf(createNoteFromLilypond('ees4')));
         });
 
         it('should write an element at a variable lens', () => {
@@ -212,7 +212,7 @@ describe('Lenses', () => {
                 element: 2
             });
 
-            const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
+            const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef);
 
             expect(res.vars).to.deep.eq({
                 theVar: ['aes4', 'ges4', 'fis4', 'des4']
@@ -226,7 +226,7 @@ describe('Lenses', () => {
                 element: 5
             });
 
-            const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
+            const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef);
 
             expect(res.vars).to.deep.eq({
                 theVar: ['aes4', 'fis4', 'ees4', 'des4']
@@ -244,16 +244,12 @@ describe('Lenses', () => {
 
             const res = R.view(lens, projectDef);
 
-            expect(res).to.deep.eq(createNoteFromLilypond('g2'));
+            expect(res).to.deep.eq(lensItemOf(createNoteFromLilypond('g2')));
         });
 
         
         it('should create a correct lens to a function', () => {
-            /*const lens = projectLensByIndex({
-                staff: 0,
-                voice: 2,
-                element: 1
-            });*/
+
 
             const seq = new FlexibleSequence(projectDef.score.staves[0].voices[2].contentDef, createRepo(projectDef.vars));
             const path = seq.indexToPath(1);
@@ -275,16 +271,8 @@ describe('Lenses', () => {
                 element: 3
             });
 
-            /*const lens = lensFromLensDef([
-                'score', 'staves', 0, 'voices', 2, 'contentDef', 0,
-                { 
-                    'function': (s: string) => s.toLocaleUpperCase(),
-                    //'inverse': (s: string) => s.toLocaleLowerCase() 
-                }, 1
-            ]);*/
 
-
-            const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef as any);
+            const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef as any);
 
             expect(res.score.staves[0].voices[2].contentDef[1]).to.deep.eq({
                 function: 'Identity',
@@ -344,7 +332,7 @@ describe('Lenses', () => {
 
             const res = R.view(lens, projectDef);
 
-            expect(res).to.deep.eq(createNoteFromLilypond('f4'));
+            expect(res).to.deep.eq(lensItemOf(createNoteFromLilypond('f4')));
         });
 
         it('should write an element at a time lens', () => {
@@ -355,7 +343,7 @@ describe('Lenses', () => {
                 eventFilter: isNote
             });
 
-            const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
+            const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef);
 
             expect(res.score.staves[0].voices[0].contentDef).to.deep.eq(['g4', 'a4', 'b4', 'fis4']);
         });
@@ -371,7 +359,7 @@ describe('Lenses', () => {
 
             const res = R.view(lens, projectDef);
 
-            expect(res).to.deep.eq(createNoteFromLilypond('e,4'));
+            expect(res).to.deep.eq(lensItemOf(createNoteFromLilypond('e,4')));
         });
 
         it('should write a nested element at a time lens', () => {
@@ -382,7 +370,7 @@ describe('Lenses', () => {
                 eventFilter: isNote
             });
 
-            const res = R.set(lens, createNoteFromLilypond('fis,4'), projectDef);
+            const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis,4')), projectDef);
 
             expect(res.score.staves[1].voices[0].contentDef).to.deep.eq([['c,4', 'fis,4'], 'e,4', 'f,4']);
         });
@@ -397,7 +385,7 @@ describe('Lenses', () => {
 
             const res = R.view(lens, projectDef);
 
-            expect(res).to.deep.eq(createNoteFromLilypond('ges4'));
+            expect(res).to.deep.eq(lensItemOf(createNoteFromLilypond('ges4')));
         });
 
 
@@ -409,7 +397,7 @@ describe('Lenses', () => {
                 eventFilter: isNote
             });
 
-            const res = R.set(lens, createNoteFromLilypond('fis4'), projectDef);
+            const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef);
 
             expect(res.vars).to.deep.eq({
                 theVar: ['aes4', 'fis4', 'ees4', 'des4']
@@ -454,7 +442,7 @@ describe('Lenses', () => {
 
             const res = R.view(lens, projectDef);
 
-            expect(res).to.deep.eq(createNoteFromLilypond('d4'));
+            expect(res).to.deep.eq(lensItemOf(createNoteFromLilypond('d4')));
         });
 
         it('should write an element to a variable', () => {
@@ -464,7 +452,7 @@ describe('Lenses', () => {
                 element: 3
             });
 
-            const res = R.set(lens, createNoteFromLilypond('fis16'), projectDef);
+            const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis16')), projectDef);
 
             expect(res.vars.theVar1).to.deep.eq( ['a4', 'g4', 'e4', 'fis16']);
         });
@@ -478,7 +466,7 @@ describe('Lenses', () => {
 
             const res = R.view(lens, projectDef);
 
-            expect(res).to.deep.eq(createNoteFromLilypond('gis4'));
+            expect(res).to.deep.eq(lensItemOf(createNoteFromLilypond('gis4')));
         });
 
         
@@ -489,7 +477,7 @@ describe('Lenses', () => {
                 element: 7
             });
 
-            const res = R.set(lens, createNoteFromLilypond('fis16'), projectDef);
+            const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis16')), projectDef);
 
             expect(res.vars.theVar4).to.deep.eq( ['fis4', 'fis16', 'cis4', 'dis4']);
         });

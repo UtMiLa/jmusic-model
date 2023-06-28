@@ -1,4 +1,4 @@
-import { cloneNote, projectLensByTime, voiceContentToSequence, voiceSequenceToDef } from '../../model';
+import { LensItem, cloneNote, doWithNote, lensItemNone, lensItemOf, projectLensByTime, voiceContentToSequence, voiceSequenceToDef } from '../../model';
 import { FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
@@ -54,6 +54,7 @@ export const initStateInSequence = (s: ISequence) => {
 
     return res;
 };
+
 
 
 /** Facade object for music scores */
@@ -112,7 +113,7 @@ export class JMusic implements Score {
         ;
     }
 
-    replaceNoteAtInsertionPoint(ins: InsertionPoint, noteConverter: (fromNote: MusicEvent | undefined) => MusicEvent | undefined): void {
+    replaceNoteAtInsertionPoint(ins: InsertionPoint, noteConverter: (fromNote: LensItem) => LensItem): void {
         
         /*this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef).chainElements(
             (ct, time) => {
@@ -131,7 +132,7 @@ export class JMusic implements Score {
             }
         )));*/
         const lens = projectLensByTime({ staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
-        this.project = R.set(lens, undefined, this.project);
+        this.project = R.set(lens, lensItemNone, this.project);
 
     }
 
@@ -174,7 +175,7 @@ export class JMusic implements Score {
     }
 
     setNoteValue(ins: InsertionPoint, time: TimeSpan): void {
-        this.replaceNoteAtInsertionPoint(ins, note => note && isNote(note) ? cloneNote(note, { nominalDuration: time }) : undefined);
+        this.replaceNoteAtInsertionPoint(ins, item => doWithNote(item, note => lensItemOf(cloneNote(note, { nominalDuration: time }))));
         this.didChange();
     }
 
@@ -182,12 +183,12 @@ export class JMusic implements Score {
         if (!pitch) {
             pitch = this.pitchFromInsertionPoint(ins);
         }
-        this.replaceNoteAtInsertionPoint(ins, note => note && isNote(note) ? cloneNote(note, { pitches : R.append<Pitch>(pitch as Pitch, note.pitches) }) : undefined);
+        this.replaceNoteAtInsertionPoint(ins, item => doWithNote(item, note => lensItemOf(cloneNote(note, { pitches : R.append<Pitch>(pitch as Pitch, note.pitches) }))));
         this.didChange();
     }
 
     setPitches(ins: InsertionPoint, pitches: Pitch[]): void {
-        this.replaceNoteAtInsertionPoint(ins, note => note && isNote(note) ? cloneNote(note, { pitches }) : undefined);
+        this.replaceNoteAtInsertionPoint(ins, item => doWithNote(item, note => lensItemOf(cloneNote(note, { pitches }))));
         this.didChange();
     }
 
@@ -196,7 +197,7 @@ export class JMusic implements Score {
             pitch = this.pitchFromInsertionPoint(ins);
         }
 
-        this.replaceNoteAtInsertionPoint(ins, note => note && isNote(note) ? cloneNote(note, { pitches: note.pitches.filter(p => p.diatonicNumber !== pitch?.diatonicNumber) }) : undefined);
+        this.replaceNoteAtInsertionPoint(ins, item => doWithNote(item, note => lensItemOf(cloneNote(note, { pitches: note.pitches.filter(p => p.diatonicNumber !== pitch?.diatonicNumber) }))));
         this.didChange();
     }
 
@@ -205,9 +206,9 @@ export class JMusic implements Score {
             pitch = this.pitchFromInsertionPoint(ins);
         }
 
-        this.replaceNoteAtInsertionPoint(ins, note => note && isNote(note) ? cloneNote(note, { pitches: note.pitches.map(p => {
+        this.replaceNoteAtInsertionPoint(ins, item => doWithNote(item, note => lensItemOf(cloneNote(note, { pitches: note.pitches.map(p => {
             return enharmonicChange(p, Enharmonic.BestBet);
-        }) }) : undefined);
+        }) }))));
         this.didChange();
     }
 
@@ -216,7 +217,7 @@ export class JMusic implements Score {
             pitch = this.pitchFromInsertionPoint(ins);
         }
 
-        this.replaceNoteAtInsertionPoint(ins, note => note && isNote(note) ? 
+        this.replaceNoteAtInsertionPoint(ins, item => doWithNote(item, note => lensItemOf(
             cloneNote(note, { pitches: note.pitches.map(p => {
                 if (Math.abs(p.alteration + alteration) >= 3) {
                     const pitch = p.pitchClassNumber + alteration;
@@ -226,7 +227,7 @@ export class JMusic implements Score {
                 }
                 return new Pitch(p.pitchClassNumber, p.octave, (p.alteration + alteration) as Alteration);
             }) })
-            : undefined);
+        )));
         this.didChange();
     }
 

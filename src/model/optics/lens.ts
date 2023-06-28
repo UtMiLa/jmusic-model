@@ -7,8 +7,48 @@ import { FlexibleSequence, FunctionPathElement, PathElement, VarablePathElement,
 import { AbsoluteTime, Time } from '../rationals/time';
 import { lookupVariable } from '../score/variables';
 import { ScoreDef } from '../score/score';
+import { Note } from '../notes/note';
 
+/*
 export type LensItem = MusicEvent | undefined;
+
+export const lensItemOf = (event: MusicEvent): LensItem => event;//R.of(Array);
+export const lensItemNone: LensItem = undefined;
+
+export const lensItemValue = (item: LensItem): MusicEvent => { 
+    if (item) return item; 
+    throw 'Undefined lens item'; 
+};
+
+export const lensItemHasValue = (item: LensItem): item is MusicEvent => !!item;
+export function doWithNote(lensItem: LensItem, transform: (note: Note) => LensItem): LensItem {
+    if (!lensItem || !isNote(lensItem)) return lensItem;
+    return transform(lensItem);
+}
+
+*/
+
+export type LensItem = MusicEvent[];
+
+export const lensItemOf = (event: MusicEvent): LensItem => [event];//R.of(Array);
+export const lensItemNone: LensItem = [];
+
+export const lensItemValue = (item: LensItem): MusicEvent => { 
+    if (item.length === 1) return item[0]; 
+    throw 'Undefined lens item'; 
+};
+
+export const lensItemHasValue = (item: LensItem): boolean => !!item.length;
+
+
+export function doWithNote(lensItem: LensItem, transform: (note: Note) => LensItem): LensItem {
+    if (!lensItem.length) return lensItem;
+    if (lensItem.length !== 1) return lensItem;
+    if (!isNote(lensItem[0])) return lensItem;
+    return transform(lensItem[0]);
+}
+
+
 
 export type ProjectLens = R.Lens<ProjectDef, LensItem>;
 
@@ -152,7 +192,7 @@ function sequenceElementSetter(index: NaturalLensIndexScore): (a: LensItem, s: P
 }
 
 function sequenceElementGetter(index: NaturalLensIndexScore): (s: ProjectDef) => LensItem {
-    return (pd: ProjectDef) => new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].contentDef, createRepo(pd.vars)).elements[index.element];
+    return (pd: ProjectDef) => lensItemOf(new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].contentDef, createRepo(pd.vars)).elements[index.element]);
 }
 
 function varLensByIndex(index: NaturalLensIndexVariable): ProjectLens {
@@ -182,9 +222,15 @@ function elementsToDef(elements: MusicEvent[]): FlexibleItem {
 function setModifiedVar(index: NaturalLensIndexVariable, value: FlexibleItem, pd: ProjectDef, a: LensItem): FlexibleItem {
     const seq = new FlexibleSequence(value, createRepo(pd.vars));
     return elementsToDef(
-        a ? 
+        lensItemHasValue(a) ? 
+        /*
+        R.addIndex(R.chain<MusicEvent, any, MusicEvent>)(
+                (value, i) => i === index.element ? a : [value],
+                seq.elements
+            )*/
+            
             seq.elements.map(
-                (value, i) => i === index.element ? a : value
+                (value, i) => i === index.element ? lensItemValue(a) : value
             )
             : 
             seq.elements.filter(
@@ -193,8 +239,8 @@ function setModifiedVar(index: NaturalLensIndexVariable, value: FlexibleItem, pd
     );    
 }
 
-function varGetter(index: NaturalLensIndexVariable): (s: { vars: VarDict; score: ScoreDef; }) => LensItem {
-    return (pd: ProjectDef) => new FlexibleSequence(new FlexibleSequence(lookupVariable(pd.vars, index.variable)).asObject, createRepo(pd.vars)).elements[index.element];
+function varGetter(index: NaturalLensIndexVariable): (s: ProjectDef) => LensItem {
+    return (pd: ProjectDef) => lensItemOf(new FlexibleSequence(new FlexibleSequence(lookupVariable(pd.vars, index.variable)).asObject, createRepo(pd.vars)).elements[index.element]);
 }
 
 export function projectLensByTime(index: TimeLensIndex): ProjectLens {
