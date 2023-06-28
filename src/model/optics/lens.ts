@@ -30,7 +30,7 @@ export function doWithNote(lensItem: LensItem, transform: (note: Note) => LensIt
 
 export type LensItem = MusicEvent[];
 
-export const lensItemOf = (event: MusicEvent): LensItem => [event];//R.of(Array);
+export const lensItemOf: (event: MusicEvent) => LensItem = R.of;
 export const lensItemNone: LensItem = [];
 
 export const lensItemValue = (item: LensItem): MusicEvent => { 
@@ -219,19 +219,20 @@ function elementsToDef(elements: MusicEvent[]): FlexibleItem {
     return voiceSequenceToDef(new FlexibleSequence(elements));
 }
 
+const musicEventChain = R.addIndex<MusicEvent, LensItem>(R.chain);
+
 function setModifiedVar(index: NaturalLensIndexVariable, value: FlexibleItem, pd: ProjectDef, a: LensItem): FlexibleItem {
     const seq = new FlexibleSequence(value, createRepo(pd.vars));
     return elementsToDef(
         lensItemHasValue(a) ? 
-        /*
-        R.addIndex(R.chain<MusicEvent, any, MusicEvent>)(
-                (value, i) => i === index.element ? a : [value],
+            musicEventChain(
+                (value, i) => i === index.element ? a : lensItemOf(value),
                 seq.elements
-            )*/
-            
-            seq.elements.map(
-                (value, i) => i === index.element ? lensItemValue(a) : value
             )
+            
+            /*seq.elements.map(
+                (value, i) => i === index.element ? lensItemValue(a) : value
+            )*/
             : 
             seq.elements.filter(
                 (value, i) => i !== index.element
