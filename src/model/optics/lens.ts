@@ -10,7 +10,7 @@ import { ScoreDef } from '../score/score';
 import { Note } from '../notes/note';
 
 /*
-Different takes on LensItem. First is MusicEvent | undefined and could be better implemented with the functional Maybe class.
+Different takes on the monad LensItem. First is MusicEvent | undefined and could be better implemented with the functional Maybe class.
 This can be used to replace one MusicEvent with one or zero MusicEvents.
 
 The other is MusicEvent[] which has the potential benefit of allowing to replace one MusicEvent with one or zero or several MusicEvents.
@@ -18,41 +18,39 @@ The other is MusicEvent[] which has the potential benefit of allowing to replace
 It could be nice if the LensItem type and accompanying functions were encapsulated, so other code was not able to access it internal workings.
 */
 
+
+export function doWithANote(transform: (note: Note) => LensItem): (note: MusicEvent) => LensItem {
+    return item => isNote(item) ? transform(item) : lensItemOf(item);
+}
+
 /*
 export type LensItem = MusicEvent | undefined;
 
-export const lensItemOf = (event: MusicEvent): LensItem => event;//R.of(Array);
+export const lensItemOf = (event: MusicEvent): LensItem => event;
 export const lensItemNone: LensItem = undefined;
 
-export const lensItemValue = (item: LensItem): MusicEvent => { 
-    if (item) return item; 
-    throw 'Undefined lens item'; 
-};
-
 export const lensItemHasValue = (item: LensItem): item is MusicEvent => !!item;
-export function doWithNote(lensItem: LensItem, transform: (note: Note) => LensItem): LensItem {
-    if (!lensItem || !isNote(lensItem)) return lensItem;
-    return transform(lensItem);
-}
 
+export function doWithNote(transform: (note: Note) => LensItem): (lensItem: LensItem) => LensItem {
+    return lensItem => {
+        if (!lensItem) return lensItem;
+        return doWithANote(transform)(lensItem);
+    };
+}
 */
+
 
 export type LensItem = MusicEvent[];
 
 export const lensItemOf: (event: MusicEvent) => LensItem = R.of;
 export const lensItemNone: LensItem = [];
 
-export const lensItemValue = (item: LensItem): MusicEvent => { 
-    if (item.length === 1) return item[0]; 
-    throw 'Undefined lens item'; 
-};
-
 export const lensItemHasValue = (item: LensItem): boolean => !!item.length;
 
-export function doWithNote(lensItem: LensItem, transform: (note: Note) => LensItem): LensItem {
-    if (!lensItem.length) return lensItem;
-    return R.chain(item => isNote(item) ? transform(item) : [item], lensItem);
-}
+export const doWithNote = (transform: (note: Note) => LensItem): ((x: LensItem) => LensItem) => (lensItem: LensItem) => lensItemBind(doWithANote(transform))(lensItem);
+
+export const lensItemBind = R.chain;
+
 
 // LensItem special functions to here
 

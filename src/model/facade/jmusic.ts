@@ -175,7 +175,7 @@ export class JMusic implements Score {
     }
 
     setNoteValue(ins: InsertionPoint, time: TimeSpan): void {
-        this.replaceNoteAtInsertionPoint(ins, item => doWithNote(item, note => lensItemOf(cloneNote(note, { nominalDuration: time }))));
+        this.replaceNoteAtInsertionPoint(ins, doWithNote(note => lensItemOf(cloneNote(note, { nominalDuration: time }))));
         this.didChange();
     }
 
@@ -183,12 +183,12 @@ export class JMusic implements Score {
         if (!pitch) {
             pitch = this.pitchFromInsertionPoint(ins);
         }
-        this.replaceNoteAtInsertionPoint(ins, item => doWithNote(item, note => lensItemOf(cloneNote(note, { pitches : R.append<Pitch>(pitch as Pitch, note.pitches) }))));
+        this.replaceNoteAtInsertionPoint(ins, doWithNote(note => lensItemOf(cloneNote(note, { pitches : R.append<Pitch>(pitch as Pitch, note.pitches) }))));
         this.didChange();
     }
 
     setPitches(ins: InsertionPoint, pitches: Pitch[]): void {
-        this.replaceNoteAtInsertionPoint(ins, item => doWithNote(item, note => lensItemOf(cloneNote(note, { pitches }))));
+        this.replaceNoteAtInsertionPoint(ins, doWithNote(note => lensItemOf(cloneNote(note, { pitches }))));
         this.didChange();
     }
 
@@ -197,7 +197,7 @@ export class JMusic implements Score {
             pitch = this.pitchFromInsertionPoint(ins);
         }
 
-        this.replaceNoteAtInsertionPoint(ins, item => doWithNote(item, note => lensItemOf(cloneNote(note, { pitches: note.pitches.filter(p => p.diatonicNumber !== pitch?.diatonicNumber) }))));
+        this.replaceNoteAtInsertionPoint(ins, doWithNote(note => lensItemOf(cloneNote(note, { pitches: note.pitches.filter(p => p.diatonicNumber !== pitch?.diatonicNumber) }))));
         this.didChange();
     }
 
@@ -206,7 +206,7 @@ export class JMusic implements Score {
             pitch = this.pitchFromInsertionPoint(ins);
         }
 
-        this.replaceNoteAtInsertionPoint(ins, item => doWithNote(item, note => lensItemOf(cloneNote(note, { pitches: note.pitches.map(p => {
+        this.replaceNoteAtInsertionPoint(ins, doWithNote(note => lensItemOf(cloneNote(note, { pitches: note.pitches.map(p => {
             return enharmonicChange(p, Enharmonic.BestBet);
         }) }))));
         this.didChange();
@@ -217,7 +217,7 @@ export class JMusic implements Score {
             pitch = this.pitchFromInsertionPoint(ins);
         }
 
-        this.replaceNoteAtInsertionPoint(ins, item => doWithNote(item, note => lensItemOf(
+        this.replaceNoteAtInsertionPoint(ins, doWithNote(note => lensItemOf(
             cloneNote(note, { pitches: note.pitches.map(p => {
                 if (Math.abs(p.alteration + alteration) >= 3) {
                     const pitch = p.pitchClassNumber + alteration;
