@@ -1,4 +1,4 @@
-import { LensItem, cloneNote, doWithNote, lensItemNone, lensItemOf, projectLensByTime, voiceContentToSequence, voiceSequenceToDef } from '../../model';
+import { DomainConverter, LensItem, VoiceContentDef, cloneNote, doWithNote, lensItemNone, lensItemOf, projectLensByTime, voiceContentToSequence, voiceSequenceToDef } from '../../model';
 import { FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
@@ -113,6 +113,13 @@ export class JMusic implements Score {
         ;
     }
 
+    get domainConverter(): DomainConverter<VoiceContentDef, ISequence> {
+        return {
+            fromDef: def => voiceContentToSequence(def, this.vars),
+            toDef: voiceSequenceToDef
+        };
+    }
+
     replaceNoteAtInsertionPoint(ins: InsertionPoint, noteConverter: (fromNote: LensItem) => LensItem): void {
         
         /*this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = voiceSequenceToDef(new FlexibleSequence(voiceContentToSequence(this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef).chainElements(
@@ -120,7 +127,7 @@ export class JMusic implements Score {
                 return [Time.equals(time, ins.time) && isNote(ct) ? toNote : ct];
             }
         )));*/
-        const lens = projectLensByTime({ staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
+        const lens = projectLensByTime(this.domainConverter, { staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
         this.project = R.over(lens, noteConverter, this.project);
 
     }
@@ -131,7 +138,7 @@ export class JMusic implements Score {
                 return !(Time.equals(time, ins.time) && isNote(ct));
             }
         )));*/
-        const lens = projectLensByTime({ staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
+        const lens = projectLensByTime(this.domainConverter, { staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
         this.project = R.set(lens, lensItemNone, this.project);
 
     }
