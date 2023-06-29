@@ -19,7 +19,7 @@ It could be nice if the LensItem type and accompanying functions were encapsulat
 */
 
 
-export function doWithANote(transform: (note: Note) => LensItem): (note: MusicEvent) => LensItem {
+export function transformNote(transform: (note: Note) => LensItem): (note: MusicEvent) => LensItem {
     return item => isNote(item) ? transform(item) : lensItemOf(item);
 }
 
@@ -34,7 +34,7 @@ export const lensItemHasValue = (item: LensItem): item is MusicEvent => !!item;
 export function doWithNote(transform: (note: Note) => LensItem): (lensItem: LensItem) => LensItem {
     return lensItem => {
         if (!lensItem) return lensItem;
-        return doWithANote(transform)(lensItem);
+        return transformNote(transform)(lensItem);
     };
 }
 */
@@ -47,12 +47,12 @@ export const lensItemNone: LensItem = [];
 
 export const lensItemHasValue = (item: LensItem): boolean => !!item.length;
 
-export const doWithNote = (transform: (note: Note) => LensItem): ((x: LensItem) => LensItem) => (lensItem: LensItem) => lensItemBind(doWithANote(transform))(lensItem);
+export const doWithNote = (transform: (note: Note) => LensItem): ((x: LensItem) => LensItem) => (lensItem: LensItem) => lensItemBind(transformNote(transform))(lensItem);
 
 export const lensItemBind = R.chain;
 
+// LensItem special functions ends here
 
-// LensItem special functions to here
 
 
 export type ProjectLens = R.Lens<ProjectDef, LensItem>;
@@ -98,6 +98,39 @@ function composeLenses<T1, T2, T3>(lens1: R.Lens<T1, T2>, lens2: R.Lens<T2, T3>)
         R.set(lens1)
     )/*/
 }
+
+
+
+/*
+
+When lensing functions, it should do like this:
+
+    Simple case: function is an isomorphism like transposing and augmenting.
+        Each note is transformed into one note using a note transformation, and the inverse transformation
+        exists which can transform it back to the original.
+        
+    Permutations: function is still an isomorphism, but note indexes change, like in revert.
+        The lens must modify the index in the remaining path according to index transformation.
+
+    Context-dependent transformations: The resulting note depends on more than one original notes, like in the
+        'relative' transformation. Changing one note might affect other notes.
+        If there exists an inverse transformation, this can be used to change the whole original sequence:
+        Transform seq => change note in transformed seq => Inverse transform => Set original.
+        This pattern is simple enough to also work for the previous cases, although not performant.
+    
+    Lossy transformation: No inverse transformation exists.
+        Removing notes will still allow for determining the original note, but modyfying
+        this might alter the result of other notes (e.g. transformation is leave only notes on strong beats;
+        when changing the value of a note, the rest of the sequence can be on totally different beats).
+        Other information losses can give similar problems. In some cases a qualified guess can be made 
+        (e.g. diatonic transpose - where only a few accidentals might be wrong). In most cases modifications should fail.
+
+    Merging: Merging two sequences to one can in some cases be resolved (e.g. pitches from first seq, values from 
+        second - change pitch or value can be applied to the correct sequence), but in most cases they should fail.
+
+*/
+
+
 
 function functionLens<T>(fp: FunctionPathElement<T>): R.Lens<Record<string, any>, any> {
     /*return R.lens(
