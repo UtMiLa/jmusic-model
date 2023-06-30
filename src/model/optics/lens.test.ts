@@ -27,13 +27,17 @@ import R = require('ramda');
 import { createNoteFromLilypond } from '../notes/note';
 import { ISequence, isNote } from '../score/sequence';
 import { ProjectDef, VariableDef } from '../score/types';
-import { lensFromLensDef, lensItemOf, projectLensByIndex, projectLensByTime } from './lens';
+import { DomainConverter, lensFromLensDef, lensItemOf, projectLensByIndex, projectLensByTime } from './lens';
 import { FlexibleSequence } from '../score/flexible-sequence';
 import { createRepo } from '../score/variables';
 
 describe('Lenses', () => {
 
     describe('Generic lenses', () => {
+        const domainConverter: DomainConverter<any, any> = {
+            fromDef: (x) => x,
+            toDef: x => x
+        };
         it('should concat lenses', () => {
             const obj = {
                 alfa: [
@@ -43,7 +47,7 @@ describe('Lenses', () => {
 
             const lensDef = ['alfa', 0, 'beta', 'gamma'];
 
-            const lens = lensFromLensDef(lensDef);
+            const lens = lensFromLensDef(domainConverter, lensDef);
 
             //R.lensPath(lensDef)
             const res = R.over(lens, (x: any) => x + ' world', obj);
@@ -73,7 +77,7 @@ describe('Lenses', () => {
                 'inverse': (s: string) => s.toLocaleLowerCase() 
             }, 0, 'beta', 'gamma'];
 
-            const lens = lensFromLensDef(lensDef);
+            const lens = lensFromLensDef(domainConverter, lensDef);
 
             const res = R.over(lens, (x: any) => x + ' world', obj);
 
@@ -102,7 +106,7 @@ describe('Lenses', () => {
 
             const lensDef = ['alfa', 0, 'beta', { 'variable': 'demo' }, 0, 'delta'];
 
-            const lens = lensFromLensDef(lensDef);
+            const lens = lensFromLensDef(domainConverter, lensDef);
 
             const res = R.over(lens, (x: any) => x + ' world', obj);
 
@@ -148,11 +152,14 @@ describe('Lenses', () => {
         });
 
         it('should read an element at an index lens', () => {
-            const lens = projectLensByIndex({
-                staff: 0,
-                voice: 1,
-                element: 3
-            });
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 1,
+                    element: 3
+                }
+            );
 
             const res = R.view(lens, projectDef);
 
@@ -160,11 +167,13 @@ describe('Lenses', () => {
         });
 
         it('should write an element at an index lens', () => {
-            const lens = projectLensByIndex({
-                staff: 0,
-                voice: 1,
-                element: 3
-            });
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 1,
+                    element: 3
+                });
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef);
 
@@ -172,11 +181,13 @@ describe('Lenses', () => {
         });
 
         it('should read a nested element at an index lens', () => {
-            const lens = projectLensByIndex({
-                staff: 1,
-                voice: 0,
-                element: 2
-            });
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    staff: 1,
+                    voice: 0,
+                    element: 2
+                });
 
             const res = R.view(lens, projectDef);
 
@@ -184,11 +195,13 @@ describe('Lenses', () => {
         });
 
         it('should write a nested element at an index lens', () => {
-            const lens = projectLensByIndex({
-                staff: 1,
-                voice: 0,
-                element: 1
-            });
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    staff: 1,
+                    voice: 0,
+                    element: 1
+                });
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('des,4')), projectDef);
 
@@ -196,10 +209,12 @@ describe('Lenses', () => {
         });
 
         it('should read an element from a variable', () => {
-            const lens = projectLensByIndex({
-                variable: 'theVar',
-                element: 2
-            });
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    variable: 'theVar',
+                    element: 2
+                });
 
             const res = R.view(lens, projectDef);
 
@@ -207,10 +222,12 @@ describe('Lenses', () => {
         });
 
         it('should write an element at a variable lens', () => {
-            const lens = projectLensByIndex({
-                variable: 'theVar',
-                element: 2
-            });
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    variable: 'theVar',
+                    element: 2
+                });
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef);
 
@@ -220,11 +237,13 @@ describe('Lenses', () => {
         });
 
         it('should write an element to a variable using an index lens', () => {
-            const lens = projectLensByIndex({
-                staff: 0,
-                voice: 1,
-                element: 5
-            });
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 1,
+                    element: 5
+                });
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef);
 
@@ -236,11 +255,13 @@ describe('Lenses', () => {
 
         
         it('should read an element from a function', () => {
-            const lens = projectLensByIndex({
-                staff: 0,
-                voice: 2,
-                element: 1
-            });
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 2,
+                    element: 1
+                });
 
             const res = R.view(lens, projectDef);
 
@@ -265,11 +286,13 @@ describe('Lenses', () => {
         });
 
         it('should write an element at a function lens', () => {
-            const lens = projectLensByIndex({
-                staff: 0,
-                voice: 2,
-                element: 3
-            });
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 2,
+                    element: 3
+                });
 
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef as any);
@@ -323,12 +346,14 @@ describe('Lenses', () => {
         });
 
         it('should read an element at a time lens', () => {
-            const lens = projectLensByTime({
-                staff: 0,
-                voice: 1,
-                time: Time.newAbsolute(3, 4),
-                eventFilter: isNote
-            });
+            const lens = projectLensByTime(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 1,
+                    time: Time.newAbsolute(3, 4),
+                    eventFilter: isNote
+                });
 
             const res = R.view(lens, projectDef);
 
@@ -336,12 +361,14 @@ describe('Lenses', () => {
         });
 
         it('should write an element at a time lens', () => {
-            const lens = projectLensByTime({
-                staff: 0,
-                voice: 0,
-                time: Time.newAbsolute(3, 4),
-                eventFilter: isNote
-            });
+            const lens = projectLensByTime(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 0,
+                    time: Time.newAbsolute(3, 4),
+                    eventFilter: isNote
+                });
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef);
 
@@ -350,12 +377,14 @@ describe('Lenses', () => {
 
         
         it('should read a nested element at a time lens', () => {
-            const lens = projectLensByTime({
-                staff: 1,
-                voice: 0,
-                time: Time.newAbsolute(1, 2),
-                eventFilter: isNote
-            });
+            const lens = projectLensByTime(
+                sc.domainConverter,
+                {
+                    staff: 1,
+                    voice: 0,
+                    time: Time.newAbsolute(1, 2),
+                    eventFilter: isNote
+                });
 
             const res = R.view(lens, projectDef);
 
@@ -363,12 +392,14 @@ describe('Lenses', () => {
         });
 
         it('should write a nested element at a time lens', () => {
-            const lens = projectLensByTime({
-                staff: 1,
-                voice: 0,
-                time: Time.newAbsolute(1, 4),
-                eventFilter: isNote
-            });
+            const lens = projectLensByTime(
+                sc.domainConverter,
+                {
+                    staff: 1,
+                    voice: 0,
+                    time: Time.newAbsolute(1, 4),
+                    eventFilter: isNote
+                });
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis,4')), projectDef);
 
@@ -376,12 +407,14 @@ describe('Lenses', () => {
         });
 
         it('should read an element from a variable using a time lens', () => {
-            const lens = projectLensByTime({
-                staff: 0,
-                voice: 1,
-                time: Time.newAbsolute(5, 4),
-                eventFilter: isNote
-            });
+            const lens = projectLensByTime(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 1,
+                    time: Time.newAbsolute(5, 4),
+                    eventFilter: isNote
+                });
 
             const res = R.view(lens, projectDef);
 
@@ -390,12 +423,14 @@ describe('Lenses', () => {
 
 
         it('should write an element to a variable using a time lens', () => {
-            const lens = projectLensByTime({
-                staff: 0,
-                voice: 1,
-                time: Time.newAbsolute(5, 4),
-                eventFilter: isNote
-            });
+            const lens = projectLensByTime(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 1,
+                    time: Time.newAbsolute(5, 4),
+                    eventFilter: isNote
+                });
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef);
 
@@ -434,11 +469,13 @@ describe('Lenses', () => {
         });
 
         it('should get a note from a variable', () => {
-            const lens = projectLensByIndex({
-                staff: 0,
-                voice: 0,
-                element: 3
-            });
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 0,
+                    element: 3
+                });
 
             const res = R.view(lens, projectDef);
 
@@ -446,11 +483,13 @@ describe('Lenses', () => {
         });
 
         it('should write an element to a variable', () => {
-            const lens = projectLensByIndex({
-                staff: 0,
-                voice: 0,
-                element: 3
-            });
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 0,
+                    element: 3
+                });
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis16')), projectDef);
 
@@ -458,11 +497,13 @@ describe('Lenses', () => {
         });
 
         it('should get a note from a nested variable', () => {
-            const lens = projectLensByIndex({
-                staff: 0,
-                voice: 1,
-                element: 7
-            });
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 1,
+                    element: 7
+                });
 
             const res = R.view(lens, projectDef);
 
@@ -471,11 +512,13 @@ describe('Lenses', () => {
 
         
         it('should write an element to a nested variable', () => {
-            const lens = projectLensByIndex({
-                staff: 0,
-                voice: 1,
-                element: 7
-            });
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 1,
+                    element: 7
+                });
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis16')), projectDef);
 

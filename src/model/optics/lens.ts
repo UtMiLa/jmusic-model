@@ -54,7 +54,10 @@ export const lensItemBind = R.chain;
 
 // LensItem special functions ends here
 
-
+export interface DomainConverter<Def, Model> {
+    fromDef(def: Def): Model;
+    toDef(model: Model): Def;
+}
 
 export type ProjectLens = R.Lens<ProjectDef, LensItem>;
 
@@ -133,12 +136,12 @@ When lensing functions, it should do like this:
 
 
 
-function functionLens<T>(fp: FunctionPathElement<T>): R.Lens<SeqFunction, FlexibleItem> {
+function functionLens<T>(domainConverter: DomainConverter<any, any>): (fp: FunctionPathElement<T>) => R.Lens<Record<string, any>, any> {
     /*return R.lens(
         obj => obj, //.args.map(fp.function),
         (value, obj) => R.assoc('args', value, obj)
     );*/
-    return R.lens<SeqFunction, FlexibleItem>(
+    return (fp: FunctionPathElement<T>) => R.lens(
         obj => R.prop('args', obj), //.args.map(fp.function),
         (value, obj) => R.assoc('args', value, obj)
     );
@@ -149,21 +152,21 @@ function variableLens<T>(vp: VarablePathElement): R.Lens<Record<string, any>, an
     return R.lensPath(['vars', vp.variable]);
 }
 
-function pathElementToLens<T>(pathElm: PathElement<T>) {
+function pathElementToLens<T>(domainConverter: DomainConverter<any, any>, pathElm: PathElement<T>) {
     return R.cond<PathElement<T>, string, number, FunctionPathElement<T>, VarablePathElement, R.Lens<Record<string, any>, any>>([
         [R.is(String), R.lensProp],
         [R.is(Number), R.lensIndex],
-        [isFunctionPathElement<T>, functionLens as any],
-        [isVariablePathElement<T>, variableLens]
+        [isFunctionPathElement<T>, functionLens(domainConverter)],
+        [isVariablePathElement<T>, variableLens]//R.lensPath(['vars', v.variable])]
     ])(pathElm);
 }
 
-export function lensFromLensDef<T, X, Y>(lensDef: PathElement<T>[]): R.Lens<Record<string, X>, Y> {
+export function lensFromLensDef<T, X, Y>(domainConverter: DomainConverter<any, any>, lensDef: PathElement<T>[]): R.Lens<Record<string, X>, Y> {
     return R.reduce<PathElement<T>, R.Lens<Record<string, any>, any>>(
         (lens1: R.Lens<Record<string, any>, any>, pathElm: PathElement<T>) => R.ifElse(
             isVariablePathElement,
-            pathElementToLens,
-            (pathElm) => composeLenses(lens1, pathElementToLens(pathElm))
+            pathElm => pathElementToLens(domainConverter, pathElm),
+            (pathElm) => composeLenses(lens1, pathElementToLens(domainConverter, pathElm))
         )(pathElm), 
 
         R.lens(R.identity, R.identity), 
@@ -189,21 +192,21 @@ function timedToIndex(pd: ProjectDef, timed: TimeLensIndex): NaturalLensIndex {
 }
 
 
-export function projectLensByIndex(index: NaturalLensIndex): ProjectLens {
+export function projectLensByIndex(domainConverter: DomainConverter<any, any>, index: NaturalLensIndex): ProjectLens {
 
     if (isVarIndex(index)) {
         return varLensByIndex(index);
     } else {
-        return voiceLensByIndex(index);
+        return voiceLensByIndex(domainConverter, index);
     }
 
 }
 
 
-function voiceLensByIndex(index: NaturalLensIndexScore): ProjectLens {
+function voiceLensByIndex(domainConverter: DomainConverter<any, any>, index: NaturalLensIndexScore): ProjectLens {
     return R.lens(
         sequenceElementGetter(index),
-        sequenceElementSetter(index)
+        sequenceElementSetter(domainConverter, index)
     );
 }
 
@@ -216,7 +219,7 @@ function isVarPath<T>(path: PathElement<T>[]): boolean
 
 
 
-function sequenceElementSetter(index: NaturalLensIndexScore): (a: LensItem, s: ProjectDef) => ProjectDef {
+function sequenceElementSetter(domainConverter: DomainConverter<any, any>, index: NaturalLensIndexScore): (a: LensItem, s: ProjectDef) => ProjectDef {
     return (a: LensItem, pd: ProjectDef) => {
         const seq = new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].contentDef, createRepo(pd.vars));
         const path = seq.indexToPath(index.element);
@@ -225,7 +228,7 @@ function sequenceElementSetter(index: NaturalLensIndexScore): (a: LensItem, s: P
 
         const value: FlexibleItem = a ? simplifyDef(a) : [];
 
-        return R.set(lensFromLensDef(['score', 'staves', index.staff, 'voices', index.voice, 'contentDef', ...path]) as unknown as R.Lens<ProjectDef, FlexibleItem>, value, pd);
+        return R.set(lensFromLensDef(domainConverter, ['score', 'staves', index.staff, 'voices', index.voice, 'contentDef', ...path]) as unknown as R.Lens<ProjectDef, FlexibleItem>, value, pd);
 
     };
 }
@@ -283,12 +286,12 @@ function varGetter(index: NaturalLensIndexVariable): (s: ProjectDef) => LensItem
     return (pd: ProjectDef) => lensItemOf(new FlexibleSequence(new FlexibleSequence(lookupVariable(pd.vars, index.variable)).asObject, createRepo(pd.vars)).elements[index.element]);
 }
 
-export function projectLensByTime(index: TimeLensIndex): ProjectLens {
+export function projectLensByTime(domainConverter: DomainConverter<any, any>, index: TimeLensIndex): ProjectLens {
     // get seq
     // find index from time
     // call projectLensByIndex
     return R.lens(
-        (pd: ProjectDef) => R.view(projectLensByIndex(timedToIndex(pd, index)), pd),
-        (a: LensItem, pd: ProjectDef) => R.set(projectLensByIndex(timedToIndex(pd, index)), a, pd)
+        (pd: ProjectDef) => R.view(projectLensByIndex(domainConverter, timedToIndex(pd, index)), pd),
+        (a: LensItem, pd: ProjectDef) => R.set(projectLensByIndex(domainConverter, timedToIndex(pd, index)), a, pd)
     ) ;
 }
