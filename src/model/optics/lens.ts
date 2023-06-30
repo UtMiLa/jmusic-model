@@ -142,8 +142,15 @@ function functionLens<T>(domainConverter: DomainConverter<any, any>): (fp: Funct
         (value, obj) => R.assoc('args', value, obj)
     );*/
     return (fp: FunctionPathElement<T>) => R.lens(
-        obj => R.prop('args', obj), //.args.map(fp.function),
-        (value, obj) => R.assoc('args', value, obj)
+        //obj => domainConverter.toDef(fp.function(domainConverter.fromDef(R.prop('args', obj)))),
+        obj => { 
+            const a = R.prop('args', obj);
+            const b = domainConverter.fromDef(a);
+            const c = fp.function(b);
+            const d = domainConverter.toDef(c);
+            return d;
+        },
+        (value, obj) => R.assoc('args', domainConverter.toDef(fp.inverse(domainConverter.fromDef(value))), obj)
     );
     //return R.lensProp('args');
 }
@@ -153,7 +160,7 @@ function variableLens<T>(vp: VarablePathElement): R.Lens<Record<string, any>, an
 }
 
 function pathElementToLens<T>(domainConverter: DomainConverter<any, any>, pathElm: PathElement<T>) {
-    return R.cond<PathElement<T>, string, number, FunctionPathElement<T>, VarablePathElement, R.Lens<Record<string, any>, any>>([
+    return R.cond<PathElement<T>, string, number, FunctionPathElement<T[]>, VarablePathElement, R.Lens<Record<string, any>, any>>([
         [R.is(String), R.lensProp],
         [R.is(Number), R.lensIndex],
         [isFunctionPathElement<T>, functionLens(domainConverter)],

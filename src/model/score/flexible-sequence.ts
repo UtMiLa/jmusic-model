@@ -1,7 +1,7 @@
 import { createRepo, isVariableRef, valueOf, VariableRepository } from './variables';
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
-import { createFunction } from './functions';
+import { createFunction, createInverseFunction } from './functions';
 import { BaseSequence, getDuration, isMusicEvent, isNote, MusicEvent, parseLilyElement, SequenceDef, SimpleSequence, splitByNotes } from './sequence';
 
 // Fix for types for R.chain
@@ -12,13 +12,16 @@ type addIndexFix<T, U> = (
     fn: (f: (item: T) => U, list: readonly T[]) => U,
 ) => _.F.Curry<(a: (item: T, idx: number, list: T[]) => U, b: readonly T[]) => U>;
 
-export interface FunctionPathElement<T> { function: (item: T) => T }
+export interface FunctionPathElement<T> { 
+    function: (item: T) => T;
+    inverse: (item: T) => T;
+}
 export interface VarablePathElement { variable: string }
 
-export type PathElement<T> = string | number | FunctionPathElement<T> | VarablePathElement;
+export type PathElement<T> = string | number | FunctionPathElement<T[]> | VarablePathElement;
 
-export function isFunctionPathElement<T>(test: PathElement<T>): test is FunctionPathElement<T> {
-    return !!test && (typeof (test as FunctionPathElement<T>).function) === 'function';
+export function isFunctionPathElement<T>(test: PathElement<T>): test is FunctionPathElement<T[]> {
+    return !!test && (typeof (test as FunctionPathElement<T[]>).function) === 'function';
 }
 
 export function isVarablePathElement<T>(test: PathElement<T>): test is VarablePathElement {
@@ -108,6 +111,8 @@ export class FlexibleSequence extends BaseSequence {
 
     private _def!: FlexibleItem[];
     public get def(): FlexibleItem[] {
+        if (!R.is(Array, this._def))
+            return simplifyDef(this._def) as any;
         return this._def.map(simplifyDef);
     }
     public set def(init: FlexibleItem[]) {
@@ -162,7 +167,15 @@ export class FlexibleSequence extends BaseSequence {
                 const no = splitByNotes(item).length;
                 return R.range(0, no).map(n => [n]);
             } else if (isSeqFunction(item)) {
-                return createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo)).map((a, i) => [{ function: R.identity }, i, 0]);
+                return createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))
+                    .map((a, i) => [
+                        { 
+                            function: createFunction(item.function, item.extraArgs), 
+                            inverse: createInverseFunction(item.function, item.extraArgs)
+                        } as FunctionPathElement<MusicEvent[]>, 
+                        i, 
+                        0
+                    ]);
             } else if (isVariableRef(item)) {
                 const varSeq = valueOf(this.repo, item.variable);
                 return varSeq.elements.map((e, i) => [{ variable: item.variable }, ...varSeq.indexToPath(i)]); //{ variable: item.variable }

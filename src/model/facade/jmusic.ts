@@ -113,10 +113,10 @@ export class JMusic implements Score {
         ;
     }
 
-    get domainConverter(): DomainConverter<VoiceContentDef, ISequence> {
+    get domainConverter(): DomainConverter<VoiceContentDef, MusicEvent[]> {
         return {
-            fromDef: def => voiceContentToSequence(def, this.vars),
-            toDef: voiceSequenceToDef
+            fromDef: def => voiceContentToSequence(def, this.vars).elements,
+            toDef: events => voiceSequenceToDef(new FlexibleSequence(events, this.vars))
         };
     }
 

@@ -66,27 +66,29 @@ describe('Lenses', () => {
                     { 
                         function: 'Test',
                         args: [
-                            {beta: { gamma: 'hello' }}
+                            'heLLO'
                         ]                        
                     }
                 ]
             };
 
             const lensDef = ['alfa', 0, { 
-                'function': (s: string) => s.toLocaleUpperCase(),
-                'inverse': (s: string) => s.toLocaleLowerCase() 
-            }, 0, 'beta', 'gamma'];
+                'function': (sl: string[]) => 
+                    sl.map(s => s.toLocaleUpperCase()),
+                'inverse': (sl: string[]) => 
+                    sl.map(s => s.toLocaleLowerCase())
+            }, 0];
 
             const lens = lensFromLensDef(domainConverter, lensDef);
 
-            const res = R.over(lens, (x: any) => x + ' world', obj);
+            const res = R.over(lens, (x: any) => x + ' wOrld', obj);
 
             expect(res).to.deep.eq({
                 alfa: [
                     { 
                         function: 'Test',
                         args: [
-                            {beta: { gamma: 'hello world' }}
+                            'hello world'
                         ]                        
                     }
                 ]
@@ -273,19 +275,19 @@ describe('Lenses', () => {
 
 
             const seq = new FlexibleSequence(projectDef.score.staves[0].voices[2].contentDef, createRepo(projectDef.vars));
-            const path = seq.indexToPath(1);
+            const path = seq.indexToPath(3);
             expect(path).to.deep.equal(
                 [
-                    0,
+                    1,
                     { 
-                        'function': R.identity
-                        //'inverse': (s: string) => s.toLocaleLowerCase() 
+                        'function': R.identity,
+                        'inverse': R.identity
                     }, 1, 0
                 ]
             );
         });
 
-        it('should write an element at a function lens', () => {
+        it('should write an element at an identity function lens', () => {
             const lens = projectLensByIndex(
                 sc.domainConverter,
                 {
@@ -302,17 +304,30 @@ describe('Lenses', () => {
                 args: ['c2', 'fis4']
             });
 
+        });
 
-            /*
-                        
+        
+        it('should write an element at a transpose function lens', () => {
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 2,
+                    element: 1
+                });
+
+
+            const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef as any);
+
             expect(res.score.staves[0].voices[2].contentDef[0]).to.deep.eq({
                 function: 'Transpose',
-                args: ['c2', 'fis4'],
+                args: ['c2', 'dis4'],
                 extraArgs: [{
                     'alteration': -1,
                     'interval': 2
                 }]
-            });*/
+            });
+
         });
 
     });

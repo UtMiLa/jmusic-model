@@ -1,6 +1,6 @@
 import R = require('ramda');
 import { Note, setGrace, setPitches, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
-import { addInterval, Interval } from '../pitches/intervals';
+import { addInterval, Interval, invertInterval } from '../pitches/intervals';
 import { Pitch } from '../pitches/pitch';
 import { RationalDef } from '../rationals/rational';
 import { isNote, MusicEvent } from './sequence';
@@ -100,7 +100,9 @@ const setTupletNotes = (fraction: RationalDef, notes: MusicEvent[]) => {
 const transposePitch = R.curry((interval: Interval, pitch: Pitch) => addInterval(pitch, interval));
 const transposeNote = R.curry((interval: Interval, note: Note) => ({...note, pitches: note.pitches.map(pitch => transposePitch(interval, pitch))}));
 
-const transpose = R.curry((interval, sequence: MusicEvent[]) => R.map(R.when(isNote, transposeNote(interval)))(sequence));
+const transpose = R.curry((interval, sequence: MusicEvent[]) => 
+    R.map(R.when(isNote, transposeNote(interval)))(sequence));
+const inverseTranspose = R.curry((interval, sequence: MusicEvent[]) => transpose(invertInterval(interval), sequence));
 
 const addLyrics = R.curry((lyrics: string, sequence: MusicEvent[]) => mapLyricsToMusic(lyrics, sequence));
 
@@ -150,8 +152,32 @@ const internal_functions: {[key: string]: MusicFunc | CurryMusicFunc } = {
     'AddLyrics': addLyrics as CurryMusicFunc
 };
 
+const throwFunction = () => { throw 'Cannot invert function'; };
+
+const internal_inverse_functions: {[key: string]: MusicFunc | CurryMusicFunc } = {
+    'Identity': R.identity,
+    'Relative': throwFunction,
+    'Reverse': R.pipe(R.reverse<MusicEvent>, R.map(reverseTuplets)),
+    'Repeat': throwFunction,
+    'Grace': throwFunction,
+    'Tuplet': throwFunction,
+    'Transpose': inverseTranspose as CurryMusicFunc,
+    'ModalTranspose': throwFunction,
+    'AddLyrics': throwFunction
+};
+
 export function createFunction(funcDef: FuncDef, extraArgs?: unknown[]): (elements: MusicEvent[]) => MusicEvent[] {
     const func = internal_functions[funcDef];
+    if (extraArgs && extraArgs.length) {
+        const res = (func as CurryMusicFunc)(...extraArgs) as MusicFunc;
+        //console.log(res([]));        
+        return res;
+    }
+    return func as MusicFunc;
+}
+
+export function createInverseFunction(funcDef: FuncDef, extraArgs?: unknown[]): (elements: MusicEvent[]) => MusicEvent[] {
+    const func = internal_inverse_functions[funcDef];
     if (extraArgs && extraArgs.length) {
         const res = (func as CurryMusicFunc)(...extraArgs) as MusicFunc;
         //console.log(res([]));        

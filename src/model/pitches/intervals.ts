@@ -25,6 +25,10 @@ export function diffPitch(pitch1: Pitch, pitch2: Pitch): Interval {
     };
 }
 
+export function invertInterval(interval: Interval): Interval {
+    return { interval: -interval.interval, alteration: -interval.alteration };
+}
+
 export function addInterval(pitch: Pitch, interval: Interval): Pitch {
     const pc = pitch.pitchClass;
 
