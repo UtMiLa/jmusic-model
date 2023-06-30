@@ -1,13 +1,14 @@
 import { createRepo } from './../score/variables';
 import { ISequence, MusicEvent, isNote } from '../score/sequence';
 import R = require('ramda');
-import { FlexibleItem, ProjectDef, VarDict, VariableDef } from '../score/types';
-import { voiceSequenceToDef } from '../score/voice';
+import { FlexibleItem, FuncDef, ProjectDef, SeqFunction, VarDict, VariableDef } from '../score/types';
+import { voiceDefToVoice, voiceSequenceToDef } from '../score/voice';
 import { FlexibleSequence, FunctionPathElement, PathElement, VarablePathElement, isFunctionPathElement, isVarablePathElement as isVariablePathElement, simplifyDef } from '../score/flexible-sequence';
 import { AbsoluteTime, Time } from '../rationals/time';
 import { lookupVariable } from '../score/variables';
 import { ScoreDef } from '../score/score';
 import { Note } from '../notes/note';
+import { Func } from 'mocha';
 
 /*
 Different takes on the monad LensItem. First is MusicEvent | undefined and could be better implemented with the functional Maybe class.
@@ -132,12 +133,12 @@ When lensing functions, it should do like this:
 
 
 
-function functionLens<T>(fp: FunctionPathElement<T>): R.Lens<Record<string, any>, any> {
+function functionLens<T>(fp: FunctionPathElement<T>): R.Lens<SeqFunction, FlexibleItem> {
     /*return R.lens(
         obj => obj, //.args.map(fp.function),
         (value, obj) => R.assoc('args', value, obj)
     );*/
-    return R.lens(
+    return R.lens<SeqFunction, FlexibleItem>(
         obj => R.prop('args', obj), //.args.map(fp.function),
         (value, obj) => R.assoc('args', value, obj)
     );
@@ -152,8 +153,8 @@ function pathElementToLens<T>(pathElm: PathElement<T>) {
     return R.cond<PathElement<T>, string, number, FunctionPathElement<T>, VarablePathElement, R.Lens<Record<string, any>, any>>([
         [R.is(String), R.lensProp],
         [R.is(Number), R.lensIndex],
-        [isFunctionPathElement<T>, functionLens],
-        [isVariablePathElement<T>, variableLens]//R.lensPath(['vars', v.variable])]
+        [isFunctionPathElement<T>, functionLens as any],
+        [isVariablePathElement<T>, variableLens]
     ])(pathElm);
 }
 
