@@ -216,7 +216,7 @@ function doConvertClef(clef: ClefViewModel, xPos: number, settings: Metrics): Ph
         case ClefType.C: glyph = 'clefs.C'; break;
         case ClefType.F: glyph = 'clefs.F'; break;
         case ClefType.G: glyph = 'clefs.G'; break;
-        case ClefType.G8: glyph = 'clefs.G'; break;
+        //case ClefType.G8: glyph = 'clefs.G'; break;
     }
 
     if (clef.change) {
