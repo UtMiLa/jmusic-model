@@ -134,6 +134,13 @@ describe('Clef', () => {
         //expect(parseLilyClef('\\clef subbass')).to.deep.eq(new Clef({ clefType: ClefType.F, line: 4 }));
     });
 
+    it('should parse clefs with transposition', () => {
+        expect(parseLilyClef('\\clef G_8')).to.deep.eq(new Clef({ clefType: ClefType.G, line: -2, transpose: -7 }));
+        expect(parseLilyClef('\\clef C_15')).to.deep.eq(new Clef({ clefType: ClefType.C, line: 0, transpose: -14 }));
+        expect(parseLilyClef('\\clef G^8')).to.deep.eq(new Clef({ clefType: ClefType.G, line: -2, transpose: 7 }));
+        expect(parseLilyClef('\\clef F^15')).to.deep.eq(new Clef({ clefType: ClefType.F, line: 2, transpose: 14 }));
+    });
+
     it('should compare two clefs', () => {
         const clef1 = new Clef({ clefType: ClefType.F, line: -2 });
         const clef2 = new Clef({ clefType: ClefType.F, line: 2 });

@@ -38,7 +38,8 @@ describe('Staff view model', () => {
                     clef:{ 
                         position: 1,
                         clefType: ClefType.G,
-                        line: -2
+                        line: -2, 
+                        transposition: 0
                     },
                     key: { 
                         keyPositions: [ {
@@ -78,7 +79,8 @@ describe('Staff view model', () => {
                     clef:    { 
                         position: 1,
                         clefType: ClefType.G,
-                        line: -2
+                        line: -2, 
+                        transposition: 0
                     },
                     key: { keyPositions: [ {
                         'alteration': -1,
@@ -155,7 +157,8 @@ describe('Staff view model', () => {
                     clef:    { 
                         position: 1,
                         clefType: ClefType.G,
-                        line: -2
+                        line: -2, 
+                        transposition: 0
                     },
                     key:    { 
                         keyPositions: []
@@ -223,7 +226,8 @@ describe('Staff view model', () => {
                     clef:    { 
                         position: 1,
                         clefType: ClefType.G,
-                        line: -2
+                        line: -2, 
+                        transposition: 0
                     },
                     key:    { 
                         keyPositions: []

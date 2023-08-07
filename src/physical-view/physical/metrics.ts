@@ -50,6 +50,12 @@ export interface Metrics {
     lyricsFontSize: number;
 
     dynamicY: number;
+
+    clefTransposeScale: number;
+    clefTransposeXOffset: number;
+    clefTransposeXSpacing: number;
+    clefTransposeYOffsetUnder: number;
+    clefTransposeYOffsetOver: number;
 }
 
 export class StandardMetrics implements Metrics {
@@ -109,4 +115,10 @@ export class StandardMetrics implements Metrics {
     lyricsFontSize = 11;
 
     dynamicY = -20;
+    
+    clefTransposeScale = 0.6;
+    clefTransposeXOffset = 3;
+    clefTransposeXSpacing = 2;
+    clefTransposeYOffsetUnder = -6;
+    clefTransposeYOffsetOver = 6;
 }

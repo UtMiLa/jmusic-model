@@ -17,7 +17,7 @@ import { StaffDef } from '../../model';
 import { Key } from '../../model';
 import { calcBeamGroups } from '../../model';
 import { noteToView } from './convert-note';
-import { TimeSlotViewModel, ScoreViewModel, StaffViewModel, AccidentalViewModel, TieViewModel, BarType } from './score-view-model';
+import { TimeSlotViewModel, ScoreViewModel, StaffViewModel, AccidentalViewModel, TieViewModel, BarType, ClefViewModel } from './score-view-model';
 import { createStateMap } from './state-map';
 import { repeatsToView } from './convert-repeat';
 import { LongDecoToView } from './convert-decoration';
@@ -68,7 +68,8 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
             clef: { 
                 position: 1,
                 clefType: def.initialClef.clefType,
-                line: def.initialClef.line
+                line: def.initialClef.line,
+                transposition: def.initialClef.transpose ?? 0
             },
             
             key: keyToView(new Key(def.initialKey), new Clef(def.initialClef))           
@@ -95,11 +96,12 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
         }
         if (value.clef) {
             currentClef = value.clef;
-            ts.clef =  { 
+            ts.clef = { 
                 position: 1,
                 clefType: value.clef.def.clefType,
                 change: true,
-                line: value.clef.def.line
+                line: value.clef.def.line,
+                transposition: value.clef.def.transpose ?? 0
             };
         }
     });
@@ -144,17 +146,22 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
 
     if ((restrictions.startTime.numerator || restrictions.endTime.denominator) && res.timeSlots[0]) {
         res.timeSlots[0].key = keyToView(initialStates.key, initialStates.clef);
-        res.timeSlots[0].clef = {
-            position: 1,
-            clefType: initialStates.clef.def.clefType,
-            line: initialStates.clef.def.line
-        };
+        res.timeSlots[0].clef = clefToView(initialStates.clef);
         //res.timeSlots[0].meter = initialStates.meter ? meterToView(initialStates.meter) : undefined;
     }
 
     return res;
 }
 
+
+function clefToView(clef: Clef): ClefViewModel {
+    return {
+        position: 1,
+        clefType: clef.def.clefType,
+        line: clef.def.line,
+        transposition: clef.def.transpose ?? 0
+    };
+}
 
 function createViewModelsForVoice(def: Staff, staffNo: number, meter: Meter | undefined, meterMap: MeterMap, clef: Clef, timeSlots: TimeSlotViewModel[], stateMap: IndexedMap<StateChange, ScopedTimeKey>) {
     let staffEndTime = Time.newAbsolute(0, 1);

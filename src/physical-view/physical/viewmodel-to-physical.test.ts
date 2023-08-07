@@ -257,7 +257,8 @@ describe('Physical model', () => {
                             clef:    { 
                                 position: 1,
                                 clefType: ClefType.G,
-                                line: -2
+                                line: -2,
+                                transposition: 0
                             },      
                             notes: [                
 
@@ -290,7 +291,8 @@ describe('Physical model', () => {
                             clef:    { 
                                 position: 1,
                                 clefType: ClefType.C,
-                                line: -3
+                                line: -3,
+                                transposition: 0
                             },             
                             notes: [                
                    
@@ -333,7 +335,8 @@ describe('Physical model', () => {
                             clef: { 
                                 position: 1,
                                 clefType: ClefType.G,
-                                line: -2
+                                line: -2,
+                                transposition: 0
                             },       
                             notes: [                
 
@@ -431,7 +434,8 @@ describe('Physical model', () => {
                             clef: { 
                                 position: 1,
                                 clefType: ClefType.G,
-                                line: -2
+                                line: -2,
+                                transposition: 0
                             },
                             beamings: [{
                                 beams: [{ fromIdx: 0, toIndex: 1, level: 0 }],
@@ -514,7 +518,8 @@ describe('Physical model', () => {
                             clef: { 
                                 position: 1,
                                 clefType: ClefType.G,
-                                line: -2
+                                line: -2,
+                                transposition: 0
                             },
                             beamings: [{
                                 beams: [{ fromIdx: 0, toIndex: 1, level: 0 }],
@@ -666,7 +671,8 @@ describe('Physical model', () => {
                             clef:          { 
                                 position: 1,
                                 clefType: ClefType.G,
-                                line: -2
+                                line: -2,
+                                transposition: 0
                             },  
                             notes: [                
 
@@ -750,7 +756,8 @@ describe('Physical model', () => {
                             clef:          { 
                                 position: 1,
                                 clefType: ClefType.G,
-                                line: -2
+                                line: -2,
+                                transposition: 0
                             },  
                             notes: [                
 
@@ -804,7 +811,8 @@ describe('Physical model', () => {
                             clef:    { 
                                 position: 1,
                                 clefType: ClefType.F,
-                                line: 2
+                                line: 2,
+                                transposition: 0
                             },        
                             notes: [                
 
@@ -892,7 +900,8 @@ describe('Physical model', () => {
                             clef:    { 
                                 position: 1,
                                 clefType: ClefType.F,
-                                line: 2
+                                line: 2,
+                                transposition: 0
                             },        
                             notes: [                
 
@@ -969,7 +978,8 @@ describe('Physical model', () => {
                             clef:    { 
                                 position: 1,
                                 clefType: ClefType.G,
-                                line: -2
+                                line: -2,
+                                transposition: 0
                             },
                             meter: {
                                 meterText: ['5', '4']
@@ -1010,7 +1020,8 @@ describe('Physical model', () => {
                             clef:    { 
                                 position: 1,
                                 clefType: ClefType.G,
-                                line: -2
+                                line: -2,
+                                transposition: 0
                             },
                             key: {
                                 keyPositions: [{ alteration: -1, position: 3}, { alteration: -1, position: 6}]
@@ -1059,7 +1070,8 @@ describe('Physical model', () => {
                             clef:    { 
                                 position: 1,
                                 clefType: ClefType.F,
-                                line: 2
+                                line: 2,
+                                transposition: 0
                             },        
                             notes: [                
                                 {
@@ -1075,7 +1087,8 @@ describe('Physical model', () => {
                                 position: 1,
                                 clefType: ClefType.F,
                                 change: true,
-                                line: 2
+                                line: 2,
+                                transposition: 0
                             },        
                             notes: [                
                                 {

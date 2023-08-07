@@ -453,13 +453,13 @@ describe('View model', () => {
 
         const log1 = scoreModelToViewModel(score);
         expect(log1.staves[0].timeSlots[1].notes[0]).to.deep.include({ positions: [1], uniq: '0-0-0' });
-        expect(log1.staves[0].timeSlots[0].clef).to.deep.eq({ clefType: ClefType.G, line: -2, position: 1});
+        expect(log1.staves[0].timeSlots[0].clef).to.deep.eq({ clefType: ClefType.G, line: -2, position: 1, transposition: 0});
         expect(log1.staves[0].timeSlots[0].meter).to.deep.eq({ meterText: ['4', '4'] });
         expect(log1.staves[0].timeSlots[0].key).to.deep.eq({ keyPositions: [] });
 
         const log2 = scoreModelToViewModel(score, { startTime: Time.newAbsolute(2, 1), endTime: Time.EternityTime });
         expect(log2.staves[0].timeSlots[1].notes[0]).to.deep.include({ positions: [3], uniq: '0-0-3' });
-        expect(log2.staves[0].timeSlots[0].clef).to.deep.eq({ clefType: ClefType.G, line: -2, position: 1});
+        expect(log2.staves[0].timeSlots[0].clef).to.deep.eq({ clefType: ClefType.G, line: -2, position: 1, transposition: 0});
         expect(log2.staves[0].timeSlots[0].meter).to.be.undefined;
         expect(log2.staves[0].timeSlots[0].key).to.deep.eq({ keyPositions: [{ alteration: 1, position: 4}, { alteration: 1, position: 1}, { alteration: 1, position: 5}, { alteration: 1, position: 2}] });
     });

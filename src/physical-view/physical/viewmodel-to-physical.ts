@@ -86,7 +86,7 @@ function convertStaff(
     convertBeamsIf(timeSlot, longElements, settings);
     convertTupletsIf(timeSlot, longElements, settings);
     convertDecorationsIf(timeSlot, longElements, settings);
-    convertClefIf(timeSlot, resultElements, mapItem, settings);
+    resultElements = convertClefIf(timeSlot, resultElements, mapItem, settings);
     convertBarIf(timeSlot, resultElements, mapItem, settings);
     resultElements = convertKeyIf(timeSlot, resultElements, mapItem, settings);
     resultElements = convertMeterIf(timeSlot, resultElements, mapItem, settings);
@@ -203,13 +203,47 @@ function convertBarIf(timeSlot: TimeSlotViewModel, resultElements: PhysicalEleme
     }
 }
 
-function convertClefIf(timeSlot: TimeSlotViewModel, resultElements: PhysicalElementBase[], mapItem: MeasureMapXValueItem, settings: Metrics) {
+function convertClefIf(timeSlot: TimeSlotViewModel, resultElements: PhysicalElementBase[], mapItem: MeasureMapXValueItem, settings: Metrics): PhysicalElementBase[] {
     if (timeSlot.clef) {
-        resultElements.push(doConvertClef(timeSlot.clef, mapItem.clef as number, settings));
+        resultElements = resultElements.concat(doConvertClef(timeSlot.clef, mapItem.clef, settings));
     }
+    return resultElements;
 }
 
-function doConvertClef(clef: ClefViewModel, xPos: number, settings: Metrics): PhysicalElementBase {
+export function clefTranspositionGlyphs(transpose: number, xPos: number, settings: Metrics, line: number): PhysicalElementBase[] {
+    if (!transpose) return [];
+
+    const yOffset = transpose > 0 ? settings.clefTransposeYOffsetOver : settings.clefTransposeYOffsetUnder;
+    const absTranspose = Math.abs(transpose);
+
+    if (absTranspose === 7) {
+        return [
+            {
+                position: { x: xPos + settings.clefTransposeXOffset, y: scaleDegreeToY(line + yOffset, settings) },
+                glyph: 'eight',
+                scale: settings.clefTransposeScale
+            }
+        ] as PhysicalFixedSizeElement[];
+    }
+    if (absTranspose === 14) {
+        return [
+            {
+                position: { x: xPos + settings.clefTransposeXOffset - settings.clefTransposeXSpacing, y: scaleDegreeToY(line + yOffset, settings) },
+                glyph: 'one',
+                scale: settings.clefTransposeScale
+            },
+            {
+                position: { x: xPos + settings.clefTransposeXOffset + settings.clefTransposeXSpacing, y: scaleDegreeToY(line + yOffset, settings) },
+                glyph: 'five',
+                scale: settings.clefTransposeScale
+            }
+        ] as PhysicalFixedSizeElement[];
+    }
+    
+    throw 'Illegal clef transposition: ' + transpose;
+}
+
+function doConvertClef(clef: ClefViewModel, xPos: number, settings: Metrics): PhysicalElementBase[] {
     let glyph: GlyphCode;
 
     switch(clef.clefType) {
@@ -223,10 +257,13 @@ function doConvertClef(clef: ClefViewModel, xPos: number, settings: Metrics): Ph
         glyph += '_change';
     }
 
-    return {
+    const transposition = clefTranspositionGlyphs(clef.transposition, xPos, settings, clef.line);
+
+    return [{
         position: { x: xPos, y: scaleDegreeToY(clef.line, settings) },
         glyph
-    } as PhysicalFixedSizeElement;
+    } as PhysicalFixedSizeElement,
+    ...transposition];
 }
 
 function convertDecorationsIf(timeSlot: TimeSlotViewModel, longElements: PhysicalLongElement[], settings: Metrics) {

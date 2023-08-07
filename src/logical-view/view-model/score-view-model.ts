@@ -13,6 +13,7 @@ export interface ClefViewModel {
     clefType: ClefType;
     change?: boolean;
     line: number;
+    transposition: number;
 }
 
 export interface TieViewModel { 

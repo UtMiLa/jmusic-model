@@ -8,7 +8,7 @@ import { StateChange } from './../states/state';
 import { AbsoluteTime, ExtendedTime } from './../rationals/time';
 import { createNoteFromLilypond, getRealDuration, Note, setNoteId } from '../notes/note';
 import { Time, TimeSpan } from '../rationals/time';
-import { Clef } from '../states/clef';
+import { Clef, ClefDef } from '../states/clef';
 import { EventType, getExtendedTime } from './timing-order';
 import R = require('ramda');
 import { FlexibleItem } from './types';
@@ -99,16 +99,36 @@ export function parseLilyMeter(ly: string): Meter {
     return MeterFactory.createRegularMeter({ count: +count, value: +value });
 }
 
-export function parseLilyClef(ly: string): Clef {
-    ly = ly.replace('\\clef ', '');
-    switch(ly) {
+function lilyClefType(clefType: string): Clef {
+    switch(clefType) {
         case 'G': case 'G2': case 'violin': case 'treble': return Clef.clefTreble;
         case 'tenorG': return Clef.clefTenor;
         case 'tenor': return Clef.clefTenorC;
         case 'F': case 'bass': return Clef.clefBass;
         case 'C': case 'alto': return Clef.clefAlto;
     }
-    throw 'Illegal clef: ' + ly;
+    throw 'Illegal clef: ' + clefType;
+}
+
+export function parseLilyClef(ly: string): Clef {
+    ly = ly.replace('\\clef ', '');
+
+    const parsed = /([a-zA-Z]+)(([_^])(\d+))?/.exec(ly);
+
+    if (!parsed) throw '';
+
+    const [orig, clefType, _, transPosition, transNumber] = parsed;
+    
+    const clef = lilyClefType(clefType);
+
+    if (transPosition) {
+        const sign = transPosition === '_' ? -1 : 1;
+        const interval = parseInt(transNumber);
+
+        return new Clef({...clef.def, transpose: sign * (interval - 1) });
+    }
+    
+    return clef;
 }
 
 export function parseLilyElement(ly: string): Note | StateChange {
