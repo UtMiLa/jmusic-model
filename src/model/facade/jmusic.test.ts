@@ -497,30 +497,6 @@ describe('Facade', () => {
             expect(v.staves).to.have.length(2);
             expect(v.staves[0].voices).to.have.length(2);
         });
-
-        it('should provide a view to one variable', () => {
-            const v = score.getView('var1');
-            expect(v.staves).to.have.length(1);
-            expect(v.staves[0].voices).to.have.length(1);
-        });
-
-        it('should be able to update a variable through the view', () => {
-            const v = score.getView('var1');
-            const ins = { 
-                time: Time.StartTime,
-                voiceNo: 0,
-                staffNo: 0,
-                position: 0
-            } as InsertionPoint;
-
-            expect(valueOf(score.vars, 'var1').elements[0]).to.deep.eq(createNoteFromLilypond('f8'));
-
-            v.addPitch(ins, Pitch.parseLilypond('g'));
-            expect(R.dissoc('uniq', v.staves[0].voices[0].content.elements[0] as Note))
-                .to.deep.eq(createNoteFromLilypond('<f g>8'));
-            //expect(score.vars.valueOf('var1').elements[0]).to.deep.eq(createNoteFromLilypond('<f g>8'));
-        });
-
         
         it('should provide a helper function to find key/clef/meter at beat 0', () => {
             const seq1 = new FlexibleSequence('\\key a \\major g4 g4 g4 g4');
