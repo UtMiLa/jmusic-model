@@ -134,20 +134,6 @@ export class JMusic extends EditView implements EditableView {
     }
 
 
-
-    pitchFromInsertionPoint(ins: InsertionPoint): Pitch {
-        const stateMap = createStateMap(this);
-        const state = getStateAt(stateMap, ins.time, ins.staffNo);
-        if (!state.clef) {
-            const clef = this.staves[ins.staffNo].initialClef;
-            if (!clef) throw 'Cannot map position without a clef';
-
-            state.clef = new Clef(clef);
-        }
-        
-        return state.clef.mapPosition(ins.position);
-    }
-
     clearScore(ins: InsertionPoint, voice?: string | JMusicSettings | ScoreDef): void {
         //this.staves = 
         this.project = makeProject(voice);

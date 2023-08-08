@@ -96,7 +96,20 @@ export abstract class EditView implements EditableView {
 
     }
 
-    abstract pitchFromInsertionPoint(ins: InsertionPoint): Pitch;
+    //abstract pitchFromInsertionPoint(ins: InsertionPoint): Pitch;
+
+    pitchFromInsertionPoint(ins: InsertionPoint): Pitch {
+        const stateMap = createStateMap(this);
+        const state = getStateAt(stateMap, ins.time, ins.staffNo);
+        if (!state.clef) {
+            const clef = this.staves[ins.staffNo].initialClef;
+            if (!clef) throw 'Cannot map position without a clef';
+
+            state.clef = new Clef(clef);
+        }
+        
+        return state.clef.mapPosition(ins.position);
+    }
 
     appendNote(ins: InsertionPoint, noteInput: NoteFlex): void {
         const note = makeNote(noteInput);

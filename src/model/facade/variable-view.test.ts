@@ -56,6 +56,41 @@ describe('Facade', () => {
             expect(valueOf(score.vars, 'var1').elements[0]).to.deep.eq(createNoteFromLilypond('<f g>8'));
         });
 
+        it('should be able to alter a pitch in a variable through the view', () => {
+            const v = score.getView('var1');
+            const ins = { 
+                time: Time.newAbsolute(1, 8),
+                voiceNo: 0,
+                staffNo: 0,
+                position: 0
+            } as InsertionPoint;
+
+            expect(valueOf(score.vars, 'var1').elements[1]).to.deep.eq(createNoteFromLilypond('g8'));
+
+            v.alterPitch(ins, -1);
+            expect(R.dissoc('uniq', v.staves[0].voices[0].content.elements[1] as Note))
+                .to.deep.eq(createNoteFromLilypond('ges8'));
+            expect(valueOf(score.vars, 'var1').elements[1]).to.deep.eq(createNoteFromLilypond('ges8'));
+        });
+
+        
+        it('should be able to remove a pitch in a variable through the view', () => {
+            const v = score.getView('var1');
+            const ins = { 
+                time: Time.newAbsolute(1, 8),
+                voiceNo: 0,
+                staffNo: 0,
+                position: 0
+            } as InsertionPoint;
+
+            expect(valueOf(score.vars, 'var1').elements[1]).to.deep.eq(createNoteFromLilypond('g8'));
+
+            v.removePitch(ins, Pitch.parseLilypond('g'));
+            expect(R.dissoc('uniq', v.staves[0].voices[0].content.elements[1] as Note))
+                .to.deep.eq(createNoteFromLilypond('r8'));
+            expect(valueOf(score.vars, 'var1').elements[1]).to.deep.eq(createNoteFromLilypond('r8'));
+        });
+
         
 
     });
