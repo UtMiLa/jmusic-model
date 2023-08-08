@@ -1,4 +1,4 @@
-import { InsertionPoint, InsertionPointDef } from '~/editor/insertion-point';
+import { InsertionPoint, InsertionPointDef } from '../../editor/insertion-point';
 import { ChangeHandler, Clef, FlexibleSequence, JMusic, JMusicSettings, Key, MeterFactory, VoiceContentDef, voiceContentToSequence, voiceSequenceToDef } from '..';
 import { LongDecorationType } from '../decorations/decoration-type';
 import { Note, cloneNote } from '../notes/note';
@@ -52,6 +52,7 @@ export interface EditableView extends DisplayableView {
     addMeterChg(ins: InsertionPoint, meter: MeterFlex): void;
     addKeyChg(ins: InsertionPoint, key: KeyFlex): void;
     addClefChg(ins: InsertionPoint, clef: ClefFlex): void;
+    getView(varname?: string): EditableView;
 }
 
 export abstract class EditView implements EditableView {

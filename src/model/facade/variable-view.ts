@@ -1,5 +1,5 @@
 import { Staff, staffDefToStaff } from './../score/staff';
-import { InsertionPoint, InsertionPointDef } from '~/editor/insertion-point';
+import { InsertionPoint, InsertionPointDef } from '../../editor/insertion-point';
 import { ChangeHandler, Clef, FlexibleSequence, JMusic, voiceContentToSequence, voiceSequenceToDef } from '..';
 import { TupletState, NoteDirection, Note } from '../notes/note';
 import { NoteExpression } from '../notes/note-expressions';

@@ -27,7 +27,8 @@ describe('Facade', () => {
                 clefs: [ 'treble', 'bass' ],
                 key: 'g \\minor'
             }, {
-                var1: 'f8 g8 a8 b8'
+                var1: 'f8 g8 a8 b8',
+                varExtra: 'c4 d4 e4 f4'
             });
             scoreChangeCalls = 0;
             score.onChanged(() => { scoreChangeCalls++; });
@@ -75,20 +76,20 @@ describe('Facade', () => {
 
         
         it('should be able to remove a pitch in a variable through the view', () => {
-            const v = score.getView('var1');
+            const v = score.getView('varExtra');
             const ins = { 
-                time: Time.newAbsolute(1, 8),
+                time: Time.newAbsolute(1, 4),
                 voiceNo: 0,
                 staffNo: 0,
                 position: 0
             } as InsertionPoint;
 
-            expect(valueOf(score.vars, 'var1').elements[1]).to.deep.eq(createNoteFromLilypond('g8'));
+            expect(valueOf(score.vars, 'varExtra').elements[1]).to.deep.eq(createNoteFromLilypond('d4'));
 
-            v.removePitch(ins, Pitch.parseLilypond('g'));
+            v.removePitch(ins, Pitch.parseLilypond('d'));
             expect(R.dissoc('uniq', v.staves[0].voices[0].content.elements[1] as Note))
-                .to.deep.eq(createNoteFromLilypond('r8'));
-            expect(valueOf(score.vars, 'var1').elements[1]).to.deep.eq(createNoteFromLilypond('r8'));
+                .to.deep.eq(createNoteFromLilypond('r4'));
+            expect(valueOf(score.vars, 'varExtra').elements[1]).to.deep.eq(createNoteFromLilypond('r4'));
         });
 
         
