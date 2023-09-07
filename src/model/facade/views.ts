@@ -16,7 +16,7 @@ import { KeyFlex, makeKey } from './key-flex';
 import { MeterFlex, makeMeter } from './meter-flex';
 import { NoteFlex, makeNote } from './note-flex';
 import R = require('ramda');
-import { createStateMap, getStateAt } from '~/logical-view/view-model/state-map';
+import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
 import { enharmonicChange, Enharmonic } from '../pitches/intervals';
 import { StateChange } from '../states/state';
 import { makeProject } from './project-flex';
