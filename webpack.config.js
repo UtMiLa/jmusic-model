@@ -5,11 +5,12 @@ module.exports = {
     entry: {
         model: './src/model/index.ts',
         view: { import: './src/logical-view/index.ts', dependOn: 'model' },
-        'physical-view': { import: './src/physical-view/index.ts', dependOn: ['model', 'view'] }
+        'physical': { import: './src/physical-view/index.ts', dependOn: ['model', 'view'] }
     },
     output: { 
         filename: '[name].js',
-        clean: true
+        clean: true,        
+        library: 'Utmila_[name]'
     },
     module: {
         rules: [
