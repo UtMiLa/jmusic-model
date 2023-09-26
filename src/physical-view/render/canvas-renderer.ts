@@ -46,6 +46,9 @@ export class CanvasRenderer implements Renderer {
                 case DrawOperationType.Fill:
                     this.ctx.fill();
                     break;
+                case DrawOperationType.ClosePath:
+                    this.ctx.closePath();
+                    break;
             }
         });
     
