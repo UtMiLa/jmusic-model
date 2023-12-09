@@ -8,9 +8,9 @@ import { JMusic } from './../model/facade/jmusic';
 import { DialogProvider } from './dialog-provider';
 import R = require('ramda');
 import { FlexibleSequence } from '../model';
-import { makeClef } from '~/model/facade/clef-flex';
-import { makeKey } from '~/model/facade/key-flex';
-import { makeMeter } from '~/model/facade/meter-flex';
+import { makeClef } from '../model/facade/clef-flex';
+import { makeKey } from '../model/facade/key-flex';
+import { makeMeter } from '../model/facade/meter-flex';
 
 export class BrowserPromptDialogProvider implements DialogProvider {
     getKey(): Promise<KeyDef> {

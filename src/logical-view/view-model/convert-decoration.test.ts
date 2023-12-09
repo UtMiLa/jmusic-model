@@ -3,7 +3,6 @@ import { Time } from './../../model/rationals/time';
 import { LongDecorationType } from './../../model/decorations/decoration-type';
 import { expect } from 'chai';
 import { LongDecoToView } from './convert-decoration';
-import { voiceContentToSequence } from '~/model';
 
 describe('View model: Decorations', () => {
 
