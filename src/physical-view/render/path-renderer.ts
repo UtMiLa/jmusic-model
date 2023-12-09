@@ -276,10 +276,14 @@ export class MyCanvasRenderer extends CanvasRenderer {
                 // 1 number
                     X = fromX;
                     Y = fromY;
-                    if (operation === 'h')
+                    if (operation === 'h') {
                         X += parseFloat(token) * scale;
-                    else if (operation === 'v')
+                        Y = current.y;
+                    }
+                    else if (operation === 'v') {
+                        X = current.x;
                         Y += parseFloat(token) * scale;
+                    }
                     else
                         X = -1;
                     //stack.push({ x: X, y: Y});
@@ -302,7 +306,9 @@ export class MyCanvasRenderer extends CanvasRenderer {
                     //if (X < 10) continue;
                     //stack.push({ x: X, y: Y} as Point);
                     nextObject?.points.push({ x: X, y: Y});
-                }
+                } /*else {
+                    nextObject = undefined;
+                }*/
                 if (nextObject && (nextObject.type !== DrawOperationType.CurveTo || nextObject.points.length % 3 === 0)) {
                     current.x = X;
                     current.y = Y;
