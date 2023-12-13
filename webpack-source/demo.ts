@@ -2,6 +2,7 @@ import { MyCanvasRenderer, PhysicalModel, StandardMetrics, renderOnRenderer, vie
 import { JMusic, Time } from '../src/model';
 import { scoreModelToViewModel } from '../src/logical-view';
 import { RenderPosition } from '~/physical-view/render/render-types';
+import { ProjectFlex } from '~/model/facade/project-flex';
 
 console.log('Demo');
 
@@ -13,7 +14,7 @@ function myRenderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElemen
 
 const textContainer = (document.querySelector('#message') as HTMLDivElement);
 
-export function render(jMusicTest: string): void {
+export function render(jMusicTest: ProjectFlex): void {
     try {
     
         const jMusic = new JMusic(jMusicTest);
@@ -51,5 +52,5 @@ export function render(jMusicTest: string): void {
 
 
 setTimeout(() => {
-    render('c\'4 d\'4 e\'4 g\'4');
+    render({ content: [['g\'4 r4 a\'2', 'c\'4 d\'4 e\'4 g\'4']]});
 }, 30);
