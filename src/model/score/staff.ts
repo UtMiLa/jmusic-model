@@ -4,6 +4,7 @@ import { KeyDef } from './../states/key';
 import { ISequence } from './sequence';
 import { ClefDef } from '../states/clef';
 import { VariableRepository, createRepo } from './variables';
+import R = require('ramda');
 
 export interface StaffDef {
     initialClef: ClefDef;
@@ -33,6 +34,6 @@ export function staffDefToStaff(def: StaffDef, repo?: VariableRepository): Staff
         initialClef: def.initialClef,
         initialKey: def.initialKey,
         initialMeter: def.initialMeter,
-        voices: def.voices.map(v => voiceDefToVoice(v, repo))
+        voices: R.chain(v => voiceDefToVoice(v, repo), def.voices)
     };
 }
