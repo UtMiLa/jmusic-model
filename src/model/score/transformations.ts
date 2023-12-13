@@ -3,6 +3,7 @@ import { Rational, RationalDef } from '../../model/rationals/rational';
 import { Note, setGrace, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
 import { TimeSpan } from '../rationals/time';
 import { isLongDecoration, isStateChange, BaseSequence, ISequence, MusicEvent, TimeSlot, SequenceDef } from './sequence';
+import { isSpacer } from '../notes/spacer';
 
 
 export class RetrogradeSequence extends BaseSequence {
@@ -21,6 +22,7 @@ export class RetrogradeSequence extends BaseSequence {
         const res = this.sequence.elements.map(n => {
             if (isStateChange(n)) return n;
             if (isLongDecoration(n)) return n;
+            if (isSpacer(n)) return n;
             let tupletGroup;
             if ((n as Note).tupletGroup === TupletState.Begin) {
                 tupletGroup = TupletState.End;
@@ -60,7 +62,7 @@ export class TupletSequence extends BaseSequence {
     
     public get elements(): MusicEvent[] {
         return this.sequence.elements.map((ele, i, arr) => {
-            if (isStateChange(ele) || isLongDecoration(ele)) {
+            if (isStateChange(ele) || isLongDecoration(ele) || isSpacer(ele)) {
                 return ele;
             } else {
                 const tupletGroup = i ? (i === arr.length - 1 ? TupletState.End : TupletState.Inside) : TupletState.Begin;
@@ -94,7 +96,7 @@ export class GraceSequence extends BaseSequence {
     
     public get elements(): MusicEvent[] {
         return this.sequence.elements.map((ele, i, arr) => {
-            if (isStateChange(ele) || isLongDecoration(ele)) {
+            if (isStateChange(ele) || isLongDecoration(ele) || isSpacer(ele)) {
                 return ele;
             } else {
                 //const graceGroup = i ? (i === arr.length - 1 ? TupletState.End : TupletState.Inside) : TupletState.Begin;
