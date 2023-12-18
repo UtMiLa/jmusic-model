@@ -53,12 +53,6 @@
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npx lint-staged",
-      "post-commit": "git update-index --again"
-    }
-  },
   "lint-staged": {
     "*.ts": [
       "eslint --fix"

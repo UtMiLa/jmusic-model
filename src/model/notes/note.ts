@@ -33,8 +33,8 @@ export type Note = Readonly<{
     grace?: boolean;
 }>;
 
-
-
+export type UpdateNote = Partial<Note>;
+/*
 export interface UpdateNote {
     pitches?: Pitch[];
     nominalDuration?: TimeSpan;
@@ -46,7 +46,7 @@ export interface UpdateNote {
     expressions?: NoteExpression[];
     text?: string[];
     grace?: boolean;
-}
+}*/
 
 
 
