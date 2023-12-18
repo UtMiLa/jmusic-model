@@ -17,7 +17,19 @@ export interface VariableRef {
 
 export type FuncDef = 'Identity' | 'Relative' | 'Reverse' | 'Repeat' | 'Grace' | 'Tuplet' | 'Transpose' | 'ModalTranspose' | 'AddLyrics';
 
+export interface MultiSequence {
+    type: 'multi';
+    sequences: FlexibleItem[]; // should we allow MultiFlexibleItem with all that mess?
+}
+
+export function isMultiSequence(test: unknown): test is MultiSequence {
+    return !!test && (test as MultiSequence).type === 'multi';
+}
+
+
 export type FlexibleItem = string | SeqFunction | VariableRef | FlexibleItem[] | MusicEvent;
+export type MultiFlexibleItem = FlexibleItem | MultiFlexibleItem[] | MultiSequence;
+
 
 export interface SeqFunction {
     function: FuncDef;

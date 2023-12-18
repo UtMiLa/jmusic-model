@@ -3,7 +3,7 @@ import { ISequence, MusicEvent, isNote } from '../score/sequence';
 import R = require('ramda');
 import { FlexibleItem, FuncDef, ProjectDef, SeqFunction, VarDict, VariableDef } from '../score/types';
 import { voiceDefToVoice, voiceSequenceToDef } from '../score/voice';
-import { FlexibleSequence, FunctionPathElement, PathElement, VarablePathElement, isFunctionPathElement, isVarablePathElement as isVariablePathElement, simplifyDef } from '../score/flexible-sequence';
+import { FlexibleSequence, FunctionPathElement, PathElement, VarablePathElement, isFunctionPathElement, isVariablePathElement as isVariablePathElement, simplifyDef } from '../score/flexible-sequence';
 import { AbsoluteTime, Time } from '../rationals/time';
 import { lookupVariable } from '../score/variables';
 import { ScoreDef } from '../score/score';

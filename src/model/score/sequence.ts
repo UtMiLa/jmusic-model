@@ -73,6 +73,9 @@ export interface ISequence {
     asObject: SequenceDef;
 }
 
+export interface ISequenceCollection {
+    seqs: ISequence[];
+}
 
 export type SequenceDef = string | FlexibleItem[];
 

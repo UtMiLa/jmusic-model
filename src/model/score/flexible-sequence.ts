@@ -24,7 +24,7 @@ export function isFunctionPathElement<T>(test: PathElement<T>): test is Function
     return !!test && (typeof (test as FunctionPathElement<T[]>).function) === 'function';
 }
 
-export function isVarablePathElement<T>(test: PathElement<T>): test is VarablePathElement {
+export function isVariablePathElement<T>(test: PathElement<T>): test is VarablePathElement {
     return !!test && (typeof (test as VarablePathElement).variable) === 'string';
 }
 
@@ -40,6 +40,8 @@ function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository)
         return [item];
     } else {
         return item.map(i => recursivelySplitStringsIn(i, repo));
+        // why not: R.chain(i => recursivelySplitStringsIn(i, repo), item);
+        // because this flattens all arrays - we should be able to group notes in locked chunks
     }
 }
 
