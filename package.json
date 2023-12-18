@@ -52,7 +52,6 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npx lint-staged",
       "post-commit": "git update-index --again"
     }
   },
