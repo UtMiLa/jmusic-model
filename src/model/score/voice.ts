@@ -20,11 +20,11 @@ export function voiceContentToSequence(content: VoiceContentDef, repo?: Variable
     return new FlexibleSequence(content as FlexibleItem, repo);
 }
 
-export function voiceDefToVoice(voiceDef: VoiceDef, repo?: VariableRepository): Voice {
-    return {
+export function voiceDefToVoice(voiceDef: VoiceDef, repo?: VariableRepository): Voice[] {
+    return [{
         content: voiceContentToSequence(voiceDef.contentDef, repo),
         noteDirection: voiceDef.noteDirection
-    };
+    }];
 }
 
 export function voiceSequenceToDef(seq: ISequence): VoiceContentDef {

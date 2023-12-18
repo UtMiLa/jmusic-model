@@ -75,7 +75,7 @@ export function createNoteFromLilypond(input: string): Note {
         const match = matcher.exec(input);
         if (!match || match.length < 4) throw 'Illegal note: ' + input;
         pitches = (match[1] === 'r') ? [] : [match[1]];
-        durationString = match[3];    
+        durationString = match[3];
         if (match[4]) {
             expressions = (match[4]).split(/(?=\\)/);
         }
@@ -118,7 +118,7 @@ export function cloneNote(note: Note,  changeProperties: UpdateNote): Note {
 
 const curryCloneNote = R.curry(cloneNote);
 
-export const setNoteDirection = (note: Note, direction: NoteDirection) => (curryCloneNote(note)({ direction })) as Note;
+export const setNoteDirection = (note: Note, direction: NoteDirection): Note => (curryCloneNote(note)({ direction })) as Note;
 
 export function setNoteText(note: Note,  text: string[] ): Note {
     return cloneNote(note, { text });

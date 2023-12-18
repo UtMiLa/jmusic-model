@@ -1,6 +1,7 @@
 import { Time, AbsoluteTime } from './../rationals/time';
 import { getDuration, ISequence, isLongDecoration, isStateChange } from './../score/sequence';
 import { getNominalDuration, getUndottedDuration, Note, setNoteId } from './note';
+import { isSpacer } from './spacer';
 
 
 export interface BeamDef {
@@ -124,6 +125,9 @@ export function calcBeamGroups(seq: ISequence, meterIterator: IterableIterator<A
             // state change
             //const stC = element as StateChange;
         } else if (isLongDecoration(element)) {
+            // decoration
+            //const deco = element as LongDecorationElement;
+        } else if (isSpacer(element)) {
             // decoration
             //const deco = element as LongDecorationElement;
         } else {

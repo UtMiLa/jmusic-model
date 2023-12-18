@@ -12,8 +12,9 @@ import { Clef, ClefDef } from '../states/clef';
 import { EventType, getExtendedTime } from './timing-order';
 import R = require('ramda');
 import { FlexibleItem } from './types';
+import { Spacer, createSpacerFromLilypond, isSpacer } from '../notes/spacer';
 
-export type MusicEvent = Note | StateChange | LongDecorationElement;
+export type MusicEvent = Note | Spacer | StateChange | LongDecorationElement;
 
 export interface SeqEnumerationState {
     clef?: Clef;
@@ -47,10 +48,13 @@ export function isNote(item: MusicEvent): item is Note {
 }
 
 export function isMusicEvent(item: unknown): item is MusicEvent {
-    return isStateChange(item as MusicEvent) || isLongDecoration(item as MusicEvent) || isNote(item as MusicEvent);
+    return isStateChange(item as MusicEvent) || isLongDecoration(item as MusicEvent) || isSpacer(item as MusicEvent) || isNote(item as MusicEvent);
 }
 
 export function getDuration(item: MusicEvent): TimeSpan {
+    if (isSpacer(item)) {
+        return item.duration;
+    }
     if (isNote(item)) {
         return getRealDuration(item);
     }
@@ -131,7 +135,7 @@ export function parseLilyClef(ly: string): Clef {
     return clef;
 }
 
-export function parseLilyElement(ly: string): Note | StateChange {
+export function parseLilyElement(ly: string): Note | Spacer | StateChange {
     if (ly.startsWith('\\clef')) {
         const sc = new StateChange();
         sc.clef = parseLilyClef(ly);
@@ -144,6 +148,8 @@ export function parseLilyElement(ly: string): Note | StateChange {
         const sc = new StateChange();
         sc.meter = parseLilyMeter(ly);
         return sc;
+    } else if (ly.startsWith('s') || ly.startsWith('\\skip')) {
+        return createSpacerFromLilypond(ly);
     } else {
         return createNoteFromLilypond(ly);
     }
@@ -263,6 +269,12 @@ export abstract class BaseSequence implements ISequence {
                 const slot = res.get(getExtendedTime(time, EventType.Expression));
                 if (!slot.decorations) slot.decorations = [];
                 slot.decorations.push(elem as LongDecorationElement);
+
+            } else if (isSpacer(elem)) {
+
+                /*const slot = res.get(getExtendedTime(time, EventType.Expression));
+                if (!slot.decorations) slot.decorations = [];
+                slot.decorations.push(elem as LongDecorationElement);*/
 
             } else {
                 

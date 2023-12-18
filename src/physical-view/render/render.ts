@@ -1,4 +1,4 @@
-import { RenderPosition } from './render-types';
+import { DrawOperation, RenderPosition } from './render-types';
 import { PhysicalElementBase } from '../physical/physical-elements';
 import { Point } from '../physical/physical-elements';
 import { VertVarSizeGlyphs } from '../physical/glyphs';
@@ -7,8 +7,6 @@ import { HorizVarSizeGlyphs } from '../physical/glyphs';
 import { Renderer } from './base-renderer';
 import { CanvasRenderer } from './canvas-renderer';
 import { renderBar, renderBeam, renderCursor, renderLongElement, renderStaffLine, renderStem, renderText, renderTie, renderTupletBracket } from './render-elements';
-
-
 
 export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition): void {
     renderOnRenderer(physicalModel, new CanvasRenderer(canvas), position);

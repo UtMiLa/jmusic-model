@@ -13,7 +13,8 @@ export enum DrawOperationType {
     CurveTo,
     Text,
     Stroke,
-    Fill
+    Fill,
+    ClosePath
 }
 
 export interface DrawOperation {
