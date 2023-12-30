@@ -1,3 +1,4 @@
+export * from './model';
 export * from './notes/note';
 export * from './pitches/pitch';
 export * from './rationals/rational';

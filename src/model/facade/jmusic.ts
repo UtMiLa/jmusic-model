@@ -1,4 +1,4 @@
-import { DomainConverter, LensItem, ProjectLens, VoiceContentDef, cloneNote, doWithNote, lensItemNone, lensItemOf, projectLensByTime, voiceContentToSequence, voiceSequenceToDef } from '../../model';
+import { DomainConverter, LensItem, Model, ProjectLens, VoiceContentDef, cloneNote, doWithNote, lensItemNone, lensItemOf, projectLensByTime, voiceContentToSequence, voiceSequenceToDef } from '../../model';
 import { FlexibleSequence } from './../score/flexible-sequence';
 import { LongDecorationType } from './../decorations/decoration-type';
 import { TimeSpan } from './../rationals/time';
@@ -62,97 +62,80 @@ export const initStateInSequence = (s: ISequence) => {
 /** Facade object for music scores */
 export class JMusic extends EditView implements EditableView {
 
+    model: Model;
+
     constructor(scoreFlex?: ProjectFlex, vars?: VarDict) {
         super();
 
-        this.project = makeProject(scoreFlex, vars);
+        this.model = new Model(scoreFlex, vars);
     }
 
-    project: ProjectDef;
+    get project(): ProjectDef { return this.model.project; }
 
     public get staves(): Staff[] {
-        return this.project.score.staves.map(sd => staffDefToStaff(sd, this.vars));
+        return this.model.staves;
     }
 
     public get repeats(): RepeatDef[] | undefined {
-        return this.project.score.repeats;
+        return this.model.repeats;
     }
 
     public get vars(): VariableRepository {
-        return createRepo(this.project.vars);
+        return this.model.vars;
     }
 
-    changeHandlers: ChangeHandler[] = [];
+    get changeHandlers(): ChangeHandler[] { return this.model.changeHandlers; }
 
     setVar(id: string, value: FlexibleItem): void {
-        this.project.vars = setVar(this.vars, id, value).vars;
+        this.model.setVar(id, value);
     }
 
     sequenceFromInsertionPoint(ins: InsertionPoint): ISequence {
-        return this.staves[ins.staffNo].voices[ins.voiceNo].content;
+        return this.model.sequenceFromInsertionPoint(ins);
     }
 
     noteFromInsertionPoint(ins: InsertionPoint): Note {
-        return this.staves[ins.staffNo].voices[ins.voiceNo].content.groupByTimeSlots('0').filter(ts => Time.equals(ts.time, ins.time))[0].elements[0];
+        return this.model.noteFromInsertionPoint(ins);
     }
 
     createProjectLens(ins: InsertionPoint): ProjectLens {
-        return projectLensByTime(this.domainConverter, { staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
+        return this.model.createProjectLens(ins);
     }
 
     insertElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent, checkType: (e: MusicEvent) => boolean): void {
-        this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = voiceSequenceToDef(new FlexibleSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content.chainElements(
-            (ct, time) => {
-                if (!Time.equals(time, ins.time)) return [ct];
-                if (checkType(ct)) return [];
-                return isNote(ct) ? [element, ct] : [ct];
-            }
-        )));
+        this.model.insertElementAtInsertionPoint(ins, element, checkType);
     }
 
     appendElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent): void {
-        this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = 
-            [
-                ...this.staves[ins.staffNo].voices[ins.voiceNo].content.elements,
-                element
-            ]
-        ;
+        this.model.appendElementAtInsertionPoint(ins, element);
     }
 
     get domainConverter(): DomainConverter<VoiceContentDef, MusicEvent[]> {
-        return {
-            fromDef: def => voiceContentToSequence(def, this.vars).elements,
-            toDef: events => voiceSequenceToDef(new FlexibleSequence(events, this.vars))
-        };
+        return this.model.domainConverter;
     }
 
     setProject(lens: ProjectLens, lensItem: LensItem): void {
-        this.project = R.set(lens, lensItem, this.project);
+        this.model.setProject(lens, lensItem);
     }
     overProject(lens: ProjectLens, noteConverter: (fromNote: LensItem) => LensItem): void {
-        this.project = R.over(lens, noteConverter, this.project);
+        this.model.overProject(lens, noteConverter);
     }
 
 
     clearScore(ins: InsertionPoint, voice?: string | JMusicSettings | ScoreDef): void {
-        //this.staves = 
-        this.project = makeProject(voice);
-
-        this.didChange();
+        this.model.clearScore(ins, voice);
     }
 
     addRepeat(repeat: RepeatDef): void {
-        if (!this.project.score.repeats)
-            this.project.score.repeats = [];
-        this.project.score.repeats?.push(repeat);
+        this.model.addRepeat(repeat);
     }
 
-    onChanged(handler: ChangeHandler): void {        
-        this.changeHandlers.push(handler);
+    onChanged(handler: ChangeHandler): void {      
+        this.model.onChanged(handler);
     }
 
     didChange(): void {
-        this.changeHandlers.forEach(handler => handler());
+        this.model.didChange();
     }
 
     getView(varname?: string): EditableView {
