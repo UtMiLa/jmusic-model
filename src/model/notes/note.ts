@@ -20,7 +20,7 @@ export enum TupletState {
     None, Begin, Inside, End
 }
 
-export type Note = Readonly<{
+export type NoteBase = {
     pitches: Pitch[];
     nominalDuration: TimeSpan;
     tupletFactor?: RationalDef;
@@ -31,9 +31,11 @@ export type Note = Readonly<{
     expressions?: NoteExpression[];
     text?: string[];
     grace?: boolean;
-}>;
+};
 
-export type UpdateNote = Partial<Note>;
+export type Note = Readonly<NoteBase>;
+
+export type UpdateNote = Partial<NoteBase>;
 /*
 export interface UpdateNote {
     pitches?: Pitch[];

@@ -1,4 +1,8 @@
 {
+  "compilerOptions": {
+    //"baseUrl": "./", /* Base directory to resolve non-absolute module names. */
+    "rootDir": "./src/",
+  },
   "extends": "./tsconfig.json",
-  "exclude": ["src/**/*.test.ts"]
+  "exclude": ["src/**/*.test.ts", "webpack-source/**/*"]
 }

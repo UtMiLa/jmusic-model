@@ -1,8 +1,8 @@
 import { MyCanvasRenderer, PhysicalModel, StandardMetrics, renderOnRenderer, viewModelToPhysical } from '../src/physical-view';
 import { JMusic, Time } from '../src/model';
 import { scoreModelToViewModel } from '../src/logical-view';
-import { RenderPosition } from '~/physical-view/render/render-types';
-import { ProjectFlex } from '~/model/facade/project-flex';
+import { RenderPosition } from '../src/physical-view/render/render-types';
+import { ProjectFlex } from '../src/model/facade/project-flex';
 
 console.log('Demo');
 
