@@ -25,7 +25,7 @@ import { expect } from 'chai';
 import { JMusic } from '../facade/jmusic';
 import R = require('ramda');
 import { createNoteFromLilypond } from '../notes/note';
-import { ISequence, isNote } from '../score/sequence';
+import { ISequence, SequenceDef, isNote } from '../score/sequence';
 import { ProjectDef, VariableDef } from '../score/types';
 import { DomainConverter, lensFromLensDef, lensItemOf, projectLensByIndex, projectLensByTime } from './lens';
 import { FlexibleSequence } from '../score/flexible-sequence';
@@ -299,7 +299,7 @@ describe('Lenses', () => {
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef as any);
 
-            expect(res.score.staves[0].voices[2].contentDef[1]).to.deep.eq({
+            expect((res.score.staves[0].voices[2].contentDef as SequenceDef)[1]).to.deep.eq({
                 function: 'Identity',
                 args: ['c2', 'fis4']
             });
@@ -319,7 +319,7 @@ describe('Lenses', () => {
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef as any);
 
-            expect(res.score.staves[0].voices[2].contentDef[0]).to.deep.eq({
+            expect((res.score.staves[0].voices[2].contentDef as SequenceDef)[0]).to.deep.eq({
                 function: 'Transpose',
                 args: ['c2', 'dis4'],
                 extraArgs: [{

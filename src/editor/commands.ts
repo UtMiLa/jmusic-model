@@ -1,4 +1,4 @@
-import { Clef, EditableView, FlexibleSequence, JMusic, Key, Pitch, createNote, getDotNumber, getDottedValue, getUndottedValue } from '../model';
+import { EditableView, JMusic, Pitch, createNote, getDotNumber, getDottedValue, getUndottedValue } from '../model';
 import { InsertionPoint } from './insertion-point';
 
 

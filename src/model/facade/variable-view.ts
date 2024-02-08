@@ -8,7 +8,7 @@ import { Pitch } from '../pitches/pitch';
 import { RationalDef } from '../rationals/rational';
 import { TimeSpan } from '../rationals/time';
 import { ISequence, SequenceDef, MusicEvent } from '../score/sequence';
-import { FlexibleItem } from '../score/types';
+import { FlexibleItem, MultiSequence } from '../score/types';
 import { VariableRepository, valueOf } from '../score/variables';
 import { EditView, EditableView } from './views';
 import { makeScore } from './score-flex';
@@ -47,9 +47,9 @@ export class VariableView extends EditView implements EditableView {
     noteFromInsertionPoint(ins: InsertionPoint): Readonly<{ pitches: Pitch[]; nominalDuration: TimeSpan; tupletFactor?: RationalDef | undefined; tupletGroup?: TupletState | undefined; direction: NoteDirection; tie?: boolean | undefined; uniq?: string | undefined; expressions?: NoteExpression[] | undefined; text?: string[] | undefined; grace?: boolean | undefined; }> {
         throw new Error('Method not implemented.');
     }
-    get domainConverter(): DomainConverter<SequenceDef, MusicEvent[]> {
+    get domainConverter(): DomainConverter<SequenceDef | MultiSequence, MusicEvent[]> {
         return {
-            fromDef: def => voiceContentToSequence(def, this.vars).elements,
+            fromDef: def => voiceContentToSequence(def, this.vars)[0].elements, // todo: correct voiceNo
             toDef: events => voiceSequenceToDef(new FlexibleSequence(events, this.vars))
         };
     }

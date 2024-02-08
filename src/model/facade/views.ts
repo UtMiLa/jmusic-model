@@ -1,16 +1,15 @@
 import { InsertionPoint, InsertionPointDef } from '../../editor/insertion-point';
-import { ChangeHandler, Clef, FlexibleSequence, JMusic, JMusicSettings, Key, MeterFactory, VoiceContentDef, voiceContentToSequence, voiceSequenceToDef } from '..';
+import { ChangeHandler, Clef, JMusic, Key, MeterFactory, VoiceContentDef } from '..';
 import { LongDecorationType } from '../decorations/decoration-type';
 import { Note, cloneNote } from '../notes/note';
-import { DomainConverter, LensItem, ProjectLens, doWithNote, lensItemNone, lensItemOf, projectLensByTime } from '../optics/lens';
+import { DomainConverter, LensItem, ProjectLens, doWithNote, lensItemNone, lensItemOf } from '../optics/lens';
 import { Alteration, Pitch } from '../pitches/pitch';
-import { Time, TimeSpan } from '../rationals/time';
-import { RepeatDef } from '../score/repeats';
-import { Score, ScoreDef } from '../score/score';
-import { ISequence, MusicEvent, isClefChange, isKeyChange, isMeterChange, isNote } from '../score/sequence';
-import { Staff, staffDefToStaff } from '../score/staff';
-import { FlexibleItem, ProjectDef } from '../score/types';
-import { VariableRepository, createRepo, setVar, valueOf } from '../score/variables';
+import { TimeSpan } from '../rationals/time';
+import { Score } from '../score/score';
+import { ISequence, MusicEvent, isClefChange, isKeyChange, isMeterChange } from '../score/sequence';
+import { Staff } from '../score/staff';
+import { FlexibleItem } from '../score/types';
+import { VariableRepository, valueOf } from '../score/variables';
 import { ClefFlex, makeClef } from './clef-flex';
 import { KeyFlex, makeKey } from './key-flex';
 import { MeterFlex, makeMeter } from './meter-flex';
@@ -19,7 +18,6 @@ import R = require('ramda');
 import { createStateMap, getStateAt } from '../../logical-view/view-model/state-map';
 import { enharmonicChange, Enharmonic } from '../pitches/intervals';
 import { StateChange } from '../states/state';
-import { makeProject } from './project-flex';
 
 export interface DisplayableView extends Score {    
     vars: VariableRepository;

@@ -2,13 +2,13 @@ import { RationalDef } from './../../model/rationals/rational';
 import { Meter } from './../../model/states/meter';
 import { BeamGroup } from './../../model/notes/beaming';
 import { AccidentalManager } from './../../model/states/key';
-import { FlexibleSequence, getAllBars, TimeSlot, TupletState } from './../../model';
+import { getAllBars, TimeSlot, TupletState } from './../../model';
 import { AbsoluteTime, Time } from './../../model';
 import { NoteViewModel, TupletViewModel } from './note-view-model';
 import { Clef } from '../../model';
 import { Key } from '../../model';
 import { TimeSlotViewModel } from './score-view-model';
-import { Voice, voiceContentToSequence, VoiceDef } from '../../model/score/voice';
+import { Voice } from '../../model/score/voice';
 import { createIdPrefix } from './state-map';
 
 /** This object is created for each voice during processing. It keeps track of the current state:

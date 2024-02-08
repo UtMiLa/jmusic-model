@@ -1,15 +1,20 @@
 import { FlexibleSequence } from './flexible-sequence';
-import { ISequence } from './sequence';
-import { FlexibleItem, MultiFlexibleItem, isMultiSequence } from './types';
+import { ISequence, ISequenceCollection } from './sequence';
+import { FlexibleItem, isMultiSequence } from './types';
+import { VariableRepository } from './variables';
 
-export class MultiFlexibleSequence {
-    constructor(item: MultiFlexibleItem) {
-        if (Array.isArray(item) && item.length === 0) {
+export class MultiFlexibleSequence implements ISequenceCollection {
+    
+    constructor(item: FlexibleItem, repo?: VariableRepository) {
+        //this.sequences = [new FlexibleSequence(item, repo)];
+        /*if (Array.isArray(item) && item.length === 0) {
             this.sequences = [];
-        } else if (isMultiSequence(item)) {
-            this.sequences = item.sequences.map(it => new FlexibleSequence(it as FlexibleItem));
+        } else*/ if (isMultiSequence(item)) {
+            this.sequences = item.sequences.map(it => new FlexibleSequence(it as FlexibleItem), repo);
+            console.log('multiseq', item, this.sequences);
+            
         } else {
-            this.sequences = [new FlexibleSequence(item as FlexibleItem)];
+            this.sequences = [new FlexibleSequence(item as FlexibleItem, repo)];
         }
     }
 

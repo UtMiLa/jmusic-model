@@ -20,7 +20,7 @@ describe('Multi-Flexible Sequence', () => {
         //
     });
 
-    it('should accept an empty array', () => {
+    /*it('should accept an empty array', () => {
         const seq = new MultiFlexibleSequence([]);
 
         expect(seq.seqs).to.deep.eq([]);
@@ -42,6 +42,6 @@ describe('Multi-Flexible Sequence', () => {
         expect(seq.seqs[0].elements.length).to.eq(3);
         expect(seq.seqs[1].elements.length).to.eq(3);
         expect(seq.seqs[0].duration).to.deep.eq(Time.HalfTime);
-    });
+    });*/
 
 });

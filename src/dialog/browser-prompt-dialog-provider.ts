@@ -1,13 +1,10 @@
-import { Alteration } from './../model/pitches/pitch';
 import { StaffDef } from './../model/score/staff';
 import { ScoreDef } from './../model/score/score';
 import { RegularMeterDef } from './../model/states/meter';
-import { Clef, ClefDef } from './../model/states/clef';
-import { Key, KeyDef } from './../model/states/key';
-import { JMusic } from './../model/facade/jmusic';
+import { ClefDef } from './../model/states/clef';
+import { KeyDef } from './../model/states/key';
 import { DialogProvider } from './dialog-provider';
 import R = require('ramda');
-import { FlexibleSequence } from '../model';
 import { makeClef } from '../model/facade/clef-flex';
 import { makeKey } from '../model/facade/key-flex';
 import { makeMeter } from '../model/facade/meter-flex';

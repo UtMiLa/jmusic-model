@@ -1,9 +1,7 @@
 import R = require('ramda');
-import { InsertionPoint, InsertionPointDef } from '~/editor/insertion-point';
+import { InsertionPoint, InsertionPointDef } from '../editor/insertion-point';
 import { ChangeHandler, JMusicSettings } from '.';
 import { ProjectFlex, makeProject } from './facade/project-flex';
-import { VariableView } from './facade/variable-view';
-import { EditableView } from './facade/views';
 import { Note } from './notes/note';
 import { ProjectLens, projectLensByTime, DomainConverter, LensItem } from './optics/lens';
 import { Time } from './rationals/time';
@@ -19,8 +17,6 @@ import { voiceSequenceToDef, VoiceContentDef, voiceContentToSequence } from './s
 
 export class Model {
     constructor(scoreFlex?: ProjectFlex, vars?: VarDict) {
-
-
         this.project = makeProject(scoreFlex, vars);
     }
 
@@ -77,7 +73,7 @@ export class Model {
 
     get domainConverter(): DomainConverter<VoiceContentDef, MusicEvent[]> {
         return {
-            fromDef: def => voiceContentToSequence(def, this.vars).elements,
+            fromDef: def => voiceContentToSequence(def, this.vars)[0].elements, // todo: correct voiceNo
             toDef: events => voiceSequenceToDef(new FlexibleSequence(events, this.vars))
         };
     }

@@ -6,7 +6,7 @@ import { BaseSequence, getDuration, isMusicEvent, isNote, MusicEvent, parseLilyE
 
 // Fix for types for R.chain
 import * as _ from 'ts-toolbelt';
-import { FlexibleItem, isSeqFunction, SeqFunction, VariableRef } from './types';
+import { FlexibleItem, isMultiSequence, isSeqFunction, MultiSequence, SeqFunction, VariableRef } from './types';
 import { Note, noteAsLilypond } from '../notes/note';
 type addIndexFix<T, U> = (
     fn: (f: (item: T) => U, list: readonly T[]) => U,
@@ -28,7 +28,7 @@ export function isVariablePathElement<T>(test: PathElement<T>): test is VarableP
     return !!test && (typeof (test as VarablePathElement).variable) === 'string';
 }
 
-function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository): FlexibleItem[] {
+export function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository): FlexibleItem[] {
     if (typeof item === 'string') {
         return splitByNotes(item);
     } else if (isSeqFunction(item)) {
@@ -38,6 +38,9 @@ function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepository)
         return [item];//repo.valueOf(item.variable).elements;
     } else if (isMusicEvent(item)) {
         return [item];
+    } else if (isMultiSequence(item)) {
+        //throw 'Not supported a';
+        return [{ type: 'multi', sequences: item.sequences.map(seq => recursivelySplitStringsIn(seq, repo)) } as MultiSequence];
     } else {
         return item.map(i => recursivelySplitStringsIn(i, repo));
         // why not: R.chain(i => recursivelySplitStringsIn(i, repo), item);
@@ -183,6 +186,8 @@ export class FlexibleSequence extends BaseSequence {
                 return varSeq.elements.map((e, i) => [{ variable: item.variable }, ...varSeq.indexToPath(i)]); //{ variable: item.variable }
             } else if (isMusicEvent(item)) {
                 return [[0]];
+            } else if (isMultiSequence(item)) {
+                throw 'Not supported b';        
             } else {
                 return (R.addIndex as addIndexFix<FlexibleItem, PathElement<MusicEvent>[][]>)(R.chain<FlexibleItem, PathElement<MusicEvent>[]>)(
                     (s: FlexibleItem, idx: number) => itemsToPaths(s).map(

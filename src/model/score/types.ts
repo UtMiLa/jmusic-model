@@ -27,7 +27,7 @@ export function isMultiSequence(test: unknown): test is MultiSequence {
 }
 
 
-export type FlexibleItem = string | SeqFunction | VariableRef | FlexibleItem[] | MusicEvent;
+export type FlexibleItem = string | SeqFunction | VariableRef | FlexibleItem[] | MusicEvent | MultiSequence;
 export type MultiFlexibleItem = FlexibleItem | MultiFlexibleItem[] | MultiSequence;
 
 

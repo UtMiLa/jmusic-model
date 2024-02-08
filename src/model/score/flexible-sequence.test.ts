@@ -4,8 +4,9 @@ import { Time } from '../rationals/time';
 import { parseLilyClef } from './sequence';
 import { expect } from 'chai';
 import { LongDecorationType } from '../decorations/decoration-type';
-import { FlexibleSequence } from './flexible-sequence';
-import { createRepo, VariableRepository } from './variables';
+import { FlexibleSequence, recursivelySplitStringsIn } from './flexible-sequence';
+import { createRepo, VariableRepository, VariableRepositoryProxy } from './variables';
+import { MultiSequence } from './types';
 describe('Flexible Sequence', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';
@@ -217,6 +218,25 @@ describe('Flexible Sequence', () => {
                 { longDeco: LongDecorationType.Slur, length: Time.QuarterTime }
             ]}
         );
+    });
+
+    it('should allow for multi sequences', () => {
+        
+        const seq1Text = 'c4 d8 e8';
+        const seq2Text = 'c,2 d,8 e,8 c4';
+        const multiSeq: MultiSequence = {
+            type: 'multi',
+            sequences: [seq1Text, seq2Text]
+        };
+
+        const splitItem = recursivelySplitStringsIn(multiSeq, new VariableRepositoryProxy());
+
+        expect(splitItem).to.have.length(1);
+        expect(splitItem[0]).to.deep.eq({ type: 'multi', sequences: [
+            ['c4', 'd8', 'e8'],
+            ['c,2', 'd,8', 'e,8', 'c4']
+        ] });
+
     });
 
     describe('Serialisation', () => {
