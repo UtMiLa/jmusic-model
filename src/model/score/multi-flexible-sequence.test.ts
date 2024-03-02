@@ -25,7 +25,7 @@ describe('Multi-Flexible Sequence', () => {
 
         expect(seq.seqs).to.deep.eq([]);
         //expect(seq.def).to.deep.eq([]);
-    });
+    });*/
 
     it('should accept a lilypond string', () => {
         const seq = new MultiFlexibleSequence(seq1Text);
@@ -42,6 +42,26 @@ describe('Multi-Flexible Sequence', () => {
         expect(seq.seqs[0].elements.length).to.eq(3);
         expect(seq.seqs[1].elements.length).to.eq(3);
         expect(seq.seqs[0].duration).to.deep.eq(Time.HalfTime);
-    });*/
+    });
+
+    it('should accept an array with a multi-sequence object', () => {
+        const seq = new MultiFlexibleSequence([multiObj1]);
+
+        expect(seq.seqs.length).to.eq(2);
+        expect(seq.seqs[0].elements.length).to.eq(3);
+        expect(seq.seqs[1].elements.length).to.eq(3);
+        expect(seq.seqs[0].duration).to.deep.eq(Time.HalfTime);
+    });
+
+    
+    it('should accept an array with a multi-sequence and a single-sequence object', () => {
+        const seq = new MultiFlexibleSequence(['g4 a4', multiObj1]);
+
+        expect(seq.seqs.length).to.eq(2);
+        expect(seq.seqs[0].elements.length).to.eq(5);
+        expect(seq.seqs[1].elements.length).to.eq(4);
+        expect(seq.seqs[0].duration).to.deep.eq(Time.WholeTime);
+        expect(seq.seqs[1].duration).to.deep.eq(Time.WholeTime);
+    });
 
 });

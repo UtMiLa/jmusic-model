@@ -18,7 +18,7 @@ export function makeProject(scoreFlex?: ScoreFlex, vars?: VarDict): ProjectDef {
     const varProxy = new VariableRepositoryProxy();
 
 
-    console.log('makeProject');
+    //console.log('makeProject');
     
 
     const vars1 = 
