@@ -1,10 +1,23 @@
 import R = require('ramda');
 import { FlexibleSequence } from './flexible-sequence';
-import { ISequence, ISequenceCollection } from './sequence';
-import { FlexibleItem, isMultiSequence, SeqFunction } from './types';
+import { ISequence, ISequenceCollection, MusicEvent } from './sequence';
+import { FlexibleItem, FuncDef, isMultiSequence, SeqFunction } from './types';
 import { VariableRepository } from './variables';
 import { Spacer } from '../notes/spacer';
 import { Time } from '../rationals/time';
+
+
+
+function applyFunctionOnSequence(funct: (a: MusicEvent) => MusicEvent, seq: ISequence): ISequence {
+    return seq; /*new FlexibleSequence(
+        { 
+            function: 'Reverse',
+            extraArgs: [],
+            args: seq.asObject 
+        } as SeqFunction
+    );*/
+}
+
 
 export class MultiFlexibleSequence implements ISequenceCollection {
     
@@ -24,7 +37,7 @@ export class MultiFlexibleSequence implements ISequenceCollection {
             if (maxSeqCount.length > 0) {
                 return R.range(0, maxSeqCount.length).map(i => {
                     const elements = allElements.map(elm => {
-                        if (elm.length > i) return elm[i];
+                        if (elm.length > i) return applyFunctionOnSequence(event => event, elm[i]);
                          
                         return new FlexibleSequence({
                             duration: elm[0].duration, 

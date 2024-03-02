@@ -22,9 +22,13 @@ export function voiceContentToSequence(content: VoiceContentDef, repo?: Variable
 }
 
 export function voiceDefToVoice(voiceDef: VoiceDef, repo?: VariableRepository): Voice[] {
-    return voiceContentToSequence(voiceDef.contentDef, repo).map(seq => ({
+    const seq = voiceContentToSequence(voiceDef.contentDef, repo);
+    const seqCount = seq.length;
+    //console.log('seq', seq);
+    
+    return seq.map((seq, idx) => ({
         content: seq,
-        noteDirection: voiceDef.noteDirection
+        noteDirection: seqCount === 1 ? voiceDef.noteDirection : idx === 0 ? NoteDirection.Up : NoteDirection.Down
     }));
 }
 
