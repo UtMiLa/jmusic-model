@@ -201,10 +201,10 @@ export class MyCanvasRenderer extends CanvasRenderer {
         if (!textElement.text) return [];
         const code = R.invertObj(emmentalerCodes);
         const theCode = code[textElement.text];
-        console.log(textElement, theCode);
+        //console.log(textElement, theCode);
         const note = emmentalerNotes['e_' + theCode];
         if (!note) return [];
-        console.log(textElement.text, theCode, note);
+        //console.log(textElement.text, theCode, note);
 
         return this.createPath(note, textElement.points[0]);//[{...textElement, text: 'c' + note.length }];
     }
@@ -230,12 +230,12 @@ export class MyCanvasRenderer extends CanvasRenderer {
                 if (nextObject) {
                     if (nextObject.type === DrawOperationType.CurveTo) {
                         const pointArray = R.splitEvery(3, nextObject.points);
-                        console.log('splitting ', pointArray);
+                        //console.log('splitting ', pointArray);
 
                         pointArray.forEach(pts => result.push({...nextObject as DrawOperation, points: pts}));
                     } else if (nextObject.type === DrawOperationType.LineTo) {
                         const pointArray = R.splitEvery(1, nextObject.points);
-                        console.log('splitting ', pointArray);
+                        //console.log('splitting ', pointArray);
 
                         pointArray.forEach(pts => result.push({...nextObject as DrawOperation, points: pts}));
                     } else {
@@ -357,7 +357,7 @@ export class MyCanvasRenderer extends CanvasRenderer {
 
         result.push({ type: DrawOperationType.Fill, points: []});
 
-        console.log(result);
+        //console.log(result);
 
         return result;
     }

@@ -62,8 +62,8 @@ setTimeout(() => {
                 initialMeter: { count: 4, value: 4 },
                 voices: [
                     {
-                        contentDef: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4']
-                        //contentDef: [{ type: 'multi', sequences: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4'] }]
+                        //contentDef: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4']
+                        contentDef: { type: 'multi', sequences: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4'] }
                     }
                 ]
             }

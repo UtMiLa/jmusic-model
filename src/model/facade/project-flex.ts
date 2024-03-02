@@ -17,6 +17,10 @@ function normalizeAllSeqs(val: VarDict, repo: VariableRepository): VarDict {
 export function makeProject(scoreFlex?: ScoreFlex, vars?: VarDict): ProjectDef {
     const varProxy = new VariableRepositoryProxy();
 
+
+    console.log('makeProject');
+    
+
     const vars1 = 
         vars
             ? normalizeAllSeqs(vars, varProxy)

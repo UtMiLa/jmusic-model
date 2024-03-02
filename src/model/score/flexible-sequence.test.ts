@@ -239,6 +239,22 @@ describe('Flexible Sequence', () => {
 
     });
 
+    it('should allow for multi sequences in flexible sequence', () => {
+        
+        const seq1Text = 'c4 d4 e2';
+        const seq2Text = 'c,2 d,4 e,4';
+        const multiSeq: MultiSequence = {
+            type: 'multi',
+            sequences: [seq1Text, seq2Text]
+        };
+
+        const seq = new FlexibleSequence(multiSeq, new VariableRepositoryProxy());
+
+        expect(seq.elements).to.have.length(6);
+        expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
+        //expect(seq.elements[1]).to.deep.eq(createNoteFromLilypond('c,2'));
+    });
+
     describe('Serialisation', () => {
         it('should simplify notes to lilypond strings', () => {
             const seq = new FlexibleSequence([seq1Text, [seq3Text, seq2Text]]);

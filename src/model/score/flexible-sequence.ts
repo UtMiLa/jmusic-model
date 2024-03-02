@@ -131,10 +131,14 @@ export class FlexibleSequence extends BaseSequence {
     private requireElements(isSingleStringArray: (test: unknown) => test is string[], isOtherFlexibleItemArray: (test: unknown) => test is FlexibleItem[], init: FlexibleItem[]) {
         if (this._elements === undefined) {
             this._elements = R.chain(
-                R.cond<FlexibleItem, string, SeqFunction, VariableRef, string[], MusicEvent, FlexibleItem[], MusicEvent[]>([
+                R.cond([
                     [
                         R.is(String),
                         ((item: string) => item ? [parseLilyElement(item) as MusicEvent] : [])
+                    ],                    
+                    [
+                        isMultiSequence,
+                        (item: MultiSequence) => R.flatten(item.sequences.map(subSeq => calcElements([subSeq], this.repo)))
                     ],
                     [
                         isSeqFunction,
@@ -221,10 +225,8 @@ export class FlexibleSequence extends BaseSequence {
             this.def = R.remove(path[0] as number, 1, this.def);
             return;
         }
-        
 
         throw 'Not implemented';
-
     }
 
     modifyElement(i: number | AbsoluteTime, fn: (from: FlexibleItem) => FlexibleItem): void {
