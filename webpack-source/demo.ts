@@ -11,8 +11,6 @@ function myRenderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElemen
     renderOnRenderer(physicalModel, new MyCanvasRenderer(canvas), position);
 }
 
-
-
 const textContainer = (document.querySelector('#message') as HTMLDivElement);
 
 export function render(jMusicTest: ProjectFlex): void {
@@ -64,9 +62,9 @@ setTimeout(() => {
                     {
                         //contentDef: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4']
                         contentDef: [
-                            'g\'4 s4 a\'2',
+                            'g\'4 r4 a\'2',
                             { type: 'multi', sequences: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4'] },
-                            'g\'4 s4 a\'2'
+                            'g\'4 r4 a\'2'
                         ]
                     }
                 ]
