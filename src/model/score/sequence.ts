@@ -11,7 +11,7 @@ import { Time, TimeSpan } from '../rationals/time';
 import { Clef, ClefDef } from '../states/clef';
 import { EventType, getExtendedTime } from './timing-order';
 import R = require('ramda');
-import { FlexibleItem } from './types';
+import { FlexibleItem, MultiFlexibleItem } from './types';
 import { Spacer, createSpacerFromLilypond, isSpacer } from '../notes/spacer';
 
 export type MusicEvent = Note | Spacer | StateChange | LongDecorationElement;
@@ -78,6 +78,7 @@ export interface ISequenceCollection {
 }
 
 export type SequenceDef = string | FlexibleItem[];
+export type MultiSequenceDef = string | MultiFlexibleItem[];
 
 export interface TimeSlot {
     time: AbsoluteTime;

@@ -1,7 +1,7 @@
 import { createRepo } from './../score/variables';
 import { ISequence, MusicEvent, isNote } from '../score/sequence';
 import R = require('ramda');
-import { FlexibleItem, FuncDef, ProjectDef, SeqFunction, VarDict, VariableDef } from '../score/types';
+import { FlexibleItem, FuncDef, MultiFlexibleItem, ProjectDef, SeqFunction, VarDict, VariableDef } from '../score/types';
 import { voiceDefToVoice, voiceSequenceToDef } from '../score/voice';
 import { FlexibleSequence, FunctionPathElement, PathElement, VarablePathElement, isFunctionPathElement, isVariablePathElement as isVariablePathElement, simplifyDef } from '../score/flexible-sequence';
 import { AbsoluteTime, Time } from '../rationals/time';
@@ -9,6 +9,7 @@ import { lookupVariable } from '../score/variables';
 import { ScoreDef } from '../score/score';
 import { Note } from '../notes/note';
 import { Func } from 'mocha';
+import { MultiFlexibleSequence } from '../score/multi-flexible-sequence';
 
 /*
 Different takes on the monad LensItem. First is MusicEvent | undefined and could be better implemented with the functional Maybe class.
@@ -65,6 +66,7 @@ export interface NaturalLensIndexScore {
     staff: number;
     voice: number;
     element: number;
+    subVoice?: number;
 }
 
 export interface NaturalLensIndexVariable {
@@ -109,7 +111,7 @@ function composeLenses<T1, T2, T3>(lens1: R.Lens<T1, T2>, lens2: R.Lens<T2, T3>)
 
 When lensing functions, it should do like this:
 
-    Simple case: function is an isomorphism like transposing and augmenting.
+    Simple case: function is an isomorphism like chromatic transposing and augmenting.
         Each note is transformed into one note using a note transformation, and the inverse transformation
         exists which can transform it back to the original.
         
@@ -124,7 +126,7 @@ When lensing functions, it should do like this:
     
     Lossy transformation: No inverse transformation exists.
         Removing notes will still allow for determining the original note, but modyfying
-        this might alter the result of other notes (e.g. transformation is leave only notes on strong beats;
+        this might alter the result of other notes (e.g. transformation is "leave only notes on strong beats";
         when changing the value of a note, the rest of the sequence can be on totally different beats).
         Other information losses can give similar problems. In some cases a qualified guess can be made 
         (e.g. diatonic transpose - where only a few accidentals might be wrong). In most cases modifications should fail.
@@ -191,7 +193,7 @@ function timedToIndex(pd: ProjectDef, timed: TimeLensIndex): NaturalLensIndex {
         staff: timed.staff,
         voice: timed.voice,
         element: getElementIndex(
-            new FlexibleSequence(pd.score.staves[timed.staff].voices[timed.voice].contentDef, createRepo(pd.vars)), 
+            new MultiFlexibleSequence(pd.score.staves[timed.staff].voices[timed.voice].contentDef, createRepo(pd.vars)).seqs[0],  // todo: get rid of seqs[0]
             timed.time, 
             timed.eventFilter
         )
@@ -228,7 +230,7 @@ function isVarPath<T>(path: PathElement<T>[]): boolean
 
 function sequenceElementSetter(domainConverter: DomainConverter<any, any>, index: NaturalLensIndexScore): (a: LensItem, s: ProjectDef) => ProjectDef {
     return (a: LensItem, pd: ProjectDef) => {
-        const seq = new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].contentDef, createRepo(pd.vars));
+        const seq = new MultiFlexibleSequence(pd.score.staves[index.staff].voices[index.voice].contentDef, createRepo(pd.vars));
         const path = seq.indexToPath(index.element);
         //console.log(path);
         path.pop(); // todo: remove annoying last 0 from path
@@ -241,7 +243,7 @@ function sequenceElementSetter(domainConverter: DomainConverter<any, any>, index
 }
 
 function sequenceElementGetter(index: NaturalLensIndexScore): (s: ProjectDef) => LensItem {
-    return (pd: ProjectDef) => lensItemOf(new FlexibleSequence(pd.score.staves[index.staff].voices[index.voice].contentDef, createRepo(pd.vars)).elements[index.element]);
+    return (pd: ProjectDef) => lensItemOf(new MultiFlexibleSequence(pd.score.staves[index.staff].voices[index.voice].contentDef, createRepo(pd.vars)).seqs[0].elements[index.element]); // todo: get rid of seqs[0]
 }
 
 function varLensByIndex(index: NaturalLensIndexVariable): ProjectLens {
@@ -264,8 +266,8 @@ function varSetter(index: NaturalLensIndexVariable): (a: LensItem, s: { vars: Va
     );
 }
 
-function elementsToDef(elements: MusicEvent[]): FlexibleItem {
-    return voiceSequenceToDef(new FlexibleSequence(elements));
+function elementsToDef(elements: MusicEvent[]): MultiFlexibleItem {
+    return voiceSequenceToDef(new MultiFlexibleSequence(elements).seqs[0]); // todo: get rid of seqs[0]
 }
 
 const musicEventChain = R.addIndex<MusicEvent, LensItem>(R.chain);
@@ -286,7 +288,7 @@ function setModifiedVar(index: NaturalLensIndexVariable, value: FlexibleItem, pd
             seq.elements.filter(
                 (value, i) => i !== index.element
             )
-    );    
+    ) as FlexibleItem;    // todo: support multi!
 }
 
 function varGetter(index: NaturalLensIndexVariable): (s: ProjectDef) => LensItem {

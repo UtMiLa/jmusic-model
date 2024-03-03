@@ -38,10 +38,10 @@ export function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepo
         return [item];//repo.valueOf(item.variable).elements;
     } else if (isMusicEvent(item)) {
         return [item];
-    } else if (isMultiSequence(item)) {
+    } /*else if (isMultiSequence(item)) {
         //throw 'Not supported a';
         return [{ type: 'multi', sequences: item.sequences.map(seq => recursivelySplitStringsIn(seq, repo)) } as MultiSequence];
-    } else {
+    } */else {
         return item.map(i => recursivelySplitStringsIn(i, repo));
         // why not: R.chain(i => recursivelySplitStringsIn(i, repo), item);
         // because this flattens all arrays - we should be able to group notes in locked chunks
@@ -136,10 +136,10 @@ export class FlexibleSequence extends BaseSequence {
                         R.is(String),
                         ((item: string) => item ? [parseLilyElement(item) as MusicEvent] : [])
                     ],                    
-                    [
+                    /*[
                         isMultiSequence,
                         (item: MultiSequence) => R.flatten(item.sequences.map(subSeq => calcElements([subSeq], this.repo)))
-                    ],
+                    ],*/
                     [
                         isSeqFunction,
                         (item: SeqFunction) => createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))

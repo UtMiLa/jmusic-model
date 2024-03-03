@@ -44,7 +44,9 @@ export const initStateInSequence = (s: ISequence) => {
     return res;
 };
 
-
+export const initStateInMultiSequence = (s: ISequence[]) => {
+    return s.reduce((prev, curr) => { return { prev, ... initStateInSequence(curr) }; }, {} as any);
+};
 
 /** Facade object for music scores */
 export class JMusic extends EditView implements EditableView {

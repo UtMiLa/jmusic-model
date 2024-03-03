@@ -48,9 +48,10 @@ export class VariableView extends EditView implements EditableView {
         throw new Error('Method not implemented.');
     }
     get domainConverter(): DomainConverter<SequenceDef | MultiSequence, MusicEvent[]> {
+        //throw 'Not implemented';
         return {
             fromDef: def => voiceContentToSequence(def, this.vars)[0].elements, // todo: correct voiceNo
-            toDef: events => voiceSequenceToDef(new FlexibleSequence(events, this.vars))
+            toDef: events => voiceSequenceToDef(new FlexibleSequence(events as FlexibleItem, this.vars)) as SequenceDef
         };
     }
     insertElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent, checkType: (e: MusicEvent) => boolean): void {

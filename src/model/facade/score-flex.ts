@@ -1,5 +1,5 @@
 import R = require('ramda');
-import { JMusicSettings, initStateInSequence } from '..';
+import { JMusicSettings, initStateInMultiSequence, initStateInSequence } from '..';
 import { NoteDirection } from '../notes/note';
 import { FlexibleSequence } from '../score/flexible-sequence';
 import { MultiFlexibleSequence } from '../score/multi-flexible-sequence';
@@ -87,12 +87,6 @@ export function makeScore(voice: string | JMusicSettings | ScoreDef | ProjectDef
                 initialKey: key,
                 initialMeter: meter,
                 voices: R.addIndex<FlexibleItem, VoiceDef[]>(R.chain)(f)(stf)
-
-                /*voices: R.chain((cnt: FlexibleItem, idx: number) => 
-                    new MultiFlexibleSequence(cnt, vars).seqs.map(seq => ({
-                        contentDef: seq.asObject,
-                        noteDirection: stf.length === 1 ? NoteDirection.Undefined : idx % 2 === 0 ? NoteDirection.Up : NoteDirection.Down
-                    } as VoiceDef)))(stf)*/
             });
         });
     }
@@ -101,7 +95,7 @@ export function makeScore(voice: string | JMusicSettings | ScoreDef | ProjectDef
 
     score.staves.forEach(staff => {
         staff.voices.forEach(voice => {
-            const states = initStateInSequence(new FlexibleSequence(voice.contentDef, vars));
+            const states = initStateInMultiSequence(new MultiFlexibleSequence(voice.contentDef, vars).seqs);
             if (states.clef) {
                 //console.log('changing clef', staff.initialClef, states.clef);
                 staff.initialClef = states.clef.def;

@@ -1,12 +1,12 @@
 import { NoteDirection } from './../notes/note';
 import { FlexibleSequence } from './flexible-sequence';
 import { MultiFlexibleSequence } from './multi-flexible-sequence';
-import { ISequence, SequenceDef } from './sequence';
+import { ISequence, MultiSequenceDef, SequenceDef } from './sequence';
 import { FlexibleItem, MultiSequence, MultiFlexibleItem } from './types';
 import { VariableRepository } from './variables';
 
 
-export type VoiceContentDef = SequenceDef | MultiSequence; 
+export type VoiceContentDef = MultiSequenceDef | MultiSequence; 
 export interface VoiceDef {
     contentDef: VoiceContentDef;
     noteDirection?: NoteDirection;

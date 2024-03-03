@@ -26,7 +26,7 @@ import { JMusic } from '../facade/jmusic';
 import R = require('ramda');
 import { createNoteFromLilypond } from '../notes/note';
 import { ISequence, SequenceDef, isNote } from '../score/sequence';
-import { ProjectDef, VariableDef } from '../score/types';
+import { FlexibleItem, ProjectDef, VariableDef } from '../score/types';
 import { DomainConverter, lensFromLensDef, lensItemOf, projectLensByIndex, projectLensByTime } from './lens';
 import { FlexibleSequence } from '../score/flexible-sequence';
 import { createRepo } from '../score/variables';
@@ -274,7 +274,7 @@ describe('Lenses', () => {
         it('should create a correct lens to a function', () => {
 
 
-            const seq = new FlexibleSequence(projectDef.score.staves[0].voices[2].contentDef, createRepo(projectDef.vars));
+            const seq = new FlexibleSequence(projectDef.score.staves[0].voices[2].contentDef as FlexibleItem, createRepo(projectDef.vars));
             const path = seq.indexToPath(3);
             expect(path).to.deep.equal(
                 [
