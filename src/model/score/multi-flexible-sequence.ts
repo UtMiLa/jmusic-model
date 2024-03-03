@@ -20,7 +20,7 @@ function applyFunctionOnSequence(funct: (a: MusicEvent) => MusicEvent, seq: ISeq
 
 
 export class MultiFlexibleSequence implements ISequenceCollection {
-    constructor(item: MultiFlexibleItem, repo?: VariableRepository) {
+    constructor(item: MultiFlexibleItem, private repo?: VariableRepository) {
         //this.sequences = [new FlexibleSequence(item, repo)];
         this.sequences = this.calcSequences(item, repo);
     }
@@ -63,8 +63,7 @@ export class MultiFlexibleSequence implements ISequenceCollection {
     }
 
     indexToPath(element: number): PathElement<MusicEvent>[] {
-        //throw new Error('Method not implemented.');
-        const seq = new FlexibleSequence(this.sequences[0].asObject); // todo: get rid of seqs[0]
+        const seq = new FlexibleSequence(this.sequences[0].asObject, this.repo); // todo: get rid of seqs[0]
         return seq.indexToPath(element);
     }
 }
