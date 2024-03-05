@@ -62,9 +62,16 @@ setTimeout(() => {
                     {
                         //contentDef: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4']
                         contentDef: [
-                            'g\'4 r4 a\'2',
+                            'b\'4 r4 c\'\'2',
                             { type: 'multi', sequences: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4'] },
                             'g\'4 r4 a\'2'
+                        ]
+                    },
+                    
+                    {
+                        //contentDef: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4']
+                        contentDef: [
+                            'g\'2 ees\'2'
                         ]
                     }
                 ]
