@@ -1,7 +1,7 @@
-import { VoiceDef, voiceDefToVoice } from './voice';
+import { voiceDefToVoice } from './voice';
 import { expect } from 'chai';
-import { MultiSequence } from './types';
-import { ClefType, JMusic, ScoreDef } from '..';
+import { MultiSequence } from '..';
+import { ClefType, JMusic, ScoreDef, VoiceDef } from '..';
 
 describe('Voices', () => {
     

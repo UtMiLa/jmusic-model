@@ -1,7 +1,8 @@
+import { ClefType } from './../data-only/states';
 import { Time } from './../rationals/time';
 import { parseLilyClef, SimpleSequence } from './../score/sequence';
 import { Pitch } from '../pitches/pitch';
-import { Clef, ClefType } from './clef';
+import { Clef } from './clef';
 import { expect } from 'chai';
 
 describe('Clef', () => {

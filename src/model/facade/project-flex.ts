@@ -1,6 +1,6 @@
 import R = require('ramda');
 import { FlexibleSequence, JMusicSettings, ScoreDef } from '..';
-import { ProjectDef, FlexibleItem, isProjectDef, VariableDef, VarDict } from '../score/types';
+import { ProjectDef, FlexibleItem, isProjectDef, VariableDef, VarDict } from '..';
 import { VariableRepository, VariableRepositoryProxy, createRepo } from '../score/variables';
 import { ScoreFlex, makeScore } from './score-flex';
 

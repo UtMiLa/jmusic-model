@@ -1,3 +1,12 @@
+export * from './data-only/project';
+export * from './data-only/score';
+export * from './data-only/voices';
+export * from './data-only/notes';
+export * from './data-only/states';
+export * from './data-only/decorations';
+export * from './data-only/variables';
+export * from './data-only/functions';
+
 export * from './model';
 export * from './notes/note';
 export * from './pitches/pitch';
@@ -18,7 +27,7 @@ export * from './score/voice';
 export * from './score/transformations';
 export * from './notes/beaming';
 export * from './notes/lyrics';
-export * from './decorations/decoration-type';
+//export * from './decorations/decoration-type';
 export * from './facade/jmusic';
 export * from './facade/variable-view';
 export * from './facade/views';

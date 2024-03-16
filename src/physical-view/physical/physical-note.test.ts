@@ -2,7 +2,7 @@ import { PhysicalVertVarSizeElement } from './physical-elements';
 import { FlagType, NoteViewModel } from './../../logical-view/view-model/note-view-model';
 import { HorizVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */
-import { NoteType, NoteDirection } from '../../model/notes/note';
+import { NoteType, NoteDirection } from '../../model';
 import { Metrics, StandardMetrics } from './metrics';
 import { expect } from 'chai';
 import { convertNote } from './physical-note';

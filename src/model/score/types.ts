@@ -1,7 +1,8 @@
-import { ScoreDef } from './score';
+import { FuncDef } from './../data-only/functions';
+import { ScoreDef, VarDict } from '..';
 import { MusicEvent } from './sequence';
 
-export interface VariableDef {
+/*export interface VariableDef {
     id: string;
     value: FlexibleItem;
 }
@@ -26,12 +27,12 @@ export function isMultiSequence(test: unknown): test is MultiSequence {
     return !!test && (test as MultiSequence).type === 'multi';
 }
 
-
-export type FlexibleItem = string | SeqFunction | VariableRef | FlexibleItem[] | MusicEvent/* | MultiSequence*/;
+/*
+export type FlexibleItem = string | SeqFunction | VariableRef | FlexibleItem[] | MusicEvent;
 export type MultiFlexibleItem = FlexibleItem | MultiFlexibleItem[] | MultiSequence;
+*/
 
-
-export interface SeqFunction {
+/*export interface SeqFunction {
     function: FuncDef;
     args: FlexibleItem;
     extraArgs?: unknown[];
@@ -40,9 +41,9 @@ export interface SeqFunction {
 export function isSeqFunction(test: unknown): test is SeqFunction {
     return !!test && !!(test as SeqFunction).function && !!(test as SeqFunction).args;
 }
+*/
 
-
-export interface ProjectDef {
+/*export interface ProjectDef {
     score: ScoreDef;
     vars: VarDict;
 }
@@ -50,3 +51,4 @@ export interface ProjectDef {
 export function isProjectDef(test: unknown): test is ProjectDef {
     return !!test && !!(test as ProjectDef).score && !!(test as ProjectDef).vars;
 }
+*/

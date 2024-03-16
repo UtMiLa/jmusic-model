@@ -1,8 +1,4 @@
-import { StaffDef } from './../model/score/staff';
-import { ScoreDef } from './../model/score/score';
-import { RegularMeterDef } from './../model/states/meter';
-import { ClefDef } from './../model/states/clef';
-import { KeyDef } from './../model/states/key';
+import { StaffDef, ScoreDef, RegularMeterDef, ClefDef, KeyDef } from './../model';
 import { DialogProvider } from './dialog-provider';
 import R = require('ramda');
 import { makeClef } from '../model/facade/clef-flex';

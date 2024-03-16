@@ -1,5 +1,5 @@
-import { parseLilyMeter } from "../score/sequence";
-import { Meter, RegularMeterDef } from "../states/meter";
+import { parseLilyMeter } from '../score/sequence';
+import { Meter, RegularMeterDef } from '..';
 
 /** Tolerant input type for meters: a Meter object, a RegularMeterDef definition, or a string in Lilypond format */
 export type MeterFlex = Meter | RegularMeterDef | string;

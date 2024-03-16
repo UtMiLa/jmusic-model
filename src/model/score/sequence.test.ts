@@ -1,9 +1,10 @@
+import { LongDecorationType } from './../data-only/decorations';
+import { NoteDirection } from './../data-only/notes';
 import { Pitch } from './../pitches/pitch';
-import { createNoteFromLilypond, Note, NoteDirection, setDuration } from './../notes/note';
+import { createNoteFromLilypond, Note, setDuration } from './../notes/note';
 import { Time } from '../rationals/time';
 import { SimpleSequence, CompositeSequence, getDuration, BaseSequence, ISequence, splitByNotes } from './sequence';
 import { expect } from 'chai';
-import { LongDecorationType } from '../decorations/decoration-type';
 import { SinonSpy } from 'sinon';
 import Sinon = require('sinon');
 import { MeterFactory } from '../states/meter';

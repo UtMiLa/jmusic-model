@@ -1,14 +1,14 @@
 import { Staff, staffDefToStaff } from './../score/staff';
 import { InsertionPoint, InsertionPointDef } from '../../editor/insertion-point';
 import { ChangeHandler, Clef, FlexibleSequence, JMusic, voiceContentToSequence, voiceSequenceToDef } from '..';
-import { TupletState, NoteDirection, Note } from '../notes/note';
+import { TupletState, NoteDirection, Note } from '..';
 import { NoteExpression } from '../notes/note-expressions';
 import { DomainConverter, ProjectLens, LensItem, projectLensByIndex, lensItemNone } from '../optics/lens';
 import { Pitch } from '../pitches/pitch';
 import { RationalDef } from '../rationals/rational';
 import { TimeSpan } from '../rationals/time';
-import { ISequence, SequenceDef, MusicEvent } from '../score/sequence';
-import { FlexibleItem, MultiSequence } from '../score/types';
+import { ISequence, SequenceDef, MusicEvent } from '..';
+import { FlexibleItem, MultiSequence } from '..';
 import { VariableRepository, valueOf } from '../score/variables';
 import { EditView, EditableView } from './views';
 import { makeScore } from './score-flex';

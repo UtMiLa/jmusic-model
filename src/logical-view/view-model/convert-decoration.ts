@@ -1,8 +1,9 @@
-import { NoteDirection } from './../../model/notes/note';
+import { NoteDirection } from './../../model/data-only/notes';
+import { LongDecorationElement, LongDecorationType } from './../../model/data-only/decorations';
+import { setNoteDirection } from './../../model/notes/note';
 import { TimeSlot } from './../../model/score/sequence';
 import { Time, AbsoluteTime } from './../../model/rationals/time';
 import { NoteRef } from './note-view-model';
-import { LongDecorationElement, LongDecorationType } from './../../model/decorations/decoration-type';
 
 export interface LongDecorationViewModel {
     noteRefs: NoteRef[];

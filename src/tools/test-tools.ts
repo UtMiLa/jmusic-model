@@ -1,4 +1,4 @@
-import { FlexibleItem } from './../model/score/types';
+import { FlexibleItem } from './../model';
 import { scoreModelToViewModel, ScoreViewModel } from '../logical-view';
 import { ClefType, Note, RegularMeterDef, ScoreDef, scoreDefToScore, setGrace, SimpleSequence, StaffDef, staffDefToStaff, Time } from './../model';
 

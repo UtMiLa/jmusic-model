@@ -73,7 +73,7 @@ export class Pitch {
 
     get lilypond(): string {
         const scaleDegree = this.pitchClassName;
-        const alteration = ['eses', 'es', '', 'is', 'isis'][this._accidental + 2];
+        const alteration = accidentalNamesLy[this._accidental + 2];
         let octave = '';
         if (this.octave > 3)
             octave = Array(this.octave - 3).fill('\'').join('');

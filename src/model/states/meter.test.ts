@@ -1,8 +1,9 @@
+import { RegularMeterDef } from './../data-only/states';
 import { StateChange } from './state';
 import { Time } from './../rationals/time';
 import { parseLilyMeter, SimpleSequence, __internal } from './../score/sequence';
 import { expect } from 'chai';
-import { getAllBars, Meter, MeterFactory, RegularMeterDef, MeterMap } from './meter';
+import { getAllBars, Meter, MeterFactory, MeterMap } from './meter';
 describe('Meter', () => {
     describe('Regular meter', () => {
         let meter1: RegularMeterDef, meter2: RegularMeterDef, meter3: RegularMeterDef;

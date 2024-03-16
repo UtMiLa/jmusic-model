@@ -1,12 +1,11 @@
 import { Pitch } from './../pitches/pitch';
-import { createNoteFromLilypond, Note, NoteDirection, TupletState } from './../notes/note';
+import { createNoteFromLilypond, Note } from './../notes/note';
 import { Time } from '../rationals/time';
 import { getDuration } from './sequence';
 import { expect } from 'chai';
-import { LongDecorationType } from '../decorations/decoration-type';
 import { FlexibleSequence } from './flexible-sequence';
 import { createFunction } from './functions';
-import { FuncDef, SeqFunction } from './types';
+import { FuncDef, SeqFunction, TupletState } from '..';
 
 // Inspiration: Lilypond functions https://lilypond.org/doc/v2.25/Documentation/notation/available-music-functions
 

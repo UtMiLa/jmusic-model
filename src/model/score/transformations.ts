@@ -1,9 +1,11 @@
 import { AbsoluteTime, Time } from './../rationals/time';
 import { Rational, RationalDef } from '../../model/rationals/rational';
-import { Note, setGrace, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
+import { Note, setGrace, setTupletFactor, setTupletGroup } from '../notes/note';
 import { TimeSpan } from '../rationals/time';
-import { isLongDecoration, isStateChange, BaseSequence, ISequence, MusicEvent, TimeSlot, SequenceDef } from './sequence';
+import { isLongDecoration, isStateChange, BaseSequence, ISequence, MusicEvent, TimeSlot } from './sequence';
 import { isSpacer } from '../notes/spacer';
+import { SequenceDef } from '../data-only/voices';
+import { TupletState } from '../data-only/notes';
 
 
 export class RetrogradeSequence extends BaseSequence {

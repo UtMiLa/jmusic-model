@@ -1,7 +1,4 @@
-import { ClefType } from './../states/clef';
-import { VoiceDef } from './voice';
-import { SimpleSequence, SequenceDef } from './sequence';
-import { StaffDef } from './staff';
+import { StaffDef, VoiceDef, ClefType, SequenceDef } from './..';
 describe('Staff', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';

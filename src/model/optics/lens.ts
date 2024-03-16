@@ -1,12 +1,12 @@
 import { createRepo } from './../score/variables';
 import { ISequence, MusicEvent, isNote } from '../score/sequence';
 import R = require('ramda');
-import { FlexibleItem, FuncDef, MultiFlexibleItem, ProjectDef, SeqFunction, VarDict, VariableDef } from '../score/types';
+import { FlexibleItem, FuncDef, MultiFlexibleItem, ProjectDef, SeqFunction, VarDict, VariableDef } from '../';
 import { voiceDefToVoice, voiceSequenceToDef } from '../score/voice';
 import { FlexibleSequence, FunctionPathElement, PathElement, VarablePathElement, isFunctionPathElement, isVariablePathElement as isVariablePathElement, simplifyDef } from '../score/flexible-sequence';
 import { AbsoluteTime, Time } from '../rationals/time';
 import { lookupVariable } from '../score/variables';
-import { ScoreDef } from '../score/score';
+import { ScoreDef } from '../';
 import { Note } from '../notes/note';
 import { Func } from 'mocha';
 import { MultiFlexibleSequence } from '../score/multi-flexible-sequence';

@@ -3,10 +3,9 @@ import { Note, UpdateNote } from './note';
 import { TupletSequence } from './../score/transformations';
 import { Time } from './../rationals/time';
 import { getAllBeats, MeterFactory, MeterMap } from './../states/meter';
-import { SimpleSequence, SequenceDef } from './../score/sequence';
+import { SimpleSequence } from './../score/sequence';
 import { expect } from 'chai';
 import { calcBeamGroups, __beaming_internal as __internal } from './beaming';
-import { StaffDef } from '../score/staff';
 
 describe('Beaming', () => {
 

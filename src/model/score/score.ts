@@ -1,10 +1,11 @@
+import { ScoreDef } from './../data-only/score';
 import { RepeatDef } from './repeats';
-import { Staff, StaffDef, staffDefToStaff } from './staff';
+import { Staff, staffDefToStaff } from './staff';
 import { VariableRepository, createRepo } from './variables';
-export interface ScoreDef {
+/*export interface ScoreDef {
     staves: StaffDef[]
     repeats?: RepeatDef[];
-}
+}*/
 
 export interface Score {
     staves: Staff[]

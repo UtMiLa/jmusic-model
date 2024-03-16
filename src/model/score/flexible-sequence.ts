@@ -1,13 +1,17 @@
+import { VariableRef } from './../data-only/variables';
+import { SeqFunction } from './../data-only/functions';
+import { SequenceDef, FlexibleItem } from './../data-only/voices';
 import { createRepo, isVariableRef, valueOf, VariableRepository } from './variables';
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
 import { createFunction, createInverseFunction } from './functions';
-import { BaseSequence, getDuration, isMusicEvent, isNote, MusicEvent, parseLilyElement, SequenceDef, SimpleSequence, splitByNotes } from './sequence';
+import { BaseSequence, getDuration, isMusicEvent, isNote, MusicEvent, parseLilyElement, SimpleSequence, splitByNotes } from './sequence';
 
 // Fix for types for R.chain
 import * as _ from 'ts-toolbelt';
-import { FlexibleItem, isMultiSequence, isSeqFunction, MultiSequence, SeqFunction, VariableRef } from './types';
+import { isMultiSequence, MultiSequence } from '..';
 import { Note, noteAsLilypond } from '../notes/note';
+import { isSeqFunction } from '../data-only/functions';
 type addIndexFix<T, U> = (
     fn: (f: (item: T) => U, list: readonly T[]) => U,
 ) => _.F.Curry<(a: (item: T, idx: number, list: T[]) => U, b: readonly T[]) => U>;

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { createNoteFromLilypond } from '../notes/note';
 import { FlexibleSequence } from './flexible-sequence';
 import { VariableRepository, createRepo, setVar } from './variables';
-import { VariableDef, FlexibleItem } from './types';
+import { VariableDef, FlexibleItem } from '../';
 
 describe('Variables', () => {
     it('should insert variable in sequence', () => {

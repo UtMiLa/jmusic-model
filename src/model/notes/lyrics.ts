@@ -1,4 +1,4 @@
-import { MusicEvent, SequenceDef } from './../score/sequence';
+import { MusicEvent, SequenceDef } from './..';
 import { Time, AbsoluteTime } from './../rationals/time';
 import { TimeSpan } from '../rationals/time';
 import { BaseSequence, ISequence } from '../score/sequence';

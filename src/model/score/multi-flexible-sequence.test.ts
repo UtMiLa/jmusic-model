@@ -1,13 +1,12 @@
 import { Pitch } from './../pitches/pitch';
-import { createNoteFromLilypond, Note, NoteDirection, setDuration } from './../notes/note';
+import { createNoteFromLilypond, Note, setDuration } from './../notes/note';
 import { Time } from '../rationals/time';
 import { parseLilyClef } from './sequence';
 import { expect } from 'chai';
-import { LongDecorationType } from '../decorations/decoration-type';
 import { FlexibleSequence } from './flexible-sequence';
 import { createRepo, VariableRepository } from './variables';
 import { MultiFlexibleSequence } from './multi-flexible-sequence';
-import { MultiSequence } from './types';
+import { MultiSequence } from '..';
 describe('Multi-Flexible Sequence', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';

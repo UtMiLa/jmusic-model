@@ -1,8 +1,9 @@
 import { GraceSequence, RetrogradeSequence, TupletSequence } from './transformations';
-import { createNoteFromLilypond, Note, NoteDirection, TupletState } from './../notes/note';
+import { createNoteFromLilypond } from './../notes/note';
 import { Time } from '../rationals/time';
 import { SimpleSequence, CompositeSequence, getDuration } from './sequence';
 import { expect } from 'chai';
+import { TupletState } from '../data-only/notes';
 describe('Sequence transformations', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';

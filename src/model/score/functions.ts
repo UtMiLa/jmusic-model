@@ -1,11 +1,12 @@
+import { FuncDef } from './../data-only/functions';
 import R = require('ramda');
-import { Note, setGrace, setPitches, setTupletFactor, setTupletGroup, TupletState } from '../notes/note';
+import { Note, setGrace, setPitches, setTupletFactor, setTupletGroup } from '../notes/note';
 import { addInterval, Interval, invertInterval } from '../pitches/intervals';
 import { Pitch } from '../pitches/pitch';
 import { RationalDef } from '../rationals/rational';
 import { isNote, MusicEvent } from './sequence';
-import { SeqFunction, FuncDef } from './types';
 import { mapLyricsToMusic } from '../notes/lyrics';
+import { TupletState } from '../data-only/notes';
 
 /* todo functions:
     repeatFor       [# of times]            repeat for a timespan

@@ -1,10 +1,11 @@
+import { KeyDef } from './../data-only/states';
 import { add, mathMod, multiply, pipe, range, times, __ } from 'ramda';
 import { Alteration, Pitch, PitchClass, Accidental } from './../pitches/pitch';
 
-export interface KeyDef {
+/*export interface KeyDef {
     accidental: Alteration;
     count: number;
-}
+}*/
 
 export class Key {
     constructor(public def: KeyDef) {}

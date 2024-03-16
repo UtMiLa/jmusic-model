@@ -1,4 +1,5 @@
-import { LongDecorationElement } from './../decorations/decoration-type';
+import { SequenceDef } from './../data-only/voices';
+import { LongDecorationElement } from './..';
 //import { generateUniqueId } from '../../tools/unique-id';
 import { Meter, MeterFactory } from './../states/meter';
 import { Pitch } from './../pitches/pitch';
@@ -8,10 +9,10 @@ import { StateChange } from './../states/state';
 import { AbsoluteTime, ExtendedTime } from './../rationals/time';
 import { createNoteFromLilypond, getRealDuration, Note, setNoteId } from '../notes/note';
 import { Time, TimeSpan } from '../rationals/time';
-import { Clef, ClefDef } from '../states/clef';
+import { Clef } from '../states/clef';
 import { EventType, getExtendedTime } from './timing-order';
 import R = require('ramda');
-import { FlexibleItem, MultiFlexibleItem } from './types';
+import { FlexibleItem, MultiFlexibleItem } from '..';
 import { Spacer, createSpacerFromLilypond, isSpacer } from '../notes/spacer';
 
 export type MusicEvent = Note | Spacer | StateChange | LongDecorationElement;
@@ -77,8 +78,8 @@ export interface ISequenceCollection {
     seqs: ISequence[];
 }
 
-export type SequenceDef = string | FlexibleItem[];
-export type MultiSequenceDef = string | MultiFlexibleItem[];
+/*export type SequenceDef = string | FlexibleItem[];
+export type MultiSequenceDef = string | MultiFlexibleItem[];*/
 
 export interface TimeSlot {
     time: AbsoluteTime;

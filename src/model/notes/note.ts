@@ -6,7 +6,8 @@ import { Pitch } from '../pitches/pitch';
 //import { mergeRight } from 'ramda';
 import * as R from 'ramda';
 import { getDotNumber, getUndottedValue } from '../rationals/dots';
-
+import { NoteDirection, NoteType, TupletState } from '../data-only/notes';
+/*
 export enum NoteType {
     NBreve = 1, NWhole, NHalf, NQuarter,
     RBreve, RWhole, RHalf, RQuarter, R8, R16, R32, R64, R128
@@ -19,7 +20,7 @@ export enum NoteDirection {
 export enum TupletState {
     None, Begin, Inside, End
 }
-
+*/
 export type NoteBase = {
     pitches: Pitch[];
     nominalDuration: TimeSpan;

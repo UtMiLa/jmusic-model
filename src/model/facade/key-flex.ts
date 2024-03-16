@@ -1,5 +1,5 @@
-import { parseLilyKey } from "..";
-import { Key, KeyDef } from "../states/key";
+import { parseLilyKey, KeyDef } from '..';
+import { Key } from '../states/key';
 
 /** Tolerant input type for key: a Key object, a KeyDef definition, or a string in Lilypond format */
 export type KeyFlex = Key | KeyDef | string;

@@ -1,14 +1,14 @@
-import { LongDecorationType } from './../decorations/decoration-type';
+import { LongDecorationType } from './..';
 import { InsertionPoint } from './../../editor/insertion-point';
 import { MeterFactory } from './../states/meter';
 import { Time } from './../rationals/time';
-import { Clef, ClefType } from './../states/clef';
+import { Clef, ClefType } from './..';
 import { expect } from 'chai';
 import { JMusic, initStateInSequence } from './jmusic';
-import { createNoteFromLilypond, Note, NoteDirection } from '../notes/note';
+import { createNoteFromLilypond, Note, NoteDirection } from '..';
 import { Pitch } from '../pitches/pitch';
 import { Key } from '../states/key';
-import { StaffDef } from '../score/staff';
+import { StaffDef } from '..';
 import { FlexibleSequence } from '../score/flexible-sequence';
 import R = require('ramda');
 import { valueOf } from '../score/variables';

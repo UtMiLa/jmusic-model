@@ -3,13 +3,13 @@ import { getExtendedTime } from '../../model/score/timing-order';
 import { createTestScore, createTestScoreVM } from '../../tools/test-tools';
 import { SimpleSequence } from './../../model/score/sequence';
 import { MeterFactory } from './../../model/states/meter';
-import { ScoreDef, scoreDefToScore } from './../../model/score/score';
+import { ScoreDef, scoreDefToScore } from './../../model';
 import { Time } from './../../model/rationals/time';
 import { Clef } from './../../model/states/clef';
 import { setStaffSequence, staffDefToStaff } from './../../model/score/staff';
-import { StaffDef } from '../../model/score/staff';
+import { StaffDef } from '../../model';
 import { expect } from 'chai';
-import { ClefType } from '../../model/states/clef';
+import { ClefType } from '../../model';
 import { scoreModelToViewModel } from './convert-model';
 
 describe('State change view model', () => {

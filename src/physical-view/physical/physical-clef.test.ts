@@ -7,8 +7,8 @@ import { Accidental } from './../../model/pitches/pitch';
 import { Time } from './../../model/rationals/time';
 import { HorizVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */
-import { NoteType, NoteDirection } from '../../model/notes/note';
-import { ClefType } from '../../model/states/clef';
+import { NoteType, NoteDirection } from '../../model';
+import { ClefType } from '../../model';
 import { PhysicalElementBase, PhysicalVertVarSizeElement, getPhysicalRect } from './physical-elements';
 import { Metrics, StandardMetrics } from './metrics';
 import { VertVarSizeGlyphs, FixedSizeGlyphs } from './glyphs';

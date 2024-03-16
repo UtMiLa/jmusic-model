@@ -1,6 +1,6 @@
 import { InsertionPoint, InsertionPointDef } from '../../editor/insertion-point';
 import { ChangeHandler, Clef, JMusic, Key, MeterFactory, VoiceContentDef } from '..';
-import { LongDecorationType } from '../decorations/decoration-type';
+import { LongDecorationType } from '../';
 import { Note, cloneNote } from '../notes/note';
 import { DomainConverter, LensItem, ProjectLens, doWithNote, lensItemNone, lensItemOf } from '../optics/lens';
 import { Alteration, Pitch } from '../pitches/pitch';
@@ -8,7 +8,7 @@ import { TimeSpan } from '../rationals/time';
 import { Score } from '../score/score';
 import { ISequence, MusicEvent, isClefChange, isKeyChange, isMeterChange } from '../score/sequence';
 import { Staff } from '../score/staff';
-import { FlexibleItem } from '../score/types';
+import { FlexibleItem } from '../';
 import { VariableRepository, valueOf } from '../score/variables';
 import { ClefFlex, makeClef } from './clef-flex';
 import { KeyFlex, makeKey } from './key-flex';

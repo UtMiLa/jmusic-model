@@ -1,7 +1,7 @@
 import R = require('ramda');
 import { FlexibleSequence, PathElement } from './flexible-sequence';
 import { ISequence, ISequenceCollection, MusicEvent } from './sequence';
-import { FlexibleItem, FuncDef, isMultiSequence, MultiFlexibleItem, SeqFunction } from './types';
+import { FlexibleItem, FuncDef, isMultiSequence, MultiFlexibleItem, SeqFunction } from '..';
 import { VariableRepository } from './variables';
 import { Spacer } from '../notes/spacer';
 import { Time } from '../rationals/time';

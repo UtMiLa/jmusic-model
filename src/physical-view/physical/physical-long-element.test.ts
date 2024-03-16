@@ -4,7 +4,7 @@ import { ScoreViewModel } from './../../logical-view/view-model/score-view-model
 import { NoteViewModel } from './../../logical-view/view-model/note-view-model';
 import { VertVarSizeGlyphs } from './glyphs';
 /* eslint-disable comma-dangle */
-import { NoteType, NoteDirection } from '../../model/notes/note';
+import { NoteType, NoteDirection } from '../../model';
 import { Metrics, StandardMetrics } from './metrics';
 import { expect } from 'chai';
 import { viewModelToPhysical } from './viewmodel-to-physical';

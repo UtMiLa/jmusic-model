@@ -2,10 +2,10 @@ import { JMusic } from './../../model/facade/jmusic';
 import { Time } from './../../model/rationals/time';
 import { TupletSequence } from './../../model/score/transformations';
 import { SimpleSequence } from './../../model/score/sequence';
-import { Clef, ClefType } from '../../model/states/clef';
+import { Clef, ClefType } from '../../model';
 import { createNoteFromLilypond, Note, setNoteDirection, setNoteText } from '../../model/notes/note';
 /* eslint-disable comma-dangle */
-import { NoteType, NoteDirection } from '../../model/notes/note';
+import { NoteType, NoteDirection } from '../../model';
 import { expect } from 'chai';
 import { FlagType } from './note-view-model';
 import { noteToView } from './convert-note';

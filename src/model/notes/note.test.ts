@@ -1,6 +1,7 @@
+import { NoteType } from './../data-only/notes';
 import { TimeSpan } from './../rationals/time';
 import { Time } from '../rationals/time';
-import { createNote, createNoteFromLilypond, getDotNo, getNominalDuration, getNoteType, getUndottedDuration, Note, noteAsLilypond, NoteType, setTupletFactor } from './note';
+import { createNote, createNoteFromLilypond, getDotNo, getNominalDuration, getNoteType, getUndottedDuration, Note, noteAsLilypond, setTupletFactor } from './note';
 import { expect } from 'chai';
 import { Pitch } from '../pitches/pitch';
 import { getDuration } from '../score/sequence';

@@ -6,8 +6,8 @@ import { SimpleSequence, CompositeSequence } from './../../model/score/sequence'
 import { StateChange } from './../../model/states/state';
 import { Time } from './../../model/rationals/time';
 import { expect } from 'chai';
-import { ClefType } from './../../model/states/clef';
-import { StaffDef, staffDefToStaff } from './../../model/score/staff';
+import { ClefType } from './../../model';
+import { StaffDef, staffDefToStaff } from './../../model';
 import { __internal } from './../../logical-view/view-model/convert-model';
 import { Metrics, StandardMetrics } from './metrics';
 import { findSystemSplits, generateMeasureMap, MeasureMap, MeasureMapItem, MeasureMapXValueItem } from './measure-map';

@@ -1,6 +1,6 @@
 import { JMusic } from './../../model/facade/jmusic';
 import { Time } from './../../model/rationals/time';
-import { LongDecorationType } from './../../model/decorations/decoration-type';
+import { LongDecorationType } from './../../model';
 import { expect } from 'chai';
 import { LongDecoToView } from './convert-decoration';
 

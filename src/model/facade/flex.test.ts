@@ -1,6 +1,7 @@
+import { ClefType } from './../data-only/states';
 import { MeterFactory } from './../states/meter';
 import { Time } from './../rationals/time';
-import { Clef, ClefType } from './../states/clef';
+import { Clef } from './../states/clef';
 import { expect } from 'chai';
 import { createNote } from '../notes/note';
 import { Pitch } from '../pitches/pitch';

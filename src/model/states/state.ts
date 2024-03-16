@@ -1,7 +1,8 @@
+import { ClefDef, KeyDef, RegularMeterDef } from './../data-only/states';
 import { Time, TimeSpan } from './../rationals/time';
-import { Key, KeyDef } from './key';
-import { Clef, ClefDef } from './clef';
-import { Meter, RegularMeterDef } from './meter';
+import { Key } from './key';
+import { Clef } from './clef';
+import { Meter } from './meter';
 
 export interface StateChangeDef {
     clef?: ClefDef;

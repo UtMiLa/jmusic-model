@@ -1,17 +1,17 @@
-import { RegularMeterDef } from './../states/meter';
-import { Voice, VoiceDef, voiceDefToVoice, voiceSequenceToDef } from './voice';
-import { KeyDef } from './../states/key';
+import { RegularMeterDef, StaffDef } from './../';
+import { Voice, voiceDefToVoice, voiceSequenceToDef } from './voice';
+import { KeyDef } from './../';
 import { ISequence } from './sequence';
-import { ClefDef } from '../states/clef';
+import { ClefDef } from '../';
 import { VariableRepository, createRepo } from './variables';
 import R = require('ramda');
 
-export interface StaffDef {
+/*export interface StaffDef {
     initialClef: ClefDef;
     initialKey: KeyDef;
     initialMeter?: RegularMeterDef;
     voices: VoiceDef[];
-}
+}*/
 
 
 export interface Staff {

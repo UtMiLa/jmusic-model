@@ -7,12 +7,12 @@ import { ProjectLens, projectLensByTime, DomainConverter, LensItem } from './opt
 import { Time } from './rationals/time';
 import { FlexibleSequence } from './score/flexible-sequence';
 import { RepeatDef } from './score/repeats';
-import { ScoreDef } from './score/score';
+import { ScoreDef } from '.';
 import { ISequence, isNote, MusicEvent } from './score/sequence';
 import { Staff, staffDefToStaff } from './score/staff';
-import { VarDict, ProjectDef, FlexibleItem } from './score/types';
+import { VarDict, ProjectDef, FlexibleItem } from '.';
 import { VariableRepository, createRepo, setVar } from './score/variables';
-import { voiceSequenceToDef, VoiceContentDef, voiceContentToSequence } from './score/voice';
+import { voiceSequenceToDef, VoiceContentDef, voiceContentToSequence } from '.';
 
 
 export class Model {

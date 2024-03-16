@@ -1,6 +1,7 @@
+import { ClefDef, ClefType } from './../data-only/states';
 import { mathMod } from 'ramda';
 import { Pitch } from '../pitches/pitch';
-export enum ClefType {
+/*export enum ClefType {
     G = 4,
     C = 0,
     F = -4
@@ -10,7 +11,7 @@ export interface ClefDef {
     clefType: ClefType;
     line: number;
     transpose?: number;
-}
+}*/
 
 export class Clef {
     constructor(public def: ClefDef) {}

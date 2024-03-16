@@ -1,3 +1,4 @@
+import { CompositeMeterDef, RegularMeterDef } from './../data-only/states';
 import { Rational, RationalDef } from '../rationals/rational';
 import { TimeMap } from '../../tools/time-map';
 import { AbsoluteTime } from './../rationals/time';
@@ -12,7 +13,7 @@ export interface Meter {
     def: RegularMeterDef | CompositeMeterDef;
 }
 
-export interface RegularMeterDef {
+/*export interface RegularMeterDef {
     count: number;
     value: number;
     upBeat?: TimeSpan;
@@ -21,7 +22,7 @@ export interface RegularMeterDef {
 export interface CompositeMeterDef {
     meters: RegularMeterDef[];
     commonDenominator?: boolean;
-}
+}*/
 
 export class MeterFactory {
     static createRegularMeter(def: RegularMeterDef): Meter {

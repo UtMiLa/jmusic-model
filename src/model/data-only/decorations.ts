@@ -1,4 +1,4 @@
-/*import { Time, TimeSpan } from './../rationals/time';
+import { TimeSpan } from './../rationals/time';
 export enum LongDecorationType {
     Crescendo,
     Decrescendo,
@@ -8,4 +8,4 @@ export enum LongDecorationType {
 export interface LongDecorationElement {
     longDeco: LongDecorationType;
     length: TimeSpan;
-}*/
+}

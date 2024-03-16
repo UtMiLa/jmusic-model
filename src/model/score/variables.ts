@@ -1,7 +1,7 @@
 import R = require('ramda');
 import { Subject } from 'rxjs';
 import { FlexibleSequence } from './flexible-sequence';
-import { FlexibleItem, VarDict, VariableDef, VariableRef } from './types';
+import { FlexibleItem, VarDict, VariableDef, VariableRef } from '..';
 
 export interface VariableRepository {
     vars: VarDict;
