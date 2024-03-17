@@ -1,6 +1,6 @@
 import { VariableRef } from './../data-only/variables';
 import { SeqFunction } from './../data-only/functions';
-import { SequenceDef, FlexibleItem } from './../data-only/voices';
+import { SequenceDef, FlexibleItem, SplitSequenceDef } from './../data-only/voices';
 import { createRepo, isVariableRef, valueOf, VariableRepository } from './variables';
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
@@ -9,7 +9,7 @@ import { BaseSequence, getDuration, isMusicEvent, isNote, MusicEvent, parseLilyE
 
 // Fix for types for R.chain
 import * as _ from 'ts-toolbelt';
-import { isMultiSequence, MultiSequence } from '..';
+import { isSplitSequence } from '..';
 import { Note, noteAsLilypond } from '../notes/note';
 import { isSeqFunction } from '../data-only/functions';
 type addIndexFix<T, U> = (
@@ -42,10 +42,10 @@ export function recursivelySplitStringsIn(item: FlexibleItem, repo: VariableRepo
         return [item];//repo.valueOf(item.variable).elements;
     } else if (isMusicEvent(item)) {
         return [item];
-    } /*else if (isMultiSequence(item)) {
+    } else if (isSplitSequence(item)) {
         //throw 'Not supported a';
-        return [{ type: 'multi', sequences: item.sequences.map(seq => recursivelySplitStringsIn(seq, repo)) } as MultiSequence];
-    } */else {
+        return [{ type: 'multi', sequences: item.sequences.map(seq => recursivelySplitStringsIn(seq, repo)) } as SplitSequenceDef];
+    } else {
         return item.map(i => recursivelySplitStringsIn(i, repo));
         // why not: R.chain(i => recursivelySplitStringsIn(i, repo), item);
         // because this flattens all arrays - we should be able to group notes in locked chunks
@@ -194,7 +194,7 @@ export class FlexibleSequence extends BaseSequence {
                 return varSeq.elements.map((e, i) => [{ variable: item.variable }, ...varSeq.indexToPath(i)]); //{ variable: item.variable }
             } else if (isMusicEvent(item)) {
                 return [[0]];
-            } else if (isMultiSequence(item)) {
+            } else if (isSplitSequence(item)) {
                 throw 'Not supported b';        
             } else {
                 return (R.addIndex as addIndexFix<FlexibleItem, PathElement<MusicEvent>[][]>)(R.chain<FlexibleItem, PathElement<MusicEvent>[]>)(

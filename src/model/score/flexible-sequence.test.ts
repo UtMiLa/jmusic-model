@@ -6,7 +6,6 @@ import { expect } from 'chai';
 import { LongDecorationType, NoteDirection } from '../';
 import { FlexibleSequence, recursivelySplitStringsIn } from './flexible-sequence';
 import { createRepo, VariableRepository, VariableRepositoryProxy } from './variables';
-import { MultiSequence } from '..';
 describe('Flexible Sequence', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';

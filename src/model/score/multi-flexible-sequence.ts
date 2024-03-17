@@ -1,7 +1,7 @@
 import R = require('ramda');
 import { FlexibleSequence, PathElement } from './flexible-sequence';
 import { ISequence, ISequenceCollection, MusicEvent } from './sequence';
-import { FlexibleItem, FuncDef, isMultiSequence, MultiFlexibleItem, SeqFunction } from '..';
+import { FlexibleItem, FuncDef, isSplitSequence, MultiFlexibleItem, SeqFunction } from '..';
 import { VariableRepository } from './variables';
 import { Spacer } from '../notes/spacer';
 import { Time } from '../rationals/time';
@@ -48,10 +48,10 @@ export class MultiFlexibleSequence implements ISequenceCollection {
             }
             return [new FlexibleSequence(item as FlexibleItem, repo)];
 
-        } else if (isMultiSequence(item)) {
-            return item.sequences.map(it => new FlexibleSequence(it as FlexibleItem), repo);
+        } else if (isSplitSequence(item)) {
+            return item.sequences.map(it => new FlexibleSequence(it), repo);
         } else {
-            return [new FlexibleSequence(item, repo)];
+            return [new FlexibleSequence(item as FlexibleItem, repo)];
         }
 
     }

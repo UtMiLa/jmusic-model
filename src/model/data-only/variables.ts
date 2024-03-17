@@ -7,7 +7,7 @@ export interface VariableDef {
 }
 
 export interface VarDict {
-    [key: string]: FlexibleItem// SequenceDef
+    [key: string]: FlexibleItem// todo: Get rid of this!
 }
 
 

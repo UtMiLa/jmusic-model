@@ -6,12 +6,12 @@ import { expect } from 'chai';
 import { FlexibleSequence } from './flexible-sequence';
 import { createRepo, VariableRepository } from './variables';
 import { MultiFlexibleSequence } from './multi-flexible-sequence';
-import { MultiSequence } from '..';
+import { SplitSequenceDef } from '..';
 describe('Multi-Flexible Sequence', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';
     const seq3Text = 'c,2 d,8 <e, c>4';
-    const multiObj1 = { type: 'multi', sequences: ['c4 d8 d8', 'e8 e8 f4'] } as MultiSequence;
+    const multiObj1 = { type: 'multi', sequences: ['c4 d8 d8', 'e8 e8 f4'] } as SplitSequenceDef;
     //const seq4Text = 'c,2 d,8 <e, c>4';
 
 

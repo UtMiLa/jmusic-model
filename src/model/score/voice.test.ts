@@ -1,6 +1,6 @@
 import { voiceDefToVoice } from './voice';
 import { expect } from 'chai';
-import { MultiSequence } from '..';
+import { SplitSequenceDef } from '..';
 import { ClefType, JMusic, ScoreDef, VoiceDef } from '..';
 
 describe('Voices', () => {
@@ -11,7 +11,7 @@ describe('Voices', () => {
 
     xit('should support multiple simultaneous sequences', () => {
 
-        const multiSeq: MultiSequence = {
+        const multiSeq: SplitSequenceDef = {
             type: 'multi',
             sequences: [seq1Text, seq2Text]
         };
@@ -39,7 +39,7 @@ describe('Voices', () => {
 
     it('should convert multiple simultaneous sequences to several voices', () => {
 
-        const multiSeq: MultiSequence = {
+        const multiSeq: SplitSequenceDef = {
             type: 'multi',
             sequences: [seq1Text, seq2Text]
         };

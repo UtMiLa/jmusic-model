@@ -5,7 +5,7 @@ import { getDuration } from './sequence';
 import { expect } from 'chai';
 import { FlexibleSequence } from './flexible-sequence';
 import { createFunction } from './functions';
-import { FuncDef, SeqFunction, TupletState } from '..';
+import { FuncDef, SeqFunction, SequenceItem, TupletState } from '..';
 
 // Inspiration: Lilypond functions https://lilypond.org/doc/v2.25/Documentation/notation/available-music-functions
 
@@ -134,7 +134,7 @@ describe('Flexible sequence transformations', () => {
         //const seq1 = SimpleSequence.createFromString(seq1Text);
         //const tuplet = new TupletSequence(seq1, { numerator: 2, denominator: 3 });
         const tuplet = new FlexibleSequence([{ function:'Tuplet', args: [seq1Text], extraArgs: [{ numerator: 2, denominator: 3 }]} as SeqFunction]);
-        const tuplet1 = new FlexibleSequence([{ function:'Reverse', args: [tuplet.def] }]);
+        const tuplet1 = new FlexibleSequence([{ function:'Reverse', args: [tuplet.def as SequenceItem] }]); // todo: tuplet.def should not be casted
         
         const slots = tuplet1.groupByTimeSlots('x');
         expect(slots).to.have.length(3);

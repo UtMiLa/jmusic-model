@@ -48,7 +48,7 @@ export class Model {
         return this.staves[ins.staffNo].voices[ins.voiceNo].content.groupByTimeSlots('0').filter(ts => Time.equals(ts.time, ins.time))[0].elements[0];
     }
 
-    createProjectLens(ins: InsertionPoint): ProjectLens {
+    createProjectLens(ins: InsertionPointDef): ProjectLens {
         return projectLensByTime(this.domainConverter, { staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
     }
 
@@ -63,12 +63,17 @@ export class Model {
     }
 
     appendElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent): void {
-        this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = 
+        this.project = R.set(R.lensPath(['score', 'staves', ins.staffNo, 'voices', ins.voiceNo, 'contentDef']), new FlexibleSequence([
+            ...this.staves[ins.staffNo].voices[ins.voiceNo].content.elements,
+            element
+        ], this.vars).asObject, this.project);
+        
+        /*this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = 
             [
                 ...this.staves[ins.staffNo].voices[ins.voiceNo].content.elements,
                 element
             ]
-        ;
+        ;*/
     }
 
     get domainConverter(): DomainConverter<VoiceContentDef, MusicEvent[]> {
