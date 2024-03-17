@@ -1,6 +1,6 @@
 import { VariableRef } from './../data-only/variables';
 import { SeqFunction } from './../data-only/functions';
-import { SequenceDef, FlexibleItem, SplitSequenceDef } from './../data-only/voices';
+import { SequenceDef, FlexibleItem, SplitSequenceDef } from './..';
 import { createRepo, isVariableRef, valueOf, VariableRepository } from './variables';
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';

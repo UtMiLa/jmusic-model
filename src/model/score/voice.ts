@@ -1,4 +1,4 @@
-import { MultiFlexibleItem, VoiceContentDef } from '../data-only/voices';
+import { MultiFlexibleItem, VoiceContentDef } from '..';
 import { FlexibleSequence } from './flexible-sequence';
 import { MultiFlexibleSequence } from './multi-flexible-sequence';
 import { ISequence } from './sequence';
