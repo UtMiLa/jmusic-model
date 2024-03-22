@@ -1,6 +1,6 @@
 import { MultiFlexibleSequence } from './../src/model/score/multi-flexible-sequence';
 import { MyCanvasRenderer, PhysicalModel, StandardMetrics, renderOnRenderer, viewModelToPhysical } from '../src/physical-view';
-import { ClefType, JMusic, Time } from '../src/model';
+import { ClefType, JMusic, NoteDirection, Time } from '../src/model';
 import { scoreModelToViewModel } from '../src/logical-view';
 import { RenderPosition } from '../src/physical-view/render/render-types';
 import { ProjectFlex } from '../src/model/facade/project-flex';
@@ -10,6 +10,15 @@ console.log('Demo');
 function myRenderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition) {
     renderOnRenderer(physicalModel, new MyCanvasRenderer(canvas), position);
 }
+const input = (document.querySelector('#commandInput') as HTMLInputElement);
+
+input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') {
+        console.log(ev, input.value);
+        input.value = '';
+    }
+});
+
 
 const textContainer = (document.querySelector('#message') as HTMLDivElement);
 
@@ -75,6 +84,26 @@ setTimeout(() => {
                         ]
                     }
                 ]
+            },
+            {
+                initialClef: { clefType: ClefType.F, line: 2 },
+                initialKey: { accidental: 0, count: 0 },
+                initialMeter: { count: 4, value: 4 },
+                voices: [
+                    {
+                        contentDef: ['g4 r4 a2', 'c4 d4 e4 g4'],
+                        noteDirection: NoteDirection.Up
+                    },
+                    
+                    {
+                        //contentDef: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4']
+                        contentDef: [
+                            'g,2 ees,2 g,2 ees,2 g,2 ees,2'
+                        ],
+                        noteDirection: NoteDirection.Down
+                    }
+                ]
+
             }
         ]
         
