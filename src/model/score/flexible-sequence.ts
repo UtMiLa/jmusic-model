@@ -7,11 +7,12 @@ import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
 import { createFunction, createInverseFunction } from './functions';
 import { BaseSequence, getDuration, isMusicEvent, isNote, MusicEvent, parseLilyElement, SimpleSequence, splitByNotes } from './sequence';
 
-// Fix for types for R.chain
 import * as _ from 'ts-toolbelt';
 import { isSplitSequence } from '..';
 import { Note, noteAsLilypond } from '../notes/note';
 import { isSeqFunction } from '../data-only/functions';
+
+// Fix for types for R.chain
 type addIndexFix<T, U> = (
     fn: (f: (item: T) => U, list: readonly T[]) => U,
 ) => _.F.Curry<(a: (item: T, idx: number, list: T[]) => U, b: readonly T[]) => U>;
