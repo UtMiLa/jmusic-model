@@ -1,6 +1,7 @@
 import { AbsoluteTime, Time } from './../model/rationals/time';
 import { InsertionPoint } from './insertion-point';
-import { Model } from '../model';
+import { ClefType, Model, StaffDef } from '../model';
+import R = require('ramda');
 
 export interface TextCommand {
     execute(model: Model, ins: InsertionPoint): any;
@@ -25,6 +26,33 @@ export class GotoTimeTextCommand implements TextCommand {
     }
 }
 
+
+export class AddStaffCommand implements TextCommand {
+    //constructor() { }
+
+    execute(model: Model, ins: InsertionPoint): any {
+        model.overProject(
+            R.lensPath(['score', 'staves']) as any,
+            staves => [
+                ...staves,
+
+                {
+                    initialClef: { clefType: ClefType.F, line: 2 },
+                    initialKey: { accidental: 0, count: 0 },
+                    initialMeter: { count: 4, value: 4 },
+                    voices: [
+        
+                    ]
+        
+                } as StaffDef
+            ] as any
+        );
+        return null;
+    }
+}
+
+
+
 export class TextCommandEngine {
     static parse(command: string): TextCommand {
         if (/^voice/.test(command)) { 
@@ -38,6 +66,9 @@ export class TextCommandEngine {
             if (!items) throw new Error('Unknown command.');            
             const time = Time.newAbsolute(parseInt(items[1]), parseInt(items[2]));
             return new GotoTimeTextCommand(time);
+        }
+        if (/^add +staff$/.test(command)) { 
+            return new AddStaffCommand();
         }
 
         throw new Error('Unknown command.');
