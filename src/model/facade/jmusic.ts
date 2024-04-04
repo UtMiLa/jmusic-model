@@ -87,7 +87,7 @@ export class JMusic extends EditView implements EditableView {
         return this.model.noteFromInsertionPoint(ins);
     }
 
-    createProjectLens(ins: InsertionPoint): ProjectLens {
+    createProjectLens(ins: InsertionPoint): ProjectLens<LensItem> {
         return this.model.createProjectLens(ins);
     }
 
@@ -103,10 +103,10 @@ export class JMusic extends EditView implements EditableView {
         return this.model.domainConverter;
     }
 
-    setProject(lens: ProjectLens, lensItem: LensItem): void {
+    setProject(lens: ProjectLens<LensItem>, lensItem: LensItem): void {
         this.model.setProject(lens, lensItem);
     }
-    overProject(lens: ProjectLens, noteConverter: (fromNote: LensItem) => LensItem): void {
+    overProject(lens: ProjectLens<LensItem>, noteConverter: (fromNote: LensItem) => LensItem): void {
         this.model.overProject(lens, noteConverter);
     }
 

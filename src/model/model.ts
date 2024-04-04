@@ -48,7 +48,7 @@ export class Model {
         return this.staves[ins.staffNo].voices[ins.voiceNo].content.groupByTimeSlots('0').filter(ts => Time.equals(ts.time, ins.time))[0].elements[0];
     }
 
-    createProjectLens(ins: InsertionPointDef): ProjectLens {
+    createProjectLens(ins: InsertionPointDef): ProjectLens<LensItem> {
         return projectLensByTime(this.domainConverter, { staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
     }
 
@@ -83,10 +83,10 @@ export class Model {
         };
     }
 
-    setProject(lens: ProjectLens, lensItem: LensItem): void {
+    setProject(lens: ProjectLens<LensItem>, lensItem: LensItem): void {
         this.project = R.set(lens, lensItem, this.project);
     }
-    overProject(lens: ProjectLens, noteConverter: (fromNote: LensItem) => LensItem): void {
+    overProject<T>(lens: ProjectLens<T>, noteConverter: (fromNote: T) => T): void {
         this.project = R.over(lens, noteConverter, this.project);
     }
 

@@ -60,7 +60,7 @@ export interface DomainConverter<Def, Model> {
     toDef(model: Model): Def;
 }
 
-export type ProjectLens = R.Lens<ProjectDef, LensItem>;
+export type ProjectLens<T> = R.Lens<ProjectDef, T>;
 
 export interface NaturalLensIndexScore {
     staff: number;
@@ -201,7 +201,7 @@ function timedToIndex(pd: ProjectDef, timed: TimeLensIndex): NaturalLensIndex {
 }
 
 
-export function projectLensByIndex(domainConverter: DomainConverter<any, any>, index: NaturalLensIndex): ProjectLens {
+export function projectLensByIndex(domainConverter: DomainConverter<any, any>, index: NaturalLensIndex): ProjectLens<LensItem> {
 
     if (isVarIndex(index)) {
         return varLensByIndex(index);
@@ -212,7 +212,7 @@ export function projectLensByIndex(domainConverter: DomainConverter<any, any>, i
 }
 
 
-function voiceLensByIndex(domainConverter: DomainConverter<any, any>, index: NaturalLensIndexScore): ProjectLens {
+function voiceLensByIndex(domainConverter: DomainConverter<any, any>, index: NaturalLensIndexScore): ProjectLens<LensItem> {
     return R.lens(
         sequenceElementGetter(index),
         sequenceElementSetter(domainConverter, index)
@@ -246,7 +246,7 @@ function sequenceElementGetter(index: NaturalLensIndexScore): (s: ProjectDef) =>
     return (pd: ProjectDef) => lensItemOf(new MultiFlexibleSequence(pd.score.staves[index.staff].voices[index.voice].contentDef, createRepo(pd.vars)).seqs[0].elements[index.element]); // todo: get rid of seqs[0]
 }
 
-function varLensByIndex(index: NaturalLensIndexVariable): ProjectLens {
+function varLensByIndex(index: NaturalLensIndexVariable): ProjectLens<LensItem> {
     return R.lens(
         varGetter(index),
         varSetter(index)
@@ -295,7 +295,7 @@ function varGetter(index: NaturalLensIndexVariable): (s: ProjectDef) => LensItem
     return (pd: ProjectDef) => lensItemOf(new FlexibleSequence(new FlexibleSequence(lookupVariable(pd.vars, index.variable)).asObject, createRepo(pd.vars)).elements[index.element]);
 }
 
-export function projectLensByTime(domainConverter: DomainConverter<any, any>, index: TimeLensIndex): ProjectLens {
+export function projectLensByTime(domainConverter: DomainConverter<any, any>, index: TimeLensIndex): ProjectLens<LensItem> {
     // get seq
     // find index from time
     // call projectLensByIndex

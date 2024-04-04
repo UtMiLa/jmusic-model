@@ -76,10 +76,10 @@ export abstract class EditView implements EditableView {
 
     abstract appendElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent): void;
 
-    abstract setProject(lens: ProjectLens, lensItem: LensItem): void;
-    abstract overProject(lens: ProjectLens, noteConverter: (fromNote: LensItem) => LensItem): void;
+    abstract setProject(lens: ProjectLens<LensItem>, lensItem: LensItem): void;
+    abstract overProject(lens: ProjectLens<LensItem>, noteConverter: (fromNote: LensItem) => LensItem): void;
 
-    abstract createProjectLens(ins: InsertionPoint): ProjectLens;
+    abstract createProjectLens(ins: InsertionPoint): ProjectLens<LensItem>;
 
     replaceNoteAtInsertionPoint(ins: InsertionPoint, noteConverter: (fromNote: LensItem) => LensItem): void {
         

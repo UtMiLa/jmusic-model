@@ -32,7 +32,7 @@ export class AddStaffCommand implements TextCommand {
 
     execute(model: Model, ins: InsertionPoint): any {
         model.overProject(
-            R.lensPath(['score', 'staves']) as any,
+            R.lensPath(['score', 'staves']),
             staves => [
                 ...staves,
 
@@ -45,7 +45,7 @@ export class AddStaffCommand implements TextCommand {
                     ]
         
                 } as StaffDef
-            ] as any
+            ]
         );
         return null;
     }

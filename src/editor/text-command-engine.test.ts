@@ -28,7 +28,7 @@ describe('Text commands', () => {
         });
 
         it('should select a voice', () => {
-            const cmd = TextCommandEngine.parse('goto 2');
+            const cmd = TextCommandEngine.parse('voice 2');
             
             cmd.execute(model, ins);
 
@@ -36,14 +36,14 @@ describe('Text commands', () => {
         });
 
         it('should select a voice on another staff', () => {
-            const cmd = TextCommandEngine.parse('goto 2:1');
+            const cmd = TextCommandEngine.parse('voice 2:1');
             
             cmd.execute(model, ins);
 
             Sinon.assert.calledOnceWithExactly(ins.moveToVoice, 1, 0);
         });
         it('should select a voice on another staff, alternative notation', () => {
-            const cmd = TextCommandEngine.parse('goto 7.3');
+            const cmd = TextCommandEngine.parse('voice 7.3');
             
             cmd.execute(model, ins);
 

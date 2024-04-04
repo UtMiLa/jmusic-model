@@ -29,7 +29,7 @@ export class VariableView extends EditView implements EditableView {
 
     vars: VariableRepository;
 
-    createProjectLens(ins: InsertionPoint): ProjectLens {
+    createProjectLens(ins: InsertionPoint): ProjectLens<LensItem> {
         const insertion = new InsertionPoint(this); // awkward
         const element = insertion.findIndex(ins.time);
         return projectLensByIndex(this.domainConverter, {
@@ -60,11 +60,11 @@ export class VariableView extends EditView implements EditableView {
     appendElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent): void {
         throw new Error('Method not implemented.');
     }
-    setProject(lens: ProjectLens, lensItem: LensItem): void {
+    setProject(lens: ProjectLens<LensItem>, lensItem: LensItem): void {
         this.parent.setProject(lens, lensItem);        
         this.didChange();
     }
-    overProject(lens: ProjectLens, noteConverter: (fromNote: LensItem) => LensItem): void {
+    overProject(lens: ProjectLens<LensItem>, noteConverter: (fromNote: LensItem) => LensItem): void {
         this.parent.overProject(lens, noteConverter);
         this.didChange();
     }
