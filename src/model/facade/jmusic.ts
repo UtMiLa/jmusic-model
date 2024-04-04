@@ -106,7 +106,7 @@ export class JMusic extends EditView implements EditableView {
     setProject(lens: ProjectLens<LensItem>, lensItem: LensItem): void {
         this.model.setProject(lens, lensItem);
     }
-    overProject(lens: ProjectLens<LensItem>, noteConverter: (fromNote: LensItem) => LensItem): void {
+    overProject<T>(lens: ProjectLens<T>, noteConverter: (fromNote: T) => T): void {
         this.model.overProject(lens, noteConverter);
     }
 
