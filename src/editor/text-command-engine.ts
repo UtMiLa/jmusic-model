@@ -31,8 +31,9 @@ export class AddStaffCommand implements TextCommand {
     //constructor() { }
 
     execute(model: Model, ins: InsertionPoint): any {
+        const a = R.lensPath(['score', 'staves']);
         model.overProject(
-            R.lensPath(['score', 'staves']),
+            a,//R.lensPath(['score', 'staves']),
             staves => [
                 ...staves,
 
