@@ -2,6 +2,7 @@
 const webpack = require('webpack');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     mode: 'development',
@@ -21,7 +22,8 @@ module.exports = {
         new HtmlWebpackPlugin({
             title: 'JMusic demo',
             template: 'webpack-source/index.html'
-        })
+        }),
+        new MiniCssExtractPlugin()
     ],
     output: { 
         filename: '[name].js',
@@ -34,6 +36,10 @@ module.exports = {
                 test: /\.ts(x?)$/,
                 exclude: [/node_modules/],
                 use: 'ts-loader'
+            },
+            {
+                test: /\.css$/i,
+                use: [MiniCssExtractPlugin.loader, 'css-loader']
             }
         ]
     },

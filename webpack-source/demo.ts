@@ -7,6 +7,8 @@ import { ClefType, JMusic, NoteDirection, ScoreDef, Time } from '../src/model';
 import { scoreModelToViewModel } from '../src/logical-view';
 import { RenderPosition } from '../src/physical-view/render/render-types';
 import { ProjectFlex } from '../src/model/facade/project-flex';
+import { Terminal } from '@xterm/xterm';
+import '@xterm/xterm/css/xterm.css';
 
 console.log('Demo');
 
@@ -14,6 +16,59 @@ function myRenderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElemen
     renderOnRenderer(physicalModel, new MyCanvasRenderer(canvas), position);
 }
 const input = (document.querySelector('#commandInput') as HTMLInputElement);
+const term = new Terminal();
+term.open(document.getElementById('terminal') as HTMLDivElement);
+term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
+
+let command = '';
+const commands = {
+    'help': {
+        f: () => {
+            console.log('help');
+            prompt(term);
+        }
+    }
+};
+function prompt(term: Terminal) {
+    command = '';
+    term.write('\r\n$ ');
+}
+
+term.onData(e => {
+    switch (e) {
+        case '\u0003': // Ctrl+C
+            term.write('^C');
+            prompt(term);
+            break;
+        case '\r': // Enter
+            try {
+                const cmd = TextCommandEngine.parse(command);
+                cmd.execute(jMusic, insertionPoint);
+                command = '';
+                render();
+            } catch (e) {
+                term.writeln('\r\nIllegal command');
+            }
+            prompt(term);
+            break;
+        case '\u007F': // Backspace (DEL)
+            // Do not delete the prompt
+            if ((term as any)._core.buffer.x > 2) {
+                term.write('\b \b');
+                if (command.length > 0) {
+                    command = command.substr(0, command.length - 1);
+                }
+            }
+            break;
+        default: // Print all other characters for demo
+            if (e >= String.fromCharCode(0x20) && e <= String.fromCharCode(0x7E) || e >= '\u00a0') {
+                command += e;
+                term.write(e);
+            }
+    }
+});
+
+
 
 const musicDef: ScoreDef = {
     staves: [
