@@ -1,6 +1,6 @@
 import { AbsoluteTime, Time } from './../model/rationals/time';
 import { InsertionPoint } from './insertion-point';
-import { ClefType, Model, StaffDef } from '../model';
+import { Model, ClefType, StaffDef, MultiSequenceDef, isSplitSequence, SplitSequenceDef, MultiSequenceItem } from '../model';
 import R = require('ramda');
 
 export interface TextCommand {
@@ -31,10 +31,9 @@ export class AddStaffCommand implements TextCommand {
     //constructor() { }
 
     execute(model: Model, ins: InsertionPoint): any {
-        const a = R.lensPath(['score', 'staves']);
         model.overProject(
-            a,//R.lensPath(['score', 'staves']),
-            staves => [
+            R.lensPath(['score', 'staves']),
+            (staves: StaffDef[]) => [
                 ...staves,
 
                 {
@@ -54,6 +53,23 @@ export class AddStaffCommand implements TextCommand {
 
 
 
+export class AppendMusicCommand implements TextCommand {
+    constructor(private items: string) { }
+
+    execute(model: Model, ins: InsertionPoint): any {
+        model.overProject(
+            R.lensPath(['score', 'staves', ins.staffNo, 'voices', ins.voiceNo, 'contentDef']),
+            (seq: MultiSequenceDef) => 
+                R.cond<MultiSequenceDef, SplitSequenceDef, string, MultiSequenceItem[], MultiSequenceDef>([
+                    [isSplitSequence, R.identity],
+                    [R.is(String), (s: string) => (s + ' ' + this.items) as MultiSequenceDef],
+                    [(R.is(Array<MultiSequenceItem>)), m => [...m, this.items]]
+                ])(seq)
+        );
+        return null;
+    }
+}
+
 export class TextCommandEngine {
     static parse(command: string): TextCommand {
         if (/^voice/.test(command)) { 
@@ -70,6 +86,9 @@ export class TextCommandEngine {
         }
         if (/^add +staff$/.test(command)) { 
             return new AddStaffCommand();
+        }
+        if (/^append /.test(command)) { 
+            return new AppendMusicCommand(command.substring('append '.length));
         }
 
         throw new Error('Unknown command.');

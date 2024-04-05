@@ -68,7 +68,22 @@ describe('Text commands', () => {
             cmd.execute(jMusic, ins);
 
             expect(jMusic.model.project.score.staves).to.have.length(2);
+        });
+        
+        it('should append music', () => {
+            const cmd = TextCommandEngine.parse('append d4 e4 f2');
 
+            const jMusic = new JMusic('c4 c4 c4 c4');
+            const ins1 = new InsertionPoint(jMusic);
+            ins1.moveToVoice(0, 0);
+            ins1.moveToTime(Time.newAbsolute(4, 4));
+
+            //expect(jMusic.model.project.score.staves[0].voices[0].contentDef).to.have.length(1);
+            expect(jMusic.staves[0].voices[0].content.elements).to.have.length(4);
+            
+            cmd.execute(jMusic, ins);
+
+            expect(jMusic.staves[0].voices[0].content.elements).to.have.length(7);
         });
     });
 });
