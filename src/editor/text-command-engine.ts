@@ -3,6 +3,7 @@ import { InsertionPoint } from './insertion-point';
 import { Model, ClefType, StaffDef, MultiSequenceDef, isSplitSequence, SplitSequenceDef, MultiSequenceItem } from '../model';
 import R = require('ramda');
 import { Command } from './commands';
+import { navigationCommands } from './text-commands/navigation-commands';
 
 export interface TextCommand {
     execute(model: Model, ins: InsertionPoint): any;
@@ -83,22 +84,30 @@ export class AppendMusicCommand implements TextCommand {
 
 export class TextCommandEngine {
     static parse(command: string): TextCommand {
+        const found = [...navigationCommands].find(elm => new RegExp(elm.argType.regex()).test(command));
+        if (found) {
+            const [parsed, rest] = found.argType.parse(command);
+            if (rest.trim() !== '') throw 'Illegal command';
+            const myFunc = found.action(parsed as unknown as any);
+            return new CustomTextCommand(myFunc);
+        }
+
         if (/^voice/.test(command)) { 
             const items = /^voice +(\d+[:.])?(\d+)/.exec(command);
             if (!items) throw new Error('Unknown command.');
             const staff = items[1] ? parseInt(items[1]) : -1;
             return new GotoVoiceTextCommand(staff, parseInt(items[2]));
         }
-        if (/^goto/.test(command)) { 
-            if (/^goto +next$/.test(command)) return new CustomTextCommand((model, ins) => ins.moveRight());
-            if (/^goto +prev$/.test(command)) return new CustomTextCommand((model, ins) => ins.moveLeft());
+        /*if (/^goto/.test(command)) { 
+            //if (/^goto +next$/.test(command)) return new CustomTextCommand((model, ins) => ins.moveRight());
+            //if (/^goto +prev$/.test(command)) return new CustomTextCommand((model, ins) => ins.moveLeft());
             if (/^goto +start$/.test(command)) return new CustomTextCommand((model, ins) => ins.moveToTime(Time.StartTime));
             
             const items = /^goto +(\d+)[\\/](\d+)/.exec(command);
             if (!items) throw new Error('Unknown command.');            
             const time = Time.newAbsolute(parseInt(items[1]), parseInt(items[2]));
             return new GotoTimeTextCommand(time);
-        }
+        }*/
         if (/^add +staff$/.test(command)) { 
             return new AddStaffCommand();
         }

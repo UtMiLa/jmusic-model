@@ -1,4 +1,4 @@
-import { Rational } from '../../model';
+import { Rational, RationalDef } from '../../model';
 
 export interface ArgumentType<T> {
     regex(): string;
@@ -31,7 +31,7 @@ export const IntegerArg: ArgumentType<number> = {
     }
 };
 
-export const RationalArg: ArgumentType<Rational> = {
+export const RationalArg: ArgumentType<RationalDef> = {
     regex(): string {
         return '\\d+\\/\\d+';
     },
