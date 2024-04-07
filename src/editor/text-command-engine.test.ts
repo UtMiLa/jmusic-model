@@ -58,6 +58,34 @@ describe('Text commands', () => {
 
             Sinon.assert.calledOnceWithExactly(ins.moveToTime, Time.newAbsolute(4, 4));
         });
+
+
+        it('should move insertion point to next event', () => {
+            const cmd = TextCommandEngine.parse('goto next');
+            
+            cmd.execute(model, ins);
+
+            Sinon.assert.calledOnceWithExactly(ins.moveRight);
+        });
+
+        it('should move insertion point to previous event', () => {
+            const cmd = TextCommandEngine.parse('goto prev');
+            
+            cmd.execute(model, ins);
+
+            Sinon.assert.calledOnceWithExactly(ins.moveLeft);
+        });
+
+
+        it('should move insertion point to start', () => {
+            const cmd = TextCommandEngine.parse('goto start');
+            
+            cmd.execute(model, ins);
+
+            Sinon.assert.calledOnceWithExactly(ins.moveToTime, Time.newAbsolute(0, 1));
+        });
+
+
         it('should add an empty staff', () => {
             const cmd = TextCommandEngine.parse('add staff');
 

@@ -2,9 +2,20 @@ import { AbsoluteTime, Time } from './../model/rationals/time';
 import { InsertionPoint } from './insertion-point';
 import { Model, ClefType, StaffDef, MultiSequenceDef, isSplitSequence, SplitSequenceDef, MultiSequenceItem } from '../model';
 import R = require('ramda');
+import { Command } from './commands';
 
 export interface TextCommand {
     execute(model: Model, ins: InsertionPoint): any;
+}
+
+
+
+export class CustomTextCommand implements TextCommand {
+    constructor(private f: (model: Model, ins: InsertionPoint) => any) { }
+
+    execute(model: Model, ins: InsertionPoint): any {
+        return this.f(model, ins);
+    }
 }
 
 export class GotoVoiceTextCommand implements TextCommand {
@@ -79,6 +90,10 @@ export class TextCommandEngine {
             return new GotoVoiceTextCommand(staff, parseInt(items[2]));
         }
         if (/^goto/.test(command)) { 
+            if (/^goto +next$/.test(command)) return new CustomTextCommand((model, ins) => ins.moveRight());
+            if (/^goto +prev$/.test(command)) return new CustomTextCommand((model, ins) => ins.moveLeft());
+            if (/^goto +start$/.test(command)) return new CustomTextCommand((model, ins) => ins.moveToTime(Time.StartTime));
+            
             const items = /^goto +(\d+)[\\/](\d+)/.exec(command);
             if (!items) throw new Error('Unknown command.');            
             const time = Time.newAbsolute(parseInt(items[1]), parseInt(items[2]));
