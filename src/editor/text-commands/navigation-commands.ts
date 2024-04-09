@@ -1,6 +1,7 @@
 import { Rational, RationalDef } from './../../model/rationals/rational';
 import { AbsoluteTime } from './../../model/rationals/time';
-import { FixedArg, NoteArg, RationalArg, many, sequence } from './argument-types';
+import { FixedArg, MusicEventArg, NoteArg, RationalArg } from './argument-types';
+import { many, optional, sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
 import { Time, Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, Note, MusicEvent, FlexibleSequence, NoteDef } from './../../model';
 import R = require('ramda');
@@ -39,7 +40,7 @@ export const navigationCommands = [
             ins.moveToTime({ ...args[1], type: 'abs' })
     },
     { 
-        argType: sequence([FixedArg('append '), many(NoteArg)]), 
+        argType: sequence([FixedArg('append '), many(MusicEventArg)]), 
         action: (args: [string, MusicEvent[]]) => (model: Model, ins: InsertionPoint): void => {
             const events: MusicEvent[] = args[1];
             const eventDef = new FlexibleSequence(events).def;

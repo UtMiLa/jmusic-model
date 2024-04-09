@@ -28,17 +28,6 @@ export class GotoVoiceTextCommand implements TextCommand {
     }
 }
 
-/*
-export class GotoTimeTextCommand implements TextCommand {
-    constructor(private time: AbsoluteTime) {}
-
-    execute(model: Model, ins: InsertionPoint): any {
-        ins.moveToTime(this.time);        
-        return null;
-    }
-}
-*/
-
 export class AddStaffCommand implements TextCommand {
     //constructor() { }
 
@@ -63,24 +52,6 @@ export class AddStaffCommand implements TextCommand {
     }
 }
 
-/*
-
-export class AppendMusicCommand implements TextCommand {
-    constructor(private items: string) { }
-
-    execute(model: Model, ins: InsertionPoint): any {
-        model.overProject(
-            R.lensPath(['score', 'staves', ins.staffNo, 'voices', ins.voiceNo, 'contentDef']),
-            (seq: MultiSequenceDef) => 
-                R.cond<MultiSequenceDef, SplitSequenceDef, string, MultiSequenceItem[], MultiSequenceDef>([
-                    [isSplitSequence, R.identity],
-                    [R.is(String), (s: string) => (s + ' ' + this.items) as MultiSequenceDef],
-                    [(R.is(Array<MultiSequenceItem>)), m => [...m, this.items]]
-                ])(seq)
-        );
-        return null;
-    }
-}*/
 
 export class TextCommandEngine {
     static parse(command: string): TextCommand {

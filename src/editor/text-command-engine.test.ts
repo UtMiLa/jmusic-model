@@ -10,7 +10,7 @@ import { TextCommandEngine } from './text-command-engine';
 
 
 describe('Text commands', () => {
-    describe('Delete pitch command', () => {
+    describe('Execute command', () => {
 
         let model: Sinon.SinonStubbedInstance<JMusic>, ins: Sinon.SinonStubbedInstance<InsertionPoint>;
 
@@ -112,6 +112,27 @@ describe('Text commands', () => {
             cmd.execute(jMusic, ins);
 
             expect(jMusic.staves[0].voices[0].content.elements).to.have.length(7);
+        });
+
+        
+        it('should append music with a key change', () => {
+            const cmd = TextCommandEngine.parse('append 2b d4 e4 f2');
+            //const cmd = TextCommandEngine.parse('append \\key f \\major d4 e4 f2');
+
+            const jMusic = new JMusic('c4 c4 c4 c4');
+            const ins1 = new InsertionPoint(jMusic);
+            ins1.moveToVoice(0, 0);
+            ins1.moveToTime(Time.newAbsolute(4, 4));
+
+            expect(jMusic.staves[0].voices[0].content.elements).to.have.length(4);
+            
+            cmd.execute(jMusic, ins);
+
+            expect(jMusic.staves[0].voices[0].content.elements).to.have.length(8);
+            expect((jMusic.staves[0].voices[0].content.elements[4] as any).key.def).to.deep.eq({
+                accidental: -1,
+                count: 2
+            });
         });
     });
 });

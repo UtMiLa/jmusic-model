@@ -1,4 +1,7 @@
-import { Note, RationalDef, createNoteFromLilypond } from '../../model';
+import { StateChange } from './../../model/states/state';
+import { Accidental } from './../../model/pitches/pitch';
+import { Key, Note, RationalDef, createNoteFromLilypond } from '../../model';
+import { mapResult, select, sequence } from './argument-modifiers';
 
 export interface ArgumentType<T> {
     regex(): string;
@@ -88,58 +91,8 @@ export const NoteArg: ArgumentType<Note> = {
     }
 };
 
-export function many<T>(type: ArgumentType<T>): ArgumentType<T[]> {
-    return {
-        regex: () => `(${type.regex()} *)+`,
-        parse: (input: string) => {
-            const typeRegex = new RegExp('^' + type.regex());
-            let rest = input;
-            const retVal = [];
-            while (typeRegex.test(rest)) {
-                const [val, r] = type.parse(rest);
-                retVal.push(val);
-                rest = r.trimStart();
-            }
-            return [retVal, rest];
-        }
-    };
-}
+const _keyArg = sequence([IntegerArg, select([FixedArg('#'), FixedArg('b')])]);
+export const KeyArg = mapResult(_keyArg, ([count, acc]) => (StateChange.newKeyChange(new Key({ count, accidental: acc === '#' ? 1 : -1 }))));
 
-export function optional<T>(type: ArgumentType<T>): ArgumentType<T | null> {
-    return {
-        regex: () => `(${type.regex()})?`,
-        parse: (input: string) => {
-            const typeRegex = new RegExp('^' + type.regex());
-            let rest = input;
-            if (typeRegex.test(rest)) {
-                const [val, r] = type.parse(rest);
-                rest = r;
-                return [val, rest];
-            }
-            return [null, rest];
-        }
-    };
-}
 
-export function sequence(types: ArgumentType<any>[]): ArgumentType<any[]> {
-    return {
-        regex: () => types.map(t => `(${t.regex()})`).join(''),
-        parse: (input: string) => {
-            //const typeRegex = new RegExp('^' + type.regex());
-            let rest = input;
-            const retVal = types.map(type => {
-                const [val, r] = type.parse(rest);
-                rest = r;
-                return val;
-            });
-            /*if (typeRegex.test(rest)) {
-                const [val, r] = type.parse(rest);
-                //retVal = val;
-                rest = r;
-                return [val, rest];
-            }
-            //const m = new RegExp(`(${type.regex()}) `, 'g');*/
-            return [retVal, rest];
-        }
-    };
-}
+export const MusicEventArg = select([NoteArg, KeyArg]); // todo: ClefArg, MeterArg, ...
