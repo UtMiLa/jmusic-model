@@ -28,7 +28,7 @@ export class GotoVoiceTextCommand implements TextCommand {
     }
 }
 
-
+/*
 export class GotoTimeTextCommand implements TextCommand {
     constructor(private time: AbsoluteTime) {}
 
@@ -37,7 +37,7 @@ export class GotoTimeTextCommand implements TextCommand {
         return null;
     }
 }
-
+*/
 
 export class AddStaffCommand implements TextCommand {
     //constructor() { }
@@ -63,7 +63,7 @@ export class AddStaffCommand implements TextCommand {
     }
 }
 
-
+/*
 
 export class AppendMusicCommand implements TextCommand {
     constructor(private items: string) { }
@@ -80,7 +80,7 @@ export class AppendMusicCommand implements TextCommand {
         );
         return null;
     }
-}
+}*/
 
 export class TextCommandEngine {
     static parse(command: string): TextCommand {
@@ -111,9 +111,9 @@ export class TextCommandEngine {
         if (/^add +staff$/.test(command)) { 
             return new AddStaffCommand();
         }
-        if (/^append /.test(command)) { 
+        /*if (/^append /.test(command)) { 
             return new AppendMusicCommand(command.substring('append '.length));
-        }
+        }*/
 
         throw new Error('Unknown command.');
     }

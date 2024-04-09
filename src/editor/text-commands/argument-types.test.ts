@@ -1,5 +1,6 @@
+import { createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { FixedArg, IntegerArg, RationalArg, many, optional, sequence } from './argument-types';
+import { FixedArg, IntegerArg, NoteArg, RationalArg, many, optional, sequence } from './argument-types';
 
 describe('Argument types', () => {
     describe('Integer', () => {
@@ -34,6 +35,16 @@ describe('Argument types', () => {
     });
 
     
+    describe('Note', () => {
+        it('should provide a regular expression', () => {
+            expect(NoteArg.regex()).to.eq('([a-gr](es|is)*[\',]*)(\\d+\\.*)((\\\\[a-z]+)*)(~?)');
+        });
+        it('should parse a note token', () => {
+            expect(NoteArg.parse('eeses4')).to.deep.eq([createNoteFromLilypond('eeses4'), '']);
+        });
+    });
+
+    
     describe('Many', () => {
         it('should provide a regular expression for many integers', () => {
             expect(many(IntegerArg).regex()).to.eq('(\\d+ *)+');
@@ -56,6 +67,16 @@ describe('Argument types', () => {
             ], '43 52 ijo 54']
             );
         });
+
+        it('should parse a note sequence', () => {
+            expect(many(NoteArg).parse('ees4 f4 ges2. aes4')).to.deep.eq([[
+                createNoteFromLilypond('ees4'),
+                createNoteFromLilypond('f4'),
+                createNoteFromLilypond('ges2.'),
+                createNoteFromLilypond('aes4')
+            ], '']);
+        });
+
     });
    
     describe('Option', () => {

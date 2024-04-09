@@ -1,8 +1,9 @@
 import { Rational, RationalDef } from './../../model/rationals/rational';
 import { AbsoluteTime } from './../../model/rationals/time';
-import { FixedArg, RationalArg, sequence } from './argument-types';
+import { FixedArg, NoteArg, RationalArg, many, sequence } from './argument-types';
 import { InsertionPoint } from '../insertion-point';
-import { Time, Model } from './../../model';
+import { Time, Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, Note, MusicEvent, FlexibleSequence, NoteDef } from './../../model';
+import R = require('ramda');
 
 
 // goto AbsoluteTime
@@ -36,5 +37,21 @@ export const navigationCommands = [
         argType: sequence([FixedArg('goto '), RationalArg]), 
         action: (args: [string, RationalDef]) => (model: Model, ins: InsertionPoint): void => 
             ins.moveToTime({ ...args[1], type: 'abs' })
+    },
+    { 
+        argType: sequence([FixedArg('append '), many(NoteArg)]), 
+        action: (args: [string, MusicEvent[]]) => (model: Model, ins: InsertionPoint): void => {
+            const events: MusicEvent[] = args[1];
+            const eventDef = new FlexibleSequence(events).def;
+            model.overProject(
+                R.lensPath(['score', 'staves', ins.staffNo, 'voices', ins.voiceNo, 'contentDef']),
+                (seq: MultiSequenceDef) => 
+                    R.cond<MultiSequenceDef, SplitSequenceDef, string, MultiSequenceItem[], MultiSequenceDef>([
+                        [isSplitSequence, R.identity],
+                        [R.is(String), (s: string) => (s + ' ' + eventDef) as MultiSequenceDef],
+                        [(R.is(Array<MultiSequenceItem>)), m => [...m, eventDef as NoteDef[]]] // todo: fix ugly cast
+                    ])(seq)
+            );
+        }
     }
 ];

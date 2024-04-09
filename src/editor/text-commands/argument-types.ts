@@ -1,4 +1,4 @@
-import { Rational, RationalDef } from '../../model';
+import { Note, RationalDef, createNoteFromLilypond } from '../../model';
 
 export interface ArgumentType<T> {
     regex(): string;
@@ -44,6 +44,47 @@ export const RationalArg: ArgumentType<RationalDef> = {
             numerator: parseInt(m[1]),
             denominator: parseInt(m[2])
         }, rest];
+    }
+};
+
+
+/*
+export const PitchArg: ArgumentType<Pitch> = {
+    regex(): string {
+        return '[a-gr](es|is)*[\',]*';
+    },
+
+    parse(input: string) {
+        const items = input.split(/\s+/);
+        if (items.length) {
+            const m = createNoteFromLilypond(items[0]);
+            items.shift();
+            return [m.pitches[0], items.join(' ')];
+        }
+        throw 'Illegal note';
+    }
+};
+
+export const ChordArg: ArgumentType<Pitch[]> = sequence(['<', many(PitchArg), '>']);
+export const DurationArg: ArgumentType<string[]> = sequence([IntegerArg, many(FixedArg('.'))]);
+*/
+
+export const NoteArg: ArgumentType<Note> = {
+    // todo: make it a sequence([select([PitchArg, ChordArg]), DurationArg, many(MarkerArg), optional(TieArg)])
+    regex(): string {
+        return /([a-gr](es|is)*[',]*)(\d+\.*)((\\[a-z]+)*)(~?)/.source;
+    },
+    //const matcher = /^([a-gr](es|is)*[',]*)(\d+\.*)((\\[a-z]+)*)(~?)$/i;
+    //const matcherChord = /^<([a-z,' ]+)>(\d+\.*)((\\[a-z]+)*)(~?)$/i;
+
+    parse(input: string) {
+        const items = input.split(/\s+/);
+        if (items.length) {
+            const m = createNoteFromLilypond(items[0]);
+            items.shift();
+            return [m, items.join(' ')];
+        }
+        throw 'Illegal note';
     }
 };
 
