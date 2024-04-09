@@ -69,22 +69,9 @@ export class TextCommandEngine {
             const staff = items[1] ? parseInt(items[1]) : -1;
             return new GotoVoiceTextCommand(staff, parseInt(items[2]));
         }
-        /*if (/^goto/.test(command)) { 
-            //if (/^goto +next$/.test(command)) return new CustomTextCommand((model, ins) => ins.moveRight());
-            //if (/^goto +prev$/.test(command)) return new CustomTextCommand((model, ins) => ins.moveLeft());
-            if (/^goto +start$/.test(command)) return new CustomTextCommand((model, ins) => ins.moveToTime(Time.StartTime));
-            
-            const items = /^goto +(\d+)[\\/](\d+)/.exec(command);
-            if (!items) throw new Error('Unknown command.');            
-            const time = Time.newAbsolute(parseInt(items[1]), parseInt(items[2]));
-            return new GotoTimeTextCommand(time);
-        }*/
         if (/^add +staff$/.test(command)) { 
             return new AddStaffCommand();
         }
-        /*if (/^append /.test(command)) { 
-            return new AppendMusicCommand(command.substring('append '.length));
-        }*/
 
         throw new Error('Unknown command.');
     }

@@ -1,9 +1,7 @@
 import { expect } from 'chai';
-import { BaseCommandFactory } from './command-factory';
 import { InsertionPoint } from './insertion-point';
-import { AddClefCommand, AddKeyCommand, AddMeterCommand, AddNoteCommand, AlterPitchCommand, ChangePitchEnharmCommand, DeleteNoteCommand, DeletePitchCommand, SetNoteDurationCommand, SetPitchCommand, SetPitchesCommand, ToggleNoteDotsCommand } from './commands';
 import Sinon = require('sinon');
-import { Clef, JMusic, Pitch, Time, createNoteFromLilypond } from '../model';
+import { ClefType, JMusic, Time } from '../model';
 import { TextCommandEngine } from './text-command-engine';
 
 
@@ -114,6 +112,22 @@ describe('Text commands', () => {
             expect(jMusic.staves[0].voices[0].content.elements).to.have.length(7);
         });
 
+        it('should append music with rest and spacer', () => {
+            const cmd = TextCommandEngine.parse('append r4 s4 f2');
+
+            const jMusic = new JMusic('c4 c4 c4 c4');
+            const ins1 = new InsertionPoint(jMusic);
+            ins1.moveToVoice(0, 0);
+            ins1.moveToTime(Time.newAbsolute(4, 4));
+
+            //expect(jMusic.model.project.score.staves[0].voices[0].contentDef).to.have.length(1);
+            expect(jMusic.staves[0].voices[0].content.elements).to.have.length(4);
+            
+            cmd.execute(jMusic, ins);
+
+            expect(jMusic.staves[0].voices[0].content.elements).to.have.length(7);
+        });
+
         
         it('should append music with a key change', () => {
             const cmd = TextCommandEngine.parse('append 2b d4 e4 f2');
@@ -152,6 +166,26 @@ describe('Text commands', () => {
             expect((jMusic.staves[0].voices[0].content.elements[4] as any).meter.def).to.deep.eq({
                 value: 4,
                 count: 3
+            });
+        });
+
+        
+        it('should append music with a clef change', () => {
+            const cmd = TextCommandEngine.parse('append \\clef bass d4 e4 f4');
+
+            const jMusic = new JMusic('c4 c4 c4 c4');
+            const ins1 = new InsertionPoint(jMusic);
+            ins1.moveToVoice(0, 0);
+            ins1.moveToTime(Time.newAbsolute(4, 4));
+
+            expect(jMusic.staves[0].voices[0].content.elements).to.have.length(4);
+            
+            cmd.execute(jMusic, ins);
+
+            expect(jMusic.staves[0].voices[0].content.elements).to.have.length(8);
+            expect((jMusic.staves[0].voices[0].content.elements[4] as any).clef.def).to.deep.eq({
+                clefType: ClefType.F,
+                line: 2
             });
         });
 

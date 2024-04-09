@@ -1,7 +1,8 @@
 import { StateChange } from './../../model/states/state';
-import { Key, KeyDef, MeterFactory, createNoteFromLilypond } from 'model';
+import { Clef, ClefType, Key, KeyDef, MeterFactory, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { FixedArg, IntegerArg, KeyArg, MeterArg, NoteArg, RationalArg } from './argument-types';
+import { ClefArg, FixedArg, IntegerArg, KeyArg, MeterArg, NoteArg, RationalArg, SpacerArg, WordArg } from './argument-types';
+import { createSpacerFromLilypond } from '../../model/notes/spacer';
 
 describe('Argument types', () => {
     describe('Integer', () => {
@@ -10,6 +11,14 @@ describe('Argument types', () => {
         });
         it('should parse an integer token', () => {
             expect(IntegerArg.parse('432gyu453')).to.deep.eq([432, 'gyu453']);
+        });
+    });
+    describe('Word', () => {
+        it('should provide a regular expression', () => {
+            expect(WordArg.regex()).to.eq('\\w+');
+        });
+        it('should parse a word token', () => {
+            expect(WordArg.parse('432gyu453 huio')).to.deep.eq(['432gyu453', ' huio']);
         });
     });
     
@@ -45,6 +54,18 @@ describe('Argument types', () => {
         });
     });
 
+    describe('Rest', () => {
+        it('should parse a rest token', () => {
+            expect(NoteArg.parse('r4')).to.deep.eq([createNoteFromLilypond('r4'), '']);
+        });
+    });
+
+    describe('Spacer', () => {
+        it('should parse a spacer token', () => {
+            expect(SpacerArg.parse('s4')).to.deep.eq([createSpacerFromLilypond('s4'), '']);
+        });
+    });
+
     describe('Key change', () => {
         it('should provide a regular expression', () => {
             expect(KeyArg.regex()).to.eq('(\\d+)((#)|(b))');
@@ -65,6 +86,18 @@ describe('Argument types', () => {
             const res = MeterArg.parse('3/4');
             expect(res).to.deep.eq([
                 StateChange.newMeterChange(MeterFactory.createRegularMeter({ value: 4, count: 3 })),                 
+                ''
+            ]);
+        });
+    });
+    describe('Clef change', () => {
+        it('should provide a regular expression', () => {
+            expect(ClefArg.regex()).to.eq('(\\\\clef )(\\w+)');
+        });
+        it('should parse a clef token', () => {
+            const res = ClefArg.parse('\\clef treble');
+            expect(res).to.deep.eq([
+                StateChange.newClefChange(new Clef({ clefType: ClefType.G, line: -2 })),
                 ''
             ]);
         });

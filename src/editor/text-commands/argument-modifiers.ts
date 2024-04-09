@@ -39,20 +39,12 @@ export function sequence(types: ArgumentType<any>[]): ArgumentType<any[]> {
     return {
         regex: () => types.map(t => `(${t.regex()})`).join(''),
         parse: (input: string) => {
-            //const typeRegex = new RegExp('^' + type.regex());
             let rest = input;
             const retVal = types.map(type => {
                 const [val, r] = type.parse(rest);
                 rest = r;
                 return val;
             });
-            /*if (typeRegex.test(rest)) {
-                const [val, r] = type.parse(rest);
-                //retVal = val;
-                rest = r;
-                return [val, rest];
-            }
-            //const m = new RegExp(`(${type.regex()}) `, 'g');*/
             return [retVal, rest];
         }
     };
