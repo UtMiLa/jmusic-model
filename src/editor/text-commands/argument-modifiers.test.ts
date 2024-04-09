@@ -1,7 +1,7 @@
 import { KeyDef, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
 import { FixedArg, IntegerArg, KeyArg, NoteArg, RationalArg } from './argument-types';
-import { many, mapResult, optional, sequence } from './argument-modifiers';
+import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 
 
 describe('Argument type modifiers', () => {
@@ -87,23 +87,28 @@ describe('Argument type modifiers', () => {
 
 
     describe('Select', () => {
-        /*it('should provide a regular expression for many integers', () => {
-            expect(sequence([IntegerArg, RationalArg]).regex()).to.eq('(\\d+)(\\d+\\/\\d+)');
+        it('should provide a regular expression for integer/rational selections', () => {
+            expect(select([IntegerArg, RationalArg]).regex()).to.eq('(\\d+)|(\\d+\\/\\d+)');
         });
-        it('should parse a sequence', () => {
-            expect(sequence([IntegerArg, FixedArg(' = '), RationalArg])
-                .parse('4 = 63/43 52 ijo 54'))
-                .to.deep.eq([[4, ' = ', {
-                    numerator: 63,
-                    denominator: 43
-                }], ' 52 ijo 54']);
+        it('should parse integers', () => {
+            expect(select([RationalArg, IntegerArg])
+                .parse('4'))
+                .to.deep.eq([4, '']);
+        });        
+        it('should parse rationals', () => {
+            expect(select([RationalArg, IntegerArg])
+                .parse('4/5'))
+                .to.deep.eq([{
+                    numerator: 4,
+                    denominator: 5
+                }, '']);
         });        
         it('should fail an unmatched sequence', () => {
-            expect(() => sequence([IntegerArg, FixedArg(' = '), RationalArg])
-                .parse('4 = 63/h43 52 ijo 54'))
+            expect(() => sequence([RationalArg, IntegerArg])
+                .parse('= 63/43'))
                 .to.throw(/Not a rational/);
             
-        });*/
+        });
     });
 
     
@@ -115,13 +120,7 @@ describe('Argument type modifiers', () => {
             expect(mapResult(IntegerArg, int => `${int}: ${int * int}`)
                 .parse('4 ='))
                 .to.deep.eq(['4: 16', ' =']);
-        });        
-        /*it('should fail an unmatched sequence', () => {
-            expect(() => sequence([IntegerArg, FixedArg(' = '), RationalArg])
-                .parse('4 = 63/h43 52 ijo 54'))
-                .to.throw(/Not a rational/);
-            
-        });*/
+        });
     });
 
 });
