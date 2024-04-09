@@ -1,6 +1,5 @@
 import { StateChange } from './../../model/states/state';
-import { Accidental } from './../../model/pitches/pitch';
-import { Key, Note, RationalDef, createNoteFromLilypond } from '../../model';
+import { Key, MeterFactory, Note, RationalDef, createNoteFromLilypond } from '../../model';
 import { mapResult, select, sequence } from './argument-modifiers';
 
 export interface ArgumentType<T> {
@@ -94,5 +93,6 @@ export const NoteArg: ArgumentType<Note> = {
 const _keyArg = sequence([IntegerArg, select([FixedArg('#'), FixedArg('b')])]);
 export const KeyArg = mapResult(_keyArg, ([count, acc]) => (StateChange.newKeyChange(new Key({ count, accidental: acc === '#' ? 1 : -1 }))));
 
+export const MeterArg = mapResult(RationalArg, (r: RationalDef) => (StateChange.newMeterChange(MeterFactory.createRegularMeter({ count: r.numerator, value: r.denominator }))));
 
-export const MusicEventArg = select([NoteArg, KeyArg]); // todo: ClefArg, MeterArg, ...
+export const MusicEventArg = select([NoteArg, KeyArg, MeterArg]); // todo: ClefArg, LongDecoration, ...

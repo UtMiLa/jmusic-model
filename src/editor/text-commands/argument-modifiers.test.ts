@@ -88,9 +88,9 @@ describe('Argument type modifiers', () => {
 
     describe('Select', () => {
         it('should provide a regular expression for integer/rational selections', () => {
-            expect(select([IntegerArg, RationalArg]).regex()).to.eq('(\\d+)|(\\d+\\/\\d+)');
+            expect(select([RationalArg, IntegerArg]).regex()).to.eq('(\\d+\\/\\d+)|(\\d+)');
         });
-        it('should parse integers', () => {
+        it('should parse integers', () => { // todo: it should warn if more than one path matches the string
             expect(select([RationalArg, IntegerArg])
                 .parse('4'))
                 .to.deep.eq([4, '']);

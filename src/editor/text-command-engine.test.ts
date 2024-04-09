@@ -134,5 +134,26 @@ describe('Text commands', () => {
                 count: 2
             });
         });
+
+
+        it('should append music with a meter change', () => {
+            const cmd = TextCommandEngine.parse('append 3/4 d4 e4 f4');
+
+            const jMusic = new JMusic('c4 c4 c4 c4');
+            const ins1 = new InsertionPoint(jMusic);
+            ins1.moveToVoice(0, 0);
+            ins1.moveToTime(Time.newAbsolute(4, 4));
+
+            expect(jMusic.staves[0].voices[0].content.elements).to.have.length(4);
+            
+            cmd.execute(jMusic, ins);
+
+            expect(jMusic.staves[0].voices[0].content.elements).to.have.length(8);
+            expect((jMusic.staves[0].voices[0].content.elements[4] as any).meter.def).to.deep.eq({
+                value: 4,
+                count: 3
+            });
+        });
+
     });
 });

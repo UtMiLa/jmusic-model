@@ -1,7 +1,7 @@
 import { StateChange } from './../../model/states/state';
-import { Key, KeyDef, createNoteFromLilypond } from 'model';
+import { Key, KeyDef, MeterFactory, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { FixedArg, IntegerArg, KeyArg, NoteArg, RationalArg } from './argument-types';
+import { FixedArg, IntegerArg, KeyArg, MeterArg, NoteArg, RationalArg } from './argument-types';
 
 describe('Argument types', () => {
     describe('Integer', () => {
@@ -53,6 +53,18 @@ describe('Argument types', () => {
             const res = KeyArg.parse('3b');
             expect(res).to.deep.eq([
                 StateChange.newKeyChange(new Key({ accidental: -1, count: 3 })),                 
+                ''
+            ]);
+        });
+    });
+    describe('Meter change', () => {
+        it('should provide a regular expression', () => {
+            expect(MeterArg.regex()).to.eq(RationalArg.regex());
+        });
+        it('should parse a meter token', () => {
+            const res = MeterArg.parse('3/4');
+            expect(res).to.deep.eq([
+                StateChange.newMeterChange(MeterFactory.createRegularMeter({ value: 4, count: 3 })),                 
                 ''
             ]);
         });
