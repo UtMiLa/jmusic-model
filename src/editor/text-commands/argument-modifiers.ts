@@ -1,5 +1,18 @@
-import { map } from 'ramda';
 import { ArgumentType } from './argument-types';
+
+function resolveSyntacticSugar<T>(arg: ArgumentType<T> | string): ArgumentType<T | undefined> {
+    if (typeof arg === 'string') {
+        return  {
+            regex: () => arg,
+            parse: (input: string) => {
+                if (!input.startsWith(arg)) throw 'Missing keyword';
+                return [undefined, input.substring(arg.length)];
+            },
+            undefinedWhenOptional: true
+        };
+    }
+    return arg;
+}
 
 
 export function many<T>(type: ArgumentType<T>): ArgumentType<T[]> {
@@ -19,7 +32,8 @@ export function many<T>(type: ArgumentType<T>): ArgumentType<T[]> {
     };
 }
 
-export function optional<T>(type: ArgumentType<T>): ArgumentType<T | null> {
+export function optional<T>(type0: ArgumentType<T> | string): ArgumentType<T | null | undefined> {
+    const type = resolveSyntacticSugar(type0);
     return {
         regex: () => `(${type.regex()})?`,
         parse: (input: string) => {
@@ -30,12 +44,14 @@ export function optional<T>(type: ArgumentType<T>): ArgumentType<T | null> {
                 rest = r;
                 return [val, rest];
             }
+            if (type.undefinedWhenOptional) return [undefined, rest];
             return [null, rest];
         }
     };
 }
 
-export function sequence(types: ArgumentType<any>[]): ArgumentType<any[]> {
+export function sequence(types0: (ArgumentType<any> | string)[]): ArgumentType<(any)[]> {
+    const types = types0.map(resolveSyntacticSugar);
     return {
         regex: () => types.map(t => `(${t.regex()})`).join(''),
         parse: (input: string) => {
@@ -45,12 +61,13 @@ export function sequence(types: ArgumentType<any>[]): ArgumentType<any[]> {
                 rest = r;
                 return val;
             });
-            return [retVal, rest];
+            return [retVal.filter((x, i) => x !== undefined), rest];
         }
     };
 }
 
-export function select(types: ArgumentType<any>[]): ArgumentType<any[]> {
+export function select(types0: (ArgumentType<any> | string)[]): ArgumentType<any[]> {
+    const types = types0.map(resolveSyntacticSugar);
     return {
         regex: () => types.map(t => `(${t.regex()})`).join('|'),
         parse: (input: string) => {

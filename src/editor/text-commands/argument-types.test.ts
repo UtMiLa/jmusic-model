@@ -1,7 +1,7 @@
 import { StateChange } from './../../model/states/state';
 import { Clef, ClefType, Key, KeyDef, MeterFactory, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { ClefArg, FixedArg, IntegerArg, KeyArg, MeterArg, NoteArg, RationalArg, SpacerArg, WordArg } from './argument-types';
+import { ClefArg, FixedArg, IntegerArg, KeyArg, MeterArg, NoteArg, RationalArg, SpaceArg, SpacerArg, WordArg } from './argument-types';
 import { createSpacerFromLilypond } from '../../model/notes/spacer';
 
 describe('Argument types', () => {
@@ -11,6 +11,14 @@ describe('Argument types', () => {
         });
         it('should parse an integer token', () => {
             expect(IntegerArg.parse('432gyu453')).to.deep.eq([432, 'gyu453']);
+        });
+    });
+    describe('Whitespace', () => {
+        it('should provide a regular expression', () => {
+            expect(SpaceArg.regex()).to.eq('\\s+');
+        });
+        it('should parse a whitespace token', () => {
+            expect(SpaceArg.parse('\t \r\ngyu453')).to.deep.eq([undefined, 'gyu453']);
         });
     });
     describe('Word', () => {

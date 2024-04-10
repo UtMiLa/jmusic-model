@@ -6,6 +6,7 @@ import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
 export interface ArgumentType<T> {
     regex(): string;
     parse(input: string): [T, string];
+    undefinedWhenOptional?: boolean;
 }
 
 export const FixedArg = (arg: string): ArgumentType<string> => ({
@@ -32,6 +33,21 @@ export const IntegerArg: ArgumentType<number> = {
         const rest = input.substring(m[0].length);
         return [parseInt(m[0]), rest];
     }
+};
+
+export const SpaceArg: ArgumentType<undefined> = {
+    regex: (): string => {
+        return '\\s+';
+    },
+
+    parse: (input: string) => {
+        const m = /^\s+/.exec(input);
+        if (!m) throw 'Not a whitespace';
+        const rest = input.substring(m[0].length);
+        return [undefined, rest];
+    },
+    
+    undefinedWhenOptional: true
 };
 
 export const WordArg: ArgumentType<string> = {
@@ -104,7 +120,7 @@ export const NoteArg: ArgumentType<Note> = {
     }
 };
 
-export const SpacerArg: ArgumentType<Spacer> = {
+export const SpacerArg: ArgumentType<Spacer> = { // todo: maybe find a better name to this or SpaceArg
     // todo: make it a sequence([select([PitchArg, ChordArg]), DurationArg, many(MarkerArg), optional(TieArg)])
     regex(): string {
         return /s(\d+\.*)/.source;
