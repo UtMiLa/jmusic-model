@@ -44,6 +44,8 @@ export function many<T>(type: ArgumentType<T>): ArgumentType<T[]> {
     };
 }
 
+export function optional<T>(type0: ArgumentType<T>): ArgumentType<T | null>;
+export function optional(type0: string): ArgumentType<undefined>;
 export function optional<T>(type0: ArgumentType<T> | string): ArgumentType<T | null | undefined> {
     const type = resolveSyntacticSugar(type0);
     return {
