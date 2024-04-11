@@ -1,11 +1,15 @@
 import { Rational, RationalDef } from './../../model/rationals/rational';
 import { AbsoluteTime } from './../../model/rationals/time';
-import { FixedArg, MusicEventArg, NoteArg, RationalArg, SpaceArg } from './argument-types';
+import { ArgumentType, FixedArg, MusicEventArg, NoteArg, RationalArg, SpaceArg } from './argument-types';
 import { many, optional, sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
 import { Time, Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, Note, MusicEvent, FlexibleSequence, NoteDef } from './../../model';
 import R = require('ramda');
 
+interface CommandDescriptor<T> {
+    argType: ArgumentType<T>;
+    action: (args: T) => (model: Model, ins: InsertionPoint) => void;
+}
 
 // goto AbsoluteTime
 // goto next
@@ -35,10 +39,10 @@ export const navigationCommands = [
         action: (args: string[]) => (model: Model, ins: InsertionPoint): void => ins.moveToTime(Time.newAbsolute(0, 1)) 
     },
     { 
-        argType: sequence(['goto', SpaceArg, RationalArg]), 
+        argType: sequence<RationalDef>(['goto', SpaceArg, RationalArg]), 
         action: (args: [RationalDef]) => (model: Model, ins: InsertionPoint): void => 
             ins.moveToTime({ ...args[0], type: 'abs' })
-    },
+    } as CommandDescriptor<[RationalDef]>,
     { 
         argType: sequence(['append', SpaceArg, many(MusicEventArg)]), 
         action: (args: [MusicEvent[]]) => (model: Model, ins: InsertionPoint): void => {
