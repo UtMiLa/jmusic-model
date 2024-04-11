@@ -120,13 +120,10 @@ export const NoteArg: ArgumentType<Note> = {
     }
 };
 
-export const SpacerArg: ArgumentType<Spacer> = { // todo: maybe find a better name to this or SpaceArg
-    // todo: make it a sequence([select([PitchArg, ChordArg]), DurationArg, many(MarkerArg), optional(TieArg)])
+export const SpacerArg: ArgumentType<Spacer> = { // todo: maybe find a better name for this or SpaceArg
     regex(): string {
         return /s(\d+\.*)/.source;
     },
-    //const matcher = /^([a-gr](es|is)*[',]*)(\d+\.*)((\\[a-z]+)*)(~?)$/i;
-    //const matcherChord = /^<([a-z,' ]+)>(\d+\.*)((\\[a-z]+)*)(~?)$/i;
 
     parse(input: string) {
         const items = input.split(/\s+/);

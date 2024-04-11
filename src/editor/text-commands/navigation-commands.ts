@@ -42,7 +42,7 @@ export const navigationCommands = [
     { 
         argType: sequence(['append', SpaceArg, many(MusicEventArg)]), 
         action: (args: [MusicEvent[]]) => (model: Model, ins: InsertionPoint): void => {
-            const events: MusicEvent[] = args[0];
+            const events = args[0];
             const eventDef = new FlexibleSequence(events).def;
             model.overProject(
                 R.lensPath(['score', 'staves', ins.staffNo, 'voices', ins.voiceNo, 'contentDef']),
