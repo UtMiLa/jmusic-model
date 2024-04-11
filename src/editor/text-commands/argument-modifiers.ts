@@ -1,17 +1,13 @@
 import { ArgumentType } from './argument-types';
-//
-type Concat<T> = T extends [infer A, ...infer Rest]
-    ? A extends any[] ? [...A, ...Concat<Rest>] : A
-    : T;
 
-type ArgSimple<A> = [A] | [A, string];
-type ArgStarter<A> = ArgSimple<A> | [string, ...ArgSimple<A>];
 
-type ArgDuple<A, B> = Concat<[ArgStarter<A>, ArgSimple<B>]>;
-
-type ArgTriple<A, B, C> = Concat<[ArgDuple<A, B>, ArgSimple<C>]>;
-type ArgQuadruple<A, B, C, D> = Concat<[ArgDuple<A, B>, ArgSimple<C>, ArgSimple<D>]>;
-type ArgQuintuple<A, B, C, D, E> = Concat<[ArgDuple<A, B>, ArgSimple<C>, ArgSimple<D>, ArgSimple<E>]>;
+type stringInterpolation = [] | [string] | [string, string] | [string, string, string];
+type ArgSimple<A> = [A, ...stringInterpolation];
+type ArgStarter<A> = [...stringInterpolation, ...ArgSimple<A>];
+type ArgDuple<A, B> = [...ArgStarter<A>, ...ArgSimple<B>];
+type ArgTriple<A, B, C> = [...ArgDuple<A, B>, ...ArgSimple<C>];
+type ArgQuadruple<A, B, C, D> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimple<D>];
+type ArgQuintuple<A, B, C, D, E> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimple<D>, ...ArgSimple<E>];
 
 
 
