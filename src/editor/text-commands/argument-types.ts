@@ -108,5 +108,5 @@ export const MeterArg = mapResult(RationalArg, (r: RationalDef) => (StateChange.
 const _clefArg = sequence([FixedArg('\\\\clef '), WordArg]);
 export const ClefArg = mapResult(_clefArg, ([keyword, value]) => (StateChange.newClefChange(parseLilyClef(value))));
 
-export const MusicEventArg = (select as (_: unknown[]) => ArgumentType<MusicEvent>)([NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg]); // todo: LongDecoration, ...
+export const MusicEventArg = select([NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg]); // todo: LongDecoration, ...
 

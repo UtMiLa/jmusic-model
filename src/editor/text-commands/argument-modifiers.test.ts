@@ -148,8 +148,8 @@ describe('Argument type modifiers', () => {
                 }, '']);
         });
         it('should parse keywords', () => {
-            expect(select([IntegerArg, 'test'])
-                .parse('test'))
+            expect(select([IntegerArg, WhitespaceArg])
+                .parse('\t'))
                 .to.deep.eq([undefined, '']);
         });
         it('should fail an unmatched select', () => {
