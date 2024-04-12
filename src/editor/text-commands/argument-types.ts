@@ -1,7 +1,8 @@
 import { StateChange } from './../../model/states/state';
-import { Clef, Key, MeterFactory, MusicEvent, Note, Pitch, PitchClass, RationalDef, Time, TimeSpan, createNoteFromLilypond, fromLilypondAlteration, fromLilypondOctave, fromLilypondPitchClass, parseLilyClef } from '../../model';
-import { many, mapResult, select, sequence } from './argument-modifiers';
+import { Clef, Key, MeterFactory, MusicEvent, Note, Pitch, PitchClass, RationalDef, Time, TimeSpan, createNote, createNoteFromLilypond, fromLilypondAlteration, fromLilypondOctave, fromLilypondPitchClass, parseLilyClef } from '../../model';
+import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
+import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
 
 export interface ArgumentType<T> {
     regex(): string;
@@ -119,10 +120,47 @@ export const PitchArg: ArgumentType<Pitch> = mapResult(sequence([PitchClassArg, 
 
 export const ChordArg: ArgumentType<Pitch[]> = mapResult(sequence(['<', many(PitchArg), '>']), pitches => pitches[0]);
 
-export const DurationArg: ArgumentType<TimeSpan> = mapResult(sequence([IntegerArg, many(FixedArg('.'))]), ([dur, dots]) => Time.newSpan(1, dur)); // todo: dots
+export const DurationArg: ArgumentType<TimeSpan> = mapResult(sequence([IntegerArg, optional(many(FixedArg('\\.')))]), 
+    ([dur, dots]) => (dots ?? []).reduce(
+        (prev, next) => next === '.' ? Time.newSpan(prev.numerator * 2 + 1, prev.denominator * 2) : prev, 
+        Time.newSpan(1, dur)
+    ));
+
+export const NoteExpressionArg: ArgumentType<string> = FixedArg('\\\\[a-z]+');
+export const NoteTieArg: ArgumentType<string> = FixedArg('~');
+export const OptionalNoteExpressionsArg: ArgumentType<string[] | null> = mapResult(optional(many(NoteExpressionArg)), res => res ? res : null);
+const ChordPitchOrRestArg: ArgumentType<Pitch[]> = select([
+    mapResult(PitchArg, pitch => [pitch]), 
+    ChordArg,
+    mapResult(FixedArg('r'), () => [])
+]);
+
+export const NoteArg: ArgumentType<Note> = mapResult(sequence([
+    ChordPitchOrRestArg, 
+    DurationArg, 
+    OptionalNoteExpressionsArg,
+    optional(NoteTieArg)]), 
+args => createNote(args[0], args[1], !!args[3], args[2] ? args[2].map(parseLilyNoteExpression) : undefined));
 
 
-export const NoteArg: ArgumentType<Note> = {
+
+
+/*
+
+
+export const NoteArg: ArgumentType<Note> = mapResult(sequence<Pitch, TimeSpan, string[], string[]?>([
+    select([
+        mapResult(PitchArg, pitch => [pitch]), 
+        ChordArg,
+        mapResult(FixedArg('r'), () => [] as Pitch[])
+    ]) as ArgumentType<Pitch[]>, 
+    DurationArg, 
+    many(NoteExpressionArg), 
+    optional(NoteTieArg)]), 
+(args: [Pitch, TimeSpan, string[], string[]?]) => createNote(args[0], args[1], !!args[3], args[2]));
+
+*/
+/*export const NoteArg: ArgumentType<Note> = {
     // todo: make it a sequence([select([PitchArg, ChordArg]), DurationArg, many(MarkerArg), optional(TieArg)])
     regex(): string {
         return /([a-gr](es|is)*[',]*)(\d+\.*)((\\[a-z]+)*)(~?)/.source;
@@ -139,7 +177,7 @@ export const NoteArg: ArgumentType<Note> = {
         }
         throw 'Illegal note';
     }
-};
+};*/
 
 export const SpacerArg: ArgumentType<Spacer> = { // todo: maybe find a better name for this or SpaceArg
     regex(): string {

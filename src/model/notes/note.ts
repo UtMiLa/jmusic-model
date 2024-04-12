@@ -1,3 +1,4 @@
+import { NoteArg } from './../../editor/text-commands/argument-types';
 import { NoteExpression, parseLilyNoteExpression } from './note-expressions';
 import { RationalDef } from '../../model/rationals/rational';
 import { Rational } from '../rationals/rational';
@@ -54,8 +55,8 @@ export interface UpdateNote {
 
 
 export function createNoteFromLilypond(input: string): Note {
-    
-    const matcher = /^([a-gr](es|is)*[',]*)(\d+\.*)((\\[a-z]+)*)(~?)$/i;
+    return NoteArg.parse(input)[0];
+    /*const matcher = /^([a-gr](es|is)*[',]*)(\d+\.*)((\\[a-z]+)*)(~?)$/i;
     const matcherChord = /^<([a-z,' ]+)>(\d+\.*)((\\[a-z]+)*)(~?)$/i;
     const matchChord = matcherChord.exec(input);
 
@@ -93,7 +94,7 @@ export function createNoteFromLilypond(input: string): Note {
     if (tie) extra.tie = tie;
     if (expressions.length) extra.expressions = expressions.map(expression => parseLilyNoteExpression(expression));
     
-    return cloneNote(res, extra);
+    return cloneNote(res, extra);*/
 }
 
 export function noteAsLilypond(note: Note): string {
@@ -151,14 +152,18 @@ export function getDotNo(note: Note): number {
     return getDotNumber(note.nominalDuration);
 }
 
-export function createNote(pitches: Pitch[], duration: TimeSpan): Note {
-    const note: Note = {
+export function createNote(pitches: Pitch[], duration: TimeSpan, tie = false, expressions?: NoteExpression[] | undefined): Note {
+    const note: UpdateNote = {
         pitches: pitches,
         nominalDuration: duration,
         direction: NoteDirection.Undefined
     };
 
-    return note;
+    if (tie) note.tie = true;
+
+    if (expressions) note.expressions = expressions;
+
+    return note as Note;
 }
 
 export function getNoteType(note: Note): NoteType {

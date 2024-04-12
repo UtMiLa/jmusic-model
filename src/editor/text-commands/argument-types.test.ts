@@ -79,7 +79,7 @@ describe('Argument types', () => {
     
     describe('Note', () => {
         it('should provide a regular expression', () => {
-            expect(NoteArg.regex()).to.eq('([a-gr](es|is)*[\',]*)(\\d+\\.*)((\\\\[a-z]+)*)(~?)');
+            expect(NoteArg.regex()).to.eq(/((([a-g](es|is)*)([',]*))|((<)((([a-g](es|is)*)([',]*) *)+)(>))|(r))((\d+)(((\. *)+)?))(((\\[a-z]+ *)+)?)((~)?)/.source);
         });
         it('should parse a note token', () => {
             expect(NoteArg.parse('eeses\'\'4')).to.deep.eq([createNoteFromLilypond('eeses\'\'4'), '']);

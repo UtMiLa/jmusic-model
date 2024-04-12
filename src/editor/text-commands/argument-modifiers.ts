@@ -66,10 +66,10 @@ export function optional<T>(type0: ArgumentType<T> | string): ArgumentType<T | n
 }
 
 export function sequence<T>(types0: ArgStarter<ArgumentType<T>>): ArgumentType<[T]>;
-export function sequence<S,T>(types0: ArgDuple<ArgumentType<T>, ArgumentType<S>>): ArgumentType<[T, S]>;
-export function sequence<S,T,U>(types0: ArgTriple<ArgumentType<T>, ArgumentType<S>, ArgumentType<U>>): ArgumentType<[T, S, U]>;
-export function sequence<S,T,U,V>(types0: ArgQuadruple<S,T,U,V>): ArgumentType<[S, T, U, V]>;
-//export function sequence<S,T,U,V,W>(types0: ArgQuintuple<S,T,U,V,W>): ArgumentType<[S, T, U, V, W]>;
+export function sequence<S,T>(types0: ArgDuple<ArgumentType<S>, ArgumentType<T>>): ArgumentType<[S, T]>;
+export function sequence<S,T,U>(types0: ArgTriple<ArgumentType<S>, ArgumentType<T>, ArgumentType<U>>): ArgumentType<[S, T, U]>;
+export function sequence<S,T,U,V>(types0: ArgQuadruple<ArgumentType<S>, ArgumentType<T>, ArgumentType<U>, ArgumentType<V>>): ArgumentType<[S, T, U, V]>;
+//export function sequence<S,T,U,V,W>(types0: ArgQuintuple<ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>>): ArgumentType<[S, T, U, V, W]>;
 export function sequence<T>(types0: (ArgumentType<T> | string)[]): ArgumentType<T[]> {
     const types = types0.map(resolveSyntacticSugar);
     return {
@@ -87,10 +87,10 @@ export function sequence<T>(types0: (ArgumentType<T> | string)[]): ArgumentType<
 }
 
 export function select<T>(types0: ArgStarter<ArgumentType<T>>): ArgumentType<T>;
-export function select<S,T>(types0: ArgDuple<ArgumentType<T>, ArgumentType<S>>): ArgumentType<T | S>;
-export function select<S,T,U>(types0: ArgTriple<ArgumentType<T>, ArgumentType<S>, ArgumentType<U>>): ArgumentType<T | S | U>;
-export function select<S,T,U,V>(types0: ArgQuadruple<S,T,U,V>): ArgumentType<S | T | U | V>;
-//export function select<S,T,U,V,W>(types0: ArgQuintuple<S,T,U,V,W>): ArgumentType<S | T | U | V | W>;
+export function select<S,T>(types0: ArgDuple<ArgumentType<S>, ArgumentType<T>>): ArgumentType<S | T>;
+export function select<S,T,U>(types0: ArgTriple<ArgumentType<S>, ArgumentType<T>, ArgumentType<U>>): ArgumentType<S | T | U>;
+export function select<S,T,U,V>(types0: ArgQuadruple<ArgumentType<S>, ArgumentType<T>, ArgumentType<U>, ArgumentType<V>>): ArgumentType<S | T | U | V>;
+//export function select<S,T,U,V,W>(types0: ArgQuintuple<ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>>): ArgumentType<S | T | U | V | W>;
 export function select(types0: (ArgumentType<any> | string)[]): ArgumentType<any> {
     const types = types0.map(resolveSyntacticSugar);
     return {
