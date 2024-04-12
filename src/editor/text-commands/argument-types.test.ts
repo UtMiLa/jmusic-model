@@ -1,7 +1,7 @@
 import { StateChange } from './../../model/states/state';
-import { Clef, ClefType, Key, KeyDef, MeterFactory, createNoteFromLilypond } from 'model';
+import { Clef, ClefType, Key, KeyDef, MeterFactory, Pitch, PitchClass, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { ClefArg, FixedArg, IntegerArg, KeyArg, MeterArg, NoteArg, RationalArg, SpaceArg, SpacerArg, WordArg } from './argument-types';
+import { ClefArg, FixedArg, IntegerArg, KeyArg, MeterArg, NoteArg, RationalArg, SpaceArg as WhitespaceArg, SpacerArg, WordArg, PitchClassArg, PitchArg } from './argument-types';
 import { createSpacerFromLilypond } from '../../model/notes/spacer';
 
 describe('Argument types', () => {
@@ -15,10 +15,10 @@ describe('Argument types', () => {
     });
     describe('Whitespace', () => {
         it('should provide a regular expression', () => {
-            expect(SpaceArg.regex()).to.eq('\\s+');
+            expect(WhitespaceArg.regex()).to.eq('\\s+');
         });
         it('should parse a whitespace token', () => {
-            expect(SpaceArg.parse('\t \r\ngyu453')).to.deep.eq([undefined, 'gyu453']);
+            expect(WhitespaceArg.parse('\t \r\ngyu453')).to.deep.eq([undefined, 'gyu453']);
         });
     });
     describe('Word', () => {
@@ -53,12 +53,36 @@ describe('Argument types', () => {
     });
 
     
+    describe('Pitch class', () => {
+        it('should provide a regular expression', () => {
+            expect(PitchClassArg.regex()).to.eq('[a-g](es|is)*');
+        });
+        it('should parse a pitch class token', () => {
+            expect(PitchClassArg.parse('eeses,,')).to.deep.eq([new PitchClass(2, -2), ',,']);
+        });
+        it('should fail on an illegal pitch class', () => {
+            expect(() => PitchClassArg.parse('jes,,')).to.throw(/Illegal pitch class/);
+        });
+    });
+    
+    describe('Pitch', () => {
+        it('should provide a regular expression', () => {
+            expect(PitchArg.regex()).to.eq('([a-g](es|is)*)([\',]*)');
+        });
+        it('should parse a pitch token', () => {
+            expect(PitchArg.parse('eeses,,4')).to.deep.eq([new Pitch(2, 1, -2), '4']);
+        });
+        it('should fail on an illegal pitch', () => {
+            expect(() => PitchArg.parse('jes,,')).to.throw(/Illegal pitch/);
+        });
+    });
+    
     describe('Note', () => {
         it('should provide a regular expression', () => {
             expect(NoteArg.regex()).to.eq('([a-gr](es|is)*[\',]*)(\\d+\\.*)((\\\\[a-z]+)*)(~?)');
         });
         it('should parse a note token', () => {
-            expect(NoteArg.parse('eeses4')).to.deep.eq([createNoteFromLilypond('eeses4'), '']);
+            expect(NoteArg.parse('eeses\'\'4')).to.deep.eq([createNoteFromLilypond('eeses\'\'4'), '']);
         });
     });
 

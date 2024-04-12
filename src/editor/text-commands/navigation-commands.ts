@@ -25,19 +25,19 @@ interface CommandDescriptor<T> {
 // set clef Clef
 // set meter Meter
 
-export const navigationCommands = [
+export const navigationCommands: CommandDescriptor<any>[] = [
     { 
         argType: sequence(['goto', SpaceArg, 'next']), 
-        action: (args: string[]) => (model: Model, ins: InsertionPoint): void => ins.moveRight() 
-    },
+        action: () => (model: Model, ins: InsertionPoint): void => ins.moveRight() 
+    } as CommandDescriptor<[void]>,
     { 
         argType: sequence(['goto', SpaceArg, 'prev']), 
-        action: (args: string[]) => (model: Model, ins: InsertionPoint): void => ins.moveLeft() 
-    },
+        action: () => (model: Model, ins: InsertionPoint): void => ins.moveLeft() 
+    } as CommandDescriptor<[void]>,
     { 
-        argType: sequence(['goto', SpaceArg, 'start']), 
-        action: (args: string[]) => (model: Model, ins: InsertionPoint): void => ins.moveToTime(Time.newAbsolute(0, 1)) 
-    },
+        argType: sequence<void>(['goto', SpaceArg, 'start']), 
+        action: () => (model: Model, ins: InsertionPoint): void => ins.moveToTime(Time.newAbsolute(0, 1)) 
+    } as CommandDescriptor<[void]>,
     { 
         argType: sequence<RationalDef>(['goto', SpaceArg, RationalArg]), 
         action: (args: [RationalDef]) => (model: Model, ins: InsertionPoint): void => 
@@ -58,5 +58,11 @@ export const navigationCommands = [
                     ])(seq)
             );
         }
-    }
+    } as CommandDescriptor<[MusicEvent[]]>
 ];
+/*
+navigationCommands.forEach(cmd => {
+    const args = cmd.argType.parse('vghj');
+    cmd.action(args);
+});
+*/

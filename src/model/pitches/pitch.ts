@@ -1,3 +1,4 @@
+import { PitchArg } from './../../editor/text-commands/argument-types';
 import {mathMod}  from 'ramda';
 import R = require('ramda');
 
@@ -9,6 +10,22 @@ const accidentalNamesSymbol = ['𝄫', '♭', '♮', '♯', '𝄪'];
 export type Alteration = -2 | -1 | 0 | 1 | 2; // -2 = 𝄫 ... 2 = 𝄪 
 
 export type Accidental = Alteration | undefined; // 0: ♮; undefined: nothing
+
+export function fromLilypondPitchClass(input: string): number {
+    const res = pitchNames.indexOf(input);
+    if (res === -1) throw 'Illegal pitch name';
+    return res;
+}
+
+export function fromLilypondAlteration(input: string): Alteration {
+    const res = accidentalNamesLy.indexOf(input);
+    if (res === -1) throw 'Illegal alteration';
+    return res - 2 as Alteration;
+}
+
+export function fromLilypondOctave(input: string): number {
+    return input.split('').reduce((a, b) => b === ',' ? a - 1 : a + 1, 3);
+}
 
 export interface PitchDef {
     type: 'Pitch';
@@ -47,28 +64,17 @@ export class Pitch {
     }
 
     static parseLilypond(input: string): Pitch {
-        const matcher = /([a-g])((es|is)*)([',]*)$/i;
+        /*const matcher = /([a-g])((es|is)*)([',]*)$/i;
         const parsed = matcher.exec(input);
         
         if (!parsed || parsed.length < 3) throw 'Illegal pitch: '+ input;
-        let octave = 3;
-        let alteration: Alteration = 0;
-        
-        switch(parsed[2]) {
-            case '': alteration = 0; break;
-            case 'es': alteration = -1; break;
-            case 'eses': alteration = -2; break;
-            case 'is': alteration = 1; break;
-            case 'isis': alteration = 2; break;
-        }
-        parsed[4].split('').forEach(char => {
-            if (char === ',') octave--;
-            if (char === '\'') octave++;
-        });
-        
-        const res = Pitch.fromScientific(parsed[1], octave);
-        res._accidental = alteration;
-        return res;
+
+        const alteration = fromLilypondAlteration(parsed[2]);
+        const octave = fromLilypondOctave(parsed[4]);
+        const pitchClass = fromLilypondPitchClass(parsed[1]);
+
+        return new Pitch(pitchClass, octave, alteration);        */
+        return PitchArg.parse(input)[0];
     }
 
     get lilypond(): string {

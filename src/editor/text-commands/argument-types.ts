@@ -1,6 +1,6 @@
 import { StateChange } from './../../model/states/state';
-import { Clef, Key, MeterFactory, MusicEvent, Note, RationalDef, createNoteFromLilypond, parseLilyClef } from '../../model';
-import { mapResult, select, sequence } from './argument-modifiers';
+import { Clef, Key, MeterFactory, MusicEvent, Note, Pitch, PitchClass, RationalDef, Time, TimeSpan, createNoteFromLilypond, fromLilypondAlteration, fromLilypondOctave, fromLilypondPitchClass, parseLilyClef } from '../../model';
+import { many, mapResult, select, sequence } from './argument-modifiers';
 import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
 
 export interface ArgumentType<T> {
@@ -80,26 +80,47 @@ export const RationalArg: ArgumentType<RationalDef> = {
 };
 
 
-/*
-export const PitchArg: ArgumentType<Pitch> = {
+
+export const PitchClassArg: ArgumentType<PitchClass> = {
     regex(): string {
-        return '[a-gr](es|is)*[\',]*';
+        return '[a-g](es|is)*';
     },
 
     parse(input: string) {
-        const items = input.split(/\s+/);
-        if (items.length) {
-            const m = createNoteFromLilypond(items[0]);
-            items.shift();
-            return [m.pitches[0], items.join(' ')];
-        }
-        throw 'Illegal note';
+        const matcher = /^([a-g])((es|is)*)/;
+        const parsed = matcher.exec(input);
+        
+        if (!parsed || parsed.length < 2) throw 'Illegal pitch class: '+ input;
+
+        const alteration = fromLilypondAlteration(parsed[2]);
+        const pitchClass = fromLilypondPitchClass(parsed[1]);
+
+        return [new PitchClass(pitchClass, alteration), input.substring(parsed[0].length)];
     }
 };
 
-export const ChordArg: ArgumentType<Pitch[]> = sequence(['<', many(PitchArg), '>']);
-export const DurationArg: ArgumentType<string[]> = sequence([IntegerArg, many(FixedArg('.'))]);
-*/
+export const OctaveArg: ArgumentType<number> = {
+    regex(): string {
+        return '[\',]*';
+    },
+
+    parse(input: string) {
+        const items = /^[',]*/.exec(input);
+
+        if (items) {
+            const m = fromLilypondOctave(items[0]);
+            return [m, input.substring(items[0].length)];
+        }
+        throw 'Illegal octave';
+    }
+};
+
+export const PitchArg: ArgumentType<Pitch> = mapResult(sequence([PitchClassArg, OctaveArg]), ([pc, oct]) => new Pitch(pc.pitchClass, oct, pc.alteration));
+
+export const ChordArg: ArgumentType<Pitch[]> = mapResult(sequence(['<', many(PitchArg), '>']), pitches => pitches[0]);
+
+export const DurationArg: ArgumentType<TimeSpan> = mapResult(sequence([IntegerArg, many(FixedArg('.'))]), ([dur, dots]) => Time.newSpan(1, dur)); // todo: dots
+
 
 export const NoteArg: ArgumentType<Note> = {
     // todo: make it a sequence([select([PitchArg, ChordArg]), DurationArg, many(MarkerArg), optional(TieArg)])
