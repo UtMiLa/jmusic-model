@@ -143,21 +143,6 @@ export const MeterArg = mapResult(RationalArg, (r: RationalDef) => (StateChange.
 
 const _clefArg = sequence([FixedArg('\\\\clef '), WordArg]);
 export const ClefArg = mapResult(_clefArg, ([keyword, value]) => (StateChange.newClefChange(parseLilyClef(value))));
-/*
 
-const _musicEventArg: ArgumentType<MusicEvent> = { // todo: maybe find a better name for this or SpaceArg
-    regex(): string {
-        return `${NoteArg.regex()}|${KeyArg.regex()}|${MeterArg.regex()}|${ClefArg.regex()}|${SpacerArg.regex()}|`;
-    },
+export const MusicEventArg = (select as (_: unknown[]) => ArgumentType<MusicEvent>)([NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg]); // todo: LongDecoration, ...
 
-    parse(input: string): [MusicEvent, string] {
-        const res = [NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg].find(arg => new RegExp('^' + arg.regex()).test(input));
-        if (!res) throw 'Illegal music event';
-        return res.parse(input);
-    }
-};
-*/
-
-export const MusicEventArg = select([NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg]); // todo: LongDecoration, ...
-
-//export const MusicEventArg = _musicEventArg; // todo: LongDecoration, ...

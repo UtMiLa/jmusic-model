@@ -8,7 +8,7 @@ type ArgStarter<A> = [...stringInterpolation, ...ArgSimple<A>];
 type ArgDuple<A, B> = [...ArgStarter<A>, ...ArgSimple<B>];
 type ArgTriple<A, B, C> = [...ArgDuple<A, B>, ...ArgSimple<C>];
 type ArgQuadruple<A, B, C, D> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimple<D>];
-type ArgQuintuple<A, B, C, D, E> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimple<D>, ...ArgSimple<E>];
+//type ArgQuintuple<A, B, C, D, E> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimple<D>, ...ArgSimple<E>];
 
 
 
@@ -69,7 +69,7 @@ export function sequence<T>(types0: ArgStarter<ArgumentType<T>>): ArgumentType<[
 export function sequence<S,T>(types0: ArgDuple<ArgumentType<T>, ArgumentType<S>>): ArgumentType<[T, S]>;
 export function sequence<S,T,U>(types0: ArgTriple<ArgumentType<T>, ArgumentType<S>, ArgumentType<U>>): ArgumentType<[T, S, U]>;
 export function sequence<S,T,U,V>(types0: ArgQuadruple<S,T,U,V>): ArgumentType<[S, T, U, V]>;
-export function sequence<S,T,U,V,W>(types0: ArgQuintuple<S,T,U,V,W>): ArgumentType<[S, T, U, V, W]>;
+//export function sequence<S,T,U,V,W>(types0: ArgQuintuple<S,T,U,V,W>): ArgumentType<[S, T, U, V, W]>;
 export function sequence<T>(types0: (ArgumentType<T> | string)[]): ArgumentType<T[]> {
     const types = types0.map(resolveSyntacticSugar);
     return {
@@ -90,7 +90,7 @@ export function select<T>(types0: ArgStarter<ArgumentType<T>>): ArgumentType<T>;
 export function select<S,T>(types0: ArgDuple<ArgumentType<T>, ArgumentType<S>>): ArgumentType<T | S>;
 export function select<S,T,U>(types0: ArgTriple<ArgumentType<T>, ArgumentType<S>, ArgumentType<U>>): ArgumentType<T | S | U>;
 export function select<S,T,U,V>(types0: ArgQuadruple<S,T,U,V>): ArgumentType<S | T | U | V>;
-export function select<S,T,U,V,W>(types0: ArgQuintuple<S,T,U,V,W>): ArgumentType<S | T | U | V | W>;
+//export function select<S,T,U,V,W>(types0: ArgQuintuple<S,T,U,V,W>): ArgumentType<S | T | U | V | W>;
 export function select(types0: (ArgumentType<any> | string)[]): ArgumentType<any> {
     const types = types0.map(resolveSyntacticSugar);
     return {
