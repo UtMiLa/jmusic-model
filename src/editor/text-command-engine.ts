@@ -18,7 +18,7 @@ export class CustomTextCommand implements TextCommand {
         return this.f(model, ins);
     }
 }
-
+/*
 export class GotoVoiceTextCommand implements TextCommand {
     constructor(private staff: number, private voice: number) {}
 
@@ -26,32 +26,7 @@ export class GotoVoiceTextCommand implements TextCommand {
         ins.moveToVoice((this.staff < 0) ? ins.staffNo : this.staff - 1, this.voice - 1);
         return null;
     }
-}
-
-export class AddStaffCommand implements TextCommand {
-    //constructor() { }
-
-    execute(model: Model, ins: InsertionPoint): any {
-        model.overProject(
-            R.lensPath(['score', 'staves']),
-            (staves: StaffDef[]) => [
-                ...staves,
-
-                {
-                    initialClef: { clefType: ClefType.F, line: 2 },
-                    initialKey: { accidental: 0, count: 0 },
-                    initialMeter: { count: 4, value: 4 },
-                    voices: [
-        
-                    ]
-        
-                } as StaffDef
-            ]
-        );
-        return null;
-    }
-}
-
+}*/
 
 export class TextCommandEngine {
     static parse(command: string): TextCommand {

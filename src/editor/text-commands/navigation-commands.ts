@@ -3,9 +3,34 @@ import { AbsoluteTime } from './../../model/rationals/time';
 import { ArgumentType, FixedArg, MusicEventArg, NoteArg, RationalArg, VoiceNoArg, WhitespaceArg } from './argument-types';
 import { many, optional, sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
-import { Time, Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, Note, MusicEvent, FlexibleSequence, NoteDef } from './../../model';
+import { Time, Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, Note, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef } from './../../model';
 import R = require('ramda');
-import { AddStaffCommand, GotoVoiceTextCommand } from '../text-command-engine';
+import { TextCommand } from '../text-command-engine';
+
+
+
+function addStaff(model: Model, ins: InsertionPoint): any {
+    model.overProject(
+        R.lensPath(['score', 'staves']),
+        (staves: StaffDef[]) => [
+            ...staves,
+
+            {
+                initialClef: { clefType: ClefType.F, line: 2 },
+                initialKey: { accidental: 0, count: 0 },
+                initialMeter: { count: 4, value: 4 },
+                voices: [
+    
+                ]
+    
+            } as StaffDef
+        ]
+    );
+    return null;
+}
+
+
+
 
 interface CommandDescriptor<T> {
     argType: ArgumentType<T>;
@@ -48,7 +73,11 @@ export const navigationCommands: CommandDescriptor<any>[] = [
         argType: sequence<[number | undefined, number]>(['voice', WhitespaceArg, VoiceNoArg]), 
         action: (args: [[number | undefined, number]]) => {            
             const staff = args[0][0] ?? -1;
-            return (model: Model, ins: InsertionPoint) => new GotoVoiceTextCommand(staff, args[0][1]).execute(model, ins);
+            return (model: Model, ins: InsertionPoint) => {
+                ins.moveToVoice((staff < 0) ? ins.staffNo : staff - 1, args[0][1] - 1);
+                return null;
+            };
+            //new GotoVoiceTextCommand(staff, args[0][1]).execute(model, ins);
         }
             
     } as CommandDescriptor<[[number | undefined, number]]>,
@@ -70,7 +99,7 @@ export const navigationCommands: CommandDescriptor<any>[] = [
     } as CommandDescriptor<[MusicEvent[]]>,
     {
         argType: sequence(['add', WhitespaceArg ,'staff']),
-        action: () => new AddStaffCommand().execute
+        action: () => addStaff
     }
 ];
 /*
