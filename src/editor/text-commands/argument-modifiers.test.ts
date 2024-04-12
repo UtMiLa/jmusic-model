@@ -147,7 +147,7 @@ describe('Argument type modifiers', () => {
                     denominator: 5
                 }, '']);
         });
-        it('should parse keywords', () => {
+        it('should parse whitespace', () => {
             expect(select([IntegerArg, WhitespaceArg])
                 .parse('\t'))
                 .to.deep.eq([undefined, '']);

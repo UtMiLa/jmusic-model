@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import { InsertionPoint } from './insertion-point';
 import Sinon = require('sinon');
-import { ClefType, JMusic, Time } from '../model';
+import { Clef, ClefType, JMusic, Key, MeterFactory, Time, isClefChange, isKeyChange, isMeterChange } from '../model';
 import { TextCommandEngine } from './text-command-engine';
+import { StateChange } from '~/model/states/state';
 
 
 
@@ -96,6 +97,37 @@ describe('Text commands', () => {
             expect(jMusic.model.project.score.staves).to.have.length(2);
         });
         
+
+        it('should set a key change', () => {
+            const cmd = TextCommandEngine.parse('set  key  5#');
+            
+            cmd.execute(model, ins);
+
+            Sinon.assert.calledOnceWithExactly(model.insertElementAtInsertionPoint, ins, StateChange.newKeyChange(new Key({ accidental: 1, count: 5 })), isKeyChange);
+        });
+
+
+        it('should set a meter change', () => {
+            const cmd = TextCommandEngine.parse('set meter\t3/8');
+            
+            cmd.execute(model, ins);
+
+            Sinon.assert.calledOnceWithExactly(model.insertElementAtInsertionPoint, ins, StateChange.newMeterChange(MeterFactory.createRegularMeter({ value: 8, count: 3 })), isMeterChange);
+        });
+
+
+        it('should set a clef change', () => {
+            const cmd = TextCommandEngine.parse('set clef \\clef alto');
+            
+            cmd.execute(model, ins);
+
+            Sinon.assert.calledOnceWithExactly(model.insertElementAtInsertionPoint, ins, StateChange.newClefChange(new Clef({ clefType: ClefType.C, line: 0 })), isClefChange);
+        });
+
+
+
+
+
         it('should append music', () => {
             const cmd = TextCommandEngine.parse('append d4 e4 f2');
 

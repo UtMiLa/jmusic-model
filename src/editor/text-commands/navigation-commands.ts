@@ -1,10 +1,12 @@
+import { StateChange } from './../../model/states/state';
 import { RationalDef } from './../../model/rationals/rational';
-import { MusicEventArg, VoiceNoArg } from './argument-types';
+import { ClefArg, KeyArg, MeterArg, MusicEventArg, VoiceNoArg } from './argument-types';
 import { ArgumentType, RationalArg, WhitespaceArg } from './base-argument-types';
 import { many, sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
-import { Time, Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef } from './../../model';
+import { Time, Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef, Meter, isMeterChange, isClefChange, isKeyChange } from './../../model';
 import R = require('ramda');
+import { AddMeterCommand } from '../commands';
 
 
 
@@ -99,7 +101,19 @@ export const navigationCommands: CommandDescriptor<any>[] = [
     {
         argType: sequence(['add', WhitespaceArg ,'staff']),
         action: () => addStaff
-    }
+    },
+    { 
+        argType: (sequence as (x: unknown) => ArgumentType<[StateChange]>)(['set', WhitespaceArg, 'key', WhitespaceArg, KeyArg]), 
+        action: ([key]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, key, isKeyChange)
+    } as CommandDescriptor<[StateChange]>,
+    { 
+        argType: (sequence as (x: unknown) => ArgumentType<[StateChange]>)(['set', WhitespaceArg, 'meter', WhitespaceArg, MeterArg]), 
+        action: ([meter]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, meter, isMeterChange)
+    } as CommandDescriptor<[StateChange]>,
+    { 
+        argType: (sequence as (x: unknown) => ArgumentType<[StateChange]>)(['set', WhitespaceArg, 'clef', WhitespaceArg, ClefArg]), 
+        action: ([clef]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, clef, isClefChange)
+    } as CommandDescriptor<[StateChange]>
 ];
 /*
 navigationCommands.forEach(cmd => {
