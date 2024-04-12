@@ -1,6 +1,6 @@
 import { KeyDef, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { FixedArg, IntegerArg, KeyArg, NoteArg, RationalArg, SpaceArg } from './argument-types';
+import { FixedArg, IntegerArg, KeyArg, NoteArg, RationalArg, WhitespaceArg } from './argument-types';
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 
 
@@ -54,8 +54,8 @@ describe('Argument type modifiers', () => {
             expect(optional('hej').parse('hej 63 43 52 ijo 54')).to.deep.eq([undefined, ' 63 43 52 ijo 54']);
         });
         it('should accept optional whitespace', () => {
-            expect(optional(SpaceArg).parse('63 43 52 ijo 54')).to.deep.eq([undefined, '63 43 52 ijo 54']);
-            expect(optional(SpaceArg).parse('\t 63 43 52 ijo 54')).to.deep.eq([undefined, '63 43 52 ijo 54']);
+            expect(optional(WhitespaceArg).parse('63 43 52 ijo 54')).to.deep.eq([undefined, '63 43 52 ijo 54']);
+            expect(optional(WhitespaceArg).parse('\t 63 43 52 ijo 54')).to.deep.eq([undefined, '63 43 52 ijo 54']);
         });
         it('should parse an optional rational', () => {
             expect(optional(RationalArg).parse('4/5 63/41 43 52 ijo 54')).to.deep.eq([
@@ -94,27 +94,27 @@ describe('Argument type modifiers', () => {
             
         });
         it('should filter out keywords and whitespace', () => {
-            expect(sequence([IntegerArg, ' =', SpaceArg, IntegerArg])
+            expect(sequence([IntegerArg, ' =', WhitespaceArg, IntegerArg])
                 .parse('4 = 63 52 ijo 54'))
                 .to.deep.eq([[4, 63], ' 52 ijo 54']);            
         });
         it('should filter out optional keywords when present', () => {
-            expect(sequence([IntegerArg, optional(' ='), SpaceArg, IntegerArg])
+            expect(sequence([IntegerArg, optional(' ='), WhitespaceArg, IntegerArg])
                 .parse('4 = 63 52 ijo 54'))
                 .to.deep.eq([[4, 63], ' 52 ijo 54']);            
         });
         it('should filter out optional keywords when not present', () => {
-            expect(sequence([IntegerArg, optional(' ='), SpaceArg, IntegerArg])
+            expect(sequence([IntegerArg, optional(' ='), WhitespaceArg, IntegerArg])
                 .parse('4 63 52 ijo 54'))
                 .to.deep.eq([[4, 63], ' 52 ijo 54']);            
         });
         it('should not filter out optional values when present', () => {
-            expect(sequence([IntegerArg, SpaceArg, optional(IntegerArg), 'end'])
+            expect(sequence([IntegerArg, WhitespaceArg, optional(IntegerArg), 'end'])
                 .parse('4 53end 63 52'))
                 .to.deep.eq([[4, 53], ' 63 52']);            
         });
         it('should not filter out optional values when not present', () => {
-            expect(sequence([IntegerArg, SpaceArg, optional(IntegerArg), 'end'])
+            expect(sequence([IntegerArg, WhitespaceArg, optional(IntegerArg), 'end'])
                 .parse('4 end 63 52'))
                 .to.deep.eq([[4, null], ' 63 52']);            
         });

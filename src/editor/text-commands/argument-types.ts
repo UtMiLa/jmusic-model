@@ -36,7 +36,7 @@ export const IntegerArg: ArgumentType<number> = {
     }
 };
 
-export const SpaceArg: ArgumentType<undefined> = {
+export const WhitespaceArg: ArgumentType<undefined> = {
     regex: (): string => {
         return '\\s+';
     },
@@ -80,6 +80,22 @@ export const RationalArg: ArgumentType<RationalDef> = {
     }
 };
 
+
+export const VoiceNoArg: ArgumentType<[number | undefined, number]> = {
+    regex(): string {
+        return '(\\d+[:.])?\\d+';
+    },
+
+    parse(input: string) {
+        const m = /^((\d+)[:.])?(\d+)/.exec(input);
+        if (!m) throw 'Not a voice number';
+        const rest = input.substring(m[0].length);
+        return [[
+            m[1] ? parseInt(m[1]) : undefined,
+            parseInt(m[3])
+        ], rest];
+    }
+};
 
 
 export const PitchClassArg: ArgumentType<PitchClass> = {
@@ -135,7 +151,7 @@ const ChordPitchOrRestArg: ArgumentType<Pitch[]> = select([
     mapResult(FixedArg('r'), () => [])
 ]);
 
-export const NoteArg: ArgumentType<Note> = mapResult(sequence([
+export const NoteArg: ArgumentType<Note> = mapResult(sequence<Pitch[], TimeSpan, string[] | null, string | null>([
     ChordPitchOrRestArg, 
     DurationArg, 
     OptionalNoteExpressionsArg,
@@ -143,43 +159,7 @@ export const NoteArg: ArgumentType<Note> = mapResult(sequence([
 args => createNote(args[0], args[1], !!args[3], args[2] ? args[2].map(parseLilyNoteExpression) : undefined));
 
 
-
-
-/*
-
-
-export const NoteArg: ArgumentType<Note> = mapResult(sequence<Pitch, TimeSpan, string[], string[]?>([
-    select([
-        mapResult(PitchArg, pitch => [pitch]), 
-        ChordArg,
-        mapResult(FixedArg('r'), () => [] as Pitch[])
-    ]) as ArgumentType<Pitch[]>, 
-    DurationArg, 
-    many(NoteExpressionArg), 
-    optional(NoteTieArg)]), 
-(args: [Pitch, TimeSpan, string[], string[]?]) => createNote(args[0], args[1], !!args[3], args[2]));
-
-*/
-/*export const NoteArg: ArgumentType<Note> = {
-    // todo: make it a sequence([select([PitchArg, ChordArg]), DurationArg, many(MarkerArg), optional(TieArg)])
-    regex(): string {
-        return /([a-gr](es|is)*[',]*)(\d+\.*)((\\[a-z]+)*)(~?)/.source;
-    },
-    //const matcher = /^([a-gr](es|is)*[',]*)(\d+\.*)((\\[a-z]+)*)(~?)$/i;
-    //const matcherChord = /^<([a-z,' ]+)>(\d+\.*)((\\[a-z]+)*)(~?)$/i;
-
-    parse(input: string) {
-        const items = input.split(/\s+/);
-        if (items.length) {
-            const m = createNoteFromLilypond(items[0]);
-            items.shift();
-            return [m, items.join(' ')];
-        }
-        throw 'Illegal note';
-    }
-};*/
-
-export const SpacerArg: ArgumentType<Spacer> = { // todo: maybe find a better name for this or SpaceArg
+export const SpacerArg: ArgumentType<Spacer> = {
     regex(): string {
         return /s(\d+\.*)/.source;
     },

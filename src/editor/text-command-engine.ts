@@ -62,16 +62,7 @@ export class TextCommandEngine {
             const myFunc = found.action(parsed as unknown as any);
             return new CustomTextCommand(myFunc);
         }
-
-        if (/^voice/.test(command)) { 
-            const items = /^voice +(\d+[:.])?(\d+)/.exec(command);
-            if (!items) throw new Error('Unknown command.');
-            const staff = items[1] ? parseInt(items[1]) : -1;
-            return new GotoVoiceTextCommand(staff, parseInt(items[2]));
-        }
-        if (/^add +staff$/.test(command)) { 
-            return new AddStaffCommand();
-        }
+        
 
         throw new Error('Unknown command.');
     }

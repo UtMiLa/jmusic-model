@@ -1,10 +1,11 @@
 import { Rational, RationalDef } from './../../model/rationals/rational';
 import { AbsoluteTime } from './../../model/rationals/time';
-import { ArgumentType, FixedArg, MusicEventArg, NoteArg, RationalArg, SpaceArg } from './argument-types';
+import { ArgumentType, FixedArg, MusicEventArg, NoteArg, RationalArg, VoiceNoArg, WhitespaceArg } from './argument-types';
 import { many, optional, sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
 import { Time, Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, Note, MusicEvent, FlexibleSequence, NoteDef } from './../../model';
 import R = require('ramda');
+import { AddStaffCommand, GotoVoiceTextCommand } from '../text-command-engine';
 
 interface CommandDescriptor<T> {
     argType: ArgumentType<T>;
@@ -27,24 +28,32 @@ interface CommandDescriptor<T> {
 
 export const navigationCommands: CommandDescriptor<any>[] = [
     { 
-        argType: sequence(['goto', SpaceArg, 'next']), 
+        argType: sequence(['goto', WhitespaceArg, 'next']), 
         action: () => (model: Model, ins: InsertionPoint): void => ins.moveRight() 
     } as CommandDescriptor<[void]>,
     { 
-        argType: sequence(['goto', SpaceArg, 'prev']), 
+        argType: sequence(['goto', WhitespaceArg, 'prev']), 
         action: () => (model: Model, ins: InsertionPoint): void => ins.moveLeft() 
     } as CommandDescriptor<[void]>,
     { 
-        argType: sequence<void>(['goto', SpaceArg, 'start']), 
+        argType: sequence<void>(['goto', WhitespaceArg, 'start']), 
         action: () => (model: Model, ins: InsertionPoint): void => ins.moveToTime(Time.newAbsolute(0, 1)) 
     } as CommandDescriptor<[void]>,
     { 
-        argType: sequence<RationalDef>(['goto', SpaceArg, RationalArg]), 
+        argType: sequence<RationalDef>(['goto', WhitespaceArg, RationalArg]), 
         action: (args: [RationalDef]) => (model: Model, ins: InsertionPoint): void => 
             ins.moveToTime({ ...args[0], type: 'abs' })
     } as CommandDescriptor<[RationalDef]>,
     { 
-        argType: sequence(['append', SpaceArg, many(MusicEventArg)]), 
+        argType: sequence<[number | undefined, number]>(['voice', WhitespaceArg, VoiceNoArg]), 
+        action: (args: [[number | undefined, number]]) => {            
+            const staff = args[0][0] ?? -1;
+            return (model: Model, ins: InsertionPoint) => new GotoVoiceTextCommand(staff, args[0][1]).execute(model, ins);
+        }
+            
+    } as CommandDescriptor<[[number | undefined, number]]>,
+    { 
+        argType: sequence(['append', WhitespaceArg, many(MusicEventArg)]), 
         action: (args: [MusicEvent[]]) => (model: Model, ins: InsertionPoint): void => {
             const events = args[0];
             const eventDef = new FlexibleSequence(events).def;
@@ -58,7 +67,11 @@ export const navigationCommands: CommandDescriptor<any>[] = [
                     ])(seq)
             );
         }
-    } as CommandDescriptor<[MusicEvent[]]>
+    } as CommandDescriptor<[MusicEvent[]]>,
+    {
+        argType: sequence(['add', WhitespaceArg ,'staff']),
+        action: () => new AddStaffCommand().execute
+    }
 ];
 /*
 navigationCommands.forEach(cmd => {
