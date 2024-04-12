@@ -1,6 +1,7 @@
 import { KeyDef, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { FixedArg, IntegerArg, KeyArg, NoteArg, RationalArg, WhitespaceArg } from './argument-types';
+import { FixedArg, IntegerArg, RationalArg, WhitespaceArg } from './base-argument-types';
+import { KeyArg, NoteArg } from './argument-types';
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 
 

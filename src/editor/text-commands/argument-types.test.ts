@@ -1,7 +1,8 @@
 import { StateChange } from './../../model/states/state';
 import { Clef, ClefType, Key, KeyDef, MeterFactory, Pitch, PitchClass, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { ClefArg, FixedArg, IntegerArg, KeyArg, MeterArg, NoteArg, RationalArg, WhitespaceArg as WhitespaceArg, SpacerArg, WordArg, PitchClassArg, PitchArg } from './argument-types';
+import { ClefArg, KeyArg, MeterArg, NoteArg, SpacerArg,  PitchClassArg, PitchArg } from './argument-types';
+import { FixedArg, IntegerArg, RationalArg, WhitespaceArg as WhitespaceArg, WordArg } from './base-argument-types';
 import { createSpacerFromLilypond } from '../../model/notes/spacer';
 
 describe('Argument types', () => {

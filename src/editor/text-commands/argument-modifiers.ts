@@ -1,4 +1,4 @@
-import { ArgumentType } from './argument-types';
+import { ArgumentType } from './base-argument-types';
 
 
 type stringInterpolation = [] | [string] | [string, string] | [string, string, string] 
