@@ -1,7 +1,7 @@
 import { ArgumentType } from './base-argument-types';
 
 
-type stringInterpolation = [] | [string] | [string, string] | [string, string, string] 
+type stringInterpolation = [] | [string] | [string, string]
     | [ArgumentType<undefined>] | [string, ArgumentType<undefined>] | [string, ArgumentType<undefined>, string];
 type ArgSimple<A> = [A, ...stringInterpolation];
 type ArgStarter<A> = [...stringInterpolation, ...ArgSimple<A>];
@@ -15,11 +15,13 @@ type ArgQuadruple<A, B, C, D> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimpl
 
 function resolveSyntacticSugar<T>(arg: ArgumentType<T> | string): ArgumentType<T | undefined> {
     if (typeof arg === 'string') {
+        const tester = new RegExp('^' + arg.replace(/ $/, '\\s+'));
         return  {
-            regex: () => arg,
+            regex: () => tester.source.substring(1),
             parse: (input: string) => {
-                if (!input.startsWith(arg)) throw 'Missing keyword';
-                return [undefined, input.substring(arg.length)];
+                const match = tester.exec(input);
+                if (!match || !match.length) throw 'Missing keyword';
+                return [undefined, input.substring(match[0].length)];
             },
             undefinedWhenOptional: true
         };

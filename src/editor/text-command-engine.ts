@@ -1,9 +1,8 @@
-import { AbsoluteTime, Time } from './../model/rationals/time';
 import { InsertionPoint } from './insertion-point';
-import { Model, ClefType, StaffDef, MultiSequenceDef, isSplitSequence, SplitSequenceDef, MultiSequenceItem } from '../model';
+import { Model } from '../model';
 import R = require('ramda');
-import { Command } from './commands';
 import { navigationCommands } from './text-commands/navigation-commands';
+import { editCommands } from './text-commands/edit-commands';
 
 export interface TextCommand {
     execute(model: Model, ins: InsertionPoint): any;
@@ -18,23 +17,14 @@ export class CustomTextCommand implements TextCommand {
         return this.f(model, ins);
     }
 }
-/*
-export class GotoVoiceTextCommand implements TextCommand {
-    constructor(private staff: number, private voice: number) {}
-
-    execute(model: Model, ins: InsertionPoint): any {
-        ins.moveToVoice((this.staff < 0) ? ins.staffNo : this.staff - 1, this.voice - 1);
-        return null;
-    }
-}*/
 
 export class TextCommandEngine {
     static parse(command: string): TextCommand {
-        const found = [...navigationCommands].find(elm => new RegExp(elm.argType.regex()).test(command));
+        const found = [...navigationCommands, ...editCommands].find(elm => new RegExp(elm.argType.regex()).test(command));
         if (found) {
             const [parsed, rest] = found.argType.parse(command);
             if (rest.trim() !== '') throw 'Illegal command';
-            const myFunc = found.action(parsed as unknown as any);
+            const myFunc = found.action(parsed);
             return new CustomTextCommand(myFunc);
         }
         
