@@ -85,7 +85,7 @@ export const editCommands: CommandDescriptor<any>[] = [
         action: ([clef]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, clef, isClefChange)
     } as CommandDescriptor<[StateChange]>,
     { 
-        argType: sequence<string, FlexibleItem[]>(['\\$', WordArg, WhitespaceArg, many(MusicEventArg)]) as ArgumentType<[string, FlexibleItem[]]>, 
+        argType: (sequence as (x: unknown) => ArgumentType<[string, FlexibleItem[]]>)(['\\$', WordArg, WhitespaceArg, '= ', many(MusicEventArg)]), 
         action: ([word, musicEvents]) => (model: Model, ins: InsertionPoint): void => model.setVar(word, musicEvents)
     } as CommandDescriptor<[string, FlexibleItem[]]>
 ];

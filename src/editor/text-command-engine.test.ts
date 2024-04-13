@@ -224,7 +224,7 @@ describe('Text commands', () => {
 
 
         it('should set a variable', () => {
-            const cmd = TextCommandEngine.parse('$varX \\clef bass d4 e4 f4');
+            const cmd = TextCommandEngine.parse('$varX = \\clef bass d4 e4 f4');
 
             const jMusic = new JMusic('c4 c4 c4 c4');
             const ins = new InsertionPoint(jMusic);
