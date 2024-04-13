@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { InsertionPoint } from './insertion-point';
 import Sinon = require('sinon');
-import { Clef, ClefType, JMusic, Key, MeterFactory, Time, isClefChange, isKeyChange, isMeterChange } from '../model';
+import { Clef, ClefType, JMusic, Key, MeterFactory, Time, createNoteFromLilypond, isClefChange, isKeyChange, isMeterChange, valueOf } from '../model';
 import { TextCommandEngine } from './text-command-engine';
 import { StateChange } from '~/model/states/state';
 
@@ -220,6 +220,37 @@ describe('Text commands', () => {
                 line: 2
             });
         });
+
+
+
+        it('should set a variable', () => {
+            const cmd = TextCommandEngine.parse('$varX \\clef bass d4 e4 f4');
+
+            const jMusic = new JMusic('c4 c4 c4 c4');
+            const ins = new InsertionPoint(jMusic);
+            
+            cmd.execute(jMusic, ins);
+
+            expect(valueOf(jMusic.vars,'varX').elements).to.have.length(4);
+        });
+
+        
+        
+        it('should append music with a variable reference', () => {
+            const cmd = TextCommandEngine.parse('append d4 $varX f4');
+
+            const jMusic = new JMusic('c4 c4 c4 c4', { varX: 'g2 a2'});
+            const ins1 = new InsertionPoint(jMusic);
+            ins1.moveToVoice(0, 0);
+            
+            expect(jMusic.staves[0].voices[0].content.elements).to.have.length(4);
+            
+            cmd.execute(jMusic, ins);
+
+            expect(jMusic.staves[0].voices[0].content.elements).to.have.length(8);
+            expect((jMusic.staves[0].voices[0].content.elements[6] as any)).to.deep.eq(createNoteFromLilypond('a2'));
+        });
+
 
     });
 });

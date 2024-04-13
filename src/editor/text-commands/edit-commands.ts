@@ -1,9 +1,9 @@
 import { StateChange } from './../../model/states/state';
 import { ClefArg, KeyArg, MeterArg, MusicEventArg } from './argument-types';
-import { ArgumentType, WhitespaceArg } from './base-argument-types';
+import { ArgumentType, WhitespaceArg, WordArg } from './base-argument-types';
 import { many, sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
-import { Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef, isMeterChange, isClefChange, isKeyChange } from './../../model';
+import { Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef, isMeterChange, isClefChange, isKeyChange, FlexibleItem } from './../../model';
 import R = require('ramda');
 
 
@@ -83,5 +83,9 @@ export const editCommands: CommandDescriptor<any>[] = [
     { 
         argType: (sequence as (x: unknown) => ArgumentType<[StateChange]>)(['set', WhitespaceArg, 'clef', WhitespaceArg, ClefArg]), 
         action: ([clef]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, clef, isClefChange)
-    } as CommandDescriptor<[StateChange]>
+    } as CommandDescriptor<[StateChange]>,
+    { 
+        argType: sequence<string, FlexibleItem[]>(['\\$', WordArg, WhitespaceArg, many(MusicEventArg)]) as ArgumentType<[string, FlexibleItem[]]>, 
+        action: ([word, musicEvents]) => (model: Model, ins: InsertionPoint): void => model.setVar(word, musicEvents)
+    } as CommandDescriptor<[string, FlexibleItem[]]>
 ];

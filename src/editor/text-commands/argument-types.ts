@@ -1,3 +1,4 @@
+import { VariableRef } from './../../../dist/model/score/types.d';
 import { StateChange } from './../../model/states/state';
 import { Key, MeterFactory, MusicEvent, Note, Pitch, PitchClass, RationalDef, Time, TimeSpan, createNote, createNoteFromLilypond, fromLilypondAlteration, fromLilypondOctave, fromLilypondPitchClass, parseLilyClef } from '../../model';
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
@@ -108,5 +109,7 @@ export const MeterArg = mapResult(RationalArg, (r: RationalDef) => (StateChange.
 const _clefArg = sequence([FixedArg('\\\\clef '), WordArg]);
 export const ClefArg = mapResult(_clefArg, ([keyword, value]) => (StateChange.newClefChange(parseLilyClef(value))));
 
-export const MusicEventArg = select([NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg]); // todo: LongDecoration, ...
+export const VariableReferenceArg = mapResult(sequence(['\\$', WordArg]), ([word]) => ({ variable: word } as VariableRef));
+
+export const MusicEventArg = select([NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg, VariableReferenceArg]); // todo: LongDecoration, ...
 
