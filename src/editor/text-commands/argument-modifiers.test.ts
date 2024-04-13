@@ -8,7 +8,7 @@ import { many, mapResult, optional, select, sequence } from './argument-modifier
 describe('Argument type modifiers', () => {
     describe('Many', () => {
         it('should provide a regular expression for many integers', () => {
-            expect(many(IntegerArg).regex()).to.eq('(\\d+ *)+');
+            expect(many(IntegerArg).regex()).to.eq('(\\d+\\s*)+');
         });
         it('should parse an integer array', () => {
             expect(many(IntegerArg).parse('4 63 43 52 ijo 54')).to.deep.eq([[4, 63, 43, 52], 'ijo 54']);

@@ -28,9 +28,9 @@ function resolveSyntacticSugar<T>(arg: ArgumentType<T> | string): ArgumentType<T
 }
 
 
-export function many<T>(type: ArgumentType<T>): ArgumentType<T[]> {
+export function many<T>(type: ArgumentType<T>, separator = '\\s*', allowEmpty = false): ArgumentType<T[]> {
     return {
-        regex: () => `(${type.regex()} *)+`,
+        regex: () => `(${type.regex()}${separator})${allowEmpty ? '*' : '+'}`,
         parse: (input: string) => {
             const typeRegex = new RegExp('^' + type.regex());
             let rest = input;
@@ -38,7 +38,7 @@ export function many<T>(type: ArgumentType<T>): ArgumentType<T[]> {
             while (typeRegex.test(rest)) {
                 const [val, r] = type.parse(rest);
                 retVal.push(val);
-                rest = r.trimStart();
+                rest = r.replace(new RegExp('^' + separator), '');
             }
             return [retVal, rest];
         }

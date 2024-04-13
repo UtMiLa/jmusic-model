@@ -61,7 +61,7 @@ export const PitchArg: ArgumentType<Pitch> = mapResult(sequence([PitchClassArg, 
 
 export const ChordArg: ArgumentType<Pitch[]> = mapResult(sequence(['<', many(PitchArg), '>']), pitches => pitches[0]);
 
-export const DurationArg: ArgumentType<TimeSpan> = mapResult(sequence([IntegerArg, optional(many(FixedArg('\\.')))]), 
+export const DurationArg: ArgumentType<TimeSpan> = mapResult(sequence([IntegerArg, many(FixedArg('\\.'), '', true)]), 
     ([dur, dots]) => (dots ?? []).reduce(
         (prev, next) => next === '.' ? Time.newSpan(prev.numerator * 2 + 1, prev.denominator * 2) : prev, 
         Time.newSpan(1, dur)
@@ -69,7 +69,7 @@ export const DurationArg: ArgumentType<TimeSpan> = mapResult(sequence([IntegerAr
 
 export const NoteExpressionArg: ArgumentType<string> = FixedArg('\\\\[a-z]+');
 export const NoteTieArg: ArgumentType<string> = FixedArg('~');
-export const OptionalNoteExpressionsArg: ArgumentType<string[] | null> = mapResult(optional(many(NoteExpressionArg)), res => res ? res : null);
+export const OptionalNoteExpressionsArg: ArgumentType<string[] | null> = mapResult(many(NoteExpressionArg, '\\s*', true), res => res ? res : null);
 const ChordPitchOrRestArg: ArgumentType<Pitch[]> = select([
     mapResult(PitchArg, pitch => [pitch]), 
     ChordArg,
@@ -81,7 +81,7 @@ export const NoteArg: ArgumentType<Note> = mapResult(sequence<Pitch[], TimeSpan,
     DurationArg, 
     OptionalNoteExpressionsArg,
     optional(NoteTieArg)]), 
-args => createNote(args[0], args[1], !!args[3], args[2] ? args[2].map(parseLilyNoteExpression) : undefined));
+args => createNote(args[0], args[1], !!args[3], args[2] && args[2].length ? args[2].map(parseLilyNoteExpression) : undefined));
 
 
 export const SpacerArg: ArgumentType<Spacer> = {
