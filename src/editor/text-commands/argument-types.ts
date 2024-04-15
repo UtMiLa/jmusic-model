@@ -1,6 +1,6 @@
-import { VariableRef } from './../../../dist/model/score/types.d';
 import { StateChange } from './../../model/states/state';
-import { Key, MeterFactory, MusicEvent, Note, Pitch, PitchClass, RationalDef, Time, TimeSpan, createNote, createNoteFromLilypond, fromLilypondAlteration, fromLilypondOctave, fromLilypondPitchClass, parseLilyClef } from '../../model';
+import { FuncDef, Key, MeterFactory, MusicEvent, Note, Pitch, PitchClass, RationalDef, SeqFunction, Time, TimeSpan, VariableRef, createNote, 
+    fromLilypondAlteration, fromLilypondOctave, fromLilypondPitchClass, isFuncDef, parseLilyClef } from '../../model';
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
 import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
@@ -111,5 +111,27 @@ export const ClefArg = mapResult(_clefArg, ([keyword, value]) => (StateChange.ne
 
 export const VariableReferenceArg = mapResult(sequence(['\\$', WordArg]), ([word]) => ({ variable: word } as VariableRef));
 
-export const MusicEventArg = select([NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg, VariableReferenceArg]); // todo: LongDecoration, ...
+const _parameterArg: ArgumentType<string[]> = {
+    regex(): string {
+        return /\s*\(([^)]*)\)/.source;
+    },
+
+    parse(input: string): [string[], string] {
+        return [[], input];
+        //throw 'Illegal argument list';
+    }
+};
+
+const _funcArg = sequence([WordArg, _parameterArg, VariableReferenceArg]);
+
+export const FunctionArg = mapResult(_funcArg, ([funcName, funcArgs, variableRef]): SeqFunction => { 
+    if (!isFuncDef(funcName)) throw 'Bad function name';
+    return {
+        function: funcName,
+        args: [variableRef],
+        extraArgs: funcArgs
+    };
+});
+
+export const MusicEventArg = select([NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg, VariableReferenceArg, FunctionArg]); // todo: LongDecoration, ...
 
