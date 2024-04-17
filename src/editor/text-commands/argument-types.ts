@@ -7,55 +7,40 @@ import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
 import { ArgumentType, IntegerArg, FixedArg, RationalArg, WordArg } from './base-argument-types';
 
 
-export const VoiceNoArg: ArgumentType<[number | undefined, number]> = {
-    /*regex(): string {
-        return '(\\d+[:.])?\\d+';
-    },*/
+export const VoiceNoArg: ArgumentType<[number | undefined, number]> = (input: string) => {
+    const m = /^((\d+)[:.])?(\d+)/.exec(input);
+    if (!m) throw 'Not a voice number';
+    const rest = input.substring(m[0].length);
+    return [[
+        m[1] ? parseInt(m[1]) : undefined,
+        parseInt(m[3])
+    ], rest];
 
-    parse(input: string) {
-        const m = /^((\d+)[:.])?(\d+)/.exec(input);
-        if (!m) throw 'Not a voice number';
-        const rest = input.substring(m[0].length);
-        return [[
-            m[1] ? parseInt(m[1]) : undefined,
-            parseInt(m[3])
-        ], rest];
-    }
 };
 
 
-export const PitchClassArg: ArgumentType<PitchClass> = {
-    /*regex(): string {
-        return '[a-g](es|is)*';
-    },*/
+export const PitchClassArg: ArgumentType<PitchClass> = (input: string) => {
+    const matcher = /^([a-g])((es|is)*)/;
+    const parsed = matcher.exec(input);
+    
+    if (!parsed || parsed.length < 2) throw 'Illegal pitch class: '+ input;
 
-    parse(input: string) {
-        const matcher = /^([a-g])((es|is)*)/;
-        const parsed = matcher.exec(input);
-        
-        if (!parsed || parsed.length < 2) throw 'Illegal pitch class: '+ input;
+    const alteration = fromLilypondAlteration(parsed[2]);
+    const pitchClass = fromLilypondPitchClass(parsed[1]);
 
-        const alteration = fromLilypondAlteration(parsed[2]);
-        const pitchClass = fromLilypondPitchClass(parsed[1]);
+    return [new PitchClass(pitchClass, alteration), input.substring(parsed[0].length)];
 
-        return [new PitchClass(pitchClass, alteration), input.substring(parsed[0].length)];
-    }
 };
 
-export const OctaveArg: ArgumentType<number> = {
-    /*regex(): string {
-        return '[\',]*';
-    },*/
+export const OctaveArg: ArgumentType<number> = (input: string) => {
+    const items = /^[',]*/.exec(input);
 
-    parse(input: string) {
-        const items = /^[',]*/.exec(input);
-
-        if (items) {
-            const m = fromLilypondOctave(items[0]);
-            return [m, input.substring(items[0].length)];
-        }
-        throw 'Illegal octave';
+    if (items) {
+        const m = fromLilypondOctave(items[0]);
+        return [m, input.substring(items[0].length)];
     }
+    throw 'Illegal octave';
+
 };
 
 export const PitchArg: ArgumentType<Pitch> = mapResult(sequence([PitchClassArg, OctaveArg]), ([pc, oct]) => new Pitch(pc.pitchClass, oct, pc.alteration));
@@ -85,20 +70,14 @@ export const NoteArg: ArgumentType<Note> = mapResult(sequence<Pitch[], TimeSpan,
 args => createNote(args[0], args[1], !!args[3], args[2] && args[2].length ? args[2].map(parseLilyNoteExpression) : undefined));
 
 
-export const SpacerArg: ArgumentType<Spacer> = {
-    /*regex(): string {
-        return /s(\d+\.*)/.source;
-    },*/
-
-    parse(input: string) {
-        const items = input.split(/\s+/);
-        if (items.length) {
-            const m = createSpacerFromLilypond(items[0]);
-            items.shift();
-            return [m, items.join(' ')];
-        }
-        throw 'Illegal spacer';
+export const SpacerArg: ArgumentType<Spacer> = (input: string) => {
+    const items = input.split(/\s+/);
+    if (items.length) {
+        const m = createSpacerFromLilypond(items[0]);
+        items.shift();
+        return [m, items.join(' ')];
     }
+    throw 'Illegal spacer';
 };
 
 const _keyArg = sequence([IntegerArg, select([FixedArg('#'), FixedArg('b')])]);
@@ -111,15 +90,8 @@ export const ClefArg = mapResult(_clefArg, ([keyword, value]) => (StateChange.ne
 
 export const VariableReferenceArg = mapResult(sequence(['\\$', WordArg]), ([word]) => ({ variable: word } as VariableRef));
 
-const _parameterArg: ArgumentType<string[]> = {
-    /*regex(): string {
-        return /\s*\(([^)]*)\)/.source;
-    },*/
-
-    parse(input: string): [string[], string] {
-        return [[], input];
-        //throw 'Illegal argument list';
-    }
+const _parameterArg: ArgumentType<string[]> = (input: string): [string[], string] => {
+    return [[], input];
 };
 
 const _funcArg = sequence([WordArg, _parameterArg, VariableReferenceArg]);

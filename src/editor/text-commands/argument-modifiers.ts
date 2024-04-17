@@ -17,34 +17,28 @@ type ArgQuadruple<A, B, C, D> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimpl
 function resolveSyntacticSugar<T>(arg: ArgumentType<T> | string): ArgumentType<T | undefined> {
     if (typeof arg === 'string') {
         const tester = new RegExp('^' + arg.replace(/ $/, '\\s+'));
-        return  {
-            //regex: () => tester.source.substring(1),
-            parse: (input: string) => {
-                const match = tester.exec(input);
-                if (!match || !match.length) throw 'Missing keyword';
-                return [undefined, input.substring(match[0].length)];
-            },
-            undefinedWhenOptional: true
+        const res: ArgumentType<T | undefined> = (input: string) => {
+            const match = tester.exec(input);
+            if (!match || !match.length) throw 'Missing keyword';
+            return [undefined, input.substring(match[0].length)];
         };
+        res.undefinedWhenOptional = true;
+        return res;
     }
     return arg;
 }
 
 
 export function many<T>(type: ArgumentType<T>, separator = '\\s*', allowEmpty = false): ArgumentType<T[]> {
-    return {
-        //regex: () => `(${type.regex()}${separator})${allowEmpty ? '*' : '+'}`,
-        parse: (input: string) => {
-            const typeRegex = R.curry(matches)(type);
-            let rest = input;
-            const retVal = [];
-            while (typeRegex(rest)) {
-                const [val, r] = type.parse(rest);
-                retVal.push(val);
-                rest = r.replace(new RegExp('^' + separator), '');
-            }
-            return [retVal, rest];
+    return (input: string) => {
+        let rest = input;
+        const retVal = [];
+        while (matches(type, rest)) {
+            const [val, r] = type(rest);
+            retVal.push(val);
+            rest = r.replace(new RegExp('^' + separator), '');
         }
+        return [retVal, rest];        
     };
 }
 
@@ -52,19 +46,16 @@ export function optional<T>(type0: ArgumentType<T>): ArgumentType<T | null>;
 export function optional(type0: string): ArgumentType<undefined>;
 export function optional<T>(type0: ArgumentType<T> | string): ArgumentType<T | null | undefined> {
     const type = resolveSyntacticSugar(type0);
-    return {
-        //regex: () => `(${type.regex()})?`,
-        parse: (input: string) => {
-            const typeRegex = R.curry(matches)(type);
-            let rest = input;
-            if (typeRegex(rest)) {
-                const [val, r] = type.parse(rest);
-                rest = r;
-                return [val, rest];
-            }
-            if (type.undefinedWhenOptional) return [undefined, rest];
-            return [null, rest];
+    return (input: string) => {
+        const typeRegex = R.curry(matches)(type);
+        let rest = input;
+        if (typeRegex(rest)) {
+            const [val, r] = type(rest);
+            rest = r;
+            return [val, rest];
         }
+        if (type.undefinedWhenOptional) return [undefined, rest];
+        return [null, rest];
     };
 }
 
@@ -75,17 +66,14 @@ export function sequence<S,T,U,V>(types0: ArgQuadruple<ArgumentType<S>, Argument
 //export function sequence<S,T,U,V,W>(types0: ArgQuintuple<ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>>): ArgumentType<[S, T, U, V, W]>;
 export function sequence<T>(types0: (ArgumentType<T> | string)[]): ArgumentType<T[]> {
     const types = types0.map(resolveSyntacticSugar);
-    return {
-        //regex: () => types.map(t => `(${t.regex()})`).join(''),
-        parse: (input: string) => {
-            let rest = input;
-            const retVal = types.map(type => {
-                const [val, r] = type.parse(rest);
-                rest = r;
-                return val;
-            });
-            return [retVal.filter((x, i) => x !== undefined), rest] as [T[], string];
-        }
+    return (input: string) => {
+        let rest = input;
+        const retVal = types.map(type => {
+            const [val, r] = type(rest);
+            rest = r;
+            return val;
+        });
+        return [retVal.filter((x, i) => x !== undefined), rest] as [T[], string];
     };
 }
 
@@ -98,24 +86,18 @@ export function select<S,T,U,V,W,X>(types0: [ArgumentType<T>, ArgumentType<S>, A
 export function select<S,T,U,V,W,X,Y>(types0: [ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>, ArgumentType<X>, ArgumentType<Y>]): ArgumentType<S | T | U | V | W | X | Y>;
 export function select(types0: (ArgumentType<any> | string)[]): ArgumentType<any> {
     const types = types0.map(resolveSyntacticSugar);
-    return {
-        //regex: () => types.map(t => `(${t.regex()})`).join('|'),
-        parse: (input: string) => {
-            const match = types.find(type => matches(type, input));
-            if (!match) throw 'Syntax error';
+    return (input: string) => {
+        const match = types.find(type => matches(type, input));
+        if (!match) throw 'Syntax error';
 
-            return match.parse(input);
-        }
+        return match(input);
     };
 }
 
 
 export function mapResult<T, S>(type: ArgumentType<T>, mapper: (arg: T) => (S)): ArgumentType<S> {
-    return {
-        //regex: () => type.regex(),
-        parse: (input: string) => {
-            const [res, rest] = type.parse(input);
-            return [mapper(res), rest];
-        }
+    return (input: string) => {
+        const [res, rest] = type(input);
+        return [mapper(res), rest];
     };
 }

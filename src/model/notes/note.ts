@@ -55,7 +55,7 @@ export interface UpdateNote {
 
 
 export function createNoteFromLilypond(input: string): Note {
-    return NoteArg.parse(input)[0];
+    return NoteArg(input)[0];
     /*const matcher = /^([a-gr](es|is)*[',]*)(\d+\.*)((\\[a-z]+)*)(~?)$/i;
     const matcherChord = /^<([a-z,' ]+)>(\d+\.*)((\\[a-z]+)*)(~?)$/i;
     const matchChord = matcherChord.exec(input);

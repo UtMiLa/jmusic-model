@@ -7,7 +7,7 @@ describe('Argument types', () => {
             expect(IntegerArg.regex()).to.eq('\\d+');
         });*/
         it('should parse an integer token', () => {
-            expect(IntegerArg.parse('432gyu453')).to.deep.eq([432, 'gyu453']);
+            expect(IntegerArg('432gyu453')).to.deep.eq([432, 'gyu453']);
         });
     });
     describe('Whitespace', () => {
@@ -15,7 +15,7 @@ describe('Argument types', () => {
             expect(WhitespaceArg.regex()).to.eq('\\s+');
         });*/
         it('should parse a whitespace token', () => {
-            expect(WhitespaceArg.parse('\t \r\ngyu453')).to.deep.eq([undefined, 'gyu453']);
+            expect(WhitespaceArg('\t \r\ngyu453')).to.deep.eq([undefined, 'gyu453']);
         });
     });
     describe('Word', () => {
@@ -23,7 +23,7 @@ describe('Argument types', () => {
             expect(WordArg.regex()).to.eq('\\w+');
         });*/
         it('should parse a word token', () => {
-            expect(WordArg.parse('432gyu453 huio')).to.deep.eq(['432gyu453', ' huio']);
+            expect(WordArg('432gyu453 huio')).to.deep.eq(['432gyu453', ' huio']);
         });
     });
     
@@ -32,7 +32,7 @@ describe('Argument types', () => {
             expect(FixedArg('fixed').regex()).to.eq('fixed');
         });*/
         it('should parse a fixed token', () => {
-            expect(FixedArg('fixed').parse('fixed432')).to.deep.eq(['fixed', '432']);
+            expect(FixedArg('fixed')('fixed432')).to.deep.eq(['fixed', '432']);
         });
     });
     
@@ -42,7 +42,7 @@ describe('Argument types', () => {
             expect(RationalArg.regex()).to.eq('\\d+\\/\\d+');
         });*/
         it('should parse a rational token', () => {
-            expect(RationalArg.parse('432/453/')).to.deep.eq([{
+            expect(RationalArg('432/453/')).to.deep.eq([{
                 numerator: 432,
                 denominator: 453
             }, '/']);

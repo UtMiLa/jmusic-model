@@ -74,7 +74,7 @@ export class Pitch {
         const pitchClass = fromLilypondPitchClass(parsed[1]);
 
         return new Pitch(pitchClass, octave, alteration);        */
-        return PitchArg.parse(input)[0];
+        return PitchArg(input)[0];
     }
 
     get lilypond(): string {

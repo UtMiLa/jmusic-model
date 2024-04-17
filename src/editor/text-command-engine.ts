@@ -22,14 +22,14 @@ export class TextCommandEngine {
     static parse(command: string): TextCommand {
         const found = [...navigationCommands, ...editCommands].find(elm => {
             try {
-                const res = elm.argType.parse(command);
+                const res = elm.argType(command);
                 if (res) return true;
             } catch {
                 return false;
             }
         });
         if (found) {
-            const [parsed, rest] = found.argType.parse(command);
+            const [parsed, rest] = found.argType(command);
             if (rest.trim() !== '') throw 'Illegal command';
             const myFunc = found.action(parsed);
             return new CustomTextCommand(myFunc);
