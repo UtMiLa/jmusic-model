@@ -10,17 +10,24 @@ export interface TextCommand {
 
 
 
-export class CustomTextCommand implements TextCommand {
-    constructor(private f: (model: Model, ins: InsertionPoint) => any) { }
+export class CustomTextCommand<T> implements TextCommand {
+    constructor(private f: (model: Model, ins: InsertionPoint) => T) { }
 
-    execute(model: Model, ins: InsertionPoint): any {
+    execute(model: Model, ins: InsertionPoint): T {
         return this.f(model, ins);
     }
 }
 
 export class TextCommandEngine {
     static parse(command: string): TextCommand {
-        const found = [...navigationCommands, ...editCommands].find(elm => new RegExp(elm.argType.regex()).test(command));
+        const found = [...navigationCommands, ...editCommands].find(elm => {
+            try {
+                const res = elm.argType.parse(command);
+                if (res) return true;
+            } catch {
+                return false;
+            }
+        });
         if (found) {
             const [parsed, rest] = found.argType.parse(command);
             if (rest.trim() !== '') throw 'Illegal command';

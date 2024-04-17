@@ -1,15 +1,25 @@
 import { RationalDef } from '../../model';
 
 export interface ArgumentType<T> {
-    regex(): string;
+    //regex(): string;
     parse(input: string): [T, string];
     undefinedWhenOptional?: boolean;
 }
 
+export function matches<T>(argt: ArgumentType<T>, input: string): boolean {
+    try {
+        const v = argt.parse(input);
+        if (v) return true;
+    } catch {
+        return false;
+    }
+    return false;
+}
+
 export const FixedArg = (arg: string): ArgumentType<string> => ({
-    regex: () => {
+    /*regex: () => {
         return arg;
-    },
+    },*/
 
     parse: (input: string) => {
         const m = new RegExp('^' + arg).exec(input);
@@ -20,9 +30,9 @@ export const FixedArg = (arg: string): ArgumentType<string> => ({
 });
 
 export const IntegerArg: ArgumentType<number> = {
-    regex: (): string => {
+    /*regex: (): string => {
         return '\\d+';
-    },
+    },*/
 
     parse: (input: string) => {
         const m = /^\d+/.exec(input);
@@ -33,9 +43,9 @@ export const IntegerArg: ArgumentType<number> = {
 };
 
 export const WhitespaceArg: ArgumentType<undefined> = {
-    regex: (): string => {
+    /*regex: (): string => {
         return '\\s+';
-    },
+    },*/
 
     parse: (input: string) => {
         const m = /^\s+/.exec(input);
@@ -48,9 +58,9 @@ export const WhitespaceArg: ArgumentType<undefined> = {
 };
 
 export const WordArg: ArgumentType<string> = {
-    regex: (): string => {
+    /*regex: (): string => {
         return '\\w+';
-    },
+    },*/
 
     parse: (input: string) => {
         const m = /^\w+/.exec(input);
@@ -61,9 +71,9 @@ export const WordArg: ArgumentType<string> = {
 };
 
 export const RationalArg: ArgumentType<RationalDef> = {
-    regex(): string {
+    /*regex(): string {
         return '\\d+\\/\\d+';
-    },
+    },*/
 
     parse(input: string) {
         const m = /^(\d+)\/(\d+)/.exec(input);

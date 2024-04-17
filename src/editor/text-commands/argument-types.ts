@@ -8,9 +8,9 @@ import { ArgumentType, IntegerArg, FixedArg, RationalArg, WordArg } from './base
 
 
 export const VoiceNoArg: ArgumentType<[number | undefined, number]> = {
-    regex(): string {
+    /*regex(): string {
         return '(\\d+[:.])?\\d+';
-    },
+    },*/
 
     parse(input: string) {
         const m = /^((\d+)[:.])?(\d+)/.exec(input);
@@ -25,9 +25,9 @@ export const VoiceNoArg: ArgumentType<[number | undefined, number]> = {
 
 
 export const PitchClassArg: ArgumentType<PitchClass> = {
-    regex(): string {
+    /*regex(): string {
         return '[a-g](es|is)*';
-    },
+    },*/
 
     parse(input: string) {
         const matcher = /^([a-g])((es|is)*)/;
@@ -43,9 +43,9 @@ export const PitchClassArg: ArgumentType<PitchClass> = {
 };
 
 export const OctaveArg: ArgumentType<number> = {
-    regex(): string {
+    /*regex(): string {
         return '[\',]*';
-    },
+    },*/
 
     parse(input: string) {
         const items = /^[',]*/.exec(input);
@@ -86,9 +86,9 @@ args => createNote(args[0], args[1], !!args[3], args[2] && args[2].length ? args
 
 
 export const SpacerArg: ArgumentType<Spacer> = {
-    regex(): string {
+    /*regex(): string {
         return /s(\d+\.*)/.source;
-    },
+    },*/
 
     parse(input: string) {
         const items = input.split(/\s+/);
@@ -112,9 +112,9 @@ export const ClefArg = mapResult(_clefArg, ([keyword, value]) => (StateChange.ne
 export const VariableReferenceArg = mapResult(sequence(['\\$', WordArg]), ([word]) => ({ variable: word } as VariableRef));
 
 const _parameterArg: ArgumentType<string[]> = {
-    regex(): string {
+    /*regex(): string {
         return /\s*\(([^)]*)\)/.source;
-    },
+    },*/
 
     parse(input: string): [string[], string] {
         return [[], input];

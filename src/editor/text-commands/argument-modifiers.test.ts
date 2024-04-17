@@ -7,9 +7,9 @@ import { many, mapResult, optional, select, sequence } from './argument-modifier
 
 describe('Argument type modifiers', () => {
     describe('Many', () => {
-        it('should provide a regular expression for many integers', () => {
+        /*it('should provide a regular expression for many integers', () => {
             expect(many(IntegerArg).regex()).to.eq('(\\d+\\s*)+');
-        });
+        });*/
         it('should parse an integer array', () => {
             expect(many(IntegerArg).parse('4 63 43 52 ijo 54')).to.deep.eq([[4, 63, 43, 52], 'ijo 54']);
         });        
@@ -41,9 +41,9 @@ describe('Argument type modifiers', () => {
     });
    
     describe('Optional', () => {
-        it('should provide a regular expression for an optional integer', () => {
+        /*it('should provide a regular expression for an optional integer', () => {
             expect(optional(IntegerArg).regex()).to.eq('(\\d+)?');
-        });
+        });*/
         it('should parse an optional integer', () => {
             expect(optional(IntegerArg).parse('4 63 ijo')).to.deep.eq([4, ' 63 ijo']);
         });        
@@ -72,9 +72,9 @@ describe('Argument type modifiers', () => {
 
 
     describe('Sequence', () => {
-        it('should provide a regular expression for many integers', () => {
+        /*it('should provide a regular expression for many integers', () => {
             expect(sequence([IntegerArg, RationalArg]).regex()).to.eq('(\\d+)(\\d+\\/\\d+)');
-        });
+        });*/
         it('should parse a sequence', () => {
             expect(sequence([IntegerArg, FixedArg(' = '), RationalArg])
                 .parse('4 = 63/43 52 ijo 54'))
@@ -131,9 +131,9 @@ describe('Argument type modifiers', () => {
 
 
     describe('Select', () => {
-        it('should provide a regular expression for integer/rational selections', () => {
+        /*it('should provide a regular expression for integer/rational selections', () => {
             expect(select([RationalArg, IntegerArg]).regex()).to.eq('(\\d+\\/\\d+)|(\\d+)');
-        });
+        });*/
         it('should parse integers', () => { // todo: it should warn if more than one path matches the string
             expect(select([RationalArg, IntegerArg])
                 .parse('4'))
@@ -162,9 +162,9 @@ describe('Argument type modifiers', () => {
 
     
     describe('MapResult', () => {
-        it('should provide the same regular expression as the child', () => {
+        /*it('should provide the same regular expression as the child', () => {
             expect(mapResult(RationalArg, rat => rat.numerator).regex()).to.eq(RationalArg.regex());
-        });
+        });*/
         it('should map a parsed integer', () => {
             expect(mapResult(IntegerArg, int => `${int}: ${int * int}`)
                 .parse('4 ='))
