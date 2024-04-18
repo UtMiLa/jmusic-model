@@ -33,7 +33,7 @@ export function many<T>(type: ArgumentType<T>, separator = '\\s*', allowEmpty = 
     return (input: string) => {
         let rest = input;
         const retVal = [];
-        while (matches(type, rest)) {
+        while (matches(type, rest)) { // cache result
             const [val, r] = type(rest);
             retVal.push(val);
             rest = r.replace(new RegExp('^' + separator), '');
@@ -49,7 +49,7 @@ export function optional<T>(type0: ArgumentType<T> | string): ArgumentType<T | n
     return (input: string) => {
         const typeRegex = R.curry(matches)(type);
         let rest = input;
-        if (typeRegex(rest)) {
+        if (typeRegex(rest)) { // cache result
             const [val, r] = type(rest);
             rest = r;
             return [val, rest];
@@ -68,7 +68,7 @@ export function sequence<T>(types0: (ArgumentType<T> | string)[]): ArgumentType<
     const types = types0.map(resolveSyntacticSugar);
     return (input: string) => {
         let rest = input;
-        const retVal = types.map(type => {
+        const retVal = types.map(type => { // cache result
             const [val, r] = type(rest);
             rest = r;
             return val;
@@ -87,7 +87,7 @@ export function select<S,T,U,V,W,X,Y>(types0: [ArgumentType<T>, ArgumentType<S>,
 export function select(types0: (ArgumentType<any> | string)[]): ArgumentType<any> {
     const types = types0.map(resolveSyntacticSugar);
     return (input: string) => {
-        const match = types.find(type => matches(type, input));
+        const match = types.find(type => matches(type, input)); // cache result
         if (!match) throw 'Syntax error';
 
         return match(input);

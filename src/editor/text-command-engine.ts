@@ -3,6 +3,7 @@ import { Model } from '../model';
 import R = require('ramda');
 import { navigationCommands } from './text-commands/navigation-commands';
 import { editCommands } from './text-commands/edit-commands';
+import { matches } from './text-commands/base-argument-types';
 
 export interface TextCommand {
     execute(model: Model, ins: InsertionPoint): any;
@@ -20,16 +21,9 @@ export class CustomTextCommand<T> implements TextCommand {
 
 export class TextCommandEngine {
     static parse(command: string): TextCommand {
-        const found = [...navigationCommands, ...editCommands].find(elm => {
-            try {
-                const res = elm.argType(command);
-                if (res) return true;
-            } catch {
-                return false;
-            }
-        });
+        const found = [...navigationCommands, ...editCommands].find(cmd => matches(cmd.argType, command));
         if (found) {
-            const [parsed, rest] = found.argType(command);
+            const [parsed, rest] = found.argType(command); // cache result
             if (rest.trim() !== '') throw 'Illegal command';
             const myFunc = found.action(parsed);
             return new CustomTextCommand(myFunc);

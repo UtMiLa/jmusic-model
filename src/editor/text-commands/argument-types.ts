@@ -4,7 +4,7 @@ import { FuncDef, Key, MeterFactory, MusicEvent, Note, Pitch, PitchClass, Ration
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
 import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
-import { ArgumentType, IntegerArg, FixedArg, RationalArg, WordArg } from './base-argument-types';
+import { ArgumentType, IntegerArg, FixedArg, RationalArg, WordArg, WhitespaceArg } from './base-argument-types';
 
 
 export const VoiceNoArg: ArgumentType<[number | undefined, number]> = (input: string) => {
@@ -94,7 +94,7 @@ const _parameterArg: ArgumentType<string[]> = (input: string): [string[], string
     return [[], input];
 };
 
-const _funcArg = sequence([WordArg, _parameterArg, VariableReferenceArg]);
+const _funcArg = sequence<string, string[], VariableRef>(['\\@', WordArg, '\\( ', _parameterArg, VariableReferenceArg, '\\s*\\)']);
 
 export const FunctionArg = mapResult(_funcArg, ([funcName, funcArgs, variableRef]): SeqFunction => { 
     if (!isFuncDef(funcName)) throw 'Bad function name';
