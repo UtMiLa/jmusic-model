@@ -5,6 +5,7 @@ import { many, mapResult, optional, select, sequence } from './argument-modifier
 import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
 import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
 import { ArgumentType, IntegerArg, FixedArg, RationalArg, WordArg, WhitespaceArg } from './base-argument-types';
+import { FunctionArg } from './function-argument-types';
 
 
 export const VoiceNoArg: ArgumentType<[number | undefined, number]> = (input: string) => {
@@ -90,20 +91,6 @@ export const ClefArg = mapResult(_clefArg, ([keyword, value]) => (StateChange.ne
 
 export const VariableReferenceArg = mapResult(sequence(['\\$', WordArg]), ([word]) => ({ variable: word } as VariableRef));
 
-const _parameterArg: ArgumentType<string[]> = (input: string): [string[], string] => {
-    return [[], input];
-};
-
-const _funcArg = sequence<string, string[], VariableRef>(['\\@', WordArg, '\\( ', _parameterArg, VariableReferenceArg, '\\s*\\)']);
-
-export const FunctionArg = mapResult(_funcArg, ([funcName, funcArgs, variableRef]): SeqFunction => { 
-    if (!isFuncDef(funcName)) throw 'Bad function name';
-    return {
-        function: funcName,
-        args: [variableRef],
-        extraArgs: funcArgs
-    };
-});
 
 export const MusicEventArg = select([NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg, VariableReferenceArg, FunctionArg]); // todo: LongDecoration, ...
 

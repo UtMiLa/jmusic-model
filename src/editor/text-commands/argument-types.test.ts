@@ -1,9 +1,10 @@
 import { StateChange } from './../../model/states/state';
 import { Clef, ClefType, Key, MeterFactory, Pitch, PitchClass, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { ClefArg, KeyArg, MeterArg, NoteArg, SpacerArg,  PitchClassArg, PitchArg, FunctionArg } from './argument-types';
+import { ClefArg, KeyArg, MeterArg, NoteArg, SpacerArg,  PitchClassArg, PitchArg } from './argument-types';
 import { RationalArg } from './base-argument-types';
 import { createSpacerFromLilypond } from '../../model/notes/spacer';
+import { FunctionArg } from './function-argument-types';
 
 describe('Argument types', () => {
         
@@ -90,21 +91,6 @@ describe('Argument types', () => {
     });
 
     
-    describe('Function', () => {
-        it('should parse a function token', () => {
-            const res = FunctionArg('@Grace( $notes )');
-            expect(res).to.deep.eq([
-                {
-                    args: [{
-                        variable: 'notes'
-                    }],
-                    extraArgs: [],
-                    function: 'Grace'
-                },
-                ''
-            ]);
-        });
-    });
 });
 
 
