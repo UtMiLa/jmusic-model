@@ -2,8 +2,8 @@ import R = require('ramda');
 import { ArgumentType, matches } from './base-argument-types';
 
 
-type stringInterpolation = [] | [string] | [string, string]
-    | [ArgumentType<undefined>] | [string, ArgumentType<undefined>] | [string, ArgumentType<undefined>, string];
+type stringInterpolation = [] | [string | RegExp] | [string, string | RegExp]
+    | [ArgumentType<undefined>] | [string | RegExp, ArgumentType<undefined>] | [string | RegExp, ArgumentType<undefined>, string | RegExp];
 type ArgSimple<A> = [A, ...stringInterpolation];
 type ArgStarter<A> = [...stringInterpolation, ...ArgSimple<A>];
 type ArgDuple<A, B> = [...ArgStarter<A>, ...ArgSimple<B>];
@@ -14,13 +14,23 @@ type ArgQuadruple<A, B, C, D> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimpl
 
 
 
-function resolveSyntacticSugar<T>(arg: ArgumentType<T> | string): ArgumentType<T | undefined> {
+function resolveSyntacticSugar<T>(arg: ArgumentType<T> | string | RegExp): ArgumentType<T | undefined> {
     if (typeof arg === 'string') {
         const tester = new RegExp('^' + arg.replace(/ $/, '\\s+'));
         const res: ArgumentType<T | undefined> = (input: string) => {
             const match = tester.exec(input);
             if (!match || !match.length) throw 'Missing keyword';
             return [undefined, input.substring(match[0].length)];
+        };
+        res.undefinedWhenOptional = true;
+        return res;
+    } else if (arg instanceof RegExp) {
+        const res: ArgumentType<T | undefined> = (input: string) => {
+            const match = arg.exec(input);
+            if (!match || !match.length) throw 'Missing keyword';
+            const len = match[0].length;
+            if (input.substring(0, len) !== match[0]) throw 'Keyword in incorrect position';
+            return [undefined, input.substring(len)];
         };
         res.undefinedWhenOptional = true;
         return res;
@@ -64,7 +74,7 @@ export function sequence<S,T>(types0: ArgDuple<ArgumentType<S>, ArgumentType<T>>
 export function sequence<S,T,U>(types0: ArgTriple<ArgumentType<S>, ArgumentType<T>, ArgumentType<U>>): ArgumentType<[S, T, U]>;
 export function sequence<S,T,U,V>(types0: ArgQuadruple<ArgumentType<S>, ArgumentType<T>, ArgumentType<U>, ArgumentType<V>>): ArgumentType<[S, T, U, V]>;
 //export function sequence<S,T,U,V,W>(types0: ArgQuintuple<ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>>): ArgumentType<[S, T, U, V, W]>;
-export function sequence<T>(types0: (ArgumentType<T> | string)[]): ArgumentType<T[]> {
+export function sequence<T>(types0: (ArgumentType<T> | string | RegExp)[]): ArgumentType<T[]> {
     const types = types0.map(resolveSyntacticSugar);
     return (input: string) => {
         let rest = input;

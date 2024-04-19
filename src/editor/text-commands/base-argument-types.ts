@@ -1,3 +1,4 @@
+import { regexEscape } from 'sanctuary';
 import { RationalDef } from '../../model';
 
 export interface ArgumentType<T> {
@@ -15,9 +16,10 @@ export function matches<T>(argt: ArgumentType<T>, input: string): boolean {
     return false;
 }
 
-export const FixedArg = (arg: string): ArgumentType<string> => (input: string) => {
-    const m = new RegExp('^' + arg).exec(input);
+export const FixedArg = (arg: string | RegExp): ArgumentType<string> => (input: string) => {
+    const m = (arg instanceof RegExp ? arg : new RegExp('^' + regexEscape(arg))).exec(input);
     if (!m) throw 'Not a match';
+    if (input.indexOf(m[0]) !== 0) throw 'Not a match in correct position';
     const rest = input.substring(m[0].length);
     return [m[0], rest];
 };

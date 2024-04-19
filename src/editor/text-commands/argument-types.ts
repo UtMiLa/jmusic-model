@@ -6,6 +6,7 @@ import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
 import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
 import { ArgumentType, IntegerArg, FixedArg, RationalArg, WordArg, WhitespaceArg } from './base-argument-types';
 import { FunctionArg } from './function-argument-types';
+import { Just, Maybe, map, maybe } from 'sanctuary';
 
 
 export const VoiceNoArg: ArgumentType<[number | undefined, number]> = (input: string) => {
@@ -48,13 +49,13 @@ export const PitchArg: ArgumentType<Pitch> = mapResult(sequence([PitchClassArg, 
 
 export const ChordArg: ArgumentType<Pitch[]> = mapResult(sequence(['<', many(PitchArg), '>']), pitches => pitches[0]);
 
-export const DurationArg: ArgumentType<TimeSpan> = mapResult(sequence([IntegerArg, many(FixedArg('\\.'), '', true)]), 
+export const DurationArg: ArgumentType<TimeSpan> = mapResult(sequence([IntegerArg, many(FixedArg(/\./), '', true)]), 
     ([dur, dots]) => (dots ?? []).reduce(
         (prev, next) => next === '.' ? Time.newSpan(prev.numerator * 2 + 1, prev.denominator * 2) : prev, 
         Time.newSpan(1, dur)
     ));
 
-export const NoteExpressionArg: ArgumentType<string> = FixedArg('\\\\[a-z]+');
+export const NoteExpressionArg: ArgumentType<string> = FixedArg(/\\[a-z]+/);
 export const NoteTieArg: ArgumentType<string> = FixedArg('~');
 export const OptionalNoteExpressionsArg: ArgumentType<string[] | null> = mapResult(many(NoteExpressionArg, '\\s*', true), res => res ? res : null);
 const ChordPitchOrRestArg: ArgumentType<Pitch[]> = select([
@@ -86,11 +87,10 @@ export const KeyArg = mapResult(_keyArg, ([count, acc]) => (StateChange.newKeyCh
 
 export const MeterArg = mapResult(RationalArg, (r: RationalDef) => (StateChange.newMeterChange(MeterFactory.createRegularMeter({ count: r.numerator, value: r.denominator }))));
 
-const _clefArg = sequence([FixedArg('\\\\clef '), WordArg]);
+const _clefArg = sequence([FixedArg(/\\clef /), WordArg]);
 export const ClefArg = mapResult(_clefArg, ([keyword, value]) => (StateChange.newClefChange(parseLilyClef(value))));
 
 export const VariableReferenceArg = mapResult(sequence(['\\$', WordArg]), ([word]) => ({ variable: word } as VariableRef));
 
 
 export const MusicEventArg = select([NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg, VariableReferenceArg, FunctionArg]); // todo: LongDecoration, ...
-

@@ -86,6 +86,11 @@ describe('Argument type modifiers', () => {
             expect(sequence([IntegerArg, '=', IntegerArg])('4=63 52 ijo 54'))
                 .to.deep.eq([[4, 63], ' 52 ijo 54']);
         });   
+        
+        it('should parse a sequence with regex keywords', () => {
+            expect(sequence([IntegerArg, /=/, IntegerArg])('4=63 52 ijo 54'))
+                .to.deep.eq([[4, 63], ' 52 ijo 54']);
+        });   
         it('should fail an unmatched sequence', () => {
             expect(() => sequence([IntegerArg, FixedArg(' = '), RationalArg])('4 = 63/h43 52 ijo 54'))
                 .to.throw(/Not a rational/);
