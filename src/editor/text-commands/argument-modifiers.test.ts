@@ -3,13 +3,14 @@ import { KeyDef, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
 import { FixedArg, IntegerArg as Int0Arg, RationalArg as R0, WhitespaceArg as W0, _eitherToException } from './base-argument-types';
 import { KeyArg, NoteArg } from './argument-types';
-import { many, mapResult, optional, select, sequence } from './argument-modifiers';
+import { many, mapResult, optional as op0, select, sequence } from './argument-modifiers';
 
 const IntegerArg = _eitherToException(Int0Arg);
 
 const WhitespaceArg = _eitherToException(W0);
 
 const RationalArg = _eitherToException(R0);
+const optional = (type: any) => _eitherToException(op0(type));
 
 describe('Argument type modifiers', () => {
     describe('Many', () => {
@@ -17,13 +18,13 @@ describe('Argument type modifiers', () => {
             expect(many(IntegerArg).regex()).to.eq('(\\d+\\s*)+');
         });*/
         it('should parse an integer array', () => {
-            expect(many(IntegerArg)('4 63 43 52 ijo 54')).to.deep.eq([[4, 63, 43, 52], 'ijo 54']);
+            expect(many(IntegerArg)('4 63 43 52 ijo 54')).to.deep.eq(either.right([[4, 63, 43, 52], 'ijo 54']));
         });        
         it('should parse an empty array', () => {
-            expect(many(IntegerArg)('e4 63 43 52 ijo 54')).to.deep.eq([[], 'e4 63 43 52 ijo 54']);
+            expect(many(IntegerArg)('e4 63 43 52 ijo 54')).to.deep.eq(either.right([[], 'e4 63 43 52 ijo 54']));
         });
         it('should parse a rational array', () => {
-            expect(many(RationalArg)('4/5 63/41 43 52 ijo 54')).to.deep.eq([[
+            expect(many(RationalArg)('4/5 63/41 43 52 ijo 54')).to.deep.eq(either.right([[
                 {
                     numerator: 4,
                     denominator: 5
@@ -31,17 +32,17 @@ describe('Argument type modifiers', () => {
                     numerator: 63,
                     denominator: 41
                 }
-            ], '43 52 ijo 54']
+            ], '43 52 ijo 54'])
             );
         });
 
         it('should parse a note sequence', () => {
-            expect(many(NoteArg)('ees4 f4 ges2. aes4')).to.deep.eq([[
+            expect(many(NoteArg)('ees4 f4 ges2. aes4')).to.deep.eq(either.right([[
                 createNoteFromLilypond('ees4'),
                 createNoteFromLilypond('f4'),
                 createNoteFromLilypond('ges2.'),
                 createNoteFromLilypond('aes4')
-            ], '']);
+            ], '']));
         });
 
     });
@@ -133,27 +134,24 @@ describe('Argument type modifiers', () => {
 
 
     describe('Select', () => {
-        /*it('should provide a regular expression for integer/rational selections', () => {
-            expect(select([RationalArg, IntegerArg]).regex()).to.eq('(\\d+\\/\\d+)|(\\d+)');
-        });*/
         it('should parse integers', () => { // todo: it should warn if more than one path matches the string
             expect(select([RationalArg, IntegerArg])('4'))
-                .to.deep.eq([4, '']);
+                .to.deep.eq(either.right([4, '']));
         });
         it('should parse rationals', () => {
             expect(select([RationalArg, IntegerArg])('4/5'))
-                .to.deep.eq([{
+                .to.deep.eq(either.right([{
                     numerator: 4,
                     denominator: 5
-                }, '']);
+                }, '']));
         });
         it('should parse whitespace', () => {
             expect(select([IntegerArg, WhitespaceArg])('\t'))
-                .to.deep.eq([undefined, '']);
+                .to.deep.eq(either.right([undefined, '']));
         });
         it('should fail an unmatched select', () => {
-            expect(() => select([RationalArg, IntegerArg])('= 63/43'))
-                .to.throw(/Syntax error/);
+            expect(select([RationalArg, IntegerArg])('= 63/43'))
+                .to.deep.eq(either.left('Syntax error'));
             
         });
     });

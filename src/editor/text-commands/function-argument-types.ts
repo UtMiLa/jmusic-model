@@ -34,7 +34,7 @@ const AddLyricsArgumentsArg = makeArgs(many(WordArg));
 const NoArgsFunctionArg = sequence<string, VariableRef>(['\\@', WordArg, '\\( ', VariableReferenceArg, '\\s*\\)']);
 const RepeatFunctionArg = sequence<string, number, VariableRef>(['\\@', WordArg, '\\( ', RepeatArgumentsArg, VariableReferenceArg, '\\s*\\)']);
 
-const FuncCombinedArg = select([EmptyArgumentsArg, TupletArgumentsArg]);
+const FuncCombinedArg = _eitherToException(select([EmptyArgumentsArg, TupletArgumentsArg]));
 
 export const FunctionArg = mapResult(FuncCombinedArg, ([funcName, funcArgs, variableRef]): SeqFunction => { 
     if (!isFuncDef(funcName)) throw 'Bad function name';

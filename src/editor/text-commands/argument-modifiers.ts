@@ -38,8 +38,10 @@ function resolveSyntacticSugar<T>(arg: ArgumentType<T> | string | RegExp): Argum
     return arg;
 }
 
-
-export function many<T>(type: ArgumentType<T>, separator = '\\s*', allowEmpty = false): ArgumentType<T[]> {
+export function many<T>(type: ArgumentType<T>, separator = '\\s*', allowEmpty = false): ArgType<T[]> {
+    return _exceptionToEither(many0(type));
+}
+function many0<T>(type: ArgumentType<T>, separator = '\\s*', allowEmpty = false): ArgumentType<T[]> {
     return (input: string) => {
         let rest = input;
         const retVal = [];
@@ -52,14 +54,16 @@ export function many<T>(type: ArgumentType<T>, separator = '\\s*', allowEmpty = 
     };
 }
 
-export function optional<T>(type0: ArgumentType<T>): ArgumentType<T | null>;
-export function optional(type0: string): ArgumentType<undefined>;
-export function optional<T>(type0: ArgumentType<T> | string): ArgumentType<T | null | undefined> {
+export function optional<T>(type0: ArgumentType<T>): ArgType<T | null>;
+export function optional(type0: string): ArgType<undefined>;
+export function optional<T>(type0: ArgumentType<T> | string): ArgType<T | null | undefined> {
+    return _exceptionToEither(optional0(type0));
+}
+function optional0<T>(type0: ArgumentType<T> | string): ArgumentType<T | null | undefined> {
     const type = resolveSyntacticSugar(type0);
     return (input: string) => {
-        const typeRegex = R.curry(matches)(type);
         let rest = input;
-        if (typeRegex(rest)) { // cache result
+        if (matches(type, rest)) { // cache result
             const [val, r] = type(rest);
             rest = r;
             return [val, rest];
@@ -90,14 +94,17 @@ export function _sequence<T>(types0: (ArgumentType<T> | string | RegExp)[]): Arg
     };
 }
 
-export function select<T>(types0: [ArgumentType<T>]): ArgumentType<T>;
-export function select<S,T>(types0: [ArgumentType<S>, ArgumentType<T>]): ArgumentType<S | T>;
-export function select<S,T,U>(types0: [ArgumentType<S>, ArgumentType<T>, ArgumentType<U>]): ArgumentType<S | T | U>;
-export function select<S,T,U,V>(types0: [ArgumentType<S>, ArgumentType<T>, ArgumentType<U>, ArgumentType<V>]): ArgumentType<S | T | U | V>;
-export function select<S,T,U,V,W>(types0: [ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>]): ArgumentType<S | T | U | V | W>;
-export function select<S,T,U,V,W,X>(types0: [ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>, ArgumentType<X>]): ArgumentType<S | T | U | V | W | X>;
-export function select<S,T,U,V,W,X,Y>(types0: [ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>, ArgumentType<X>, ArgumentType<Y>]): ArgumentType<S | T | U | V | W | X | Y>;
-export function select(types0: (ArgumentType<any> | string)[]): ArgumentType<any> {
+export function select<T>(types0: [ArgumentType<T>]): ArgType<T>;
+export function select<S,T>(types0: [ArgumentType<S>, ArgumentType<T>]): ArgType<S | T>;
+export function select<S,T,U>(types0: [ArgumentType<S>, ArgumentType<T>, ArgumentType<U>]): ArgType<S | T | U>;
+export function select<S,T,U,V>(types0: [ArgumentType<S>, ArgumentType<T>, ArgumentType<U>, ArgumentType<V>]): ArgType<S | T | U | V>;
+export function select<S,T,U,V,W>(types0: [ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>]): ArgType<S | T | U | V | W>;
+export function select<S,T,U,V,W,X>(types0: [ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>, ArgumentType<X>]): ArgType<S | T | U | V | W | X>;
+export function select<S,T,U,V,W,X,Y>(types0: [ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>, ArgumentType<X>, ArgumentType<Y>]): ArgType<S | T | U | V | W | X | Y>;
+export function select(types0: (ArgumentType<any> | string)[]): ArgType<any> {
+    return _exceptionToEither(select0(types0));
+}
+export function select0(types0: (ArgumentType<any> | string)[]): ArgumentType<any> {
     const types = types0.map(resolveSyntacticSugar);
     return (input: string) => {
         const match = types.find(type => matches(type, input)); // cache result
