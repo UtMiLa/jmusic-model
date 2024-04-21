@@ -34,6 +34,19 @@ describe('Argument types', () => {
         it('should parse a fixed token', () => {
             expect(FixedArg('fixed')('fixed432')).to.deep.eq(['fixed', '432']);
         });
+        it('should parse a fixed token with special regex characters', () => {
+            expect(FixedArg('fix.?ed')('fix.?ed432')).to.deep.eq(['fix.?ed', '432']);
+        });
+        it('should parse a fixed token with special regex characters not at beginning', () => {
+            expect(() => FixedArg('fix.?ed')(' fix.?ed432')).to.throw(/Not a match$/);
+        });
+        it('should parse a regex', () => {
+            expect(FixedArg(/fix.?ed/)('fixed432')).to.deep.eq(['fixed', '432']);
+            expect(FixedArg(/fix.?ed/)('fixXed432')).to.deep.eq(['fixXed', '432']);
+        });
+        it('should parse a regex not at beginning', () => {
+            expect(() => FixedArg(/fix.?ed/)(' fixXed432')).to.throw(/position$/);
+        });
     });
     
 

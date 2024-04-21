@@ -5,8 +5,6 @@ import { many, mapResult, optional, select, sequence } from './argument-modifier
 import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
 import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
 import { ArgumentType, IntegerArg, FixedArg, RationalArg, WordArg, WhitespaceArg } from './base-argument-types';
-import { FunctionArg } from './function-argument-types';
-import { Just, Maybe, map, maybe } from 'sanctuary';
 
 
 export const VoiceNoArg: ArgumentType<[number | undefined, number]> = (input: string) => {
@@ -92,5 +90,6 @@ export const ClefArg = mapResult(_clefArg, ([keyword, value]) => (StateChange.ne
 
 export const VariableReferenceArg = mapResult(sequence(['\\$', WordArg]), ([word]) => ({ variable: word } as VariableRef));
 
+import { FunctionArg } from './function-argument-types';
 
 export const MusicEventArg = select([NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg, VariableReferenceArg, FunctionArg]); // todo: LongDecoration, ...

@@ -20,12 +20,11 @@
     "postpub": "cd dist & del package.json"
   },
   "dependencies": {
-    "@types/sanctuary": "^3.1.4",
     "deep-eql": "^4.1.2",
+    "fp-ts": "^2.16.5",
     "node": "^15.3.0",
     "ramda": "^0.28.0",
-    "rxjs": "^7.8.0",
-    "sanctuary": "^3.1.0"
+    "rxjs": "^7.8.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.14",
