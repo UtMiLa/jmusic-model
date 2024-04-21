@@ -6,8 +6,8 @@ import { InsertionPoint } from '../insertion-point';
 import { Time, Model } from './../../model';
 import R = require('ramda');
 
-const WhitespaceArg = _eitherToException(W0);
-const RationalArg = _eitherToException(R0);
+const WhitespaceArg = (W0);
+const RationalArg = (R0);
 
 interface CommandDescriptor<T> {
     argType: ArgumentType<T>;
@@ -42,7 +42,7 @@ export const navigationCommands: CommandDescriptor<any>[] = [
             ins.moveToTime({ ...args[0], type: 'abs' })
     } as CommandDescriptor<[RationalDef]>,
     { 
-        argType: _eitherToException(sequence<[number | undefined, number]>(['voice ', _eitherToException(VoiceNoArg)])), 
+        argType: _eitherToException(sequence<[number | undefined, number]>(['voice ', (VoiceNoArg)])), 
         action: (args: [[number | undefined, number]]) => {            
             const staff = args[0][0] ?? -1;
             return (model: Model, ins: InsertionPoint) => {

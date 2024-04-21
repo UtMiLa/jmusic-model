@@ -1,9 +1,9 @@
 import R = require('ramda');
-import { ArgType, ArgumentType, _exceptionToEither, matches } from './base-argument-types';
+import { ArgumentType, ArgType, _eitherToException, _exceptionToEither, matches } from './base-argument-types';
 
 
 type stringInterpolation = [] | [string | RegExp] | [string, string | RegExp]
-    | [ArgumentType<undefined>] | [string | RegExp, ArgumentType<undefined>] | [string | RegExp, ArgumentType<undefined>, string | RegExp];
+    | [ArgType<undefined>] | [string | RegExp, ArgType<undefined>] | [string | RegExp, ArgType<undefined>, string | RegExp];
 type ArgSimple<A> = [A, ...stringInterpolation];
 type ArgStarter<A> = [...stringInterpolation, ...ArgSimple<A>];
 type ArgDuple<A, B> = [...ArgStarter<A>, ...ArgSimple<B>];
@@ -14,7 +14,7 @@ type ArgQuadruple<A, B, C, D> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimpl
 
 
 
-function resolveSyntacticSugar<T>(arg: ArgumentType<T> | string | RegExp): ArgumentType<T | undefined> {
+function resolveSyntacticSugar<T>(arg: ArgType<T> | string | RegExp): ArgumentType<T | undefined> {
     if (typeof arg === 'string') {
         const tester = new RegExp('^' + arg.replace(/ $/, '\\s+'));
         const res: ArgumentType<T | undefined> = (input: string) => {
@@ -35,7 +35,7 @@ function resolveSyntacticSugar<T>(arg: ArgumentType<T> | string | RegExp): Argum
         res.undefinedWhenOptional = true;
         return res;
     }
-    return arg;
+    return _eitherToException(arg);
 }
 
 export function many<T>(type: ArgumentType<T>, separator = '\\s*', allowEmpty = false): ArgType<T[]> {
@@ -54,12 +54,12 @@ function many0<T>(type: ArgumentType<T>, separator = '\\s*', allowEmpty = false)
     };
 }
 
-export function optional<T>(type0: ArgumentType<T>): ArgType<T | null>;
+export function optional<T>(type0: ArgType<T>): ArgType<T | null>;
 export function optional(type0: string): ArgType<undefined>;
-export function optional<T>(type0: ArgumentType<T> | string): ArgType<T | null | undefined> {
+export function optional<T>(type0: ArgType<T> | string): ArgType<T | null | undefined> {
     return _exceptionToEither(optional0(type0));
 }
-function optional0<T>(type0: ArgumentType<T> | string): ArgumentType<T | null | undefined> {
+function optional0<T>(type0: ArgType<T> | string): ArgumentType<T | null | undefined> {
     const type = resolveSyntacticSugar(type0);
     return (input: string) => {
         let rest = input;
@@ -73,15 +73,15 @@ function optional0<T>(type0: ArgumentType<T> | string): ArgumentType<T | null | 
     };
 }
 
-export function sequence<T>(types0: ArgStarter<ArgumentType<T>>): ArgType<[T]>;
-export function sequence<S,T>(types0: ArgDuple<ArgumentType<S>, ArgumentType<T>>): ArgType<[S, T]>;
-export function sequence<S,T,U>(types0: ArgTriple<ArgumentType<S>, ArgumentType<T>, ArgumentType<U>>): ArgType<[S, T, U]>;
-export function sequence<S,T,U,V>(types0: ArgQuadruple<ArgumentType<S>, ArgumentType<T>, ArgumentType<U>, ArgumentType<V>>): ArgType<[S, T, U, V]>;
-//export function sequence<S,T,U,V,W>(types0: ArgQuintuple<ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>>): ArgumentType<[S, T, U, V, W]>;
-export function sequence<T>(types0: (ArgumentType<T> | string | RegExp)[]): ArgType<T[]> {
+export function sequence<T>(types0: ArgStarter<ArgType<T>>): ArgType<[T]>;
+export function sequence<S,T>(types0: ArgDuple<ArgType<S>, ArgType<T>>): ArgType<[S, T]>;
+export function sequence<S,T,U>(types0: ArgTriple<ArgType<S>, ArgType<T>, ArgType<U>>): ArgType<[S, T, U]>;
+export function sequence<S,T,U,V>(types0: ArgQuadruple<ArgType<S>, ArgType<T>, ArgType<U>, ArgType<V>>): ArgType<[S, T, U, V]>;
+//export function sequence<S,T,U,V,W>(types0: ArgQuintuple<ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>>): ArgType<[S, T, U, V, W]>;
+export function sequence<T>(types0: (ArgType<T> | string | RegExp)[]): ArgType<T[]> {
     return _exceptionToEither(_sequence(types0));
 }
-export function _sequence<T>(types0: (ArgumentType<T> | string | RegExp)[]): ArgumentType<T[]> {
+export function _sequence<T>(types0: (ArgType<T> | string | RegExp)[]): ArgumentType<T[]> {
     const types = types0.map(resolveSyntacticSugar);
     return (input: string) => {
         let rest = input;
@@ -94,17 +94,17 @@ export function _sequence<T>(types0: (ArgumentType<T> | string | RegExp)[]): Arg
     };
 }
 
-export function select<T>(types0: [ArgumentType<T>]): ArgType<T>;
-export function select<S,T>(types0: [ArgumentType<S>, ArgumentType<T>]): ArgType<S | T>;
-export function select<S,T,U>(types0: [ArgumentType<S>, ArgumentType<T>, ArgumentType<U>]): ArgType<S | T | U>;
-export function select<S,T,U,V>(types0: [ArgumentType<S>, ArgumentType<T>, ArgumentType<U>, ArgumentType<V>]): ArgType<S | T | U | V>;
-export function select<S,T,U,V,W>(types0: [ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>]): ArgType<S | T | U | V | W>;
-export function select<S,T,U,V,W,X>(types0: [ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>, ArgumentType<X>]): ArgType<S | T | U | V | W | X>;
-export function select<S,T,U,V,W,X,Y>(types0: [ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>, ArgumentType<X>, ArgumentType<Y>]): ArgType<S | T | U | V | W | X | Y>;
-export function select(types0: (ArgumentType<any> | string)[]): ArgType<any> {
+export function select<T>(types0: [ArgType<T>]): ArgType<T>;
+export function select<S,T>(types0: [ArgType<S>, ArgType<T>]): ArgType<S | T>;
+export function select<S,T,U>(types0: [ArgType<S>, ArgType<T>, ArgType<U>]): ArgType<S | T | U>;
+export function select<S,T,U,V>(types0: [ArgType<S>, ArgType<T>, ArgType<U>, ArgType<V>]): ArgType<S | T | U | V>;
+export function select<S,T,U,V,W>(types0: [ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>]): ArgType<S | T | U | V | W>;
+export function select<S,T,U,V,W,X>(types0: [ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>, ArgType<X>]): ArgType<S | T | U | V | W | X>;
+export function select<S,T,U,V,W,X,Y>(types0: [ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>, ArgType<X>, ArgType<Y>]): ArgType<S | T | U | V | W | X | Y>;
+export function select(types0: (ArgType<any> | string)[]): ArgType<any> {
     return _exceptionToEither(select0(types0));
 }
-export function select0(types0: (ArgumentType<any> | string)[]): ArgumentType<any> {
+export function select0(types0: (ArgType<any> | string)[]): ArgumentType<any> {
     const types = types0.map(resolveSyntacticSugar);
     return (input: string) => {
         const match = types.find(type => matches(type, input)); // cache result

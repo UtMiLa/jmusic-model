@@ -4,12 +4,12 @@ import { FuncDef, Key, MeterFactory, MusicEvent, Note, Pitch, PitchClass, Ration
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
 import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
-import { ArgumentType, IntegerArg, FixedArg as F0, RationalArg as R0, WordArg as W0, WhitespaceArg, _eitherToException, ArgType } from './base-argument-types';
+import { ArgumentType, IntegerArg, FixedArg, RationalArg as R0, WordArg as W0, WhitespaceArg, _eitherToException, ArgType, _exceptionToEither } from './base-argument-types';
 
 
-const RationalArg = _eitherToException(R0);
-const WordArg = _eitherToException(W0);
-const FixedArg = (s: RegExp | string) => _eitherToException(F0(s));
+const RationalArg = (R0);
+const WordArg = (W0);
+
 
 export const VoiceNoArg: ArgType<[number | undefined, number]> = (input: string) => {
     const m = /^((\d+)[:.])?(\d+)/.exec(input);
@@ -47,30 +47,30 @@ export const OctaveArg: ArgType<number> = (input: string) => {
 
 };
 
-export const PitchArg: ArgumentType<Pitch> = mapResult(_eitherToException(sequence([_eitherToException(PitchClassArg), _eitherToException(OctaveArg)])), ([pc, oct]) => new Pitch(pc.pitchClass, oct, pc.alteration));
+export const PitchArg: ArgumentType<Pitch> = mapResult(_eitherToException(sequence([(PitchClassArg), (OctaveArg)])), ([pc, oct]) => new Pitch(pc.pitchClass, oct, pc.alteration));
 
-export const ChordArg: ArgumentType<Pitch[]> = mapResult(_eitherToException(sequence(['<', _eitherToException(many(PitchArg)), '>'])), pitches => pitches[0]);
+export const ChordArg: ArgumentType<Pitch[]> = mapResult(_eitherToException(sequence(['<', (many(PitchArg)), '>'])), pitches => pitches[0]);
 
-export const DurationArg: ArgumentType<TimeSpan> = mapResult(_eitherToException(sequence([_eitherToException(IntegerArg), _eitherToException(many(FixedArg(/\./), '', true))])), 
+export const DurationArg: ArgumentType<TimeSpan> = mapResult(_eitherToException(sequence([(IntegerArg), (many(_eitherToException(FixedArg(/\./)), '', true))])), 
     ([dur, dots]) => (dots ?? []).reduce(
         (prev, next) => next === '.' ? Time.newSpan(prev.numerator * 2 + 1, prev.denominator * 2) : prev, 
         Time.newSpan(1, dur)
     ));
 
-export const NoteExpressionArg: ArgumentType<string> = FixedArg(/\\[a-z]+/);
-export const NoteTieArg: ArgumentType<string> = FixedArg('~');
-export const OptionalNoteExpressionsArg: ArgumentType<string[] | null> = mapResult(_eitherToException(many(NoteExpressionArg, '\\s*', true)), res => res ? res : null);
-const ChordPitchOrRestArg: ArgumentType<Pitch[]> = _eitherToException(select([
-    mapResult(PitchArg, pitch => [pitch]), 
-    ChordArg,
-    mapResult(FixedArg('r'), () => [])
+export const NoteExpressionArg: ArgType<string> = FixedArg(/\\[a-z]+/);
+export const NoteTieArg: ArgType<string> = FixedArg('~');
+export const OptionalNoteExpressionsArg: ArgumentType<string[] | null> = mapResult(_eitherToException(many(_eitherToException(NoteExpressionArg), '\\s*', true)), res => res ? res : null);
+const ChordPitchOrRestArg: ArgType<Pitch[]> = (select([
+    _exceptionToEither(mapResult(PitchArg, pitch => [pitch])), 
+    _exceptionToEither(ChordArg),
+    _exceptionToEither(mapResult(_eitherToException(FixedArg('r')), () => []))
 ]));
 
 export const NoteArg: ArgumentType<Note> = mapResult(_eitherToException(sequence<Pitch[], TimeSpan, string[] | null, string | null>([
-    ChordPitchOrRestArg, 
-    DurationArg, 
-    OptionalNoteExpressionsArg,
-    _eitherToException(optional(NoteTieArg))])), 
+    (ChordPitchOrRestArg), 
+    _exceptionToEither(DurationArg), 
+    _exceptionToEither(OptionalNoteExpressionsArg),
+    (optional((NoteTieArg)))])), 
 args => createNote(args[0], args[1], !!args[3], args[2] && args[2].length ? args[2].map(parseLilyNoteExpression) : undefined));
 
 
@@ -84,17 +84,19 @@ export const SpacerArg: ArgumentType<Spacer> = (input: string) => {
     throw 'Illegal spacer';
 };
 
-const _keyArg = _eitherToException(sequence([_eitherToException(IntegerArg), _eitherToException(select([FixedArg('#'), FixedArg('b')]))]));
-export const KeyArg = mapResult(_keyArg, ([count, acc]) => (StateChange.newKeyChange(new Key({ count, accidental: acc === '#' ? 1 : -1 }))));
+const _keyArg = _eitherToException(sequence([(IntegerArg), (select([FixedArg('#'), FixedArg('b')]))]));
+export const KeyArg = _exceptionToEither(mapResult(_keyArg, ([count, acc]) => (StateChange.newKeyChange(new Key({ count, accidental: acc === '#' ? 1 : -1 })))));
 
-export const MeterArg = mapResult(RationalArg, (r: RationalDef) => (StateChange.newMeterChange(MeterFactory.createRegularMeter({ count: r.numerator, value: r.denominator }))));
+export const MeterArg = _exceptionToEither(mapResult(_eitherToException(RationalArg), (r: RationalDef) => (StateChange.newMeterChange(MeterFactory.createRegularMeter({ count: r.numerator, value: r.denominator })))));
 
 const _clefArg = _eitherToException(sequence([FixedArg(/\\clef /), WordArg]));
-export const ClefArg = mapResult(_clefArg, ([keyword, value]) => (StateChange.newClefChange(parseLilyClef(value))));
+export const ClefArg = _exceptionToEither(mapResult(_clefArg, ([keyword, value]) => (StateChange.newClefChange(parseLilyClef(value)))));
 
 export const VariableReferenceArg = mapResult(_eitherToException(sequence(['\\$', WordArg])), ([word]) => ({ variable: word } as VariableRef));
 
 import { FunctionArg } from './function-argument-types';
 import { either } from 'fp-ts';
 
-export const MusicEventArg = _eitherToException(select([NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg, VariableReferenceArg, FunctionArg])); // todo: LongDecoration, ...
+export const MusicEventArg = _eitherToException(select(
+    [_exceptionToEither(NoteArg), KeyArg, MeterArg, ClefArg, _exceptionToEither(SpacerArg), _exceptionToEither(VariableReferenceArg), _exceptionToEither(FunctionArg)])
+); // todo: LongDecoration, ...

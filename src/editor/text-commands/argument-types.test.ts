@@ -60,10 +60,10 @@ describe('Argument types', () => {
         });*/
         it('should parse a key token', () => {
             const res = KeyArg('3b');
-            expect(res).to.deep.eq([
+            expect(res).to.deep.eq(either.right([
                 StateChange.newKeyChange(new Key({ accidental: -1, count: 3 })),                 
                 ''
-            ]);
+            ]));
         });
     });
     describe('Meter change', () => {
@@ -72,10 +72,10 @@ describe('Argument types', () => {
         });*/
         it('should parse a meter token', () => {
             const res = MeterArg('3/4');
-            expect(res).to.deep.eq([
+            expect(res).to.deep.eq(either.right([
                 StateChange.newMeterChange(MeterFactory.createRegularMeter({ value: 4, count: 3 })),                 
                 ''
-            ]);
+            ]));
         });
     });
     describe('Clef change', () => {
@@ -84,10 +84,10 @@ describe('Argument types', () => {
         });*/
         it('should parse a clef token', () => {
             const res = ClefArg('\\clef treble');
-            expect(res).to.deep.eq([
+            expect(res).to.deep.eq(either.right([
                 StateChange.newClefChange(new Clef({ clefType: ClefType.G, line: -2 })),
                 ''
-            ]);
+            ]));
         });
     });
 

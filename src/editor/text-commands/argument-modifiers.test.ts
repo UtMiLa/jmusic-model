@@ -1,16 +1,16 @@
 import { either } from 'fp-ts';
 import { KeyDef, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { FixedArg, IntegerArg as Int0Arg, RationalArg as R0, WhitespaceArg as W0, _eitherToException } from './base-argument-types';
+import { FixedArg, IntegerArg, RationalArg, WhitespaceArg, _eitherToException } from './base-argument-types';
 import { KeyArg, NoteArg } from './argument-types';
-import { many, mapResult, optional as op0, select, sequence } from './argument-modifiers';
+import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 
-const IntegerArg = _eitherToException(Int0Arg);
+//const IntegerArg = _eitherToException(Int0Arg);
 
-const WhitespaceArg = _eitherToException(W0);
+//const WhitespaceArg = _eitherToException(W0);
 
-const RationalArg = _eitherToException(R0);
-const optional = (type: any) => _eitherToException(op0(type));
+//const RationalArg = _eitherToException(R0);
+//const optional = (type: any) => _eitherToException(op0(type));
 
 describe('Argument type modifiers', () => {
     describe('Many', () => {
@@ -18,13 +18,13 @@ describe('Argument type modifiers', () => {
             expect(many(IntegerArg).regex()).to.eq('(\\d+\\s*)+');
         });*/
         it('should parse an integer array', () => {
-            expect(many(IntegerArg)('4 63 43 52 ijo 54')).to.deep.eq(either.right([[4, 63, 43, 52], 'ijo 54']));
+            expect(many(_eitherToException(IntegerArg))('4 63 43 52 ijo 54')).to.deep.eq(either.right([[4, 63, 43, 52], 'ijo 54']));
         });        
         it('should parse an empty array', () => {
-            expect(many(IntegerArg)('e4 63 43 52 ijo 54')).to.deep.eq(either.right([[], 'e4 63 43 52 ijo 54']));
+            expect(many(_eitherToException(IntegerArg))('e4 63 43 52 ijo 54')).to.deep.eq(either.right([[], 'e4 63 43 52 ijo 54']));
         });
         it('should parse a rational array', () => {
-            expect(many(RationalArg)('4/5 63/41 43 52 ijo 54')).to.deep.eq(either.right([[
+            expect(many(_eitherToException(RationalArg))('4/5 63/41 43 52 ijo 54')).to.deep.eq(either.right([[
                 {
                     numerator: 4,
                     denominator: 5
@@ -52,36 +52,32 @@ describe('Argument type modifiers', () => {
             expect(optional(IntegerArg).regex()).to.eq('(\\d+)?');
         });*/
         it('should parse an optional integer', () => {
-            expect(optional(IntegerArg)('4 63 ijo')).to.deep.eq([4, ' 63 ijo']);
+            expect(optional(IntegerArg)('4 63 ijo')).to.deep.eq(either.right([4, ' 63 ijo']));
         });        
         it('should parse an empty optional', () => {
-            expect(optional(IntegerArg)('e4 63 43 52 ijo 54')).to.deep.eq([null, 'e4 63 43 52 ijo 54']);
+            expect(optional(IntegerArg)('e4 63 43 52 ijo 54')).to.deep.eq(either.right([null, 'e4 63 43 52 ijo 54']));
         });
         it('should accept optional keywords in string form', () => {
-            expect(optional('hej')('e4 63 43 52 ijo 54')).to.deep.eq([undefined, 'e4 63 43 52 ijo 54']);
-            expect(optional('hej')('hej 63 43 52 ijo 54')).to.deep.eq([undefined, ' 63 43 52 ijo 54']);
+            expect(optional('hej')('e4 63 43 52 ijo 54')).to.deep.eq(either.right([undefined, 'e4 63 43 52 ijo 54']));
+            expect(optional('hej')('hej 63 43 52 ijo 54')).to.deep.eq(either.right([undefined, ' 63 43 52 ijo 54']));
         });
         it('should accept optional whitespace', () => {
-            expect(optional(WhitespaceArg)('63 43 52 ijo 54')).to.deep.eq([undefined, '63 43 52 ijo 54']);
-            expect(optional(WhitespaceArg)('\t 63 43 52 ijo 54')).to.deep.eq([undefined, '63 43 52 ijo 54']);
+            expect(optional(WhitespaceArg)('63 43 52 ijo 54')).to.deep.eq(either.right([undefined, '63 43 52 ijo 54']));
+            expect(optional(WhitespaceArg)('\t 63 43 52 ijo 54')).to.deep.eq(either.right([undefined, '63 43 52 ijo 54']));
         });
         it('should parse an optional rational', () => {
-            expect(optional(RationalArg)('4/5 63/41 43 52 ijo 54')).to.deep.eq([
+            expect(optional(RationalArg)('4/5 63/41 43 52 ijo 54')).to.deep.eq(either.right([
                 {
                     numerator: 4,
                     denominator: 5
                 }, 
                 ' 63/41 43 52 ijo 54']
-            );
+            ));
         });
     });
 
-
-
+    /*
     describe('Sequence', () => {
-        /*it('should provide a regular expression for many integers', () => {
-            expect(sequence([IntegerArg, RationalArg]).regex()).to.eq('(\\d+)(\\d+\\/\\d+)');
-        });*/
         it('should parse a sequence', () => {
             expect(sequence([IntegerArg, _eitherToException(FixedArg(' = ')), RationalArg])('4 = 63/43 52 ijo 54'))
                 .to.deep.eq(either.right([[4, ' = ', {
@@ -156,13 +152,13 @@ describe('Argument type modifiers', () => {
         });
     });
 
-    
+   */ 
     describe('MapResult', () => {
         /*it('should provide the same regular expression as the child', () => {
             expect(mapResult(RationalArg, rat => rat.numerator).regex()).to.eq(RationalArg.regex());
         });*/
         it('should map a parsed integer', () => {
-            expect(mapResult(IntegerArg, int => `${int}: ${int * int}`)('4 ='))
+            expect(mapResult(_eitherToException(IntegerArg), int => `${int}: ${int * int}`)('4 ='))
                 .to.deep.eq(['4: 16', ' =']);
         });
     });

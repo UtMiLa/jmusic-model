@@ -1,13 +1,11 @@
 import { StateChange } from './../../model/states/state';
 import { ClefArg, KeyArg, MeterArg, MusicEventArg } from './argument-types';
-import { ArgType, ArgumentType, WhitespaceArg as W0, WordArg as Wo0, _eitherToException } from './base-argument-types';
+import { ArgType, ArgumentType, WhitespaceArg, WordArg, _eitherToException } from './base-argument-types';
 import { many, sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
 import { Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef, isMeterChange, isClefChange, isKeyChange, FlexibleItem } from './../../model';
 import R = require('ramda');
 
-const WhitespaceArg = _eitherToException(W0);
-const WordArg = _eitherToException(Wo0);
 
 function addStaff(model: Model, ins: InsertionPoint): any {
     model.overProject(
@@ -54,7 +52,7 @@ interface CommandDescriptor<T> {
 export const editCommands: CommandDescriptor<any>[] = [
    
     { 
-        argType: _eitherToException(sequence(['append', WhitespaceArg, _eitherToException(many(MusicEventArg))])), 
+        argType: _eitherToException(sequence(['append', WhitespaceArg, many(MusicEventArg)])), 
         action: (args: [MusicEvent[]]) => (model: Model, ins: InsertionPoint): void => {
             const events = args[0];
             const eventDef = new FlexibleSequence(events).def;
@@ -86,7 +84,7 @@ export const editCommands: CommandDescriptor<any>[] = [
         action: ([clef]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, clef, isClefChange)
     } as CommandDescriptor<[StateChange]>,
     { 
-        argType: _eitherToException((sequence as (x: unknown) => ArgType<[string, FlexibleItem[]]>)([/\$/, WordArg, WhitespaceArg, '= ', _eitherToException(many(MusicEventArg))])), 
+        argType: _eitherToException((sequence as (x: unknown) => ArgType<[string, FlexibleItem[]]>)([/\$/, WordArg, WhitespaceArg, '= ', (many(MusicEventArg))])), 
         action: ([word, musicEvents]) => (model: Model, ins: InsertionPoint): void => model.setVar(word, musicEvents)
     } as CommandDescriptor<[string, FlexibleItem[]]>
 ];
