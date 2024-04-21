@@ -25,24 +25,24 @@ interface CommandDescriptor<T> {
 
 export const navigationCommands: CommandDescriptor<any>[] = [
     { 
-        argType: sequence(['goto', WhitespaceArg, 'next']), 
+        argType: _eitherToException(sequence(['goto', WhitespaceArg, 'next'])), 
         action: () => (model: Model, ins: InsertionPoint): void => ins.moveRight() 
     } as CommandDescriptor<[void]>,
     { 
-        argType: sequence(['goto', WhitespaceArg, 'prev']), 
+        argType: _eitherToException(sequence(['goto', WhitespaceArg, 'prev'])), 
         action: () => (model: Model, ins: InsertionPoint): void => ins.moveLeft() 
     } as CommandDescriptor<[void]>,
     { 
-        argType: sequence<void>(['goto', WhitespaceArg, 'start']), 
+        argType: _eitherToException(sequence<void>(['goto', WhitespaceArg, 'start'])), 
         action: () => (model: Model, ins: InsertionPoint): void => ins.moveToTime(Time.newAbsolute(0, 1)) 
     } as CommandDescriptor<[void]>,
     { 
-        argType: sequence<RationalDef>(['goto ', RationalArg]), 
+        argType: _eitherToException(sequence<RationalDef>(['goto ', RationalArg])), 
         action: (args: [RationalDef]) => (model: Model, ins: InsertionPoint): void => 
             ins.moveToTime({ ...args[0], type: 'abs' })
     } as CommandDescriptor<[RationalDef]>,
     { 
-        argType: sequence<[number | undefined, number]>(['voice ', VoiceNoArg]), 
+        argType: _eitherToException(sequence<[number | undefined, number]>(['voice ', _eitherToException(VoiceNoArg)])), 
         action: (args: [[number | undefined, number]]) => {            
             const staff = args[0][0] ?? -1;
             return (model: Model, ins: InsertionPoint) => {

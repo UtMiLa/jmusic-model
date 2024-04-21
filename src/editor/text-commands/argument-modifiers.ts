@@ -1,5 +1,5 @@
 import R = require('ramda');
-import { ArgumentType, matches } from './base-argument-types';
+import { ArgType, ArgumentType, _exceptionToEither, matches } from './base-argument-types';
 
 
 type stringInterpolation = [] | [string | RegExp] | [string, string | RegExp]
@@ -69,12 +69,15 @@ export function optional<T>(type0: ArgumentType<T> | string): ArgumentType<T | n
     };
 }
 
-export function sequence<T>(types0: ArgStarter<ArgumentType<T>>): ArgumentType<[T]>;
-export function sequence<S,T>(types0: ArgDuple<ArgumentType<S>, ArgumentType<T>>): ArgumentType<[S, T]>;
-export function sequence<S,T,U>(types0: ArgTriple<ArgumentType<S>, ArgumentType<T>, ArgumentType<U>>): ArgumentType<[S, T, U]>;
-export function sequence<S,T,U,V>(types0: ArgQuadruple<ArgumentType<S>, ArgumentType<T>, ArgumentType<U>, ArgumentType<V>>): ArgumentType<[S, T, U, V]>;
+export function sequence<T>(types0: ArgStarter<ArgumentType<T>>): ArgType<[T]>;
+export function sequence<S,T>(types0: ArgDuple<ArgumentType<S>, ArgumentType<T>>): ArgType<[S, T]>;
+export function sequence<S,T,U>(types0: ArgTriple<ArgumentType<S>, ArgumentType<T>, ArgumentType<U>>): ArgType<[S, T, U]>;
+export function sequence<S,T,U,V>(types0: ArgQuadruple<ArgumentType<S>, ArgumentType<T>, ArgumentType<U>, ArgumentType<V>>): ArgType<[S, T, U, V]>;
 //export function sequence<S,T,U,V,W>(types0: ArgQuintuple<ArgumentType<T>, ArgumentType<S>, ArgumentType<U>, ArgumentType<V>, ArgumentType<W>>): ArgumentType<[S, T, U, V, W]>;
-export function sequence<T>(types0: (ArgumentType<T> | string | RegExp)[]): ArgumentType<T[]> {
+export function sequence<T>(types0: (ArgumentType<T> | string | RegExp)[]): ArgType<T[]> {
+    return _exceptionToEither(_sequence(types0));
+}
+export function _sequence<T>(types0: (ArgumentType<T> | string | RegExp)[]): ArgumentType<T[]> {
     const types = types0.map(resolveSyntacticSugar);
     return (input: string) => {
         let rest = input;

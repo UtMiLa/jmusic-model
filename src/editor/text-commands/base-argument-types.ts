@@ -48,14 +48,14 @@ export function matches<T>(argt: ArgumentType<T>, input: string): boolean {
     return either.isRight(v);
 }
 
-export const FixedArg = (arg: string | RegExp): ArgumentType<string> => (input: string) => {
+export const FixedArg = (arg: string | RegExp): ArgType<string> => (input: string) => {
     const m = (arg instanceof RegExp ? arg : new RegExp('^' + regexEscape(arg))).exec(input);
-    //if (!m) return either.left('Not a match');
-    if (!m) throw 'Not a match';
-    //if (input.indexOf(m[0]) !== 0) return either.left('Not a match in correct position');
-    if (input.indexOf(m[0]) !== 0) throw 'Not a match in correct position';
+    if (!m) return either.left('Not a match');
+    //if (!m) throw 'Not a match';
+    if (input.indexOf(m[0]) !== 0) return either.left('Not a match in correct position');
+    //if (input.indexOf(m[0]) !== 0) throw 'Not a match in correct position';
     const rest = input.substring(m[0].length);
-    return [m[0], rest];
+    return either.right([m[0], rest]);
 };
 
 export const IntegerArg: ArgType<number> = (input: string) => {

@@ -1,6 +1,6 @@
 import { StateChange } from './../../model/states/state';
 import { ClefArg, KeyArg, MeterArg, MusicEventArg } from './argument-types';
-import { ArgumentType, WhitespaceArg as W0, WordArg as Wo0, _eitherToException } from './base-argument-types';
+import { ArgType, ArgumentType, WhitespaceArg as W0, WordArg as Wo0, _eitherToException } from './base-argument-types';
 import { many, sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
 import { Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef, isMeterChange, isClefChange, isKeyChange, FlexibleItem } from './../../model';
@@ -54,7 +54,7 @@ interface CommandDescriptor<T> {
 export const editCommands: CommandDescriptor<any>[] = [
    
     { 
-        argType: sequence(['append', WhitespaceArg, many(MusicEventArg)]), 
+        argType: _eitherToException(sequence(['append', WhitespaceArg, many(MusicEventArg)])), 
         action: (args: [MusicEvent[]]) => (model: Model, ins: InsertionPoint): void => {
             const events = args[0];
             const eventDef = new FlexibleSequence(events).def;
@@ -70,23 +70,23 @@ export const editCommands: CommandDescriptor<any>[] = [
         }
     } as CommandDescriptor<[MusicEvent[]]>,
     {
-        argType: sequence(['add', WhitespaceArg ,'staff']),
+        argType: _eitherToException(sequence(['add', WhitespaceArg ,'staff'])),
         action: () => addStaff
     },
     { 
-        argType: (sequence as (x: unknown) => ArgumentType<[StateChange]>)(['set', WhitespaceArg, 'key', WhitespaceArg, KeyArg]), 
+        argType: _eitherToException((sequence as (x: unknown) => ArgType<[StateChange]>)(['set', WhitespaceArg, 'key', WhitespaceArg, KeyArg])), 
         action: ([key]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, key, isKeyChange)
     } as CommandDescriptor<[StateChange]>,
     { 
-        argType: (sequence as (x: unknown) => ArgumentType<[StateChange]>)(['set', WhitespaceArg, 'meter', WhitespaceArg, MeterArg]), 
+        argType: _eitherToException((sequence as (x: unknown) => ArgType<[StateChange]>)(['set', WhitespaceArg, 'meter', WhitespaceArg, MeterArg])), 
         action: ([meter]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, meter, isMeterChange)
     } as CommandDescriptor<[StateChange]>,
     { 
-        argType: (sequence as (x: unknown) => ArgumentType<[StateChange]>)(['set', WhitespaceArg, 'clef', WhitespaceArg, ClefArg]), 
+        argType: _eitherToException((sequence as (x: unknown) => ArgType<[StateChange]>)(['set', WhitespaceArg, 'clef', WhitespaceArg, ClefArg])), 
         action: ([clef]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, clef, isClefChange)
     } as CommandDescriptor<[StateChange]>,
     { 
-        argType: (sequence as (x: unknown) => ArgumentType<[string, FlexibleItem[]]>)([/\$/, WordArg, WhitespaceArg, '= ', many(MusicEventArg)]), 
+        argType: _eitherToException((sequence as (x: unknown) => ArgType<[string, FlexibleItem[]]>)([/\$/, WordArg, WhitespaceArg, '= ', many(MusicEventArg)])), 
         action: ([word, musicEvents]) => (model: Model, ins: InsertionPoint): void => model.setVar(word, musicEvents)
     } as CommandDescriptor<[string, FlexibleItem[]]>
 ];

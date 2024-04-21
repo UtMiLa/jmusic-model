@@ -1,3 +1,4 @@
+import { either } from 'fp-ts';
 import { KeyDef, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
 import { FixedArg, IntegerArg as Int0Arg, RationalArg as R0, WhitespaceArg as W0, _eitherToException } from './base-argument-types';
@@ -81,49 +82,49 @@ describe('Argument type modifiers', () => {
             expect(sequence([IntegerArg, RationalArg]).regex()).to.eq('(\\d+)(\\d+\\/\\d+)');
         });*/
         it('should parse a sequence', () => {
-            expect(sequence([IntegerArg, FixedArg(' = '), RationalArg])('4 = 63/43 52 ijo 54'))
-                .to.deep.eq([[4, ' = ', {
+            expect(sequence([IntegerArg, _eitherToException(FixedArg(' = ')), RationalArg])('4 = 63/43 52 ijo 54'))
+                .to.deep.eq(either.right([[4, ' = ', {
                     numerator: 63,
                     denominator: 43
-                }], ' 52 ijo 54']);
+                }], ' 52 ijo 54']));
         });
         it('should parse a sequence with string keywords', () => {
             expect(sequence([IntegerArg, '=', IntegerArg])('4=63 52 ijo 54'))
-                .to.deep.eq([[4, 63], ' 52 ijo 54']);
+                .to.deep.eq(either.right([[4, 63], ' 52 ijo 54']));
         });   
         
         it('should parse a sequence with regex keywords', () => {
             expect(sequence([IntegerArg, /=/, IntegerArg])('4=63 52 ijo 54'))
-                .to.deep.eq([[4, 63], ' 52 ijo 54']);
+                .to.deep.eq(either.right([[4, 63], ' 52 ijo 54']));
         });   
         it('should fail an unmatched sequence', () => {
-            expect(() => sequence([IntegerArg, FixedArg(' = '), RationalArg])('4 = 63/h43 52 ijo 54'))
-                .to.throw(/Not a rational/);
+            expect(sequence([IntegerArg, _eitherToException(FixedArg(' = ')), RationalArg])('4 = 63/h43 52 ijo 54'))
+                .to.deep.eq(either.left('Not a rational'));
             
         });
         it('should filter out keywords and whitespace', () => {
             expect(sequence([IntegerArg, ' =', WhitespaceArg, IntegerArg])('4 = 63 52 ijo 54'))
-                .to.deep.eq([[4, 63], ' 52 ijo 54']);            
+                .to.deep.eq(either.right([[4, 63], ' 52 ijo 54']));            
         });
         it('should filter out optional keywords when present', () => {
             expect(sequence([IntegerArg, optional(' ='), WhitespaceArg, IntegerArg])('4 = 63 52 ijo 54'))
-                .to.deep.eq([[4, 63], ' 52 ijo 54']);            
+                .to.deep.eq(either.right([[4, 63], ' 52 ijo 54']));            
         });
         it('should filter out optional keywords when not present', () => {
             expect(sequence([IntegerArg, optional(' ='), WhitespaceArg, IntegerArg])('4 63 52 ijo 54'))
-                .to.deep.eq([[4, 63], ' 52 ijo 54']);            
+                .to.deep.eq(either.right([[4, 63], ' 52 ijo 54']));            
         });
         it('should not filter out optional values when present', () => {
             expect(sequence([IntegerArg, WhitespaceArg, optional(IntegerArg), 'end'])('4 53end 63 52'))
-                .to.deep.eq([[4, 53], ' 63 52']);            
+                .to.deep.eq(either.right([[4, 53], ' 63 52']));
         });
         it('should not filter out optional values when not present', () => {
             expect(sequence([IntegerArg, WhitespaceArg, optional(IntegerArg), 'end'])('4 end 63 52'))
-                .to.deep.eq([[4, null], ' 63 52']);            
+                .to.deep.eq(either.right([[4, null], ' 63 52']));
         });
         it('should fail a sequence with unmatched string keywords', () => {
-            expect(() => sequence([IntegerArg, '=', IntegerArg])('4 63 52 ijo 54'))
-                .to.throw(/Missing keyword/);
+            expect(sequence([IntegerArg, '=', IntegerArg])('4 63 52 ijo 54'))
+                .to.deep.eq(either.left('Missing keyword'));
         });   
     });
 

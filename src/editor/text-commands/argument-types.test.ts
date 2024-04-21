@@ -5,6 +5,7 @@ import { ClefArg, KeyArg, MeterArg, NoteArg, SpacerArg,  PitchClassArg, PitchArg
 import { RationalArg } from './base-argument-types';
 import { createSpacerFromLilypond } from '../../model/notes/spacer';
 import { FunctionArg } from './function-argument-types';
+import { either } from 'fp-ts';
 
 describe('Argument types', () => {
         
@@ -13,10 +14,10 @@ describe('Argument types', () => {
             expect(PitchClassArg.regex()).to.eq('[a-g](es|is)*');
         });*/
         it('should parse a pitch class token', () => {
-            expect(PitchClassArg('eeses,,')).to.deep.eq([new PitchClass(2, -2), ',,']);
+            expect(PitchClassArg('eeses,,')).to.deep.eq(either.right([new PitchClass(2, -2), ',,']));
         });
         it('should fail on an illegal pitch class', () => {
-            expect(() => PitchClassArg('jes,,')).to.throw(/Illegal pitch class/);
+            expect(PitchClassArg('jes,,')).to.deep.eq(either.left('Illegal pitch class: jes,,'));
         });
     });
     
