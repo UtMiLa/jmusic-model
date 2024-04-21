@@ -1,13 +1,13 @@
 import { RationalDef } from './../../model/rationals/rational';
 import { VoiceNoArg } from './argument-types';
-import { ArgumentType, RationalArg, WhitespaceArg } from './base-argument-types';
+import { ArgumentType, RationalArg as R0, WhitespaceArg as W0, _eitherToException } from './base-argument-types';
 import { sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
 import { Time, Model } from './../../model';
 import R = require('ramda');
 
-
-
+const WhitespaceArg = _eitherToException(W0);
+const RationalArg = _eitherToException(R0);
 
 interface CommandDescriptor<T> {
     argType: ArgumentType<T>;

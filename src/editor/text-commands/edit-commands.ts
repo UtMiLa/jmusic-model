@@ -1,12 +1,13 @@
 import { StateChange } from './../../model/states/state';
 import { ClefArg, KeyArg, MeterArg, MusicEventArg } from './argument-types';
-import { ArgumentType, WhitespaceArg, WordArg } from './base-argument-types';
+import { ArgumentType, WhitespaceArg as W0, WordArg as Wo0, _eitherToException } from './base-argument-types';
 import { many, sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
 import { Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef, isMeterChange, isClefChange, isKeyChange, FlexibleItem } from './../../model';
 import R = require('ramda');
 
-
+const WhitespaceArg = _eitherToException(W0);
+const WordArg = _eitherToException(Wo0);
 
 function addStaff(model: Model, ins: InsertionPoint): any {
     model.overProject(

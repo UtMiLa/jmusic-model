@@ -2,8 +2,10 @@ import R = require('ramda');
 import { VariableRef, SeqFunction, isFuncDef } from '../../model';
 import { sequence, mapResult, many, select } from './argument-modifiers';
 import { KeyArg, PitchArg, VariableReferenceArg } from './argument-types';
-import { ArgumentType, IntegerArg, RationalArg, WordArg } from './base-argument-types';
+import { ArgumentType, IntegerArg, RationalArg as R0, WordArg as W0, _eitherToException } from './base-argument-types';
 
+const RationalArg = _eitherToException(R0);
+const WordArg = _eitherToException(W0);
 
 //return ['Identity', 'Relative', 'Reverse', 'Repeat', 'Grace', 'Tuplet', 'Transpose', 'ModalTranspose', 'AddLyrics'].includes(test);
 
@@ -19,13 +21,13 @@ const EmptyArgumentsArg = sequence<string, string[], VariableRef>(['\\@', WordAr
 
 const RelativeArgumentsArg = makeArgs(PitchArg);
 
-const RepeatArgumentsArg = makeArgs<number>(IntegerArg);
+const RepeatArgumentsArg = makeArgs<number>(_eitherToException(IntegerArg));
 
 const TupletArgumentsArg = sequence<string, string[], VariableRef>(['\\@', WordArg, '\\( ',  makeArgs<string[]>(RationalArg), VariableReferenceArg, '\\s*\\)']);
 
 const TransposeArgumentsArg = makeArgs(sequence(['from ', PitchArg, ' *to ', PitchArg]));
 
-const ModalTransposeArgumentsArg = makeArgs(sequence([KeyArg, ' ', IntegerArg]));
+const ModalTransposeArgumentsArg = makeArgs(sequence([KeyArg, ' ', _eitherToException(IntegerArg)]));
 
 const AddLyricsArgumentsArg = makeArgs(many(WordArg));
 

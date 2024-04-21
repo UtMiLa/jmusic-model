@@ -4,8 +4,11 @@ import { FuncDef, Key, MeterFactory, MusicEvent, Note, Pitch, PitchClass, Ration
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
 import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
-import { ArgumentType, IntegerArg, FixedArg, RationalArg, WordArg, WhitespaceArg } from './base-argument-types';
+import { ArgumentType, IntegerArg, FixedArg, RationalArg as R0, WordArg as W0, WhitespaceArg, _eitherToException } from './base-argument-types';
 
+
+const RationalArg = _eitherToException(R0);
+const WordArg = _eitherToException(W0);
 
 export const VoiceNoArg: ArgumentType<[number | undefined, number]> = (input: string) => {
     const m = /^((\d+)[:.])?(\d+)/.exec(input);
@@ -47,7 +50,7 @@ export const PitchArg: ArgumentType<Pitch> = mapResult(sequence([PitchClassArg, 
 
 export const ChordArg: ArgumentType<Pitch[]> = mapResult(sequence(['<', many(PitchArg), '>']), pitches => pitches[0]);
 
-export const DurationArg: ArgumentType<TimeSpan> = mapResult(sequence([IntegerArg, many(FixedArg(/\./), '', true)]), 
+export const DurationArg: ArgumentType<TimeSpan> = mapResult(sequence([_eitherToException(IntegerArg), many(FixedArg(/\./), '', true)]), 
     ([dur, dots]) => (dots ?? []).reduce(
         (prev, next) => next === '.' ? Time.newSpan(prev.numerator * 2 + 1, prev.denominator * 2) : prev, 
         Time.newSpan(1, dur)
@@ -80,7 +83,7 @@ export const SpacerArg: ArgumentType<Spacer> = (input: string) => {
     throw 'Illegal spacer';
 };
 
-const _keyArg = sequence([IntegerArg, select([FixedArg('#'), FixedArg('b')])]);
+const _keyArg = sequence([_eitherToException(IntegerArg), select([FixedArg('#'), FixedArg('b')])]);
 export const KeyArg = mapResult(_keyArg, ([count, acc]) => (StateChange.newKeyChange(new Key({ count, accidental: acc === '#' ? 1 : -1 }))));
 
 export const MeterArg = mapResult(RationalArg, (r: RationalDef) => (StateChange.newMeterChange(MeterFactory.createRegularMeter({ count: r.numerator, value: r.denominator }))));

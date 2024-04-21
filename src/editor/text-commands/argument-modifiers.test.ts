@@ -1,9 +1,14 @@
 import { KeyDef, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { FixedArg, IntegerArg, RationalArg, WhitespaceArg } from './base-argument-types';
+import { FixedArg, IntegerArg as Int0Arg, RationalArg as R0, WhitespaceArg as W0, _eitherToException } from './base-argument-types';
 import { KeyArg, NoteArg } from './argument-types';
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 
+const IntegerArg = _eitherToException(Int0Arg);
+
+const WhitespaceArg = _eitherToException(W0);
+
+const RationalArg = _eitherToException(R0);
 
 describe('Argument type modifiers', () => {
     describe('Many', () => {
