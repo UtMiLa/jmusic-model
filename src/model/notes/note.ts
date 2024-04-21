@@ -8,6 +8,7 @@ import { Pitch } from '../pitches/pitch';
 import * as R from 'ramda';
 import { getDotNumber, getUndottedValue } from '../rationals/dots';
 import { NoteDirection, NoteType, TupletState } from '../data-only/notes';
+import { _eitherToException } from '~/editor/text-commands/base-argument-types';
 /*
 export enum NoteType {
     NBreve = 1, NWhole, NHalf, NQuarter,
@@ -55,7 +56,7 @@ export interface UpdateNote {
 
 
 export function createNoteFromLilypond(input: string): Note {
-    return NoteArg(input)[0];
+    return _eitherToException(NoteArg)(input)[0];
     /*const matcher = /^([a-gr](es|is)*[',]*)(\d+\.*)((\\[a-z]+)*)(~?)$/i;
     const matcherChord = /^<([a-z,' ]+)>(\d+\.*)((\\[a-z]+)*)(~?)$/i;
     const matchChord = matcherChord.exec(input);

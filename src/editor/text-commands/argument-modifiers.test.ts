@@ -37,7 +37,7 @@ describe('Argument type modifiers', () => {
         });
 
         it('should parse a note sequence', () => {
-            expect(many(NoteArg)('ees4 f4 ges2. aes4')).to.deep.eq(either.right([[
+            expect(many(_eitherToException(NoteArg))('ees4 f4 ges2. aes4')).to.deep.eq(either.right([[
                 createNoteFromLilypond('ees4'),
                 createNoteFromLilypond('f4'),
                 createNoteFromLilypond('ges2.'),
@@ -76,10 +76,10 @@ describe('Argument type modifiers', () => {
         });
     });
 
-    /*
+    
     describe('Sequence', () => {
         it('should parse a sequence', () => {
-            expect(sequence([IntegerArg, _eitherToException(FixedArg(' = ')), RationalArg])('4 = 63/43 52 ijo 54'))
+            expect(sequence([IntegerArg, (FixedArg(' = ')), RationalArg])('4 = 63/43 52 ijo 54'))
                 .to.deep.eq(either.right([[4, ' = ', {
                     numerator: 63,
                     denominator: 43
@@ -95,7 +95,7 @@ describe('Argument type modifiers', () => {
                 .to.deep.eq(either.right([[4, 63], ' 52 ijo 54']));
         });   
         it('should fail an unmatched sequence', () => {
-            expect(sequence([IntegerArg, _eitherToException(FixedArg(' = ')), RationalArg])('4 = 63/h43 52 ijo 54'))
+            expect(sequence([IntegerArg, (FixedArg(' = ')), RationalArg])('4 = 63/h43 52 ijo 54'))
                 .to.deep.eq(either.left('Not a rational'));
             
         });
@@ -152,14 +152,14 @@ describe('Argument type modifiers', () => {
         });
     });
 
-   */ 
+   
     describe('MapResult', () => {
         /*it('should provide the same regular expression as the child', () => {
             expect(mapResult(RationalArg, rat => rat.numerator).regex()).to.eq(RationalArg.regex());
         });*/
         it('should map a parsed integer', () => {
-            expect(mapResult(_eitherToException(IntegerArg), int => `${int}: ${int * int}`)('4 ='))
-                .to.deep.eq(['4: 16', ' =']);
+            expect(mapResult((IntegerArg), int => `${int}: ${int * int}`)('4 ='))
+                .to.deep.eq(either.right(['4: 16', ' =']));
         });
     });
 

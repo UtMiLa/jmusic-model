@@ -26,10 +26,10 @@ describe('Argument types', () => {
             expect(PitchArg.regex()).to.eq('([a-g](es|is)*)([\',]*)');
         });*/
         it('should parse a pitch token', () => {
-            expect(PitchArg('eeses,,4')).to.deep.eq([new Pitch(2, 1, -2), '4']);
+            expect(PitchArg('eeses,,4')).to.deep.eq(either.right([new Pitch(2, 1, -2), '4']));
         });
         it('should fail on an illegal pitch', () => {
-            expect(() => PitchArg('jes,,')).to.throw(/Illegal pitch/);
+            expect(PitchArg('jes,,')).to.deep.eq(either.left('Illegal pitch class: jes,,'));
         });
     });
     
@@ -38,19 +38,19 @@ describe('Argument types', () => {
             expect(NoteArg.regex()).to.eq(/((([a-g](es|is)*)([',]*))|((<)((([a-g](es|is)*)([',]*)\s*)+)(>))|(r))((\d+)((\.)*))((\\[a-z]+\s*)*)((~)?)/.source);
         });*/
         it('should parse a note token', () => {
-            expect(NoteArg('eeses\'\'4')).to.deep.eq([createNoteFromLilypond('eeses\'\'4'), '']);
+            expect(NoteArg('eeses\'\'4')).to.deep.eq(either.right([createNoteFromLilypond('eeses\'\'4'), '']));
         });
     });
 
     describe('Rest', () => {
         it('should parse a rest token', () => {
-            expect(NoteArg('r4')).to.deep.eq([createNoteFromLilypond('r4'), '']);
+            expect(NoteArg('r4')).to.deep.eq(either.right([createNoteFromLilypond('r4'), '']));
         });
     });
 
     describe('Spacer', () => {
         it('should parse a spacer token', () => {
-            expect(SpacerArg('s4')).to.deep.eq([createSpacerFromLilypond('s4'), '']);
+            expect(SpacerArg('s4')).to.deep.eq(either.right([createSpacerFromLilypond('s4'), '']));
         });
     });
 

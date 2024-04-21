@@ -16,13 +16,13 @@ const _parameterArg: ArgType<string[]> = (input: string) => {
     return either.right([[], input]);
 };
 
-const EmptyArgumentsArg = (sequence<string, string[], VariableRef>(['\\@', WordArg, '\\( ', _parameterArg, _exceptionToEither(VariableReferenceArg), '\\s*\\)']));
+const EmptyArgumentsArg = (sequence<string, string[], VariableRef>(['\\@', WordArg, '\\( ', _parameterArg, (VariableReferenceArg), '\\s*\\)']));
 
 const RelativeArgumentsArg = makeArgs(PitchArg);
 
 const RepeatArgumentsArg = makeArgs<number>(_eitherToException(IntegerArg));
 
-const TupletArgumentsArg = (sequence<string, string[], VariableRef>(['\\@', WordArg, '\\( ',  makeArgs<string[]>(RationalArg), _exceptionToEither(VariableReferenceArg), '\\s*\\)']));
+const TupletArgumentsArg = (sequence<string, string[], VariableRef>(['\\@', WordArg, '\\( ',  makeArgs<string[]>(RationalArg), (VariableReferenceArg), '\\s*\\)']));
 
 /*const TransposeArgumentsArg = makeArgs(sequence(['from ', PitchArg, ' *to ', PitchArg]));
 
@@ -33,7 +33,7 @@ const AddLyricsArgumentsArg = makeArgs(many(WordArg));
 const NoArgsFunctionArg = sequence<string, VariableRef>(['\\@', WordArg, '\\( ', VariableReferenceArg, '\\s*\\)']);
 const RepeatFunctionArg = sequence<string, number, VariableRef>(['\\@', WordArg, '\\( ', RepeatArgumentsArg, VariableReferenceArg, '\\s*\\)']);*/
 
-const FuncCombinedArg = _eitherToException(select([EmptyArgumentsArg, TupletArgumentsArg]));
+const FuncCombinedArg = (select([EmptyArgumentsArg, TupletArgumentsArg]));
 
 export const FunctionArg = mapResult(FuncCombinedArg, ([funcName, funcArgs, variableRef]): SeqFunction => { 
     if (!isFuncDef(funcName)) throw 'Bad function name';

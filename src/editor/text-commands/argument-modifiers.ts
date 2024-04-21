@@ -1,5 +1,6 @@
 import R = require('ramda');
 import { ArgumentType, ArgType, _eitherToException, _exceptionToEither, matches } from './base-argument-types';
+import { either } from 'fp-ts';
 
 
 type stringInterpolation = [] | [string | RegExp] | [string, string | RegExp]
@@ -114,8 +115,23 @@ export function select0(types0: (ArgType<any> | string)[]): ArgumentType<any> {
     };
 }
 
+/*
+export function mapResult<T, S>(type: ArgumentType<T>, mapper: (arg: T) => (S)): ArgType<S> {
+    return (input: string) => {
+        try {
+            const [res, rest] = type(input);
+            return either.right([mapper(res), rest]);
+        } catch (e) {
+            return either.left(e as string);
+        }        
+    };
+}
+*/
 
-export function mapResult<T, S>(type: ArgumentType<T>, mapper: (arg: T) => (S)): ArgumentType<S> {
+export function mapResult<T, S>(type: ArgType<T>, mapper: (arg: T) => (S)): ArgType<S> {
+    return _exceptionToEither(_mapResult(_eitherToException(type), mapper));
+}
+function _mapResult<T, S>(type: ArgumentType<T>, mapper: (arg: T) => (S)): ArgumentType<S> {
     return (input: string) => {
         const [res, rest] = type(input);
         return [mapper(res), rest];

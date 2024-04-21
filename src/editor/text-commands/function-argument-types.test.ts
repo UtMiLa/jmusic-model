@@ -1,13 +1,14 @@
 import { Rational } from './../../model/rationals/rational';
 import { expect } from 'chai';
 import { FunctionArg } from './function-argument-types';
+import { either } from 'fp-ts';
 
 describe('Argument types', () => {
         
     describe('Function', () => {
         it('should parse a function token without extra arguments', () => {
             const res = FunctionArg('@Grace( $notes )');
-            expect(res).to.deep.eq([
+            expect(res).to.deep.eq(either.right([
                 {
                     args: [{
                         variable: 'notes'
@@ -16,13 +17,13 @@ describe('Argument types', () => {
                     function: 'Grace'
                 },
                 ''
-            ]);
+            ]));
         });
 
         
         it('should parse a function token with one extra argument', () => {
             const res = FunctionArg('@Tuplet( 2/3 , $notes )');
-            expect(res).to.deep.eq([
+            expect(res).to.deep.eq(either.right([
                 {
                     args: [{
                         variable: 'notes'
@@ -31,7 +32,7 @@ describe('Argument types', () => {
                     function: 'Tuplet'
                 },
                 ''
-            ]);
+            ]));
         });
     });
 });

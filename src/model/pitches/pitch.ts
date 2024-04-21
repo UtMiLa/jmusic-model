@@ -1,3 +1,4 @@
+import { _eitherToException } from '~/editor/text-commands/base-argument-types';
 import { PitchArg } from './../../editor/text-commands/argument-types';
 import {mathMod}  from 'ramda';
 import R = require('ramda');
@@ -74,7 +75,7 @@ export class Pitch {
         const pitchClass = fromLilypondPitchClass(parsed[1]);
 
         return new Pitch(pitchClass, octave, alteration);        */
-        return PitchArg(input)[0];
+        return _eitherToException(PitchArg)(input)[0];
     }
 
     get lilypond(): string {
