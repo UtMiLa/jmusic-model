@@ -2,7 +2,7 @@ import R = require('ramda');
 import { VariableRef, SeqFunction, isFuncDef } from '../../model';
 import { sequence, mapResult, many, select } from './argument-modifiers';
 import { KeyArg, PitchArg, VariableReferenceArg } from './argument-types';
-import { ArgType, ArgumentType, IntegerArg, RationalArg, WordArg, _eitherToException, _exceptionToEither } from './base-argument-types';
+import { ArgType, IntegerArg, RationalArg, WordArg } from './base-argument-types';
 import { either } from 'fp-ts';
 
 
@@ -20,7 +20,7 @@ const EmptyArgumentsArg = (sequence<string, string[], VariableRef>(['\\@', WordA
 
 const RelativeArgumentsArg = makeArgs(PitchArg);
 
-const RepeatArgumentsArg = makeArgs<number>(_eitherToException(IntegerArg));
+const RepeatArgumentsArg = makeArgs<number>(IntegerArg);
 
 const TupletArgumentsArg = (sequence<string, string[], VariableRef>(['\\@', WordArg, '\\( ',  makeArgs<string[]>(RationalArg), (VariableReferenceArg), '\\s*\\)']));
 

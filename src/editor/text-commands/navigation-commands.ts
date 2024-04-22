@@ -1,16 +1,13 @@
 import { RationalDef } from './../../model/rationals/rational';
 import { VoiceNoArg } from './argument-types';
-import { ArgumentType, RationalArg as R0, WhitespaceArg as W0, _eitherToException } from './base-argument-types';
+import { ArgType, RationalArg, WhitespaceArg } from './base-argument-types';
 import { sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
 import { Time, Model } from './../../model';
 import R = require('ramda');
 
-const WhitespaceArg = (W0);
-const RationalArg = (R0);
-
 interface CommandDescriptor<T> {
-    argType: ArgumentType<T>;
+    argType: ArgType<T>;
     action: (args: T) => (model: Model, ins: InsertionPoint) => void;
 }
 
@@ -25,24 +22,24 @@ interface CommandDescriptor<T> {
 
 export const navigationCommands: CommandDescriptor<any>[] = [
     { 
-        argType: _eitherToException(sequence(['goto', WhitespaceArg, 'next'])), 
+        argType: (sequence(['goto', WhitespaceArg, 'next'])), 
         action: () => (model: Model, ins: InsertionPoint): void => ins.moveRight() 
     } as CommandDescriptor<[void]>,
     { 
-        argType: _eitherToException(sequence(['goto', WhitespaceArg, 'prev'])), 
+        argType: (sequence(['goto', WhitespaceArg, 'prev'])), 
         action: () => (model: Model, ins: InsertionPoint): void => ins.moveLeft() 
     } as CommandDescriptor<[void]>,
     { 
-        argType: _eitherToException(sequence<void>(['goto', WhitespaceArg, 'start'])), 
+        argType: (sequence<void>(['goto', WhitespaceArg, 'start'])), 
         action: () => (model: Model, ins: InsertionPoint): void => ins.moveToTime(Time.newAbsolute(0, 1)) 
     } as CommandDescriptor<[void]>,
     { 
-        argType: _eitherToException(sequence<RationalDef>(['goto ', RationalArg])), 
+        argType: (sequence<RationalDef>(['goto ', RationalArg])), 
         action: (args: [RationalDef]) => (model: Model, ins: InsertionPoint): void => 
             ins.moveToTime({ ...args[0], type: 'abs' })
     } as CommandDescriptor<[RationalDef]>,
     { 
-        argType: _eitherToException(sequence<[number | undefined, number]>(['voice ', (VoiceNoArg)])), 
+        argType: (sequence<[number | undefined, number]>(['voice ', (VoiceNoArg)])), 
         action: (args: [[number | undefined, number]]) => {            
             const staff = args[0][0] ?? -1;
             return (model: Model, ins: InsertionPoint) => {

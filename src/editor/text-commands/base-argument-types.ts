@@ -8,42 +8,14 @@ export function regexEscape(s: string): string { // taken from sanctuary.js
     return s.replace (/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
 
-export interface ArgumentType<T> {
-    (input: string): [T, string];
-    undefinedWhenOptional?: boolean;
-}
-
 export interface ArgType<T> {
     (input: string): Either<string, [T, string]>;
     undefinedWhenOptional?: boolean;
 }
 
 
-export function _exceptionToEither<T>(arg: ArgumentType<T>): ArgType<T> {
-    const f = (input: string) => {
-        try {
-            const res = arg(input);
-            return either.right(res);
-        } catch(e: unknown) { 
-            return either.left(e as string);
-        }        
-    };
-    f.undefinedWhenOptional = arg.undefinedWhenOptional;
-    return f;
-}
-
-export function _eitherToException<T>(arg: ArgType<T>): ArgumentType<T> {
-    const f = (input: string) => {
-        const res = arg(input);
-        if (either.isLeft(res)) throw res.left;
-        return res.right;
-    };
-    f.undefinedWhenOptional = arg.undefinedWhenOptional;
-    return f;
-}
-
-export function matches<T>(argt: ArgumentType<T>, input: string): boolean {
-    const arg = _exceptionToEither(argt);
+export function matches<T>(argt: ArgType<T>, input: string): boolean {
+    const arg = argt;
     const v = arg(input);
     return either.isRight(v);
 }

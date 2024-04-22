@@ -4,7 +4,7 @@ import { FuncDef, Key, MeterFactory, MusicEvent, Note, Pitch, PitchClass, Ration
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
 import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
-import { ArgumentType, IntegerArg, FixedArg, RationalArg as R0, WordArg as W0, WhitespaceArg, _eitherToException, ArgType, _exceptionToEither } from './base-argument-types';
+import { IntegerArg, FixedArg, RationalArg as R0, WordArg as W0, WhitespaceArg, ArgType } from './base-argument-types';
 
 
 const RationalArg = (R0);
@@ -49,9 +49,9 @@ export const OctaveArg: ArgType<number> = (input: string) => {
 
 export const PitchArg: ArgType<Pitch> = mapResult((sequence([(PitchClassArg), (OctaveArg)])), ([pc, oct]) => new Pitch(pc.pitchClass, oct, pc.alteration));
 
-export const ChordArg: ArgType<Pitch[]> = mapResult((sequence(['<', (many(_eitherToException(PitchArg))), '>'])), pitches => pitches[0]);
+export const ChordArg: ArgType<Pitch[]> = mapResult((sequence(['<', (many((PitchArg))), '>'])), pitches => pitches[0]);
 
-export const DurationArg: ArgType<TimeSpan> = mapResult((sequence([(IntegerArg), (many(_eitherToException(FixedArg(/\./)), '', true))])), 
+export const DurationArg: ArgType<TimeSpan> = mapResult((sequence([(IntegerArg), (many((FixedArg(/\./)), '', true))])), 
     ([dur, dots]) => (dots ?? []).reduce(
         (prev, next) => next === '.' ? Time.newSpan(prev.numerator * 2 + 1, prev.denominator * 2) : prev, 
         Time.newSpan(1, dur)
@@ -59,7 +59,7 @@ export const DurationArg: ArgType<TimeSpan> = mapResult((sequence([(IntegerArg),
 
 export const NoteExpressionArg: ArgType<string> = FixedArg(/\\[a-z]+/);
 export const NoteTieArg: ArgType<string> = FixedArg('~');
-export const OptionalNoteExpressionsArg: ArgType<string[] | null> = mapResult((many(_eitherToException(NoteExpressionArg), '\\s*', true)), res => res ? res : null);
+export const OptionalNoteExpressionsArg: ArgType<string[] | null> = mapResult((many((NoteExpressionArg), '\\s*', true)), res => res ? res : null);
 const ChordPitchOrRestArg: ArgType<Pitch[]> = (select([
     (mapResult((PitchArg), pitch => [pitch])), 
     (ChordArg),
@@ -97,6 +97,6 @@ export const VariableReferenceArg = mapResult((sequence(['\\$', WordArg])), ([wo
 import { FunctionArg } from './function-argument-types';
 import { either } from 'fp-ts';
 
-export const MusicEventArg = _eitherToException(select(
+export const MusicEventArg = (select(
     [(NoteArg), KeyArg, MeterArg, ClefArg, SpacerArg, (VariableReferenceArg), (FunctionArg)])
 ); // todo: LongDecoration, ...

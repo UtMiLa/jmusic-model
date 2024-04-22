@@ -4,6 +4,7 @@ import R = require('ramda');
 import { navigationCommands } from './text-commands/navigation-commands';
 import { editCommands } from './text-commands/edit-commands';
 import { matches } from './text-commands/base-argument-types';
+import { either } from 'fp-ts';
 
 export interface TextCommand {
     execute(model: Model, ins: InsertionPoint): any;
@@ -23,12 +24,12 @@ export class TextCommandEngine {
     static parse(command: string): TextCommand {
         const found = [...navigationCommands, ...editCommands].find(cmd => matches(cmd.argType, command));
         if (found) {
-            const [parsed, rest] = found.argType(command); // cache result
+            const res = found.argType(command); // cache result
+            const [parsed, rest] = either.getOrElse<string, [any, string]>(e => { throw e; })(res);            
             if (rest.trim() !== '') throw 'Illegal command';
             const myFunc = found.action(parsed);
             return new CustomTextCommand(myFunc);
         }
-        
 
         throw new Error('Unknown command.');
     }

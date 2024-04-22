@@ -1,7 +1,7 @@
-import { _eitherToException } from '~/editor/text-commands/base-argument-types';
 import { PitchArg } from './../../editor/text-commands/argument-types';
 import {mathMod}  from 'ramda';
 import R = require('ramda');
+import { either } from 'fp-ts';
 
 const pitchNames = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
 const accidentalNamesLy = ['eses', 'es', '', 'is', 'isis'];
@@ -75,7 +75,8 @@ export class Pitch {
         const pitchClass = fromLilypondPitchClass(parsed[1]);
 
         return new Pitch(pitchClass, octave, alteration);        */
-        return _eitherToException(PitchArg)(input)[0];
+        //return _eitherToException(PitchArg)(input)[0];
+        return either.getOrElse<string, [Pitch, string]>((e) => {throw e;})(PitchArg(input))[0];
     }
 
     get lilypond(): string {

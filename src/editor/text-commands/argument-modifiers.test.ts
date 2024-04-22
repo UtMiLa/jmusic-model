@@ -1,7 +1,7 @@
 import { either } from 'fp-ts';
 import { KeyDef, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { FixedArg, IntegerArg, RationalArg, WhitespaceArg, _eitherToException } from './base-argument-types';
+import { FixedArg, IntegerArg, RationalArg, WhitespaceArg } from './base-argument-types';
 import { KeyArg, NoteArg } from './argument-types';
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 
@@ -18,13 +18,13 @@ describe('Argument type modifiers', () => {
             expect(many(IntegerArg).regex()).to.eq('(\\d+\\s*)+');
         });*/
         it('should parse an integer array', () => {
-            expect(many(_eitherToException(IntegerArg))('4 63 43 52 ijo 54')).to.deep.eq(either.right([[4, 63, 43, 52], 'ijo 54']));
+            expect(many((IntegerArg))('4 63 43 52 ijo 54')).to.deep.eq(either.right([[4, 63, 43, 52], 'ijo 54']));
         });        
         it('should parse an empty array', () => {
-            expect(many(_eitherToException(IntegerArg))('e4 63 43 52 ijo 54')).to.deep.eq(either.right([[], 'e4 63 43 52 ijo 54']));
+            expect(many((IntegerArg))('e4 63 43 52 ijo 54')).to.deep.eq(either.right([[], 'e4 63 43 52 ijo 54']));
         });
         it('should parse a rational array', () => {
-            expect(many(_eitherToException(RationalArg))('4/5 63/41 43 52 ijo 54')).to.deep.eq(either.right([[
+            expect(many((RationalArg))('4/5 63/41 43 52 ijo 54')).to.deep.eq(either.right([[
                 {
                     numerator: 4,
                     denominator: 5
@@ -37,7 +37,7 @@ describe('Argument type modifiers', () => {
         });
 
         it('should parse a note sequence', () => {
-            expect(many(_eitherToException(NoteArg))('ees4 f4 ges2. aes4')).to.deep.eq(either.right([[
+            expect(many((NoteArg))('ees4 f4 ges2. aes4')).to.deep.eq(either.right([[
                 createNoteFromLilypond('ees4'),
                 createNoteFromLilypond('f4'),
                 createNoteFromLilypond('ges2.'),

@@ -1,7 +1,37 @@
 import R = require('ramda');
-import { ArgumentType, ArgType, _eitherToException, _exceptionToEither, matches } from './base-argument-types';
+import { ArgType, matches } from './base-argument-types';
 import { either } from 'fp-ts';
 
+
+export interface ArgumentType<T> {
+    (input: string): [T, string];
+    undefinedWhenOptional?: boolean;
+}
+
+
+function _exceptionToEither<T>(arg: ArgumentType<T>): ArgType<T> {
+    const f = (input: string) => {
+        try {
+            const res = arg(input);
+            return either.right(res);
+        } catch(e: unknown) { 
+            return either.left(e as string);
+        }        
+    };
+    f.undefinedWhenOptional = arg.undefinedWhenOptional;
+    return f;
+}
+
+
+function _eitherToException<T>(arg: ArgType<T>): ArgumentType<T> {
+    const f = (input: string) => {
+        const res = arg(input);
+        if (either.isLeft(res)) throw res.left;
+        return res.right;
+    };
+    f.undefinedWhenOptional = arg.undefinedWhenOptional;
+    return f;
+}
 
 type stringInterpolation = [] | [string | RegExp] | [string, string | RegExp]
     | [ArgType<undefined>] | [string | RegExp, ArgType<undefined>] | [string | RegExp, ArgType<undefined>, string | RegExp];
@@ -39,14 +69,14 @@ function resolveSyntacticSugar<T>(arg: ArgType<T> | string | RegExp): ArgumentTy
     return _eitherToException(arg);
 }
 
-export function many<T>(type: ArgumentType<T>, separator = '\\s*', allowEmpty = false): ArgType<T[]> {
-    return _exceptionToEither(many0(type));
+export function many<T>(type: ArgType<T>, separator = '\\s*', allowEmpty = false): ArgType<T[]> {
+    return _exceptionToEither(many0(_eitherToException(type)));
 }
 function many0<T>(type: ArgumentType<T>, separator = '\\s*', allowEmpty = false): ArgumentType<T[]> {
     return (input: string) => {
         let rest = input;
         const retVal = [];
-        while (matches(type, rest)) { // cache result
+        while (matches(_exceptionToEither(type), rest)) { // cache result
             const [val, r] = type(rest);
             retVal.push(val);
             rest = r.replace(new RegExp('^' + separator), '');
@@ -64,7 +94,7 @@ function optional0<T>(type0: ArgType<T> | string): ArgumentType<T | null | undef
     const type = resolveSyntacticSugar(type0);
     return (input: string) => {
         let rest = input;
-        if (matches(type, rest)) { // cache result
+        if (matches(_exceptionToEither(type), rest)) { // cache result
             const [val, r] = type(rest);
             rest = r;
             return [val, rest];
@@ -108,7 +138,7 @@ export function select(types0: (ArgType<any> | string)[]): ArgType<any> {
 export function select0(types0: (ArgType<any> | string)[]): ArgumentType<any> {
     const types = types0.map(resolveSyntacticSugar);
     return (input: string) => {
-        const match = types.find(type => matches(type, input)); // cache result
+        const match = types.find(type => matches(_exceptionToEither(type), input)); // cache result
         if (!match) throw 'Syntax error';
 
         return match(input);

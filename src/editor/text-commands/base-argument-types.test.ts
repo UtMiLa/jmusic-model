@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { FixedArg, IntegerArg, RationalArg, WhitespaceArg as WhitespaceArg, WordArg, _eitherToException } from './base-argument-types';
+import { FixedArg, IntegerArg, RationalArg, WhitespaceArg as WhitespaceArg, WordArg } from './base-argument-types';
 import { either } from 'fp-ts';
 
 describe('Argument types', () => {
