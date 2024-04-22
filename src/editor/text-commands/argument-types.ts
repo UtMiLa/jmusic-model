@@ -77,9 +77,20 @@ args => createNote(args[0], args[1], !!args[3], args[2] && args[2].length ? args
 export const SpacerArg: ArgType<Spacer> = (input: string) => {
     const items = input.split(/\s+/);
     if (items.length) {
-        const m = createSpacerFromLilypond(items[0]);
+        //const m = createSpacerFromLilypond(items[0]);
+
+        const matcher = /^(s|(\\skip))(\d+\.*)/i;
+        const match = matcher.exec(items[0]);
+        if (!match || match.length < 2) return either.left('Illegal spacer: ' + items[0]);
+    
+        const durationString = match[3];
+    
+        const m = { 
+            duration: Time.fromLilypond(durationString), 
+            type: 'spacer' 
+        } as Spacer;
         items.shift();
-        return either.right([m, items.join(' ')]);
+        return either.right([m, input.substring(match[0].length)]);
     }
     return either.left('Illegal spacer');
 };

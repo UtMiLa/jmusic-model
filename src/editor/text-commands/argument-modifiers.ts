@@ -4,36 +4,6 @@ import { either } from 'fp-ts';
 import { Either, Left } from 'fp-ts/lib/Either';
 
 
-export interface ArgumentType<T> {
-    (input: string): [T, string];
-    undefinedWhenOptional?: boolean;
-}
-
-
-function _exceptionToEither<T>(arg: ArgumentType<T>): ArgType<T> {
-    const f = (input: string) => {
-        try {
-            const res = arg(input);
-            return either.right(res);
-        } catch(e: unknown) { 
-            return either.left(e as string);
-        }        
-    };
-    f.undefinedWhenOptional = arg.undefinedWhenOptional;
-    return f;
-}
-
-
-function _eitherToException<T>(arg: ArgType<T>): ArgumentType<T> {
-    const f = (input: string) => {
-        const res = arg(input);
-        if (either.isLeft(res)) throw res.left;
-        return res.right;
-    };
-    f.undefinedWhenOptional = arg.undefinedWhenOptional;
-    return f;
-}
-
 type stringInterpolation = [] | [string | RegExp] | [string, string | RegExp]
     | [ArgType<undefined>] | [string | RegExp, ArgType<undefined>] | [string | RegExp, ArgType<undefined>, string | RegExp];
 type ArgSimple<A> = [A, ...stringInterpolation];
@@ -75,7 +45,7 @@ export function many<T>(type: ArgType<T>, separator = '\\s*', allowEmpty = false
         let rest = input;
         const retVal = [];
         while (matches(type, rest)) { // cache result
-            const [val, r] = _eitherToException(type)(rest);
+            const [val, r] = (type(rest) as any).right;
             retVal.push(val);
             rest = r.replace(new RegExp('^' + separator), '');
         }
@@ -128,13 +98,13 @@ export function select<S,T,U,V,W>(types0: [ArgType<T>, ArgType<S>, ArgType<U>, A
 export function select<S,T,U,V,W,X>(types0: [ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>, ArgType<X>]): ArgType<S | T | U | V | W | X>;
 export function select<S,T,U,V,W,X,Y>(types0: [ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>, ArgType<X>, ArgType<Y>]): ArgType<S | T | U | V | W | X | Y>;
 export function select(types0: (ArgType<any> | string)[]): ArgType<any> {
-    return _exceptionToEither(select0(types0));
+    return (select0(types0));
 }
-export function select0(types0: (ArgType<any> | string)[]): ArgumentType<any> {
-    const types = types0.map(resolveSyntacticSugar).map(_eitherToException);
+export function select0(types0: (ArgType<any> | string)[]): ArgType<any> {
+    const types = types0.map(resolveSyntacticSugar);
     return (input: string) => {
-        const match = types.find(type => matches(_exceptionToEither(type), input)); // cache result
-        if (!match) throw 'Syntax error';
+        const match = types.find(type => matches((type), input)); // cache result
+        if (!match) return either.left('Syntax error');
 
         return match(input);
     };
