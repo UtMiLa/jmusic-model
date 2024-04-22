@@ -145,25 +145,8 @@ export function select0(types0: (ArgType<any> | string)[]): ArgumentType<any> {
     };
 }
 
-/*
-export function mapResult<T, S>(type: ArgumentType<T>, mapper: (arg: T) => (S)): ArgType<S> {
-    return (input: string) => {
-        try {
-            const [res, rest] = type(input);
-            return either.right([mapper(res), rest]);
-        } catch (e) {
-            return either.left(e as string);
-        }        
-    };
-}
-*/
-
+/** Maps result from ArgType<T> to ArgType<S> using mapper() */
 export function mapResult<T, S>(type: ArgType<T>, mapper: (arg: T) => (S)): ArgType<S> {
-    return _exceptionToEither(_mapResult(_eitherToException(type), mapper));
+    return (input: string) => either.map<[T, string], [S, string]>(([res, rest]: [T, string]) => ([mapper(res), rest]))(type(input));
 }
-function _mapResult<T, S>(type: ArgumentType<T>, mapper: (arg: T) => (S)): ArgumentType<S> {
-    return (input: string) => {
-        const [res, rest] = type(input);
-        return [mapper(res), rest];
-    };
-}
+
