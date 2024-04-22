@@ -1,6 +1,7 @@
 import R = require('ramda');
 import { ArgType, matches } from './base-argument-types';
 import { either } from 'fp-ts';
+import { Either, Left } from 'fp-ts/lib/Either';
 
 
 export interface ArgumentType<T> {
@@ -58,7 +59,7 @@ function resolveSyntacticSugar<T>(arg: ArgType<T> | string | RegExp): ArgType<T 
     } else if (arg instanceof RegExp) {
         const res: ArgType<T | undefined> = (input: string) => {
             const match = arg.exec(input);
-            if (!match || !match.length) throw 'Missing keyword';
+            if (!match || !match.length) return either.left('Missing keyword');
             const len = match[0].length;
             if (input.substring(0, len) !== match[0]) return either.left('Keyword in incorrect position');
             return either.right([undefined, input.substring(len)]);
@@ -85,19 +86,15 @@ export function many<T>(type: ArgType<T>, separator = '\\s*', allowEmpty = false
 export function optional<T>(type0: ArgType<T>): ArgType<T | null>;
 export function optional(type0: string): ArgType<undefined>;
 export function optional<T>(type0: ArgType<T> | string): ArgType<T | null | undefined> {
-    return _exceptionToEither(optional0(type0));
-}
-function optional0<T>(type0: ArgType<T> | string): ArgumentType<T | null | undefined> {
-    const type = _eitherToException(resolveSyntacticSugar(type0));
+    const type = resolveSyntacticSugar(type0);
     return (input: string) => {
-        let rest = input;
-        if (matches(_exceptionToEither(type), rest)) { // cache result
-            const [val, r] = type(rest);
-            rest = r;
-            return [val, rest];
+        const rest = input;
+        if (matches((type), rest)) { // cache result
+            const res = type(rest);
+            if (either.isRight(res)) return res;
         }
-        if (type.undefinedWhenOptional) return [undefined, rest];
-        return [null, rest];
+        if (type.undefinedWhenOptional) return either.right([undefined, rest]);
+        return either.right([null, rest]);
     };
 }
 
@@ -106,19 +103,20 @@ export function sequence<S,T>(types0: ArgDuple<ArgType<S>, ArgType<T>>): ArgType
 export function sequence<S,T,U>(types0: ArgTriple<ArgType<S>, ArgType<T>, ArgType<U>>): ArgType<[S, T, U]>;
 export function sequence<S,T,U,V>(types0: ArgQuadruple<ArgType<S>, ArgType<T>, ArgType<U>, ArgType<V>>): ArgType<[S, T, U, V]>;
 //export function sequence<S,T,U,V,W>(types0: ArgQuintuple<ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>>): ArgType<[S, T, U, V, W]>;
-export function sequence<T>(types0: (ArgType<T> | string | RegExp)[]): ArgType<T[]> {
-    return _exceptionToEither(_sequence(types0));
-}
-export function _sequence<T>(types0: (ArgType<T> | string | RegExp)[]): ArgumentType<T[]> {
-    const types = types0.map(resolveSyntacticSugar).map(_eitherToException);
-    return (input: string) => {
+export function sequence(types0: (ArgType<unknown> | string | RegExp)[]): ArgType<unknown> {
+    const types = types0.map(resolveSyntacticSugar);
+    return (input: string): Either<string, [unknown, string]> => {
         let rest = input;
         const retVal = types.map(type => { // cache result
-            const [val, r] = type(rest);
-            rest = r;
-            return val;
-        });
-        return [retVal.filter((x, i) => x !== undefined), rest] as [T[], string];
+            const res = type(rest);
+            if (either.isLeft(res)) return res;
+            rest = res.right[1];
+            return res.right[0];
+        }).filter((x) => x !== undefined);
+
+        const leftie = retVal.find((x: unknown) => x && either.isLeft(x as any)) as Left<string>;
+        if (leftie) return leftie;
+        return either.right([retVal, rest]);
     };
 }
 

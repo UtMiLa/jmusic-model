@@ -25,7 +25,7 @@ export class TextCommandEngine {
         const found = [...navigationCommands, ...editCommands].find(cmd => matches(cmd.argType, command));
         if (found) {
             const res = found.argType(command); // cache result
-            const [parsed, rest] = either.getOrElse<string, [any, string]>(e => { throw e; })(res);            
+            const [parsed, rest] = either.getOrElse<string, [any, string]>(e => { throw 'Unknown command.'; })(res);            
             if (rest.trim() !== '') throw 'Illegal command';
             const myFunc = found.action(parsed);
             return new CustomTextCommand(myFunc);
