@@ -45,43 +45,40 @@ type ArgQuadruple<A, B, C, D> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimpl
 
 
 
-function resolveSyntacticSugar<T>(arg: ArgType<T> | string | RegExp): ArgumentType<T | undefined> {
+function resolveSyntacticSugar<T>(arg: ArgType<T> | string | RegExp): ArgType<T | undefined> {
     if (typeof arg === 'string') {
         const tester = new RegExp('^' + arg.replace(/ $/, '\\s+'));
-        const res: ArgumentType<T | undefined> = (input: string) => {
+        const res: ArgType<T | undefined> = (input: string) => {
             const match = tester.exec(input);
-            if (!match || !match.length) throw 'Missing keyword';
-            return [undefined, input.substring(match[0].length)];
+            if (!match || !match.length) return either.left('Missing keyword');
+            return either.right([undefined, input.substring(match[0].length)]);
         };
         res.undefinedWhenOptional = true;
         return res;
     } else if (arg instanceof RegExp) {
-        const res: ArgumentType<T | undefined> = (input: string) => {
+        const res: ArgType<T | undefined> = (input: string) => {
             const match = arg.exec(input);
             if (!match || !match.length) throw 'Missing keyword';
             const len = match[0].length;
-            if (input.substring(0, len) !== match[0]) throw 'Keyword in incorrect position';
-            return [undefined, input.substring(len)];
+            if (input.substring(0, len) !== match[0]) return either.left('Keyword in incorrect position');
+            return either.right([undefined, input.substring(len)]);
         };
         res.undefinedWhenOptional = true;
         return res;
     }
-    return _eitherToException(arg);
+    return arg;
 }
 
 export function many<T>(type: ArgType<T>, separator = '\\s*', allowEmpty = false): ArgType<T[]> {
-    return _exceptionToEither(many0(_eitherToException(type)));
-}
-function many0<T>(type: ArgumentType<T>, separator = '\\s*', allowEmpty = false): ArgumentType<T[]> {
     return (input: string) => {
         let rest = input;
         const retVal = [];
-        while (matches(_exceptionToEither(type), rest)) { // cache result
-            const [val, r] = type(rest);
+        while (matches(type, rest)) { // cache result
+            const [val, r] = _eitherToException(type)(rest);
             retVal.push(val);
             rest = r.replace(new RegExp('^' + separator), '');
         }
-        return [retVal, rest];        
+        return either.right([retVal, rest]);
     };
 }
 
@@ -91,7 +88,7 @@ export function optional<T>(type0: ArgType<T> | string): ArgType<T | null | unde
     return _exceptionToEither(optional0(type0));
 }
 function optional0<T>(type0: ArgType<T> | string): ArgumentType<T | null | undefined> {
-    const type = resolveSyntacticSugar(type0);
+    const type = _eitherToException(resolveSyntacticSugar(type0));
     return (input: string) => {
         let rest = input;
         if (matches(_exceptionToEither(type), rest)) { // cache result
@@ -113,7 +110,7 @@ export function sequence<T>(types0: (ArgType<T> | string | RegExp)[]): ArgType<T
     return _exceptionToEither(_sequence(types0));
 }
 export function _sequence<T>(types0: (ArgType<T> | string | RegExp)[]): ArgumentType<T[]> {
-    const types = types0.map(resolveSyntacticSugar);
+    const types = types0.map(resolveSyntacticSugar).map(_eitherToException);
     return (input: string) => {
         let rest = input;
         const retVal = types.map(type => { // cache result
@@ -136,7 +133,7 @@ export function select(types0: (ArgType<any> | string)[]): ArgType<any> {
     return _exceptionToEither(select0(types0));
 }
 export function select0(types0: (ArgType<any> | string)[]): ArgumentType<any> {
-    const types = types0.map(resolveSyntacticSugar);
+    const types = types0.map(resolveSyntacticSugar).map(_eitherToException);
     return (input: string) => {
         const match = types.find(type => matches(_exceptionToEither(type), input)); // cache result
         if (!match) throw 'Syntax error';
