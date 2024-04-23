@@ -105,10 +105,6 @@ export const ClefArg = (mapResult(_clefArg, ([keyword, value]) => (StateChange.n
 export const VariableReferenceArg = mapResult((sequence(['\\$', WordArg])), ([word]) => ({ variable: word } as VariableRef));
 
 export const SplitSequenceArg = mapResult(sequence(['<< *', many(NoteArg), /\s*\\\\\s+/, many(NoteArg),  ' *>>']), ([v1Notes, v2Notes]: [NoteBase[], NoteBase[]]) => {
-    console.log('notes', v1Notes, v2Notes);
-    const def1 = new FlexibleSequence(v1Notes).def;
-    const def2 = new FlexibleSequence(v2Notes).def;
-    console.log('notes2', def1, def2);
     return ({
         type: 'multi',
         sequences: [new FlexibleSequence(v1Notes).def, new FlexibleSequence(v2Notes).def]
@@ -117,7 +113,6 @@ export const SplitSequenceArg = mapResult(sequence(['<< *', many(NoteArg), /\s*\
 
 import { FunctionArg } from './function-argument-types';
 import { either } from 'fp-ts';
-import { log } from 'console';
 
 export const MusicEventArg = (select(
     [NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg, VariableReferenceArg, FunctionArg, SplitSequenceArg])
