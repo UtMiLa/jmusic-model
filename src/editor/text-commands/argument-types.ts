@@ -1,5 +1,6 @@
+import { FlexibleSequence } from './../../model/score/flexible-sequence';
 import { StateChange } from './../../model/states/state';
-import { FuncDef, Key, MeterFactory, MusicEvent, Note, Pitch, PitchClass, RationalDef, SeqFunction, Time, TimeSpan, VariableRef, createNote, 
+import { FuncDef, Key, MeterFactory, MusicEvent, Note, NoteBase, NoteDef, Pitch, PitchClass, RationalDef, SeqFunction, SequenceDef, SequenceItem, SplitSequenceDef, Time, TimeSpan, VariableRef, createNote, 
     fromLilypondAlteration, fromLilypondOctave, fromLilypondPitchClass, isFuncDef, parseLilyClef } from '../../model';
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
@@ -103,9 +104,14 @@ export const ClefArg = (mapResult(_clefArg, ([keyword, value]) => (StateChange.n
 
 export const VariableReferenceArg = mapResult((sequence(['\\$', WordArg])), ([word]) => ({ variable: word } as VariableRef));
 
+export const SplitSequenceArg = mapResult(sequence(['<< *', many(NoteArg), /\s+\\\\\s+/, many(NoteArg),  ' *>>']), ([v1Notes, v2Notes]: [NoteBase[], NoteBase[]]) => ({
+    type: 'multi',
+    sequences: [new FlexibleSequence(v1Notes).def, new FlexibleSequence(v2Notes).def]
+})) as ArgType<SplitSequenceDef>; // todo: tests - and make it work!
+
 import { FunctionArg } from './function-argument-types';
 import { either } from 'fp-ts';
 
 export const MusicEventArg = (select(
-    [(NoteArg), KeyArg, MeterArg, ClefArg, SpacerArg, (VariableReferenceArg), (FunctionArg)])
-); // todo: LongDecoration, ...
+    [NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg, VariableReferenceArg, FunctionArg, SplitSequenceArg])
+) as ArgType<SequenceItem>; // todo: LongDecoration, SplitSequence ...

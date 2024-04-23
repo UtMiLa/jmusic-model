@@ -96,6 +96,7 @@ export function select<S,T,U,V>(types0: [ArgType<S>, ArgType<T>, ArgType<U>, Arg
 export function select<S,T,U,V,W>(types0: [ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>]): ArgType<S | T | U | V | W>;
 export function select<S,T,U,V,W,X>(types0: [ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>, ArgType<X>]): ArgType<S | T | U | V | W | X>;
 export function select<S,T,U,V,W,X,Y>(types0: [ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>, ArgType<X>, ArgType<Y>]): ArgType<S | T | U | V | W | X | Y>;
+export function select<S,T,U,V,W,X,Y,Z>(types0: [ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>, ArgType<X>, ArgType<Y>, ArgType<Z>]): ArgType<S | T | U | V | W | X | Y | Z>;
 export function select(types0: (ArgType<any> | string)[]): ArgType<any> {
 
     const types = types0.map(resolveSyntacticSugar);

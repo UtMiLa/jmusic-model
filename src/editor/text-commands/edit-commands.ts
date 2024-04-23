@@ -3,7 +3,7 @@ import { ClefArg, KeyArg, MeterArg, MusicEventArg } from './argument-types';
 import { ArgType, ResultAndRest, WhitespaceArg, WordArg } from './base-argument-types';
 import { many, sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
-import { Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef, isMeterChange, isClefChange, isKeyChange, FlexibleItem } from './../../model';
+import { Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef, isMeterChange, isClefChange, isKeyChange, FlexibleItem, SequenceItem } from './../../model';
 import R = require('ramda');
 import { Either } from 'fp-ts/lib/Either';
 import { either } from 'fp-ts';
@@ -62,17 +62,18 @@ export function commandDescriptor<T>(argType: ArgType<T>, action: (args: T) => (
 export const editCommands = [
    
     commandDescriptor( 
-        (sequence<MusicEvent[]>(['append', WhitespaceArg, many<any>(MusicEventArg)])), 
-        (args: [MusicEvent[]]) => (model: Model, ins: InsertionPoint): void => {
+        (sequence<SequenceItem[]>(['append', WhitespaceArg, many(MusicEventArg)])), 
+        (args: [SequenceItem[]]) => (model: Model, ins: InsertionPoint): void => {
             const events = args[0];
             const eventDef = new FlexibleSequence(events).def;
             model.overProject(
                 R.lensPath(['score', 'staves', ins.staffNo, 'voices', ins.voiceNo, 'contentDef']),
                 (seq: MultiSequenceDef) => 
                     R.cond<MultiSequenceDef, SplitSequenceDef, string, MultiSequenceItem[], MultiSequenceDef>([
-                        [isSplitSequence, R.identity],
-                        [R.is(String), (s: string) => (s + ' ' + eventDef) as MultiSequenceDef],
-                        [(R.is(Array<MultiSequenceItem>)), m => [...m, eventDef as NoteDef[]]] // todo: fix ugly cast
+                        [isSplitSequence, R.identity], // SplitSequence
+                        [R.is(String), (s: string) => (s + ' ' + eventDef) as MultiSequenceDef], // never
+                        [(R.is(Array<MultiSequenceItem>)), m => [...m, eventDef as SequenceItem[]]]
+                        // NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg, VariableReferenceArg, FunctionArg, LongDecoration
                     ])(seq)
             );
         }
