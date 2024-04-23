@@ -75,16 +75,12 @@ export function sequence(types0: (ArgType<unknown> | string | RegExp)[]): ArgTyp
     const types = types0.map(resolveSyntacticSugar);
     
     return (input: string): EitherResultAndRest<unknown> => {
-        if (input === undefined) throw 'Bad input';
         const collected = types.reduce((prev: EitherResultAndRest<unknown[]>, curr) => {
             if (either.isLeft(prev)) return prev;
             return either.flatMap(([prevArr, prevRest]: [unknown[], string]) => {
-                if (prevRest === undefined) 
-                    throw 'How this?' + prev;
                 const nextItem = curr(prevRest);
                 if (either.isLeft(nextItem)) return nextItem;
                 const [nextVal, nextRest] = nextItem.right;
-                if (nextRest === undefined) throw 'Bad rest';
                 return makeResultAndRest(nextVal === undefined ? prevArr : [...prevArr, nextVal], nextRest);
             })(prev) as EitherResultAndRest<unknown[]>;
         }, either.right([[] as unknown[], input]) as EitherResultAndRest<unknown[]>);
@@ -101,9 +97,7 @@ export function select<S,T,U,V,W>(types0: [ArgType<T>, ArgType<S>, ArgType<U>, A
 export function select<S,T,U,V,W,X>(types0: [ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>, ArgType<X>]): ArgType<S | T | U | V | W | X>;
 export function select<S,T,U,V,W,X,Y>(types0: [ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>, ArgType<X>, ArgType<Y>]): ArgType<S | T | U | V | W | X | Y>;
 export function select(types0: (ArgType<any> | string)[]): ArgType<any> {
-    return (select0(types0));
-}
-export function select0(types0: (ArgType<any> | string)[]): ArgType<any> {
+
     const types = types0.map(resolveSyntacticSugar);
     return (input: string) => {
         const match = types.find(type => matches((type), input)); // cache result

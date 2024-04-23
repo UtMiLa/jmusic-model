@@ -1,10 +1,12 @@
 import { StateChange } from './../../model/states/state';
 import { ClefArg, KeyArg, MeterArg, MusicEventArg } from './argument-types';
-import { ArgType, WhitespaceArg, WordArg } from './base-argument-types';
+import { ArgType, ResultAndRest, WhitespaceArg, WordArg } from './base-argument-types';
 import { many, sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
 import { Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef, isMeterChange, isClefChange, isKeyChange, FlexibleItem } from './../../model';
 import R = require('ramda');
+import { Either } from 'fp-ts/lib/Either';
+import { either } from 'fp-ts';
 
 
 function addStaff(model: Model, ins: InsertionPoint): any {
@@ -28,11 +30,19 @@ function addStaff(model: Model, ins: InsertionPoint): any {
 }
 
 
-
-
 interface CommandDescriptor<T> {
     argType: ArgType<T>;
     action: (args: T) => (model: Model, ins: InsertionPoint) => void;
+}
+
+export function commandDescriptor<T>(argType: ArgType<T>, action: (args: T) => (model: Model, ins: InsertionPoint) => any) {
+    return (input: string) => {
+        const match = argType(input);
+
+        //if (either.isLeft(match)) return match;
+
+        return either.map((x: ResultAndRest<T>) => action(x[0]))(match);
+    };
 }
 
 // goto AbsoluteTime
@@ -49,11 +59,11 @@ interface CommandDescriptor<T> {
 // set clef Clef
 // set meter Meter
 
-export const editCommands: CommandDescriptor<any>[] = [
+export const editCommands = [
    
-    { 
-        argType: (sequence(['append', WhitespaceArg, many(MusicEventArg)])), 
-        action: (args: [MusicEvent[]]) => (model: Model, ins: InsertionPoint): void => {
+    commandDescriptor( 
+        (sequence<MusicEvent[]>(['append', WhitespaceArg, many<any>(MusicEventArg)])), 
+        (args: [MusicEvent[]]) => (model: Model, ins: InsertionPoint): void => {
             const events = args[0];
             const eventDef = new FlexibleSequence(events).def;
             model.overProject(
@@ -66,25 +76,25 @@ export const editCommands: CommandDescriptor<any>[] = [
                     ])(seq)
             );
         }
-    } as CommandDescriptor<[MusicEvent[]]>,
-    {
-        argType: (sequence(['add', WhitespaceArg ,'staff'])),
-        action: () => addStaff
-    },
-    { 
-        argType: ((sequence as (x: unknown) => ArgType<[StateChange]>)(['set', WhitespaceArg, 'key', WhitespaceArg, KeyArg])), 
-        action: ([key]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, key, isKeyChange)
-    } as CommandDescriptor<[StateChange]>,
-    { 
-        argType: ((sequence as (x: unknown) => ArgType<[StateChange]>)(['set', WhitespaceArg, 'meter', WhitespaceArg, MeterArg])), 
-        action: ([meter]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, meter, isMeterChange)
-    } as CommandDescriptor<[StateChange]>,
-    { 
-        argType: ((sequence as (x: unknown) => ArgType<[StateChange]>)(['set', WhitespaceArg, 'clef', WhitespaceArg, ClefArg])), 
-        action: ([clef]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, clef, isClefChange)
-    } as CommandDescriptor<[StateChange]>,
-    { 
-        argType: ((sequence as (x: unknown) => ArgType<[string, FlexibleItem[]]>)([/\$/, WordArg, WhitespaceArg, '= ', (many(MusicEventArg))])), 
-        action: ([word, musicEvents]) => (model: Model, ins: InsertionPoint): void => model.setVar(word, musicEvents)
-    } as CommandDescriptor<[string, FlexibleItem[]]>
+    ),
+    commandDescriptor( 
+        (sequence(['add', WhitespaceArg ,'staff'])),
+        () => addStaff
+    ),
+    commandDescriptor( 
+        ((sequence as (x: unknown) => ArgType<[StateChange]>)(['set', WhitespaceArg, 'key', WhitespaceArg, KeyArg])), 
+        ([key]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, key, isKeyChange)
+    ),
+    commandDescriptor( 
+        ((sequence as (x: unknown) => ArgType<[StateChange]>)(['set', WhitespaceArg, 'meter', WhitespaceArg, MeterArg])), 
+        ([meter]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, meter, isMeterChange)
+    ),
+    commandDescriptor( 
+        ((sequence as (x: unknown) => ArgType<[StateChange]>)(['set', WhitespaceArg, 'clef', WhitespaceArg, ClefArg])), 
+        ([clef]) => (model: Model, ins: InsertionPoint): void => model.insertElementAtInsertionPoint(ins, clef, isClefChange)
+    ),
+    commandDescriptor(  
+        ((sequence as (x: unknown) => ArgType<[string, FlexibleItem[]]>)([/\$/, WordArg, WhitespaceArg, '= ', (many(MusicEventArg))])), 
+        ([word, musicEvents]) => (model: Model, ins: InsertionPoint): void => model.setVar(word, musicEvents)
+    )
 ];
