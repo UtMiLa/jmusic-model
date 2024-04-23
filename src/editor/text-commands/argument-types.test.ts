@@ -1,7 +1,7 @@
 import { StateChange } from './../../model/states/state';
 import { Clef, ClefType, Key, MeterFactory, Pitch, PitchClass, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { ClefArg, KeyArg, MeterArg, NoteArg, SpacerArg,  PitchClassArg, PitchArg } from './argument-types';
+import { ClefArg, KeyArg, MeterArg, NoteArg, SpacerArg,  PitchClassArg, PitchArg, SplitSequenceArg } from './argument-types';
 import { RationalArg } from './base-argument-types';
 import { createSpacerFromLilypond } from '../../model/notes/spacer';
 import { FunctionArg } from './function-argument-types';
@@ -86,6 +86,20 @@ describe('Argument types', () => {
             const res = ClefArg('\\clef treble');
             expect(res).to.deep.eq(either.right([
                 StateChange.newClefChange(new Clef({ clefType: ClefType.G, line: -2 })),
+                ''
+            ]));
+        });
+    });
+
+    
+    describe('Split sequence', () => {
+        it('should parse a split sequence', () => {
+            const res = SplitSequenceArg('<< c2 \\\\ e4 f4 >>');
+            expect(res).to.deep.eq(either.right([
+                {
+                    type: 'multi',
+                    sequences: [ ['c2' ], ['e4', 'f4' ] ]
+                },
                 ''
             ]));
         });
