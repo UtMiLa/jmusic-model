@@ -39,11 +39,9 @@ export const PitchClassArg: ArgType<PitchClass> = (input: string) => {
 export const OctaveArg: ArgType<number> = (input: string) => {
     const items = /^[',]*/.exec(input);
 
-    if (items) {
-        const m = fromLilypondOctave(items[0]);
-        return either.right([m, input.substring(items[0].length)]);
-    }
-    return either.left('Illegal octave');
+    const m = fromLilypondOctave(items ? items[0] : '');
+    const rest = items ? input.substring(items[0].length) : input;
+    return either.right([m, rest]);
 
 };
 

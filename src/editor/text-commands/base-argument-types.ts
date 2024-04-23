@@ -8,8 +8,12 @@ export function regexEscape(s: string): string { // taken from sanctuary.js
     return s.replace (/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
 
+export type ResultAndRest<T> = [T, string];
+export type EitherResultAndRest<T> = Either<string, ResultAndRest<T>>;
+export const makeResultAndRest = <T>(result: T, rest: string): EitherResultAndRest<T> => either.right([result, rest]);
+
 export interface ArgType<T> {
-    (input: string): Either<string, [T, string]>;
+    (input: string): Either<string, ResultAndRest<T>>;
     undefinedWhenOptional?: boolean;
 }
 
@@ -27,7 +31,7 @@ export const FixedArg = (arg: string | RegExp): ArgType<string> => (input: strin
     if (input.indexOf(m[0]) !== 0) return either.left('Not a match in correct position');
     //if (input.indexOf(m[0]) !== 0) throw 'Not a match in correct position';
     const rest = input.substring(m[0].length);
-    return either.right([m[0], rest]);
+    return makeResultAndRest(m[0], rest);
 };
 
 export const IntegerArg: ArgType<number> = (input: string) => {

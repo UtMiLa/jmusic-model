@@ -1,5 +1,5 @@
 import R = require('ramda');
-import { ArgType, matches } from './base-argument-types';
+import { ArgType, EitherResultAndRest, makeResultAndRest, matches } from './base-argument-types';
 import { either } from 'fp-ts';
 import { Either, Left } from 'fp-ts/lib/Either';
 
@@ -12,8 +12,6 @@ type ArgDuple<A, B> = [...ArgStarter<A>, ...ArgSimple<B>];
 type ArgTriple<A, B, C> = [...ArgDuple<A, B>, ...ArgSimple<C>];
 type ArgQuadruple<A, B, C, D> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimple<D>];
 //type ArgQuintuple<A, B, C, D, E> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimple<D>, ...ArgSimple<E>];
-
-
 
 
 function resolveSyntacticSugar<T>(arg: ArgType<T> | string | RegExp): ArgType<T | undefined> {
@@ -75,18 +73,23 @@ export function sequence<S,T,U,V>(types0: ArgQuadruple<ArgType<S>, ArgType<T>, A
 //export function sequence<S,T,U,V,W>(types0: ArgQuintuple<ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>>): ArgType<[S, T, U, V, W]>;
 export function sequence(types0: (ArgType<unknown> | string | RegExp)[]): ArgType<unknown> {
     const types = types0.map(resolveSyntacticSugar);
-    return (input: string): Either<string, [unknown, string]> => {
-        let rest = input;
-        const retVal = types.map(type => { // cache result
-            const res = type(rest);
-            if (either.isLeft(res)) return res;
-            rest = res.right[1];
-            return res.right[0];
-        }).filter((x) => x !== undefined);
-
-        const leftie = retVal.find((x: unknown) => x && either.isLeft(x as any)) as Left<string>;
-        if (leftie) return leftie;
-        return either.right([retVal, rest]);
+    
+    return (input: string): EitherResultAndRest<unknown> => {
+        if (input === undefined) throw 'Bad input';
+        const collected = types.reduce((prev: EitherResultAndRest<unknown[]>, curr) => {
+            if (either.isLeft(prev)) return prev;
+            return either.flatMap(([prevArr, prevRest]: [unknown[], string]) => {
+                if (prevRest === undefined) 
+                    throw 'How this?' + prev;
+                const nextItem = curr(prevRest);
+                if (either.isLeft(nextItem)) return nextItem;
+                const [nextVal, nextRest] = nextItem.right;
+                if (nextRest === undefined) throw 'Bad rest';
+                return makeResultAndRest(nextVal === undefined ? prevArr : [...prevArr, nextVal], nextRest);
+            })(prev) as EitherResultAndRest<unknown[]>;
+        }, either.right([[] as unknown[], input]) as EitherResultAndRest<unknown[]>);
+        
+        return collected;
     };
 }
 
