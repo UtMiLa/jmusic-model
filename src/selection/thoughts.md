@@ -22,13 +22,13 @@ A selection can be empty or consist of one or more voices. The selected music el
 ### Queries
 
 Some combination of these criteria:
-* Select music from these voices
+* Select music from these voices/staves
 * Select music between time1 and time2
 * Add to existing selection or start a new
 * Select music after some pattern, e.g. notes with certain pitch or duration
 * Select/deselect single notes or bars
 * Select music with same duration as given variable/other selection (to enable replacing/swapping)
-* Select music displayed in a rectangle (to enable mouse selection)
+* Select music displayed in a rectangle (to enable selecting using mouse)
 
 ### Commands
 
@@ -47,4 +47,9 @@ Some combination of these criteria:
 * Items in physical view are marked as selected
 * Some stylesheet-like definition defines how to display selected elements
 * It might be possible to display several selections in contrasting colors (some logic to decide what to do if they overlap)
+
+### Issues
+
+* What happens to selections when elements are added/removed/changed in model?
+* * in other programs, selections disappear when editing
 
