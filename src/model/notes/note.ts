@@ -112,7 +112,8 @@ export function noteAsLilypond(note: Note): string {
     const dotNo = getDotNo(note);
     const dots = R.repeat('.', dotNo).join('');
     const tie = note.tie ? '~' : '';
-    return pitchPart + durationPart + dots + tie;
+    const expressions = note.expressions ? note.expressions.map(x => `\\${x}`).join('') : '';
+    return pitchPart + durationPart + dots + tie + expressions;
 }
 
 export function cloneNote(note: Note,  changeProperties: UpdateNote): Note {

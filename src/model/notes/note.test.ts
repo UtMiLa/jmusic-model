@@ -175,6 +175,10 @@ describe('Note', () => {
         it('should convert tied notes to Lilypond', () => {
             expect(noteAsLilypond(createNoteFromLilypond('e\'1~'))).to.eq('e\'1~');
         });
+        it('should convert decorated notes to Lilypond', () => {
+            expect(noteAsLilypond(createNoteFromLilypond('e\'1\\staccato'))).to.eq('e\'1\\staccato');
+            expect(noteAsLilypond(createNote([new Pitch(1,1)], Time.QuarterTime, false, ['prall','fermata']))).to.eq('d,,4\\prall\\fermata');
+        });
     });
 
 });

@@ -3,7 +3,7 @@ import { InsertionPoint } from './insertion-point';
 import Sinon = require('sinon');
 import { Clef, ClefType, JMusic, Key, MeterFactory, Time, createNoteFromLilypond, isClefChange, isKeyChange, isMeterChange, valueOf } from '../model';
 import { TextCommandEngine } from './text-command-engine';
-import { StateChange } from '~/model/states/state';
+import { StateChange } from '../model/states/state';
 
 
 
