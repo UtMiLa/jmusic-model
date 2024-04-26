@@ -88,6 +88,8 @@ describe('Facade', () => {
             expect(sc.staves[0].voices).to.have.length(2);
             expect(sc.staves[0].voices[0].content.duration).to.deep.eq(Time.WholeTime);
             expect(sc.staves[0].voices[0].content.elements).to.have.length(4);
+            expect(sc.staves[0].voices[0].noteDirection).to.eq(NoteDirection.Up);
+            expect(sc.staves[0].voices[1].noteDirection).to.eq(NoteDirection.Down);
             
             expect(sc.staves[1].initialClef).to.deep.eq({ clefType: ClefType.C, line: 2 });
             expect(sc.staves[1].initialKey).to.deep.eq({ count: 2, accidental: -1 });
@@ -159,6 +161,8 @@ describe('Facade', () => {
             const jMusic = new JMusic(scoreDef);
 
             expect(jMusic.repeats).to.have.length(4);
+            expect(jMusic.staves[0].voices[0].noteDirection).to.eq(NoteDirection.Up);
+            expect(jMusic.staves[0].voices[1].noteDirection).to.eq(NoteDirection.Down);            
         });
 
             

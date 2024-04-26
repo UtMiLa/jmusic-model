@@ -25,7 +25,7 @@ function multiSeqVoicesToSingleSeqVoices(voices: VoiceDef[], vars: VariableRepos
         //console.log('multiSeq', multiSeq, multiSeq.seqs.length, idx);
         return multiSeq.seqs.map((seq, seqIndx) => ({
             contentDef: seq.asObject,
-            noteDirection: multiSeq.seqs.length === 1 ? NoteDirection.Undefined : seqIndx % 2 === 0 ? NoteDirection.Up : NoteDirection.Down
+            noteDirection: multiSeq.seqs.length === 1 ? cnt.noteDirection : seqIndx % 2 === 0 ? NoteDirection.Up : NoteDirection.Down
         } as VoiceDef));
     };
 
