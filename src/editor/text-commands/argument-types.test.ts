@@ -1,5 +1,5 @@
 import { StateChange } from './../../model/states/state';
-import { Clef, ClefType, Key, MeterFactory, Pitch, PitchClass, createNoteFromLilypond } from 'model';
+import { Clef, ClefType, Key, MeterFactory, Pitch, PitchClass, Time, createNote, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
 import { ClefArg, KeyArg, MeterArg, NoteArg, SpacerArg,  PitchClassArg, PitchArg, SplitSequenceArg } from './argument-types';
 import { RationalArg } from './base-argument-types';
@@ -10,9 +10,6 @@ import { either } from 'fp-ts';
 describe('Argument types', () => {
         
     describe('Pitch class', () => {
-        /*it('should provide a regular expression', () => {
-            expect(PitchClassArg.regex()).to.eq('[a-g](es|is)*');
-        });*/
         it('should parse a pitch class token', () => {
             expect(PitchClassArg('eeses,,')).to.deep.eq(either.right([new PitchClass(2, -2), ',,']));
         });
@@ -22,9 +19,6 @@ describe('Argument types', () => {
     });
     
     describe('Pitch', () => {
-        /*it('should provide a regular expression', () => {
-            expect(PitchArg.regex()).to.eq('([a-g](es|is)*)([\',]*)');
-        });*/
         it('should parse a pitch token', () => {
             expect(PitchArg('eeses,,4')).to.deep.eq(either.right([new Pitch(2, 1, -2), '4']));
         });
@@ -34,11 +28,14 @@ describe('Argument types', () => {
     });
     
     describe('Note', () => {
-        /*it('should provide a regular expression', () => {
-            expect(NoteArg.regex()).to.eq(/((([a-g](es|is)*)([',]*))|((<)((([a-g](es|is)*)([',]*)\s*)+)(>))|(r))((\d+)((\.)*))((\\[a-z]+\s*)*)((~)?)/.source);
-        });*/
         it('should parse a note token', () => {
-            expect(NoteArg('eeses\'\'4')).to.deep.eq(either.right([createNoteFromLilypond('eeses\'\'4'), '']));
+            expect(NoteArg('eeses\'\'4')).to.deep.eq(either.right([createNote([new Pitch(2, 5, -2)], Time.newSpan(1, 4), false), '']));
+        });
+        it('should parse a note token with dots', () => {
+            expect(NoteArg('e4.')).to.deep.eq(either.right([createNote([new Pitch(2, 3)], Time.newSpan(3, 8), false), '']));
+        });
+        it('should parse a note token with tie', () => {
+            expect(NoteArg('e4~')).to.deep.eq(either.right([createNote([new Pitch(2, 3)], Time.newSpan(1, 4), true), '']));
         });
     });
 

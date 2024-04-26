@@ -9,6 +9,6 @@ An instrument definition contains
 * ambitus
 * valid clefs
 * name
-* rules for polyphony (violins can play up to 4 simultaneous notes; only two for lang time)
-* special rules, like accept lyrics
+* rules for polyphony (violins can play up to 4 simultaneous notes; only two for long time)
+* special rules, like allow lyrics
 

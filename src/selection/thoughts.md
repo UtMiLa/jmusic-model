@@ -19,6 +19,14 @@ A selection is some entity with a method to test whether an arbitrary music elem
 
 A selection can be empty or consist of one or more voices. The selected music elements need not to be adjacent.
 
+### Ids
+
+There must be a way to specify elements in a unique way. That is, there must be a way to calculate voice number, absolute time, and element type from an identificator.
+
+Candidate keys could be:
+* Staffno, voiceno, elementno
+* Staffno, voiceno, absolute time, element type
+
 ### Queries
 
 Some combination of these criteria:
@@ -80,6 +88,7 @@ On time axis:
 
 * What happens to selections when elements are added/removed/changed in model?
 * * in other programs, selections disappear when editing
+* * this appears to be the easiest
 * How should music elements be uniquely identified?
 * What if one tries to select only a part of a variable/funcion? Or only a part of a long note?
 

@@ -40,13 +40,16 @@ describe('Note', () => {
         expect(getNoteType(createNoteFromLilypond('r32'))).to.eq(NoteType.R32);
         expect(getNoteType(createNoteFromLilypond('r64'))).to.eq(NoteType.R64);
         expect(getNoteType(createNoteFromLilypond('r128'))).to.eq(NoteType.R128);
+    });
 
+    it('should create a semibreve rest', () => {
         const goodRest = createNote([], Time.newSpan(2, 1));
         expect(getNoteType(goodRest)).to.eq(NoteType.RBreve);
+    });
 
+    it('should fail to create a 1/3 rest', () => {
         const badRest = createNote([], Time.newSpan(1, 3));
         expect(() => getNoteType(badRest)).to.throw();
-
     });
 
     it('should support multiple pitches', () => {
@@ -106,8 +109,15 @@ describe('Note', () => {
 
     
     it('should create a tied note', () => {
-        const note = createNoteFromLilypond('c\'4~');
-        expect(note.tie).to.be.true;
+        const note1 = createNote([new Pitch(1, 1)], Time.EightsTime, true);
+        expect(note1.tie).to.be.true;
+        const note2 = createNote([new Pitch(1, 1)], Time.EightsTime, false);
+        expect(note2.tie).to.be.undefined;
+    });
+
+    it('should create a tied note in Lilypond format', () => {
+        const note0 = createNoteFromLilypond('c\'4~');
+        expect(note0.tie).to.be.true;
         const note1 = createNoteFromLilypond('c\'4');
         expect(note1.tie).to.be.undefined;
         const note2 = createNoteFromLilypond('<c\' e\' g\'>4~');
@@ -161,6 +171,9 @@ describe('Note', () => {
             expect(noteAsLilypond(createNoteFromLilypond('e\'1...'))).to.eq('e\'1...');
             expect(noteAsLilypond(createNoteFromLilypond('e\'128.'))).to.eq('e\'128.');
             expect(noteAsLilypond(createNoteFromLilypond('e\'8..'))).to.eq('e\'8..');
+        });
+        it('should convert tied notes to Lilypond', () => {
+            expect(noteAsLilypond(createNoteFromLilypond('e\'1~'))).to.eq('e\'1~');
         });
     });
 

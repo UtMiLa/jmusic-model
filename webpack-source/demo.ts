@@ -93,12 +93,11 @@ const musicDef: ScoreDef = {
             initialMeter: { count: 4, value: 4 },
             voices: [
                 {
-                    contentDef: ['g4 r4 a2', 'c4 d4 e4 g4'],
+                    contentDef: ['g4 r4 a2', 'c4 d4~ d4 g4'],
                     noteDirection: NoteDirection.Up
                 },
                 
                 {
-                    //contentDef: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4']
                     contentDef: [
                         'g,2 ees,2 g,2 ees,2 g,2 ees,2'
                     ],
