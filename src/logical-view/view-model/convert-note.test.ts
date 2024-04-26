@@ -228,4 +228,12 @@ describe('View model, note', () => {
         expect(viewModel.text).to.deep.equal(['ghjk', 'ery']);
     });
     
+    it('should color a selected note', () => {
+        const note: Note = createNoteFromLilypond('c\'2');
+
+        const viewModel = noteToView(note, clef, true);
+
+        expect(viewModel.colors).to.deep.equal(['#88f']);
+    });
+    
 });

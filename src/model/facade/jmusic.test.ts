@@ -134,6 +134,8 @@ describe('Facade', () => {
             const jMusicObj = new JMusic(meterModel);
 
             expect(jMusicObj.staves).to.have.length(2);
+            expect(jMusicObj.staves[0].voices[0].noteDirection).to.eq(NoteDirection.Up);
+            expect(jMusicObj.staves[0].voices[1].noteDirection).to.eq(NoteDirection.Down);
         });
 
         it('should create a score from a ScoreDef including repeats', () => {
@@ -161,8 +163,7 @@ describe('Facade', () => {
             const jMusic = new JMusic(scoreDef);
 
             expect(jMusic.repeats).to.have.length(4);
-            expect(jMusic.staves[0].voices[0].noteDirection).to.eq(NoteDirection.Up);
-            expect(jMusic.staves[0].voices[1].noteDirection).to.eq(NoteDirection.Down);            
+            expect(jMusic.staves[0].voices[0].noteDirection).to.eq(NoteDirection.Down);
         });
 
             

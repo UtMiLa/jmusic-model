@@ -47,7 +47,7 @@ function HSVtoRGB(h: number, s: number, v: number) {
 
 
 
-export function noteToView(note: Note, clef: Clef): NoteViewModel {
+export function noteToView(note: Note, clef: Clef, isSelected = false): NoteViewModel {
     const positions = note.pitches.map(p => clef.map(p)).sort();
     let direction = note.direction;
     if (!direction) {
@@ -83,6 +83,7 @@ export function noteToView(note: Note, clef: Clef): NoteViewModel {
     if (note.tupletFactor) res.tuplet = true;
     if (note.expressions) res.expressions = [...note.expressions];
     if (note.text) res.text = [...note.text];
+    if (isSelected) res.colors = note.pitches.map(() => '#88f');
 
     return res;
 }
