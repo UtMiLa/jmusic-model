@@ -152,6 +152,17 @@ function convertRest(note: NoteViewModel, xPos: number, settings: Metrics) {
 
     addDots(note, staffLine * settings.scaleDegreeUnit*2, settings, res, xPos);
 
+    
+    if (note.selected) {
+        return [{
+            element: OtherVarSizeGlyphs.Selection,
+            position: { x: xPos - 5, y: staffLine * settings.scaleDegreeUnit*2 - 10 },
+            length: 20,
+            height: 20
+        } as PhysicalElementBase, ...res];
+    }
+
+
     return res;
 }
 

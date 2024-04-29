@@ -162,6 +162,34 @@ describe('Physical model, notes', () => {
 
     });
 
+    it('should add a square on a selected rest', () => {
+        //
+        const note =                         {
+            positions: [],
+            noteType: NoteType.RQuarter,
+            flagType: FlagType.None,
+            direction: NoteDirection.Down,
+            selected: true
+        };
+
+        const physical = convertNote(note, 20, defaultMetrics);
+
+        expect(physical.length).to.eq(2);
+
+        expect(physical[0]).to.deep.eq({
+            element: OtherVarSizeGlyphs.Selection,
+            position: { x: 15, y: defaultMetrics.scaleDegreeUnit*2 - 10 },
+            height: 20,
+            length: 20
+        });
+
+        expect(physical[1]).to.deep.eq({
+            glyph: 'rests.2',
+            position: { x: 20, y: defaultMetrics.scaleDegreeUnit*2 }
+        });
+
+    });
+
 
     describe('Rests', () => {
         it('should render rests for empty notes', () => {
