@@ -1,3 +1,4 @@
+import { ElementIdentifier, Selection } from './../../selection/selection-types';
 import { RepeatDef } from './../../model/score/repeats';
 import { getStateAt, ScopedTimeKey } from './state-map';
 import { StateChange } from './../../model/states/state';
@@ -13,7 +14,6 @@ import { keyToView } from './convert-key';
 import { FlagType, NoteViewModel, BeamingViewModel } from './note-view-model';
 import { NoteDirection } from '../../model';
 import { Clef } from '../../model';
-import { StaffDef } from '../../model';
 import { Key } from '../../model';
 import { calcBeamGroups } from '../../model';
 import { noteToView } from './convert-note';
@@ -23,6 +23,8 @@ import { repeatsToView } from './convert-repeat';
 import { LongDecoToView } from './convert-decoration';
 import { EventType, getExtendedTime } from '../../model/score/timing-order';
 import { State } from './running-state';
+import { option } from 'fp-ts';
+import { pipe } from 'fp-ts/lib/function';
 
 
 
@@ -44,16 +46,17 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
 }
 
 
-export function scoreModelToViewModel(def: Score, restrictions: SubsetDef = { startTime: Time.StartTimeMinus, endTime: Time.EternityTime }): ScoreViewModel {
+export function scoreModelToViewModel(def: Score, selection: option.Option<Selection> = option.none, restrictions: SubsetDef = { startTime: Time.StartTimeMinus, endTime: Time.EternityTime }): ScoreViewModel {
     const stateMap = createStateMap(def);
     //console.log('scoreModelToViewModel', def);    
 
     return { staves: def.staves.map((staff, staffNo) => staffModelToViewModel(staff, stateMap.clone((key: ScopedTimeKey, value: StateChange) => {
         return key.scope === undefined || key.scope === staffNo;
-    }), staffNo, restrictions, def.repeats)) };
+    }), staffNo, restrictions, selection, def.repeats)) };
 }
 
-function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef, repeats: RepeatDef[] | undefined = undefined): StaffViewModel {
+function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef, selection: option.Option<Selection>, 
+    repeats: RepeatDef[] | undefined = undefined): StaffViewModel {
 
     //console.log(def, stateMap, staffNo);
     //(restrictions.startTime as ExtendedTime).extended = -Infinity;
@@ -107,7 +110,7 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
     });
 
 
-    const staffEndTime = createViewModelsForVoice(def, staffNo, meter, meterMap, clef, timeSlots, stateMap);
+    const staffEndTime = createViewModelsForVoice(def, staffNo, meter, meterMap, clef, timeSlots, stateMap, selection);
 
     if (meter) {
         addBarLines(meterMap, staffEndTime, timeSlots);
@@ -163,7 +166,8 @@ function clefToView(clef: Clef): ClefViewModel {
     };
 }
 
-function createViewModelsForVoice(def: Staff, staffNo: number, meter: Meter | undefined, meterMap: MeterMap, clef: Clef, timeSlots: TimeSlotViewModel[], stateMap: IndexedMap<StateChange, ScopedTimeKey>) {
+function createViewModelsForVoice(def: Staff, staffNo: number, meter: Meter | undefined, meterMap: MeterMap, clef: Clef, 
+    timeSlots: TimeSlotViewModel[], stateMap: IndexedMap<StateChange, ScopedTimeKey>, selection: option.Option<Selection>) {
     let staffEndTime = Time.newAbsolute(0, 1);
 
     def.voices.forEach((voice, voiceNo) => {
@@ -197,14 +201,14 @@ function createViewModelsForVoice(def: Staff, staffNo: number, meter: Meter | un
                 });
             }
 
-            createTimeSlotViewModels(state, voiceTimeSlot, stateMap, staffNo);
+            createTimeSlotViewModels(state, voiceTimeSlot, stateMap, staffNo, selection);
         });
 
     });
     return staffEndTime;
 }
 
-function createTimeSlotViewModels(state: State, voiceTimeSlot: TimeSlot, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo: number) {
+function createTimeSlotViewModels(state: State, voiceTimeSlot: TimeSlot, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo: number, selection: option.Option<Selection>) {
 
     const clefChg = stateMap.peekLatest({ absTime: voiceTimeSlot.time, scope: staffNo }, (key, value) => !!value.clef);
     if (clefChg && clefChg.clef && clefChg.clef !== state.clef) {
@@ -221,7 +225,7 @@ function createTimeSlotViewModels(state: State, voiceTimeSlot: TimeSlot, stateMa
         state.setMeter(meterChg.meter, voiceTimeSlot.time);
     }
 
-    const elements = createNoteViewModels(state);
+    const elements = createNoteViewModels(state, selection);
 
     createAccidentalViewModel(state);
 
@@ -295,8 +299,8 @@ function createAccidentalViewModel(state: State) { // todo: this should be done 
 
 
 
-function createNoteViewModels(state: State): NoteViewModel[] {
-    return state.voiceTimeSlot.elements.map((note) => {
+function createNoteViewModels(state: State, selection: option.Option<Selection> = option.none): NoteViewModel[] {
+    return state.voiceTimeSlot.elements.map((note, elementNo) => {
         const bg = state.voiceBeamGroups.find(vbg => vbg.notes.find(n => n.uniq === note.uniq));
 
         if (bg && bg.notes[0].uniq === note.uniq) {
@@ -329,7 +333,14 @@ function createNoteViewModels(state: State): NoteViewModel[] {
         const noteClone = note.direction ? setNoteDirection(note, note.direction)
             : state.voice.noteDirection ? setNoteDirection(note, state.voice.noteDirection)
                 : note;
-        const noteView = noteToView(noteClone, state.clef);
+
+        const testSelection = option.map<Selection, boolean>(s => s.isSelected(
+            { elementNo, staffNo: state.staffNo, voiceNo: state.voiceNo }
+        ));
+        const fallback = option.getOrElse<boolean>(() => false);
+        const isSelected = pipe(selection, testSelection, fallback);
+
+        const noteView = noteToView(noteClone, state.clef, isSelected);
 
         if (bg)
             noteView.flagType = FlagType.Beam;
@@ -339,4 +350,4 @@ function createNoteViewModels(state: State): NoteViewModel[] {
 }
 
 export const __internal = { 
-    staffModelToViewModel: (def: Staff, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef = { startTime: Time.StartTime, endTime: Time.EternityTime }) => staffModelToViewModel(def, stateMap, staffNo, restrictions), createNoteViewModels, State };
+    staffModelToViewModel: (def: Staff, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, selection: option.Option<Selection> = option.none, restrictions: SubsetDef = { startTime: Time.StartTime, endTime: Time.EternityTime }) => staffModelToViewModel(def, stateMap, staffNo, restrictions, selection), createNoteViewModels, State };

@@ -124,38 +124,6 @@ export type GlyphCode =
     'zero' | 'one' | 'two' | 'three' | 'four' | 'five' | 'six' | 'seven' | 'eight' | 'nine' | 
     'f' | 'm' | 'p' | 'r' | 's' | 'z';
 
-export enum FixedSizeGlyphs {
-    BrevisHead,
-    WholeHead,
-    HalfHead,
-    QuarterHead,
-    BrevisRest,
-    WholeRest,
-    HalfRest,
-    QuarterRest,
-    Small8Rest,
-    Small16Rest,
-    Small32Rest,
-    Small64Rest,
-    Small128Rest,
-
-    GClef,
-    CClef,
-    FClef,
-    PercussionClef,
-
-    MeterNumber0,
-    MeterNumber1,
-    MeterNumber2,
-    MeterNumber3,
-    MeterNumber4,
-    MeterNumber5,
-    MeterNumber6,
-    MeterNumber7,
-    MeterNumber8,
-    MeterNumber9,
-}
-
 
 export enum HorizVarSizeGlyphs {
     Stem = 101,
@@ -180,3 +148,7 @@ export enum VertVarSizeGlyphs {
 }
 
 
+
+export enum OtherVarSizeGlyphs {
+    Selection = 201
+}

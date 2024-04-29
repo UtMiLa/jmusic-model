@@ -6,7 +6,7 @@ import { renderOnRenderer } from './render';
 import { DrawOperation, DrawOperationType } from './render-types';
 import * as sinon from 'sinon';
 import { StandardMetrics } from '../physical/metrics';
-import { FixedSizeGlyphs, HorizVarSizeGlyphs, VertVarSizeGlyphs } from '../physical/glyphs';
+import { HorizVarSizeGlyphs, VertVarSizeGlyphs } from '../physical/glyphs';
 
 class MockRenderer implements Renderer {
     draw(strokeColor: string, fillColor: string, operations: DrawOperation[], path?: boolean | undefined): void {

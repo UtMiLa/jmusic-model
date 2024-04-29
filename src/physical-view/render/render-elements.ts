@@ -92,6 +92,23 @@ export function renderBar(elem: PhysicalElementBase, position: RenderPosition, r
 }
 
 
+export function renderSelection(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point): void {
+    const convertX = (x: number) => convertXY({x, y:0}).x;
+    const convertY = (y: number) => convertXY({x:0, y}).y;
+
+    //const scale = (elem as any).scale ? (elem as any).scale : 1;
+
+    const drawOp: DrawOperation[] = [
+        { type: DrawOperationType.MoveTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y) }] },
+        { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height) }] },
+        { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x + (elem.length ?? 0)), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height) }] },
+        { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x + (elem.length ?? 0)), y: convertY(elem.position.y) }] },
+        { type: DrawOperationType.Fill, points: [] }];
+
+    renderer.draw('#000000', '#88ff88', drawOp);
+}
+
+
 export function renderStem(elem: PhysicalElementBase, position: RenderPosition, renderer: Renderer, convertXY: (p: Point, v?: Point) => Point): void {
 
     const drawOp: DrawOperation[] = [

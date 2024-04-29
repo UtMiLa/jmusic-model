@@ -233,7 +233,7 @@ describe('View model, note', () => {
 
         const viewModel = noteToView(note, clef, true);
 
-        expect(viewModel.colors).to.deep.equal(['#88f']);
+        expect(viewModel.selected).to.be.true;
     });
     
 });

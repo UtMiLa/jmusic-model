@@ -11,7 +11,7 @@ import { NoteType, NoteDirection } from '../../model';
 import { ClefType } from '../../model';
 import { PhysicalElementBase, PhysicalVertVarSizeElement, getPhysicalRect } from './physical-elements';
 import { Metrics, StandardMetrics } from './metrics';
-import { VertVarSizeGlyphs, FixedSizeGlyphs } from './glyphs';
+import { VertVarSizeGlyphs } from './glyphs';
 import { expect } from 'chai';
 import { viewModelToPhysical } from './viewmodel-to-physical';
 import { ScoreViewModel } from '../../logical-view';

@@ -9,6 +9,8 @@ import { RenderPosition } from '../src/physical-view/render/render-types';
 import { ProjectFlex } from '../src/model/facade/project-flex';
 import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
+import { SelectionAll } from '../src/selection/query';
+import { option } from 'fp-ts';
 
 console.log('Demo');
 
@@ -132,7 +134,7 @@ export function render(): void {
     try {
 
         const restrictions = { startTime: Time.StartTime, endTime: Time.EternityTime };
-        const logicalModel = scoreModelToViewModel(jMusic, restrictions);
+        const logicalModel = scoreModelToViewModel(jMusic, option.some(new SelectionAll()), restrictions);
 
         const cursor = {
             absTime: insertionPoint?.time,

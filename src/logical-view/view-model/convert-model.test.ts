@@ -1,3 +1,4 @@
+import { Selection } from './../../selection/selection-types';
 import { getExtendedTime, EventType } from '../../model/score/timing-order';
 import { Note, UpdateNote } from './../../model/notes/note';
 import { InsertionPoint } from './../../editor/insertion-point';
@@ -12,6 +13,8 @@ import { Clef } from './../../model';
 import { scoreModelToViewModel, __internal } from './convert-model';
 import { createTestStaff } from '../../tools/test-tools';
 import { createScopedTimeMap } from './state-map';
+import { option } from 'fp-ts';
+import { SelectionAll } from '../../selection/query';
 /* eslint-disable comma-dangle */
 
 describe('View model', () => {
@@ -442,7 +445,7 @@ describe('View model', () => {
         const log1 = scoreModelToViewModel(score);
         expect(log1.staves[0].timeSlots[1].notes[0]).to.deep.include({ positions: [1], uniq: '0-0-0' });
 
-        const log2 = scoreModelToViewModel(score, { startTime: Time.newAbsolute(1, 1), endTime: Time.EternityTime });
+        const log2 = scoreModelToViewModel(score, option.none, { startTime: Time.newAbsolute(1, 1), endTime: Time.EternityTime });
         expect(log2.staves[0].timeSlots[0].notes[0]).to.deep.include({ positions: [2], uniq: '0-0-1' });
     });
 
@@ -457,7 +460,7 @@ describe('View model', () => {
         expect(log1.staves[0].timeSlots[0].meter).to.deep.eq({ meterText: ['4', '4'] });
         expect(log1.staves[0].timeSlots[0].key).to.deep.eq({ keyPositions: [] });
 
-        const log2 = scoreModelToViewModel(score, { startTime: Time.newAbsolute(2, 1), endTime: Time.EternityTime });
+        const log2 = scoreModelToViewModel(score, option.none, { startTime: Time.newAbsolute(2, 1), endTime: Time.EternityTime });
         expect(log2.staves[0].timeSlots[1].notes[0]).to.deep.include({ positions: [3], uniq: '0-0-3' });
         expect(log2.staves[0].timeSlots[0].clef).to.deep.eq({ clefType: ClefType.G, line: -2, position: 1, transposition: 0});
         expect(log2.staves[0].timeSlots[0].meter).to.be.undefined;
@@ -467,7 +470,7 @@ describe('View model', () => {
     it('should time-restrict endpoint', () => {
         const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], meter: '4/4' });
 
-        const log2 = scoreModelToViewModel(score, { startTime: Time.newAbsolute(1, 1), endTime: Time.newAbsolute(2, 1) });
+        const log2 = scoreModelToViewModel(score, option.none, { startTime: Time.newAbsolute(1, 1), endTime: Time.newAbsolute(2, 1) });
         expect(log2.staves[0].timeSlots[1].notes[0]).to.deep.include({ positions: [2], uniq: '0-0-1' });
         expect(log2.staves[0].timeSlots[3].notes).to.deep.eq([]);
         expect(log2.staves[0].timeSlots[3].accidentals).to.deep.eq([]);
@@ -534,6 +537,31 @@ describe('View model', () => {
             ]);
         });
     
+    });
+
+
+    
+    describe('Selections', () => {
+        it('should select nothing if selection not provided', () => {            
+            const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], meter: '4/4' });
+
+            const log2 = scoreModelToViewModel(score, option.none, { startTime: Time.newAbsolute(1, 1), endTime: Time.newAbsolute(2, 1) });
+            log2.staves[0].timeSlots.forEach(slot => {
+                if (slot?.notes?.length)
+                    expect(slot.notes[0]).to.not.include({ selected: true });
+            });
+            
+        });
+
+        it('should select everything if all-selection provided', () => {            
+            const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], meter: '4/4' });
+
+            const log2 = scoreModelToViewModel(score, option.some(new SelectionAll), { startTime: Time.newAbsolute(1, 1), endTime: Time.newAbsolute(2, 1) });
+            log2.staves[0].timeSlots.forEach(slot => {
+                if (slot?.notes?.length)
+                    expect(slot.notes[0]).to.include({ selected: true });
+            });
+        });
     });
 
 });

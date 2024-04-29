@@ -48,5 +48,6 @@ export interface NoteViewModel {
     text?: string[];
     colors?: string[];
     grace?: boolean;
+    selected?: boolean;
 }
 

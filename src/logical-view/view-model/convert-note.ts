@@ -83,7 +83,7 @@ export function noteToView(note: Note, clef: Clef, isSelected = false): NoteView
     if (note.tupletFactor) res.tuplet = true;
     if (note.expressions) res.expressions = [...note.expressions];
     if (note.text) res.text = [...note.text];
-    if (isSelected) res.colors = note.pitches.map(() => '#88f');
+    if (isSelected) res.selected = true;
 
     return res;
 }

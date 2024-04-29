@@ -1,4 +1,4 @@
-import { GlyphCode } from '../physical/glyphs';
+import { GlyphCode, OtherVarSizeGlyphs } from '../physical/glyphs';
 import { VertVarSizeGlyphs, HorizVarSizeGlyphs } from './glyphs';
 
 export interface Point {
@@ -7,7 +7,7 @@ export interface Point {
 }
 
 export interface PhysicalElementBase {
-    element?: VertVarSizeGlyphs | HorizVarSizeGlyphs;
+    element?: VertVarSizeGlyphs | HorizVarSizeGlyphs | OtherVarSizeGlyphs;
     position: Point;
     length?: number;
     height?: number;

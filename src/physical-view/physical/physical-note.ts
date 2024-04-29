@@ -1,6 +1,6 @@
 import { FlagType, NoteViewModel } from '../../logical-view';
 import { Note, NoteDirection, NoteType } from '../../model';
-import { GlyphCode, HorizVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
+import { GlyphCode, HorizVarSizeGlyphs, OtherVarSizeGlyphs, VertVarSizeGlyphs } from './glyphs';
 import { Metrics } from './metrics';
 import { PhysicalElementBase, PhysicalHorizVarSizeElement, PhysicalFixedSizeElement, PhysicalVertVarSizeElement, PhysicalTextElement } from './physical-elements';
 import { calcDisplacements, scaleDegreeToY } from './functions';
@@ -91,6 +91,14 @@ export function convertNote(note: NoteViewModel, xPos: number, settings: Metrics
         //console.log('added expressions', note, result);        
     }
 
+    if (note.selected) {
+        result = [{
+            element: OtherVarSizeGlyphs.Selection,
+            position: { x: xPos - 5, y: stemBaseY - 10 },
+            length: 20,
+            height: 20
+        } as PhysicalElementBase, ...result];
+    }
 
     return result;
 }

@@ -1,12 +1,12 @@
 import { DrawOperation, RenderPosition } from './render-types';
 import { PhysicalElementBase } from '../physical/physical-elements';
 import { Point } from '../physical/physical-elements';
-import { VertVarSizeGlyphs } from '../physical/glyphs';
+import { OtherVarSizeGlyphs, VertVarSizeGlyphs } from '../physical/glyphs';
 import { PhysicalModel } from '../physical/physical-elements';
 import { HorizVarSizeGlyphs } from '../physical/glyphs';
 import { Renderer } from './base-renderer';
 import { CanvasRenderer } from './canvas-renderer';
-import { renderBar, renderBeam, renderCursor, renderLongElement, renderStaffLine, renderStem, renderText, renderTie, renderTupletBracket } from './render-elements';
+import { renderBar, renderBeam, renderCursor, renderLongElement, renderSelection, renderStaffLine, renderStem, renderText, renderTie, renderTupletBracket } from './render-elements';
 
 export function renderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition): void {
     renderOnRenderer(physicalModel, new CanvasRenderer(canvas), position);
@@ -48,6 +48,16 @@ export function renderOnRenderer(physicalModel: PhysicalModel, renderer: Rendere
     renderFunctions[VertVarSizeGlyphs.Tie] = renderTie;
     renderFunctions[HorizVarSizeGlyphs.Cursor] = renderCursor;
 
+
+    physicalModel.elements.forEach(elem => {
+
+        if (elem.element === OtherVarSizeGlyphs.Selection) {
+
+            renderSelection(elem, position, renderer, convertXY);
+
+        } 
+
+    });
 
     physicalModel.elements.forEach(elem => {
 
