@@ -335,7 +335,7 @@ function createNoteViewModels(state: State, selection: option.Option<Selection> 
                 : note;
 
         const testSelection = option.map<Selection, boolean>(s => s.isSelected(
-            { elementNo, staffNo: state.staffNo, voiceNo: state.voiceNo }
+            { elementNo: state.slotNo, staffNo: state.staffNo, voiceNo: state.voiceNo }
         ));
         const fallback = option.getOrElse<boolean>(() => false);
         const isSelected = pipe(selection, testSelection, fallback);

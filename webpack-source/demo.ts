@@ -9,10 +9,10 @@ import { RenderPosition } from '../src/physical-view/render/render-types';
 import { ProjectFlex } from '../src/model/facade/project-flex';
 import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
-import { SelectionAll } from '../src/selection/query';
+import { SelectionAll, SelectionVoiceTime } from '../src/selection/query';
 import { option } from 'fp-ts';
 
-console.log('Demo');
+//console.log('Demo');
 
 function myRenderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition) {
     renderOnRenderer(physicalModel, new MyCanvasRenderer(canvas), position);
@@ -134,7 +134,15 @@ export function render(): void {
     try {
 
         const restrictions = { startTime: Time.StartTime, endTime: Time.EternityTime };
-        const logicalModel = scoreModelToViewModel(jMusic, option.some(new SelectionAll()), restrictions);
+        const select = new SelectionVoiceTime(jMusic, 1, 0, Time.newAbsolute(7, 32), Time.newAbsolute(11, 8));
+        const logicalModel = scoreModelToViewModel(
+            jMusic, 
+            //option.some(new SelectionVoiceTime(jMusic.model, 1, 0, Time.StartTime, Time.newAbsolute(1, 2))), 
+            //option.some(new SelectionVoiceTime(jMusic.model, 1, 0, Time.newAbsolute(1, 2), Time.EternityTime)), 
+            option.some(select),
+            restrictions);
+
+        //console.log('Sel', select.isSelected({ elementNo: 2, staffNo: 1, voiceNo: 0 }));
 
         const cursor = {
             absTime: insertionPoint?.time,

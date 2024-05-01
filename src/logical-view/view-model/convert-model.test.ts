@@ -14,7 +14,7 @@ import { scoreModelToViewModel, __internal } from './convert-model';
 import { createTestStaff } from '../../tools/test-tools';
 import { createScopedTimeMap } from './state-map';
 import { option } from 'fp-ts';
-import { SelectionAll } from '../../selection/query';
+import { SelectionAll, SelectionVoiceTime } from '../../selection/query';
 /* eslint-disable comma-dangle */
 
 describe('View model', () => {
@@ -560,6 +560,45 @@ describe('View model', () => {
             log2.staves[0].timeSlots.forEach(slot => {
                 if (slot?.notes?.length)
                     expect(slot.notes[0]).to.include({ selected: true });
+            });
+        });
+
+        
+        it('should select notes in time interval', () => {            
+            const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], meter: '4/4' });
+
+            const log2 = scoreModelToViewModel(score, 
+                option.some(new SelectionVoiceTime(score, 0, 0, Time.newAbsolute(1, 1), Time.newAbsolute(2, 1))), 
+                { startTime: Time.newAbsolute(1, 1), endTime: Time.newAbsolute(2, 1) }
+            );
+            log2.staves[0].timeSlots.forEach((slot, i) => {
+                if (slot.notes.length) {
+                    expect(slot.notes[0]).to.include({ selected: i === 1 });
+                }
+            });
+            log2.staves[1].timeSlots.forEach((slot, i) => {
+                if (slot.notes.length) {
+                    expect(slot.notes[0]).to.not.include({ selected: true });
+                }
+            });
+        });
+        
+        it('should select notes in off-beat time interval', () => {            
+            const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], meter: '4/4' });
+
+            const log2 = scoreModelToViewModel(score, 
+                option.some(new SelectionVoiceTime(score, 0, 0, Time.newAbsolute(3, 4), Time.newAbsolute(9, 8))), 
+                { startTime: Time.newAbsolute(1, 1), endTime: Time.newAbsolute(2, 1) }
+            );
+            log2.staves[0].timeSlots.forEach((slot, i) => {
+                if (slot.notes.length) {
+                    expect(slot.notes[0].selected).to.eq( i === 1 );
+                }
+            });
+            log2.staves[1].timeSlots.forEach((slot) => {
+                if (slot.notes.length) {
+                    expect(slot.notes[0].selected).to.be.undefined;
+                }
             });
         });
     });
