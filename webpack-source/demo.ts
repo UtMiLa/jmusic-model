@@ -1,3 +1,4 @@
+import { SelectionManager } from './../src/selection/selection-types';
 import { TextCommandEngine } from './../src/editor/text-command-engine';
 import { Cursor } from './../src/physical-view/physical/cursor';
 import { InsertionPoint } from './../src/editor/insertion-point';
@@ -38,7 +39,7 @@ term.onData(e => {
         case '\r': // Enter
             try {
                 const cmd = TextCommandEngine.parse(command);
-                cmd.execute(jMusic, insertionPoint);
+                cmd.execute(jMusic, insertionPoint, selMan);
                 command = '';
                 render();
             } catch (e) {
@@ -119,7 +120,7 @@ input.addEventListener('keydown', ev => {
     if (ev.key === 'Enter') {
         console.log(ev, input.value);
         const cmd = TextCommandEngine.parse(input.value);
-        cmd.execute(jMusic, insertionPoint);
+        cmd.execute(jMusic, insertionPoint, selMan);
         input.value = '';
         //insertionPoint.moveToTime(Time.fromStart(Time.WholeTime));
         //jMusic.addKeyChg(insertionPoint, { accidental: 1, count: 2 });
@@ -127,6 +128,9 @@ input.addEventListener('keydown', ev => {
     }
 });
 
+const selMan = new SelectionManager();
+const select = new SelectionVoiceTime(jMusic, 1, 0, Time.newAbsolute(7, 32), Time.newAbsolute(11, 8));
+selMan.setSelection(select);
 
 const textContainer = (document.querySelector('#message') as HTMLDivElement);
 
@@ -134,12 +138,11 @@ export function render(): void {
     try {
 
         const restrictions = { startTime: Time.StartTime, endTime: Time.EternityTime };
-        const select = new SelectionVoiceTime(jMusic, 1, 0, Time.newAbsolute(7, 32), Time.newAbsolute(11, 8));
         const logicalModel = scoreModelToViewModel(
             jMusic, 
             //option.some(new SelectionVoiceTime(jMusic.model, 1, 0, Time.StartTime, Time.newAbsolute(1, 2))), 
             //option.some(new SelectionVoiceTime(jMusic.model, 1, 0, Time.newAbsolute(1, 2), Time.EternityTime)), 
-            option.some(select),
+            selMan.get(),
             restrictions);
 
         //console.log('Sel', select.isSelected({ elementNo: 2, staffNo: 1, voiceNo: 0 }));

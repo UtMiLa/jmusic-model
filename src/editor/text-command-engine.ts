@@ -1,29 +1,29 @@
+import { SelectionManager } from './../selection/selection-types';
 import { InsertionPoint } from './insertion-point';
 import { Model } from '../model';
 import R = require('ramda');
 import { navigationCommands } from './text-commands/navigation-commands';
-import { commandDescriptor, editCommands } from './text-commands/edit-commands';
-import { matches } from './text-commands/base-argument-types';
+import { editCommands } from './text-commands/edit-commands';
 import { either } from 'fp-ts';
-import { Right } from 'fp-ts/lib/Either';
+import { selectionCommands } from './text-commands/selection-commands';
 
 export interface TextCommand {
-    execute(model: Model, ins: InsertionPoint): any;
+    execute(model: Model, ins: InsertionPoint, selMan?: SelectionManager): any;
 }
 
 
 
 export class CustomTextCommand<T> implements TextCommand {
-    constructor(private f: (model: Model, ins: InsertionPoint) => T) { }
+    constructor(private f: (model: Model, ins: InsertionPoint, selMan?: SelectionManager) => T) { }
 
-    execute(model: Model, ins: InsertionPoint): T {
-        return this.f(model, ins);
+    execute(model: Model, ins: InsertionPoint, selMan: SelectionManager): T {
+        return this.f(model, ins, selMan);
     }
 }
 
 export class TextCommandEngine {
     static parse(command: string): TextCommand {
-        const found = [...navigationCommands, ...editCommands]
+        const found = [...navigationCommands, ...editCommands, ...selectionCommands]
             //.map(cmd => commandDescriptor(cmd.argType, cmd.action as any))
             .map(cmd => cmd(command))
             .find(cmd => either.isRight(cmd));

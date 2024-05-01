@@ -7,6 +7,7 @@ import { Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSe
 import R = require('ramda');
 import { Either } from 'fp-ts/lib/Either';
 import { either } from 'fp-ts';
+import { SelectionManager } from '~/selection/selection-types';
 
 
 function addStaff(model: Model, ins: InsertionPoint): any {
@@ -30,12 +31,9 @@ function addStaff(model: Model, ins: InsertionPoint): any {
 }
 
 
-interface CommandDescriptor<T> {
-    argType: ArgType<T>;
-    action: (args: T) => (model: Model, ins: InsertionPoint) => void;
-}
 
-export function commandDescriptor<T>(argType: ArgType<T>, action: (args: T) => (model: Model, ins: InsertionPoint) => any) {
+export function commandDescriptor<T>(argType: ArgType<T>, action: (args: T) => 
+    (model: Model, ins: InsertionPoint, selDesc?: SelectionManager) => any) {
     return (input: string) => {
         const match = argType(input);
 
@@ -45,19 +43,6 @@ export function commandDescriptor<T>(argType: ArgType<T>, action: (args: T) => (
     };
 }
 
-// goto AbsoluteTime
-// goto next
-// goto prev
-// goto start
-
-
-// voice StaffNo:VoiceNo
-
-// append Some(MusicElement)
-
-// set key Key
-// set clef Clef
-// set meter Meter
 
 export const editCommands = [
    

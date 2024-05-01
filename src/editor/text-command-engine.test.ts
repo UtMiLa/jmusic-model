@@ -1,9 +1,12 @@
+import { SelectionManager } from './../selection/selection-types';
 import { expect } from 'chai';
 import { InsertionPoint } from './insertion-point';
 import Sinon = require('sinon');
 import { Clef, ClefType, JMusic, Key, MeterFactory, Time, createNoteFromLilypond, isClefChange, isKeyChange, isMeterChange, valueOf } from '../model';
 import { TextCommandEngine } from './text-command-engine';
 import { StateChange } from '../model/states/state';
+import { option } from 'fp-ts';
+import { SelectionAll } from '../selection/query';
 
 
 
@@ -245,10 +248,25 @@ describe('Text commands', () => {
             
             expect(jMusic.staves[0].voices[0].content.elements).to.have.length(4);
             
-            cmd.execute(jMusic, ins);
+            cmd.execute(jMusic, ins1);
 
             expect(jMusic.staves[0].voices[0].content.elements).to.have.length(8);
             expect((jMusic.staves[0].voices[0].content.elements[6] as any)).to.deep.eq(createNoteFromLilypond('a2'));
+        });
+
+             
+        
+        it('should set selection to all', () => {
+            const cmd = TextCommandEngine.parse('selection  set all');
+
+            const jMusic = new JMusic('c4 c4 c4 c4', { varX: 'g2 a2'});
+            const ins1 = new InsertionPoint(jMusic);
+
+            const selMan = new SelectionManager();
+            
+            cmd.execute(jMusic, ins1, selMan);
+
+            expect(selMan.get()).to.deep.eq(option.some(new SelectionAll()));
         });
 
 
