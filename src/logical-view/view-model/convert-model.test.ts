@@ -1,4 +1,4 @@
-import { Selection } from './../../selection/selection-types';
+import { Selection, SelectionManager } from './../../selection/selection-types';
 import { getExtendedTime, EventType } from '../../model/score/timing-order';
 import { Note, UpdateNote } from './../../model/notes/note';
 import { InsertionPoint } from './../../editor/insertion-point';
@@ -555,8 +555,12 @@ describe('View model', () => {
 
         it('should select everything if all-selection provided', () => {            
             const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], meter: '4/4' });
+            
+            const selection = new SelectionAll;
+            const selMan = new SelectionManager();
+            selMan.setSelection(selection);
 
-            const log2 = scoreModelToViewModel(score, option.some(new SelectionAll), { startTime: Time.newAbsolute(1, 1), endTime: Time.newAbsolute(2, 1) });
+            const log2 = scoreModelToViewModel(score, selMan.get(score), { startTime: Time.newAbsolute(1, 1), endTime: Time.newAbsolute(2, 1) });
             log2.staves[0].timeSlots.forEach(slot => {
                 if (slot?.notes?.length)
                     expect(slot.notes[0]).to.include({ selected: true });
@@ -567,8 +571,12 @@ describe('View model', () => {
         it('should select notes in time interval', () => {            
             const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], meter: '4/4' });
 
+            const selection = new SelectionVoiceTime(0, 0, Time.newAbsolute(1, 1), Time.newAbsolute(2, 1));
+            const selMan = new SelectionManager();
+            selMan.setSelection(selection);
+
             const log2 = scoreModelToViewModel(score, 
-                option.some(new SelectionVoiceTime(score, 0, 0, Time.newAbsolute(1, 1), Time.newAbsolute(2, 1))), 
+                selMan.get(score), 
                 { startTime: Time.newAbsolute(1, 1), endTime: Time.newAbsolute(2, 1) }
             );
             log2.staves[0].timeSlots.forEach((slot, i) => {
@@ -587,7 +595,7 @@ describe('View model', () => {
             const score = new JMusic({ content: [['c\'\'1 d\'\'1 ees\'\'1'], ['c\'1 d\'1 e\'1']], meter: '4/4' });
 
             const log2 = scoreModelToViewModel(score, 
-                option.some(new SelectionVoiceTime(score, 0, 0, Time.newAbsolute(3, 4), Time.newAbsolute(9, 8))), 
+                option.some(element => new SelectionVoiceTime(0, 0, Time.newAbsolute(3, 4), Time.newAbsolute(9, 8)).isSelected(score, element)), 
                 { startTime: Time.newAbsolute(1, 1), endTime: Time.newAbsolute(2, 1) }
             );
             log2.staves[0].timeSlots.forEach((slot, i) => {

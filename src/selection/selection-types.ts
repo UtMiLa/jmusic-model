@@ -1,3 +1,5 @@
+import { pipe } from 'fp-ts/lib/function';
+import { Model } from './../model/model';
 import { option } from 'fp-ts';
 
 
@@ -7,8 +9,12 @@ export interface ElementIdentifier {
     elementNo: number;
 }
 
+export interface SelectionFunc {
+    (element: ElementIdentifier): boolean;
+}
+
 export interface Selection {
-    isSelected(element: ElementIdentifier): boolean;
+    isSelected(model: Model, element: ElementIdentifier): boolean;
 }
 
 /*export interface SelectionManager {
@@ -36,8 +42,11 @@ export class SelectionManager {
     intersectSelection(s: Selection): void {
         throw 'Not implemented';
     }
-    get(): option.Option<Selection> {
-        return option.fromNullable(this.selection);
+    get(model: Model): option.Option<SelectionFunc> {
+        return pipe(this.selection, 
+            option.fromNullable,
+            option.map(sel => (element: ElementIdentifier) => sel.isSelected(model, element))
+        );
     }
 
 }

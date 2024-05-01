@@ -1,4 +1,4 @@
-import { ElementIdentifier, Selection } from './../../selection/selection-types';
+import { ElementIdentifier, Selection, SelectionFunc } from './../../selection/selection-types';
 import { RepeatDef } from './../../model/score/repeats';
 import { getStateAt, ScopedTimeKey } from './state-map';
 import { StateChange } from './../../model/states/state';
@@ -46,7 +46,7 @@ function getTimeSlot(timeSlots: TimeSlotViewModel[], time: AbsoluteTime): TimeSl
 }
 
 
-export function scoreModelToViewModel(def: Score, selection: option.Option<Selection> = option.none, restrictions: SubsetDef = { startTime: Time.StartTimeMinus, endTime: Time.EternityTime }): ScoreViewModel {
+export function scoreModelToViewModel(def: Score, selection: option.Option<SelectionFunc> = option.none, restrictions: SubsetDef = { startTime: Time.StartTimeMinus, endTime: Time.EternityTime }): ScoreViewModel {
     const stateMap = createStateMap(def);
     //console.log('scoreModelToViewModel', def);    
 
@@ -55,7 +55,7 @@ export function scoreModelToViewModel(def: Score, selection: option.Option<Selec
     }), staffNo, restrictions, selection, def.repeats)) };
 }
 
-function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef, selection: option.Option<Selection>, 
+function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, restrictions: SubsetDef, selection: option.Option<SelectionFunc>, 
     repeats: RepeatDef[] | undefined = undefined): StaffViewModel {
 
     //console.log(def, stateMap, staffNo);
@@ -167,7 +167,7 @@ function clefToView(clef: Clef): ClefViewModel {
 }
 
 function createViewModelsForVoice(def: Staff, staffNo: number, meter: Meter | undefined, meterMap: MeterMap, clef: Clef, 
-    timeSlots: TimeSlotViewModel[], stateMap: IndexedMap<StateChange, ScopedTimeKey>, selection: option.Option<Selection>) {
+    timeSlots: TimeSlotViewModel[], stateMap: IndexedMap<StateChange, ScopedTimeKey>, selection: option.Option<SelectionFunc>) {
     let staffEndTime = Time.newAbsolute(0, 1);
 
     def.voices.forEach((voice, voiceNo) => {
@@ -208,7 +208,7 @@ function createViewModelsForVoice(def: Staff, staffNo: number, meter: Meter | un
     return staffEndTime;
 }
 
-function createTimeSlotViewModels(state: State, voiceTimeSlot: TimeSlot, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo: number, selection: option.Option<Selection>) {
+function createTimeSlotViewModels(state: State, voiceTimeSlot: TimeSlot, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo: number, selection: option.Option<SelectionFunc>) {
 
     const clefChg = stateMap.peekLatest({ absTime: voiceTimeSlot.time, scope: staffNo }, (key, value) => !!value.clef);
     if (clefChg && clefChg.clef && clefChg.clef !== state.clef) {
@@ -299,7 +299,7 @@ function createAccidentalViewModel(state: State) { // todo: this should be done 
 
 
 
-function createNoteViewModels(state: State, selection: option.Option<Selection> = option.none): NoteViewModel[] {
+function createNoteViewModels(state: State, selection: option.Option<SelectionFunc> = option.none): NoteViewModel[] {
     return state.voiceTimeSlot.elements.map((note, elementNo) => {
         const bg = state.voiceBeamGroups.find(vbg => vbg.notes.find(n => n.uniq === note.uniq));
 
@@ -334,7 +334,7 @@ function createNoteViewModels(state: State, selection: option.Option<Selection> 
             : state.voice.noteDirection ? setNoteDirection(note, state.voice.noteDirection)
                 : note;
 
-        const testSelection = option.map<Selection, boolean>(s => s.isSelected(
+        const testSelection = option.map<SelectionFunc, boolean>(s => s(
             { elementNo: state.slotNo, staffNo: state.staffNo, voiceNo: state.voiceNo }
         ));
         const fallback = option.getOrElse<boolean>(() => false);
@@ -350,4 +350,4 @@ function createNoteViewModels(state: State, selection: option.Option<Selection> 
 }
 
 export const __internal = { 
-    staffModelToViewModel: (def: Staff, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, selection: option.Option<Selection> = option.none, restrictions: SubsetDef = { startTime: Time.StartTime, endTime: Time.EternityTime }) => staffModelToViewModel(def, stateMap, staffNo, restrictions, selection), createNoteViewModels, State };
+    staffModelToViewModel: (def: Staff, stateMap: IndexedMap<StateChange, ScopedTimeKey>, staffNo = 0, selection: option.Option<SelectionFunc> = option.none, restrictions: SubsetDef = { startTime: Time.StartTime, endTime: Time.EternityTime }) => staffModelToViewModel(def, stateMap, staffNo, restrictions, selection), createNoteViewModels, State };

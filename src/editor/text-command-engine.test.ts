@@ -5,8 +5,7 @@ import Sinon = require('sinon');
 import { Clef, ClefType, JMusic, Key, MeterFactory, Time, createNoteFromLilypond, isClefChange, isKeyChange, isMeterChange, valueOf } from '../model';
 import { TextCommandEngine } from './text-command-engine';
 import { StateChange } from '../model/states/state';
-import { option } from 'fp-ts';
-import { SelectionAll } from '../selection/query';
+import { SelectionAll, SelectionVoiceTime } from '../selection/query';
 
 
 
@@ -266,7 +265,22 @@ describe('Text commands', () => {
             
             cmd.execute(jMusic, ins1, selMan);
 
-            expect(selMan.get()).to.deep.eq(option.some(new SelectionAll()));
+            expect((selMan as any).selection).to.deep.eq(new SelectionAll());
+        });
+
+
+        
+        it('should set selection to one voice', () => {
+            const cmd = TextCommandEngine.parse('selection set  voice 0:1');
+
+            const jMusic = new JMusic('c4 c4 c4 c4', { varX: 'g2 a2'});
+            const ins1 = new InsertionPoint(jMusic);
+
+            const selMan = new SelectionManager();
+            
+            cmd.execute(jMusic, ins1, selMan);
+
+            expect((selMan as any).selection).to.deep.eq(new SelectionVoiceTime(0, 1, Time.StartTime, Time.EternityTime));
         });
 
 
