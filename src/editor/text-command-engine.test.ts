@@ -280,7 +280,7 @@ describe('Text commands', () => {
             
             cmd.execute(jMusic, ins1, selMan);
 
-            expect((selMan as any).selection).to.deep.eq(new SelectionVoiceTime(0, 1, Time.StartTime, Time.EternityTime));
+            expect((selMan as any).selection).to.deep.eq(new SelectionVoiceTime(jMusic, 0, 1, Time.StartTime, Time.EternityTime));
         });
 
 

@@ -14,7 +14,7 @@ export interface SelectionFunc {
 }
 
 export interface Selection {
-    isSelected(model: Model, element: ElementIdentifier): boolean;
+    isSelected(element: ElementIdentifier): boolean;
 }
 
 /*export interface SelectionManager {
@@ -42,10 +42,10 @@ export class SelectionManager {
     intersectSelection(s: Selection): void {
         throw 'Not implemented';
     }
-    get(model: Model): option.Option<SelectionFunc> {
+    get(): option.Option<SelectionFunc> {
         return pipe(this.selection, 
             option.fromNullable,
-            option.map(sel => (element: ElementIdentifier) => sel.isSelected(model, element))
+            option.map(sel => (element: ElementIdentifier) => sel.isSelected(element))
         );
     }
 

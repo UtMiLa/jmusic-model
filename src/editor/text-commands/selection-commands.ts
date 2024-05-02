@@ -4,7 +4,7 @@ import { InsertionPoint } from '../insertion-point';
 import { Model } from './../../model';
 import R = require('ramda');
 import { commandDescriptor } from './edit-commands';
-import { SelectionArg } from './selection-argument-types';
+import { ProtoSelection, SelectionArg } from './selection-argument-types';
 
 
 
@@ -12,7 +12,7 @@ import { SelectionArg } from './selection-argument-types';
 
 export const selectionCommands = [
     commandDescriptor(  
-        (sequence<Selection>(['selection *set ', SelectionArg])), 
-        ([selection]: [Selection]) => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.setSelection(selection)
+        (sequence<ProtoSelection>(['selection +set ', SelectionArg])), 
+        ([selection]: [ProtoSelection]) => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.setSelection(selection.actuate(model, ins))
     )
 ];

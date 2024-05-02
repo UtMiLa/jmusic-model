@@ -12,7 +12,7 @@ export class SelectionAll implements Selection {
         //
     }
 
-    isSelected(model: Model, element: ElementIdentifier): boolean {
+    isSelected(element: ElementIdentifier): boolean {
         return true; // element.staffNo === 1 && element.voiceNo === 0
     }
 
@@ -29,14 +29,14 @@ export function getTimeFromIdentifier(model: Model, element: ElementIdentifier):
 
 export class SelectionVoiceTime implements Selection {
 
-    constructor(private staffNo: number, private voiceNo: number, private from: AbsoluteTime, private to: AbsoluteTime) {
+    constructor(private model: Model, private staffNo: number, private voiceNo: number, private from: AbsoluteTime, private to: AbsoluteTime) {
         //
     }
 
-    isSelected(model: Model, element: ElementIdentifier): boolean {
+    isSelected(element: ElementIdentifier): boolean {
         //console.log('isSelected', this, element);
         if (element.staffNo !== this.staffNo || element.voiceNo !== this.voiceNo) return false;
-        const time = getTimeFromIdentifier(model, element);
+        const time = getTimeFromIdentifier(this.model, element);
         //console.log('isSelected time', time);
         if (Time.sortComparison(time, this.from) < 0 || Time.sortComparison(time, this.to) >= 0) return false;
         //console.log('isSelected true');
