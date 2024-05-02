@@ -10,9 +10,9 @@ import { IntegerArg, FixedArg, RationalArg as R0, WordArg as W0, WhitespaceArg, 
 
 const RationalArg = (R0);
 const WordArg = (W0);
+export type VoiceNo = [number | undefined, number];
 
-
-export const VoiceNoArg: ArgType<[number | undefined, number]> = (input: string) => {
+export const VoiceNoArg: ArgType<VoiceNo> = (input: string) => {
     const m = /^((\d+)[:.])?(\d+)/.exec(input);
     if (!m) return either.left('Not a voice number');
     const rest = input.substring(m[0].length);

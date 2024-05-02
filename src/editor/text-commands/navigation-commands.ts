@@ -1,5 +1,5 @@
 import { RationalDef } from './../../model/rationals/rational';
-import { VoiceNoArg } from './argument-types';
+import { VoiceNo, VoiceNoArg } from './argument-types';
 import { ArgType, RationalArg, WhitespaceArg } from './base-argument-types';
 import { sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
@@ -40,8 +40,8 @@ export const navigationCommands = [
             ins.moveToTime({ ...args[0], type: 'abs' })
     ),
     commandDescriptor(  
-        (sequence<[number | undefined, number]>(['voice ', (VoiceNoArg)])), 
-        (args: [[number | undefined, number]]) => {            
+        (sequence<VoiceNo>(['voice ', (VoiceNoArg)])), 
+        (args: [VoiceNo]) => {            
             const staff = args[0][0] ?? -1;
             return (model: Model, ins: InsertionPoint) => {
                 ins.moveToVoice((staff < 0) ? ins.staffNo : staff - 1, args[0][1] - 1);

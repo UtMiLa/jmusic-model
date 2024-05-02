@@ -13,6 +13,18 @@ import { ProtoSelection, SelectionArg } from './selection-argument-types';
 export const selectionCommands = [
     commandDescriptor(  
         (sequence<ProtoSelection>(['selection +set ', SelectionArg])), 
-        ([selection]: [ProtoSelection]) => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.setSelection(selection.actuate(model, ins))
-    )
+        ([selection]: [ProtoSelection]) => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.setSelection(selection(model, ins))
+    )/*,
+    commandDescriptor(  
+        (sequence<ProtoSelection>(['selection +also ', SelectionArg])), 
+        ([selection]: [ProtoSelection]) => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.unionSelection(selection(model, ins))
+    ),
+    commandDescriptor(  
+        (sequence<ProtoSelection>(['selection +restrict ', SelectionArg])), 
+        ([selection]: [ProtoSelection]) => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.intersectSelection(selection(model, ins))
+    ),
+    commandDescriptor(  
+        (sequence<ProtoSelection>(['selection +except ', SelectionArg])), 
+        ([selection]: [ProtoSelection]) => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.excludeSelection(selection(model, ins))
+    )*/
 ];

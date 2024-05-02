@@ -129,7 +129,7 @@ input.addEventListener('keydown', ev => {
 });
 
 const selMan = new SelectionManager();
-const select = new SelectionVoiceTime(1, 0, Time.newAbsolute(7, 32), Time.newAbsolute(11, 8));
+const select = new SelectionVoiceTime(jMusic, 1, 0, Time.newAbsolute(7, 32), Time.newAbsolute(11, 8));
 selMan.setSelection(select);
 
 const textContainer = (document.querySelector('#message') as HTMLDivElement);
@@ -142,7 +142,7 @@ export function render(): void {
             jMusic, 
             //option.some(new SelectionVoiceTime(jMusic.model, 1, 0, Time.StartTime, Time.newAbsolute(1, 2))), 
             //option.some(new SelectionVoiceTime(jMusic.model, 1, 0, Time.newAbsolute(1, 2), Time.EternityTime)), 
-            selMan.get(jMusic),
+            selMan.get(),
             restrictions);
 
         //console.log('Sel', select.isSelected({ elementNo: 2, staffNo: 1, voiceNo: 0 }));
