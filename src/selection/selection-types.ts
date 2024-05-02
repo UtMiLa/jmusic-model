@@ -17,14 +17,6 @@ export interface Selection {
     isSelected(element: ElementIdentifier): boolean;
 }
 
-/*export interface SelectionManager {
-    setSelection(s: Selection): void;
-    excludeSelection(s: Selection): void;
-    unionSelection(s: Selection): void;
-    intersectSelection(s: Selection): void;
-    get(): option.Option<Selection>;
-}*/
-
 export class SelectionManager {
     private selection: Selection | undefined;
     setSelection(s: Selection): void {
