@@ -49,13 +49,13 @@ export const ToEndTimeRestrictionArg: ArgType<[TimeRestriction, TimeRestriction]
     return ['this', Time.EternityTime];
 });
 export const ToTimeRestrictionArg: ArgType<[TimeRestriction, TimeRestriction]> = mapResult(sequence(['to ', RationalArg]), rat => {
-    return ['this', Time.EternityTime];
+    return ['this', {...rat[0], type: 'abs' }];
 });
 export const FromStartTimeRestrictionArg: ArgType<[TimeRestriction, TimeRestriction]> = mapResult(FixedArg(/from +start/), () => {
-    return [Time.StartTime, Time.EternityTime];
+    return [Time.StartTime, 'this'];
 });
 export const FromTimeRestrictionArg: ArgType<[TimeRestriction, TimeRestriction]> = mapResult(sequence(['from ', RationalArg]), rat => {
-    return [Time.StartTime, Time.EternityTime];
+    return [{...rat[0], type: 'abs' } as AbsoluteTime, 'this'];
 });
 
 export const TimeRestrictionArg = select([FromTimeRestrictionArg, FromStartTimeRestrictionArg, ToEndTimeRestrictionArg, ToTimeRestrictionArg, NoTimeRestrictionArg]);

@@ -2,7 +2,7 @@ import { SelectionVoiceTime } from './../../selection/query';
 import { Rational } from './../../model/rationals/rational';
 import { expect } from 'chai';
 import { either } from 'fp-ts';
-import { SelectionVoiceTimeArg, ToEndTimeRestrictionArg } from './selection-argument-types';
+import { FromStartTimeRestrictionArg, SelectionVoiceTimeArg, ToEndTimeRestrictionArg, ToTimeRestrictionArg } from './selection-argument-types';
 import { JMusic, Time } from '../../model';
 import { InsertionPoint } from '../insertion-point';
 
@@ -12,6 +12,27 @@ describe('Selection argument types', () => {
         if (!either.isRight(parsed)) throw 'Fail';
         const value = parsed.right;
         expect(value).to.deep.eq([['this', Time.EternityTime], '']);
+    });
+
+    it('should match current to abs time', () => {
+        const parsed = ToTimeRestrictionArg('to 8/1');
+        if (!either.isRight(parsed)) throw 'Fail';
+        const value = parsed.right;
+        expect(value).to.deep.eq([['this', Time.newAbsolute(8, 1)], '']);
+    });
+
+    it('should match from start to current', () => {
+        const parsed = FromStartTimeRestrictionArg('from start');
+        if (!either.isRight(parsed)) throw 'Fail';
+        const value = parsed.right;
+        expect(value).to.deep.eq([[Time.StartTime, 'this'], '']);
+    });
+
+    it('should match from abs time to current', () => {
+        const parsed = FromStartTimeRestrictionArg('from start');
+        if (!either.isRight(parsed)) throw 'Fail';
+        const value = parsed.right;
+        expect(value).to.deep.eq([[Time.StartTime, 'this'], '']);
     });
 
     it('should match current to end', () => {
