@@ -330,5 +330,20 @@ describe('Text commands', () => {
             expect((selMan as any).selection).to.deep.eq(new SelectionVoiceTime(jMusic, 3, 5, Time.newAbsolute(3, 4), Time.EternityTime));
         });
 
+        
+        it('should clear the selection', () => {
+            const cmd = TextCommandEngine.parse('selection clear');
+
+            const jMusic = new JMusic('c4 c4 c4 c4', { varX: 'g2 a2'});
+            const ins1 = new InsertionPoint(jMusic);
+
+            const selMan = new SelectionManager();
+            selMan.setSelection(new SelectionAll());
+            
+            cmd.execute(jMusic, ins1, selMan);
+
+            expect((selMan as any).selection).to.be.undefined;
+        });
+
     });
 });

@@ -5,12 +5,17 @@ import { Model } from './../../model';
 import R = require('ramda');
 import { commandDescriptor } from './edit-commands';
 import { ProtoSelection, SelectionArg } from './selection-argument-types';
+import { FixedArg } from './base-argument-types';
 
 
 
 
 
 export const selectionCommands = [
+    commandDescriptor(  
+        (FixedArg(/selection +clear/)), 
+        () => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.clearSelection()
+    ),
     commandDescriptor(  
         (sequence<ProtoSelection>(['selection +set ', SelectionArg])), 
         ([selection]: [ProtoSelection]) => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.setSelection(selection(model, ins))
