@@ -1,11 +1,15 @@
+
 import { SelectionManager } from './../selection/selection-types';
 import { expect } from 'chai';
 import { InsertionPoint } from './insertion-point';
 import Sinon = require('sinon');
 import { Clef, ClefType, JMusic, Key, MeterFactory, Time, createNoteFromLilypond, isClefChange, isKeyChange, isMeterChange, valueOf } from '../model';
-import { TextCommandEngine } from './text-command-engine';
+import { TextCommand, TextCommandEngine } from './text-command-engine';
 import { StateChange } from '../model/states/state';
 import { SelectionAll, SelectionVoiceTime } from '../selection/query';
+import { Right } from 'fp-ts/lib/Either';
+import { either, option } from 'fp-ts';
+import { selectUnion } from '~/selection/selection-combiners';
 
 
 
@@ -344,6 +348,140 @@ describe('Text commands', () => {
 
             expect((selMan as any).selection).to.be.undefined;
         });
+    });
+
+    describe('Selection combiners', () => {
+        let cmd1: TextCommand;
+        let cmd2: TextCommand;
+        let cmd3: TextCommand;
+        let cmd4: TextCommand;
+        let jMusic: JMusic;
+        let ins1: InsertionPoint;
+        let selMan: SelectionManager;
+
+        beforeEach(() => {
+            cmd1 = TextCommandEngine.parse('selection set voice this from start');
+            cmd2 = TextCommandEngine.parse('selection also voice this to end');
+            cmd3 = TextCommandEngine.parse('selection restrict voice this to end');
+            cmd4 = TextCommandEngine.parse('selection except voice this to end');
+
+            jMusic = new JMusic('c4 c4 c4 c4', { varX: 'g2 a2'});
+            ins1 = new InsertionPoint(jMusic);
+
+            selMan = new SelectionManager();
+        });
+        
+        it('should union two selections', () => {
+            
+            ins1.moveToTime(Time.newAbsolute(1, 2));
+            cmd1.execute(jMusic, ins1, selMan);
+
+            const s1 = selMan.get();
+            if (option.isNone(s1)) throw 'fail';
+
+            expect(s1.value({ elementNo: 0, staffNo: 0, voiceNo: 0 }), 'expect 1-1').to.be.true;
+            expect(s1.value({ elementNo: 2, staffNo: 0, voiceNo: 0 }), 'expect 1-2').to.be.false;
+            expect(s1.value({ elementNo: 3, staffNo: 0, voiceNo: 0 }), 'expect 1-3').to.be.false;
+
+            ins1.moveToTime(Time.newAbsolute(1, 4));
+            cmd2.execute(jMusic, ins1, selMan);
+
+            const s2 = selMan.get();
+            if (option.isNone(s2)) throw 'fail';
+
+            expect(s2.value({ elementNo: 0, staffNo: 0, voiceNo: 0 }), 'expect 2-1').to.be.true;
+            expect(s2.value({ elementNo: 2, staffNo: 0, voiceNo: 0 }), 'expect 2-2').to.be.true;
+            expect(s2.value({ elementNo: 3, staffNo: 0, voiceNo: 0 }), 'expect 2-3').to.be.true;
+
+        });
+
+        it('should intersect two selections', () => {
+            
+            ins1.moveToTime(Time.newAbsolute(1, 2));
+            cmd1.execute(jMusic, ins1, selMan);
+
+            const s1 = selMan.get();
+            if (option.isNone(s1)) throw 'fail';
+
+            expect(s1.value({ elementNo: 0, staffNo: 0, voiceNo: 0 }), 'expect 1-1').to.be.true;
+            expect(s1.value({ elementNo: 1, staffNo: 0, voiceNo: 0 }), 'expect 2-2').to.be.true;
+            expect(s1.value({ elementNo: 2, staffNo: 0, voiceNo: 0 }), 'expect 1-2').to.be.false;
+            expect(s1.value({ elementNo: 3, staffNo: 0, voiceNo: 0 }), 'expect 1-3').to.be.false;
+
+            ins1.moveToTime(Time.newAbsolute(1, 4));
+            cmd3.execute(jMusic, ins1, selMan);
+
+            const s2 = selMan.get();
+            if (option.isNone(s2)) throw 'fail';
+
+            expect(s2.value({ elementNo: 0, staffNo: 0, voiceNo: 0 }), 'expect 2-1').to.be.false;
+            expect(s2.value({ elementNo: 1, staffNo: 0, voiceNo: 0 }), 'expect 2-2').to.be.true;
+            expect(s2.value({ elementNo: 2, staffNo: 0, voiceNo: 0 }), 'expect 2-2').to.be.false;
+            expect(s2.value({ elementNo: 3, staffNo: 0, voiceNo: 0 }), 'expect 2-3').to.be.false;
+
+        });
+
+        it('should diff two selections', () => {
+            
+            ins1.moveToTime(Time.newAbsolute(1, 2));
+            cmd1.execute(jMusic, ins1, selMan);
+
+            const s1 = selMan.get();
+            if (option.isNone(s1)) throw 'fail';
+
+            expect(s1.value({ elementNo: 0, staffNo: 0, voiceNo: 0 }), 'expect 1-1').to.be.true;
+            expect(s1.value({ elementNo: 1, staffNo: 0, voiceNo: 0 }), 'expect 2-2').to.be.true;
+            expect(s1.value({ elementNo: 2, staffNo: 0, voiceNo: 0 }), 'expect 1-2').to.be.false;
+            expect(s1.value({ elementNo: 3, staffNo: 0, voiceNo: 0 }), 'expect 1-3').to.be.false;
+
+            ins1.moveToTime(Time.newAbsolute(1, 4));
+            cmd4.execute(jMusic, ins1, selMan);
+
+            const s2 = selMan.get();
+            if (option.isNone(s2)) throw 'fail';
+
+            expect(s2.value({ elementNo: 0, staffNo: 0, voiceNo: 0 }), 'expect 2-1').to.be.true;
+            expect(s2.value({ elementNo: 1, staffNo: 0, voiceNo: 0 }), 'expect 2-2').to.be.false;
+            expect(s2.value({ elementNo: 2, staffNo: 0, voiceNo: 0 }), 'expect 2-2').to.be.false;
+            expect(s2.value({ elementNo: 3, staffNo: 0, voiceNo: 0 }), 'expect 2-3').to.be.false;
+
+        });
+
+        it('should union an empty with a selection', () => {
+            
+            ins1.moveToTime(Time.newAbsolute(1, 4));
+            cmd2.execute(jMusic, ins1, selMan);
+
+            const s2 = selMan.get();
+            if (option.isNone(s2)) throw 'fail';
+
+            expect(s2.value({ elementNo: 0, staffNo: 0, voiceNo: 0 }), 'expect 2-1').to.be.false;
+            expect(s2.value({ elementNo: 2, staffNo: 0, voiceNo: 0 }), 'expect 2-2').to.be.true;
+            expect(s2.value({ elementNo: 3, staffNo: 0, voiceNo: 0 }), 'expect 2-3').to.be.true;
+
+        });
+
+        it('should intersect an empty with a selection', () => {
+            
+            ins1.moveToTime(Time.newAbsolute(1, 4));
+            cmd3.execute(jMusic, ins1, selMan);
+
+            const s2 = selMan.get();
+            if (option.isSome(s2)) throw 'fail';
+
+        });
+
+        it('should diff an empty with a selection', () => {
+            
+            ins1.moveToTime(Time.newAbsolute(1, 4));
+            cmd4.execute(jMusic, ins1, selMan);
+
+            const s2 = selMan.get();
+            if (option.isSome(s2)) throw 'fail';
+
+        });
+
+
 
     });
 });

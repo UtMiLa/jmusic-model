@@ -17,19 +17,19 @@ export const selectionCommands = [
         () => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.clearSelection()
     ),
     commandDescriptor(  
-        (sequence<ProtoSelection>(['selection +set ', SelectionArg])), 
+        (sequence<ProtoSelection>([/selection +set +/, SelectionArg])), 
         ([selection]: [ProtoSelection]) => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.setSelection(selection(model, ins))
-    )/*,
+    ),
     commandDescriptor(  
-        (sequence<ProtoSelection>(['selection +also ', SelectionArg])), 
+        (sequence<ProtoSelection>([/selection +also +/, SelectionArg])), 
         ([selection]: [ProtoSelection]) => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.unionSelection(selection(model, ins))
     ),
     commandDescriptor(  
-        (sequence<ProtoSelection>(['selection +restrict ', SelectionArg])), 
+        (sequence<ProtoSelection>([/selection +restrict +/, SelectionArg])), 
         ([selection]: [ProtoSelection]) => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.intersectSelection(selection(model, ins))
     ),
     commandDescriptor(  
-        (sequence<ProtoSelection>(['selection +except ', SelectionArg])), 
+        (sequence<ProtoSelection>([/selection +except +/, SelectionArg])), 
         ([selection]: [ProtoSelection]) => (model: Model, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.excludeSelection(selection(model, ins))
-    )*/
+    )
 ];

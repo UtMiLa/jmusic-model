@@ -1,6 +1,7 @@
 import { pipe } from 'fp-ts/lib/function';
 import { Model } from './../model/model';
 import { option } from 'fp-ts';
+import { selectDifference, selectIntersect, selectUnion } from './selection-combiners';
 
 
 export interface ElementIdentifier {
@@ -26,13 +27,13 @@ export class SelectionManager {
         this.selection = undefined;
     }
     excludeSelection(s: Selection): void {
-        throw 'Not implemented';
+        this.selection = this.selection ? selectDifference(this.selection, s) : this.selection;
     }
     unionSelection(s: Selection): void {
-        throw 'Not implemented';
+        this.selection = this.selection ? selectUnion(this.selection, s) : s;
     }
     intersectSelection(s: Selection): void {
-        throw 'Not implemented';
+        this.selection = this.selection ? selectIntersect(this.selection, s) : this.selection;
     }
     get(): option.Option<SelectionFunc> {
         return pipe(this.selection, 

@@ -16,9 +16,9 @@ describe('Selection combiners', () => {
     const sel2: Selection = {
         isSelected: (element: ElementIdentifier) => element.voiceNo === 1
     };
-    const sel3: Selection = {
+    /*const sel3: Selection = {
         isSelected: (element: ElementIdentifier) => element.staffNo > 2
-    };
+    };*/
 
     it('should union two selections', () => {
         const selUnion = selectUnion(sel1, sel2);
