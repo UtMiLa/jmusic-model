@@ -10,6 +10,7 @@ import { SelectionAll, SelectionBy, SelectionVoiceTime } from '../selection/quer
 import { Right } from 'fp-ts/lib/Either';
 import { either, option } from 'fp-ts';
 import { selectUnion } from '~/selection/selection-combiners';
+import R = require('ramda');
 
 
 
@@ -258,8 +259,9 @@ describe('Text commands', () => {
         });
 
 
-        function compareSelections(sel1: Selection, sel2: Selection) {
-            return (sel1 as any).predicate.toString() === (sel2 as any).predicate.toString();
+        function compareSelections(sel1: any, sel2: any) {
+            return (sel1 as any).predicate.toString() === (sel2 as any).predicate.toString() 
+                && R.equals(R.dissoc('predicate', sel1), R.dissoc('predicate', sel2));
         }
              
         
@@ -290,7 +292,6 @@ describe('Text commands', () => {
 
             const compareSel = new SelectionVoiceTime(jMusic, 0, 1, Time.StartTime, Time.EternityTime);
             expect(compareSelections((selMan as any).selection, compareSel)).to.be.true;
-            //expect((selMan as any).selection).to.deep.eq(new SelectionVoiceTime(jMusic, 0, 1, Time.StartTime, Time.EternityTime));
         });
 
 
@@ -307,7 +308,6 @@ describe('Text commands', () => {
 
             const compareSel = new SelectionVoiceTime(jMusic, 1, 1, Time.StartTime, Time.EternityTime);
             expect(compareSelections((selMan as any).selection, compareSel)).to.be.true;
-            //expect((selMan as any).selection).to.deep.eq(new SelectionVoiceTime(jMusic, 1, 1, Time.StartTime, Time.EternityTime));
         });
 
 
@@ -325,7 +325,6 @@ describe('Text commands', () => {
 
             const compareSel = new SelectionVoiceTime(jMusic, 3, 5, Time.StartTime, Time.EternityTime);
             expect(compareSelections((selMan as any).selection, compareSel)).to.be.true;
-            //expect((selMan as any).selection).to.deep.eq(new SelectionVoiceTime(jMusic, 3, 5, Time.StartTime, Time.EternityTime));
         });
 
 
