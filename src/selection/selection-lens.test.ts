@@ -1,6 +1,6 @@
 import { Time } from './../model/rationals/time';
 import { expect } from 'chai';
-import { Clef, ClefType, JMusic, Key, ScoreDef, VariableRepositoryProxy, createRepo, isNote } from '../model';
+import { Clef, ClefType, DomainConverter, FlexibleSequence, JMusic, Key, MusicEvent, ScoreDef, VariableRepositoryProxy, VoiceContentDef, createRepo, isNote, voiceContentToSequence, voiceSequenceToDef } from '../model';
 import { createTestScore } from '../tools/test-tools';
 import { SelectionVoiceTime } from './query';
 import { SelectionLens } from './selection-lens';
@@ -8,15 +8,21 @@ import R = require('ramda');
 
 describe('Selection lensing', () => {
     let source: ScoreDef;
+    let domainConverter: DomainConverter<VoiceContentDef, MusicEvent[]>;
 
     beforeEach(() => {
         source = createTestScore([['c\'4 d\'2 e\'8 f\'8 g\'4'], ['c8 d8 e8 f8 g4. f8 e4 d4 c2']], [4, 4], [0, 0]);
+        const vars = createRepo({});
+        domainConverter = {
+            fromDef: def => voiceContentToSequence(def, vars)[0].elements,
+            toDef: events => voiceSequenceToDef(new FlexibleSequence(events, vars))
+        };
     });
 
     it('should get items in selection', () => {
         const selection = new SelectionVoiceTime(new JMusic(source), 1, 0, Time.newAbsolute(1, 4), Time.newAbsolute(3, 4));
         const getterLens = new SelectionLens(selection);
-        const items = getterLens.get(source);
+        const items = getterLens.get(source, domainConverter);
 
         expect(items).to.be.deep.eq(['e8', 'f8', 'g4.']);
     });
@@ -25,7 +31,7 @@ describe('Selection lensing', () => {
     it('should modify items in selection - no change', () => {
         const selection = new SelectionVoiceTime(new JMusic(source), 1, 0, Time.newAbsolute(1, 4), Time.newAbsolute(3, 4));
         const setterLens = new SelectionLens(selection);
-        const items = setterLens.change(source, event => [event]);
+        const items = setterLens.change(source, event => [event], domainConverter);
 
         expect(new JMusic(items)).to.be.deep.eq(new JMusic(source));
     });
@@ -33,7 +39,7 @@ describe('Selection lensing', () => {
     it('should modify items in selection - delete', () => {
         const selection = new SelectionVoiceTime(new JMusic(source), 1, 0, Time.newAbsolute(1, 4), Time.newAbsolute(3, 4));
         const setterLens = new SelectionLens(selection);
-        const items = setterLens.change(source, () => []);
+        const items = setterLens.change(source, () => [], domainConverter);
         const source1 = source = createTestScore([['c\'4 d\'2 e\'8 f\'8 g\'4'], ['c8 d8 f8 e4 d4 c2']], [4, 4], [0, 0]);
 
         expect(new JMusic(items)).to.be.deep.eq(new JMusic(source1));
@@ -42,7 +48,7 @@ describe('Selection lensing', () => {
     it('should modify items in selection - add note expression', () => {
         const selection = new SelectionVoiceTime(new JMusic(source), 1, 0, Time.newAbsolute(1, 4), Time.newAbsolute(3, 4));
         const setterLens = new SelectionLens(selection);
-        const items = setterLens.change(source, (note) => [isNote(note) ? {...note, expressions: [...note.expressions ?? [], 'staccato'] } : note]);
+        const items = setterLens.change(source, (note) => [isNote(note) ? {...note, expressions: [...note.expressions ?? [], 'staccato'] } : note], domainConverter);
         const source1 = createTestScore([['c\'4 d\'2 e\'8 f\'8 g\'4'], ['c8 d8 e8\\staccato f8\\staccato g4.\\staccato f8 e4 d4 c2']], [4, 4], [0, 0]);
 
         expect(new JMusic(items)).to.be.deep.eq(new JMusic(source1));
@@ -64,7 +70,13 @@ describe('Selection lensing', () => {
         }, vars);
         const selection = new SelectionVoiceTime(source, 1, 0, Time.newAbsolute(1, 4), Time.newAbsolute(3, 4));
         const setterLens = new SelectionLens(selection);
-        const items = setterLens.change(source.model.project.score, () => [], createRepo(vars));
+
+        domainConverter = {
+            fromDef: def => voiceContentToSequence(def, createRepo(vars))[0].elements,
+            toDef: events => voiceSequenceToDef(new FlexibleSequence(events, createRepo(vars)))
+        };
+
+        const items = setterLens.change(source.model.project.score, () => [], domainConverter);
         const source1 = new JMusic({
             staves: [{
                 voices: [{ contentDef: ['c\'4 d\'2', { variable: 'e' }, 'f\'8 g\'4'] }],

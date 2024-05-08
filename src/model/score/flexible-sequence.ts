@@ -11,6 +11,8 @@ import * as _ from 'ts-toolbelt';
 import { isSplitSequence } from '..';
 import { Note, noteAsLilypond } from '../notes/note';
 import { isSeqFunction } from '../data-only/functions';
+import { ConceptualSequence } from '../object-model-functional/types';
+import { convertSequenceDataToConceptual } from '../object-model-functional/conversions';
 
 // Fix for types for R.chain
 type addIndexFix<T, U> = (
