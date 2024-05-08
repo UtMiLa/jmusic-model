@@ -41,7 +41,7 @@ export class SelectionLens {
                     voices: staff.voices.map((voice, voiceNo) => {
                         const seq = new FlexibleSequence(voice.contentDef, vars); // Todo: use DomainConverter
                         const elements = seq.elements; // Todo: use DomainConverter
-/*
+                        /*
                         elements.forEach((elem, index) => {
                             const path = seq.indexToPath(index);
                             //const modified = seq.
@@ -70,6 +70,6 @@ export class SelectionLens {
                 }; 
             }).filter(staff => staff)
         };
-        return model.model.project.score;
+        return result;//model.model.project.score;
     }
 }
