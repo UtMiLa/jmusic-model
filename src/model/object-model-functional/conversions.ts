@@ -3,10 +3,11 @@ import R = require('ramda');
 import { ProjectDef } from '../data-only/project';
 import { VarDict, VariableRef } from '../data-only/variables';
 import { VoiceContentDef } from '../data-only/voices';
-import { FlexibleSequence, recursivelySplitStringsIn } from '../score/flexible-sequence';
+import { recursivelySplitStringsIn } from '../score/flexible-sequence';
 import { FlexibleItem } from '../score/types';
 import { VariableRepository, createRepo, isVariableRef, valueOf } from '../score/variables';
-import { ConceptualFunctionCall, ConceptualSequence, ConceptualSequenceItem, ConceptualVarRef, isConceptualFunctionCall, isConceptualVarRef } from './types';
+import { ConceptualFunctionCall, ConceptualSequence, ConceptualSequenceItem, ConceptualVarRef, 
+    isConceptualFunctionCall, isConceptualVarRef } from './types';
 import { MusicEvent, getDuration, isMusicEvent, isNote, parseLilyElement } from '../score/sequence';
 import { isSeqFunction, SeqFunction } from '../data-only/functions';
 import { createFunction } from '../score/functions';
@@ -14,8 +15,7 @@ import { noteAsLilypond } from '../notes/note';
 
 
 function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
-    return new FlexibleSequence(items, repo, true).elements; // todo: refactor FlexibleSequence out of this module
-    //requireElements(items, repo);// 
+    return conceptualGetElements(requireElements(items, repo));
 }
 function isSingleStringArray(test: unknown): test is string[] {
     return (test as string[]).length === 1 && typeof ((test as string[])[0]) === 'string';
@@ -50,6 +50,7 @@ function requireElements(
                         type: 'Func',
                         func: 'Reverse',
                         items: elems,
+                        extraArgs: item.extraArgs,
                         duration
                     } as ConceptualSequenceItem];
                 }
@@ -114,7 +115,7 @@ export function conceptualGetElements(conceptual: ConceptualSequence): MusicEven
         if (isConceptualVarRef(elem)) {
             return conceptualGetElements(elem.items);
         } else if (isConceptualFunctionCall(elem)) {
-            return createFunction(elem.func/*, elem.extraArgs*/)(conceptualGetElements(elem.items));
+            return createFunction(elem.func, elem.extraArgs)(conceptualGetElements(elem.items));
         } else {
             return [elem];
         }

@@ -16,6 +16,7 @@ export interface ConceptualFunctionCall {
     name: string;
     func: FuncDef;
     items: ConceptualSequence;
+    extraArgs: any[];
     readonly duration: TimeSpan;
 }
 
