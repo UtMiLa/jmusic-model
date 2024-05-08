@@ -47,10 +47,11 @@ function requireElements(
                     const funcRes = createFunction(item.function, item.extraArgs)(calcElements([item.args], repo));
                     const duration = funcRes.reduce((prev, curr) => Time.addSpans(prev, getDuration(curr)), Time.NoTime);
                     return [{
+                        type: 'Func',
                         func: 'Reverse',
                         items: elems,
                         duration
-                    } as ConceptualFunctionCall as ConceptualSequenceItem];
+                    } as ConceptualSequenceItem];
                 }
             ],
             [
@@ -59,10 +60,11 @@ function requireElements(
                     const varRes = valueOf(repo, item.variable).elements;
                     const duration = varRes.reduce((prev, curr) => Time.addSpans(prev, getDuration(curr)), Time.NoTime);
                     return [{ 
+                        type: 'VarRef',
                         name: item.variable, 
                         items: varRes, 
                         duration
-                    } as ConceptualVarRef] as ConceptualSequenceItem[];
+                    }] as ConceptualSequenceItem[];
                 }
             ],
             [
@@ -103,7 +105,19 @@ export function convertConceptualSequenceToData(conceptual: ConceptualSequence):
                 return noteAsLilypond(elem);
             }
         }
-        return 'c4';
+        throw 'Unknown object';
     });
 }
 
+export function conceptualGetElements(conceptual: ConceptualSequence): MusicEvent[] {
+    return R.chain(elem => {
+        if (isConceptualVarRef(elem)) {
+            return conceptualGetElements(elem.items);
+        } else if (isConceptualFunctionCall(elem)) {
+            return createFunction(elem.func/*, elem.extraArgs*/)(conceptualGetElements(elem.items));
+        } else {
+            return [elem];
+        }
+        throw 'Unknown object';
+    }, conceptual);
+}

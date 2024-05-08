@@ -3,7 +3,7 @@ import { RetrogradeSequence } from './../score/transformations';
 import { expect } from 'chai';
 import { createTestScore } from '../../tools/test-tools';
 import { VoiceContentDef } from '../data-only/voices';
-import { convertConceptualSequenceToData, convertSequenceDataToConceptual } from './conversions';
+import { conceptualGetElements, convertConceptualSequenceToData, convertSequenceDataToConceptual } from './conversions';
 import { createNoteFromLilypond } from '../notes/note';
 import { ConceptualFunctionCall, ConceptualSequence, ConceptualVarRef } from './types';
 import { FuncDef, SeqFunction } from '../data-only/functions';
@@ -103,6 +103,36 @@ describe('Conversions', () => {
             const data = convertConceptualSequenceToData(conceptual);
 
             expect(data).to.deep.eq(['c4', 'd4', 'e4', 'f4', { function: 'Reverse', args: ['g4', 'a4.'] }]);
+        });
+    });
+
+    describe('Applying functions and variables', () => { 
+        it('should apply content without variables and functions', () => {
+            const data: VoiceContentDef = ['c4 d4 e4 f4'];
+            const conceptual = convertSequenceDataToConceptual(data, {});
+
+            const elements = conceptualGetElements(conceptual);
+
+            expect(elements).to.have.length(4);
+            expect(elements[2]).to.deep.eq(createNoteFromLilypond('e4'));
+        });
+        it('should apply variables\' content', () => {
+            const data: VoiceContentDef = ['c4 d4 e4 f4', { variable: 'xx'}];
+            const conceptual = convertSequenceDataToConceptual(data, { xx: ['g4 a4.']});
+
+            const elements = conceptualGetElements(conceptual);
+
+            expect(elements).to.have.length(6);
+            expect(elements[5]).to.deep.eq(createNoteFromLilypond('a4.'));
+        });
+        it('should apply functions content', () => {
+            const data: VoiceContentDef = ['c4 d4 e4 f4', { function: 'Reverse', args: ['a4 g4.'] } as SeqFunction];
+            const conceptual = convertSequenceDataToConceptual(data, { xx: ['a4 g4.']});
+
+            const elements = conceptualGetElements(conceptual);
+
+            expect(elements).to.have.length(6);
+            expect(elements[4]).to.deep.eq(createNoteFromLilypond('g4.'));
         });
     });
 });
