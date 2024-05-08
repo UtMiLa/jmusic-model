@@ -6,14 +6,16 @@ import { VoiceContentDef } from '../data-only/voices';
 import { FlexibleSequence, recursivelySplitStringsIn } from '../score/flexible-sequence';
 import { FlexibleItem } from '../score/types';
 import { VariableRepository, createRepo, isVariableRef, valueOf } from '../score/variables';
-import { ConceptualFunctionCall, ConceptualSequence, ConceptualSequenceItem, ConceptualVarRef } from './types';
-import { MusicEvent, getDuration, isMusicEvent, parseLilyElement } from '../score/sequence';
+import { ConceptualFunctionCall, ConceptualSequence, ConceptualSequenceItem, ConceptualVarRef, isConceptualFunctionCall, isConceptualVarRef } from './types';
+import { MusicEvent, getDuration, isMusicEvent, isNote, parseLilyElement } from '../score/sequence';
 import { isSeqFunction, SeqFunction } from '../data-only/functions';
 import { createFunction } from '../score/functions';
+import { noteAsLilypond } from '../notes/note';
 
 
 function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
     return new FlexibleSequence(items, repo, true).elements; // todo: refactor FlexibleSequence out of this module
+    //requireElements(items, repo);// 
 }
 function isSingleStringArray(test: unknown): test is string[] {
     return (test as string[]).length === 1 && typeof ((test as string[])[0]) === 'string';
@@ -88,3 +90,20 @@ function requireElements(
 export function convertSequenceDataToConceptual(data: VoiceContentDef, vars: VarDict): ConceptualSequence {
     return requireElements(recursivelySplitStringsIn(data, createRepo(vars)), createRepo(vars));
 }
+
+
+export function convertConceptualSequenceToData(conceptual: ConceptualSequence): VoiceContentDef {
+    return conceptual.map(elem => {
+        if (isConceptualVarRef(elem)) {
+            return { variable: elem.name };
+        } else if (isConceptualFunctionCall(elem)) {
+            return { function: elem.func, args: convertConceptualSequenceToData(elem.items) } as SeqFunction;
+        } else {
+            if (isNote(elem)) {
+                return noteAsLilypond(elem);
+            }
+        }
+        return 'c4';
+    });
+}
+
