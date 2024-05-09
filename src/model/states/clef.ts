@@ -41,3 +41,42 @@ export class Clef {
     static clefTenorC = new Clef({ clefType: ClefType.C, line: 2 });
 
 }
+
+
+export function clefToLilypond(clef: Clef): string {
+    let clefTypeString: string;
+    switch(clef.def.clefType) {
+        case ClefType.C:            
+            if (clef.def.line === 0) {
+                clefTypeString = 'alto';
+            } else
+            if (clef.def.line === 2) {
+                clefTypeString = 'tenor';
+            } else throw 'Illegal clef';
+            break;
+        case ClefType.G: 
+            clefTypeString = 'G';
+            if (clef.def.line !== -2) throw 'Illegal clef';
+            break;
+        case ClefType.F: 
+            clefTypeString = 'F';
+            if (clef.def.line !== 2) throw 'Illegal clef';
+            break;
+    }
+
+    let clefOctave = '';
+    if (clef.def.transpose) {
+        if (clef.def.transpose > 0) {
+            const num = clef.def.transpose + 1;
+            if (num !== 8 && num !== 15) throw 'Illegal clef transposition';
+            clefOctave = '^' + num;
+        } else {
+            const num = 1 - clef.def.transpose;
+            if (num !== 8 && num !== 15) throw 'Illegal clef transposition';
+            clefOctave = '_' + num;
+        }
+
+    }
+
+    return '\\clef ' + clefTypeString + clefOctave;
+}

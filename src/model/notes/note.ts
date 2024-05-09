@@ -9,20 +9,7 @@ import * as R from 'ramda';
 import { getDotNumber, getUndottedValue } from '../rationals/dots';
 import { NoteDirection, NoteType, TupletState } from '../data-only/notes';
 import { either } from 'fp-ts';
-/*
-export enum NoteType {
-    NBreve = 1, NWhole, NHalf, NQuarter,
-    RBreve, RWhole, RHalf, RQuarter, R8, R16, R32, R64, R128
-}
 
-export enum NoteDirection {
-    Undefined = 0, Up = 1, Down = 2
-}
-
-export enum TupletState {
-    None, Begin, Inside, End
-}
-*/
 export type NoteBase = {
     pitches: Pitch[];
     nominalDuration: TimeSpan;
@@ -39,63 +26,11 @@ export type NoteBase = {
 export type Note = Readonly<NoteBase>;
 
 export type UpdateNote = Partial<NoteBase>;
-/*
-export interface UpdateNote {
-    pitches?: Pitch[];
-    nominalDuration?: TimeSpan;
-    tupletFactor?: RationalDef;
-    tupletGroup?: TupletState;
-    direction?: NoteDirection;
-    tie?: boolean;
-    uniq?: string;
-    expressions?: NoteExpression[];
-    text?: string[];
-    grace?: boolean;
-}*/
 
 
 
 export function createNoteFromLilypond(input: string): Note {
     return either.getOrElse<string, [Note, string]>((e) => {throw e;})(NoteArg(input))[0];
-    /*const matcher = /^([a-gr](es|is)*[',]*)(\d+\.*)((\\[a-z]+)*)(~?)$/i;
-    const matcherChord = /^<([a-z,' ]+)>(\d+\.*)((\\[a-z]+)*)(~?)$/i;
-    const matchChord = matcherChord.exec(input);
-
-    let pitches = [] as string[];
-    let durationString = '';
-    let expressions = [] as string[];
-    let tie = false;
-
-    if (matchChord) {
-        //console.log(matchChord);
-        pitches = matchChord[1].split(' ');
-        durationString = matchChord[2];
-        if (matchChord[3]) {
-            expressions = matchChord[3].split(/(?=\\)/);
-        }
-        if (matchChord[5] === '~') {
-            tie = true;
-        }
-    } else {
-        const match = matcher.exec(input);
-        if (!match || match.length < 4) 
-            throw 'Illegal note: ' + input;
-        pitches = (match[1] === 'r') ? [] : [match[1]];
-        durationString = match[3];
-        if (match[4]) {
-            expressions = (match[4]).split(/(?=\\)/);
-        }
-        if (match[6] === '~') {
-            tie = true;
-        }
-    }
-    //console.log(match);
-    const res = createNote(pitches.map(pitch => Pitch.parseLilypond(pitch)), Time.fromLilypond(durationString));
-    const extra: UpdateNote = {};
-    if (tie) extra.tie = tie;
-    if (expressions.length) extra.expressions = expressions.map(expression => parseLilyNoteExpression(expression));
-    
-    return cloneNote(res, extra);*/
 }
 
 export function noteAsLilypond(note: Note): string {

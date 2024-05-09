@@ -2,7 +2,7 @@ import { FuncDef } from '../data-only/functions';
 import { TimeSpan } from '../rationals/time';
 import { MusicEvent, isMusicEvent } from '../score/sequence';
 
-// todo: Find a better name than "Conceptual"
+// todo: Find a better name than "Conceptual" - maybe "structural"?
 
 export interface ConceptualVarRef {
     type: 'VarRef';

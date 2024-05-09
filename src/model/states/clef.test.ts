@@ -2,7 +2,7 @@ import { ClefType } from './../data-only/states';
 import { Time } from './../rationals/time';
 import { parseLilyClef, SimpleSequence } from './../score/sequence';
 import { Pitch } from '../pitches/pitch';
-import { Clef } from './clef';
+import { Clef, clefToLilypond } from './clef';
 import { expect } from 'chai';
 
 describe('Clef', () => {
@@ -151,6 +151,26 @@ describe('Clef', () => {
         expect(clef1.equals(clef3)).to.be.false;
         expect(clef3.equals(clef2)).to.be.false;
         expect(clef3.equals(Clef.clefTenorC)).to.be.true;
+
+    });
+
+    it('should convert clef to Lilypond', () => {
+        expect(clefToLilypond(new Clef({ clefType: ClefType.G, line: -2 }))).to.eq('\\clef G');
+        expect(() => clefToLilypond(new Clef({ clefType: ClefType.G, line: -3 }))).to.throw();
+
+        expect(clefToLilypond(new Clef({ clefType: ClefType.G, line: -2, transpose: -7 }))).to.eq('\\clef G_8');
+        expect(clefToLilypond(new Clef({ clefType: ClefType.G, line: -2, transpose: -14 }))).to.eq('\\clef G_15');
+        expect(clefToLilypond(new Clef({ clefType: ClefType.G, line: -2, transpose: 7 }))).to.eq('\\clef G^8');
+        expect(clefToLilypond(new Clef({ clefType: ClefType.G, line: -2, transpose: 14 }))).to.eq('\\clef G^15');
+        expect(() => clefToLilypond(new Clef({ clefType: ClefType.G, line: -2, transpose: -6 }))).to.throw();
+
+        expect(clefToLilypond(new Clef({ clefType: ClefType.F, line: 2 }))).to.eq('\\clef F');
+        expect(() => clefToLilypond(new Clef({ clefType: ClefType.F, line: 3 }))).to.throw();
+
+        expect(clefToLilypond(new Clef({ clefType: ClefType.C, line: 0 }))).to.eq('\\clef alto');
+        expect(clefToLilypond(new Clef({ clefType: ClefType.C, line: 2 }))).to.eq('\\clef tenor');
+        expect(() => clefToLilypond(new Clef({ clefType: ClefType.C, line: 4 }))).to.throw();
+        expect(() => clefToLilypond(new Clef({ clefType: ClefType.C, line: -2 }))).to.throw();
 
     });
 

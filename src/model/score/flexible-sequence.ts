@@ -1,11 +1,11 @@
 import { VariableRef } from './../data-only/variables';
 import { SeqFunction } from './../data-only/functions';
-import { SequenceDef, FlexibleItem, SplitSequenceDef } from './..';
+import { SequenceDef, FlexibleItem, SplitSequenceDef, VoiceContentDef, MultiSequenceItem, clefToLilypond } from './..';
 import { createRepo, isVariableRef, valueOf, VariableRepository } from './variables';
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
 import { createFunction, createInverseFunction } from './functions';
-import { BaseSequence, getDuration, isMusicEvent, isNote, MusicEvent, parseLilyElement, SimpleSequence, splitByNotes } from './sequence';
+import { BaseSequence, getDuration, isClefChange, isKeyChange, isLongDecoration, isMeterChange, isMusicEvent, isNote, isStateChange, MusicEvent, parseLilyElement, SimpleSequence, splitByNotes } from './sequence';
 
 import * as _ from 'ts-toolbelt';
 import { isSplitSequence } from '..';
@@ -13,6 +13,8 @@ import { Note, noteAsLilypond } from '../notes/note';
 import { isSeqFunction } from '../data-only/functions';
 import { ConceptualSequence } from '../object-model-functional/types';
 import { convertSequenceDataToConceptual } from '../object-model-functional/conversions';
+import { isString } from 'fp-ts/lib/string';
+import { isSpacer, spacerAsLilypond } from '../notes/spacer';
 
 // Fix for types for R.chain
 type addIndexFix<T, U> = (
@@ -73,6 +75,30 @@ export function simplifyDef(item: FlexibleItem): FlexibleItem {
     
 }
 
+function flexibleItemToDef(flex: FlexibleItem): MultiSequenceItem[] {
+    
+    if (isMusicEvent(flex)) {
+        if (isNote(flex)) return [noteAsLilypond(flex)];
+        if (isSpacer(flex)) return [spacerAsLilypond(flex)];
+        
+        if (isStateChange(flex)) {
+            if (flex.clef) return [clefToLilypond(flex.clef)];
+            if (isMeterChange(flex)) throw 'Meter change';
+            if (isKeyChange(flex)) throw 'Key change';
+            throw 'Never here';
+        }
+        if (isLongDecoration(flex)) throw 'Long decoration';
+        throw 'other music event';
+    }
+    if (R.is(Array)(flex)) return R.chain(flexibleItemToDef, flex);
+    if (isSeqFunction(flex)) return [flex];
+    if (isVariableRef(flex)) return [flex];
+    if (isString(flex)) return [flex];
+    if (isSplitSequence(flex)) return [flex];
+    
+    throw 'Never here';
+}
+
 function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
     return new FlexibleSequence(items, repo, true).elements;
 }
@@ -90,10 +116,12 @@ export class FlexibleSequence extends BaseSequence {
     constructor(init: FlexibleItem, private repo: VariableRepository = createRepo({}), alreadySplit = false) {
         super();
 
+        const def = init; // */flexibleItemToDef(init);
+
         if (!alreadySplit) repo.observer$.subscribe(newRepo => {
-            this.def = recursivelySplitStringsIn(init, newRepo);
+            this.def = recursivelySplitStringsIn(def, newRepo);
         });
-        this.def = alreadySplit ? init as FlexibleItem[] : recursivelySplitStringsIn(init, repo);
+        this.def = alreadySplit ? def as FlexibleItem[] : recursivelySplitStringsIn(init, repo);
     }
 
     private _elements: MusicEvent[] | undefined = undefined
