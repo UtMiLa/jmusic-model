@@ -3,7 +3,7 @@ import { StateChange } from './state';
 import { Time } from './../rationals/time';
 import { parseLilyMeter, SimpleSequence, __internal } from './../score/sequence';
 import { expect } from 'chai';
-import { getAllBars, Meter, MeterFactory, MeterMap } from './meter';
+import { getAllBars, Meter, MeterFactory, MeterMap, meterToLilypond } from './meter';
 describe('Meter', () => {
     describe('Regular meter', () => {
         let meter1: RegularMeterDef, meter2: RegularMeterDef, meter3: RegularMeterDef;
@@ -87,6 +87,14 @@ describe('Meter', () => {
             expect(parseLilyMeter('\\meter 6/8')).to.deep.eq(MeterFactory.createRegularMeter({ count: 6, value: 8 }));
             expect(parseLilyMeter('\\meter 12/16')).to.deep.eq(MeterFactory.createRegularMeter({ count: 12, value: 16 }));
             expect(parseLilyMeter('\\meter 4/4')).to.deep.eq(MeterFactory.createRegularMeter({ count: 4, value: 4 }));    
+        });
+    
+        it('should convert different regular meter changes to Lilypond', () => {
+            expect(meterToLilypond(MeterFactory.createRegularMeter({ count: 3, value: 4 }))).to.deep.eq('\\meter 3/4');
+            expect(meterToLilypond(MeterFactory.createRegularMeter({ count: 2, value: 2 }))).to.deep.eq('\\meter 2/2');
+            expect(meterToLilypond(MeterFactory.createRegularMeter({ count: 6, value: 8 }))).to.deep.eq('\\meter 6/8');
+            expect(meterToLilypond(MeterFactory.createRegularMeter({ count: 12, value: 16 }))).to.deep.eq('\\meter 12/16');
+            expect(meterToLilypond(MeterFactory.createRegularMeter({ count: 4, value: 4 }))).to.deep.eq('\\meter 4/4');
         });
     
         it('should compare two meter changes', () => {

@@ -162,3 +162,8 @@ export class MeterMap extends TimeMap<Meter> {
         }        
     }
 }
+
+export function meterToLilypond(meter: Meter): string {
+    const regularDef = meter.def as RegularMeterDef;
+    return `\\meter ${regularDef.count}/${regularDef.value}`;
+}

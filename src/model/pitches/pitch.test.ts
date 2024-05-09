@@ -1,12 +1,13 @@
 import { expect } from 'chai';
 import { Pitch, PitchClass } from './pitch';
 describe('Pitch', () => {
-    let pc: Pitch, pd: Pitch, pb: Pitch, pe: Pitch;
+    let pc: Pitch, pd: Pitch, pb: Pitch, pe: Pitch, pfis: Pitch;
     beforeEach(() => { 
         pc = Pitch.parseScientific('c4');
         pd = Pitch.parseScientific('d5');
         pb = Pitch.parseScientific('b1');
         pe = Pitch.parseScientific('e3');
+        pfis = new Pitch(3, 4, 1);
     });
 
     it('should parse a pitch', () => {
@@ -17,11 +18,13 @@ describe('Pitch', () => {
         expect(pc.octave).to.equal(4);
         expect(pd.octave).to.equal(5);
         expect(pb.octave).to.equal(1);
+        expect(pfis.octave).to.equal(4);
     });
     it('should get correct pitch class from a pitch', () => {
         expect(pc.pitchClassName).to.equal('c');
         expect(pd.pitchClassName).to.equal('d');
         expect(pb.pitchClassName).to.equal('b');
+        expect(pfis.pitchClassName).to.equal('fis');
     });
     it('should compare pitches correctly', () => {
         expect(Pitch.compare(pc, pd)).to.be.lt(0);
@@ -35,6 +38,7 @@ describe('Pitch', () => {
         expect(pd.lilypond).to.eq('d\'\'');
         expect(pb.lilypond).to.eq('b,,');
         expect(pe.lilypond).to.eq('e');
+        expect(pfis.lilypond).to.eq('fis\'');
 
         expect((new Pitch(2, 4, -2)).lilypond).to.eq('eeses\'');
         expect((new Pitch(3, 3, 1)).lilypond).to.eq('fis');

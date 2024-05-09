@@ -1,7 +1,7 @@
 import { Time } from './../rationals/time';
 import { parseLilyKey, SimpleSequence, __internal } from './../score/sequence';
 import { PitchClass } from './../pitches/pitch';
-import { Key, AccidentalManager, displaceAccidentals } from './key';
+import { Key, AccidentalManager, displaceAccidentals, keyToLilypond } from './key';
 import { Pitch } from '../pitches/pitch';
 import { expect } from 'chai';
 
@@ -27,20 +27,20 @@ describe('Key', () => {
         const pitches = Array.from<PitchClass>(keyEs.enumerate());
         expect(pitches.length).to.equal(3);
         expect(pitches[0].alteration).to.equal(-1);
-        expect(pitches[0].pitchClassName).to.equal('b');
-        expect(pitches[1].pitchClassName).to.equal('e');
-        expect(pitches[2].pitchClassName).to.equal('a');
+        expect(pitches[0].pitchClassName).to.equal('bes');
+        expect(pitches[1].pitchClassName).to.equal('ees');
+        expect(pitches[2].pitchClassName).to.equal('aes');
     });
 
     it('should enumerate sharps', () => {
         const pitches = Array.from<PitchClass>(keyH.enumerate());
         expect(pitches.length).to.equal(5);
         expect(pitches[0].alteration).to.equal(1);
-        expect(pitches[0].pitchClassName).to.equal('f');
-        expect(pitches[1].pitchClassName).to.equal('c');
-        expect(pitches[2].pitchClassName).to.equal('g');
-        expect(pitches[3].pitchClassName).to.equal('d');
-        expect(pitches[4].pitchClassName).to.equal('a');
+        expect(pitches[0].pitchClassName).to.equal('fis');
+        expect(pitches[1].pitchClassName).to.equal('cis');
+        expect(pitches[2].pitchClassName).to.equal('gis');
+        expect(pitches[3].pitchClassName).to.equal('dis');
+        expect(pitches[4].pitchClassName).to.equal('ais');
     });
 
     it('should parse a key change', () => {
@@ -87,6 +87,18 @@ describe('Key', () => {
         expect(parseLilyKey('\\key g \\minor')).to.deep.eq(new Key({ accidental: -1, count: 2 }));
         expect(parseLilyKey('\\key a \\minor')).to.deep.eq(new Key({ accidental: 0, count: 0 }));
         expect(parseLilyKey('\\key b \\minor')).to.deep.eq(new Key({ accidental: 1, count: 2 }));
+
+    });
+
+    it('should stringify all key change types', () => {
+        expect(keyToLilypond(new Key({ accidental: 0, count: 0 }))).to.deep.eq('\\key c \\major');
+        expect(keyToLilypond(new Key({ accidental: 1, count: 2 }))).to.deep.eq('\\key d \\major');
+        expect(keyToLilypond(new Key({ accidental: 1, count: 4 }))).to.deep.eq('\\key e \\major');
+        expect(keyToLilypond(new Key({ accidental: -1, count: 3 }))).to.deep.eq('\\key ees \\major');
+        expect(keyToLilypond(new Key({ accidental: -1, count: 1 }))).to.deep.eq('\\key f \\major');
+        expect(keyToLilypond(new Key({ accidental: 1, count: 1 }))).to.deep.eq('\\key g \\major');
+        expect(keyToLilypond(new Key({ accidental: 1, count: 3 }))).to.deep.eq('\\key a \\major');
+        expect(keyToLilypond(new Key({ accidental: 1, count: 5 }))).to.deep.eq('\\key b \\major');
 
     });
 

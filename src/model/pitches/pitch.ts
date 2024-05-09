@@ -81,13 +81,13 @@ export class Pitch {
 
     get lilypond(): string {
         const scaleDegree = this.pitchClassName;
-        const alteration = accidentalNamesLy[this._accidental + 2];
+        //const alteration = accidentalNamesLy[this._accidental + 2];
         let octave = '';
         if (this.octave > 3)
             octave = Array(this.octave - 3).fill('\'').join('');
         else if (this.octave < 3)
             octave = Array(3 - this.octave).fill(',').join('');
-        return scaleDegree + alteration + octave;
+        return scaleDegree + /*alteration +*/ octave;
     }
 
     get scientific(): string {
@@ -98,7 +98,7 @@ export class Pitch {
     }
 
     get pitchClassName(): string {
-        return pitchNames[this._pitchClass];
+        return pitchNames[this._pitchClass] + accidentalNamesLy[this._accidental + 2];
     }
 
     get pitchClassNumber(): number {
@@ -152,7 +152,7 @@ export class PitchClass {
         return new PitchClass(pitchClass, accidental as Alteration);
     }
     get pitchClassName(): string {
-        return pitchNames[this._pitchClass];
+        return pitchNames[this._pitchClass] + accidentalNamesLy[this._accidental + 2];
     }
     get alteration(): Alteration {
         return this._accidental;

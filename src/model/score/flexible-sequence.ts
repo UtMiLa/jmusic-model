@@ -1,6 +1,6 @@
 import { VariableRef } from './../data-only/variables';
 import { SeqFunction } from './../data-only/functions';
-import { SequenceDef, FlexibleItem, SplitSequenceDef, VoiceContentDef, MultiSequenceItem, clefToLilypond } from './..';
+import { SequenceDef, FlexibleItem, SplitSequenceDef, VoiceContentDef, MultiSequenceItem, clefToLilypond, meterToLilypond, keyToLilypond } from './..';
 import { createRepo, isVariableRef, valueOf, VariableRepository } from './variables';
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
@@ -83,8 +83,8 @@ function flexibleItemToDef(flex: FlexibleItem): MultiSequenceItem[] {
         
         if (isStateChange(flex)) {
             if (flex.clef) return [clefToLilypond(flex.clef)];
-            if (isMeterChange(flex)) throw 'Meter change';
-            if (isKeyChange(flex)) throw 'Key change';
+            if (flex.meter) return [meterToLilypond(flex.meter)];
+            if (flex.key) return [keyToLilypond(flex.key)];
             throw 'Never here';
         }
         if (isLongDecoration(flex)) throw 'Long decoration';
