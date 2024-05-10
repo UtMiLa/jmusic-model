@@ -1,6 +1,6 @@
 import { Staff, staffDefToStaff } from './../score/staff';
 import { InsertionPoint, InsertionPointDef } from '../../editor/insertion-point';
-import { ChangeHandler, Clef, FlexibleSequence, JMusic, MultiSequenceDef, voiceContentToSequence, voiceSequenceToDef } from '..';
+import { ChangeHandler, Clef, FlexibleSequence, JMusic, MultiSequenceDef, flexibleItemToDef, voiceContentToSequence, voiceSequenceToDef } from '..';
 import { TupletState, NoteDirection, Note } from '..';
 import { NoteExpression } from '../notes/note-expressions';
 import { DomainConverter, ProjectLens, LensItem, projectLensByIndex, lensItemNone } from '../optics/lens';
@@ -13,6 +13,7 @@ import { VariableRepository, valueOf } from '../score/variables';
 import { EditView, EditableView } from './views';
 import { makeScore } from './score-flex';
 import R = require('ramda');
+import { conceptualGetElements, convertSequenceDataToConceptual } from '../object-model-functional/conversions';
 
 export class VariableView extends EditView implements EditableView {
     constructor(private parent: JMusic, private variableName: string) {
@@ -48,10 +49,9 @@ export class VariableView extends EditView implements EditableView {
         throw new Error('Method not implemented.');
     }
     get domainConverter(): DomainConverter<SequenceDef | MultiSequenceDef, MusicEvent[]> {
-        //throw 'Not implemented';
         return {
-            fromDef: def => voiceContentToSequence(def, this.vars)[0].elements, // todo: correct voiceNo
-            toDef: events => voiceSequenceToDef(new FlexibleSequence(events as FlexibleItem, this.vars)) as SequenceDef
+            fromDef: def => conceptualGetElements(convertSequenceDataToConceptual(def, this.vars.vars)),
+            toDef: events => flexibleItemToDef(events)
         };
     }
     insertElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent, checkType: (e: MusicEvent) => boolean): void {

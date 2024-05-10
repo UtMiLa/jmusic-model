@@ -5,7 +5,7 @@ import { ProjectFlex, makeProject } from './facade/project-flex';
 import { Note } from './notes/note';
 import { ProjectLens, projectLensByTime, DomainConverter, LensItem } from './optics/lens';
 import { Time } from './rationals/time';
-import { FlexibleSequence } from './score/flexible-sequence';
+import { FlexibleSequence, flexibleItemToDef } from './score/flexible-sequence';
 import { RepeatDef } from './score/repeats';
 import { ScoreDef } from '.';
 import { ISequence, isNote, MusicEvent } from './score/sequence';
@@ -13,6 +13,7 @@ import { Staff, staffDefToStaff } from './score/staff';
 import { VarDict, ProjectDef, FlexibleItem } from '.';
 import { VariableRepository, createRepo, setVar } from './score/variables';
 import { voiceSequenceToDef, VoiceContentDef, voiceContentToSequence } from '.';
+import { conceptualGetElements, convertSequenceDataToConceptual } from './object-model-functional/conversions';
 
 
 export class Model {
@@ -78,8 +79,8 @@ export class Model {
 
     get domainConverter(): DomainConverter<VoiceContentDef, MusicEvent[]> {
         return {
-            fromDef: def => voiceContentToSequence(def, this.vars)[0].elements, // todo: correct voiceNo
-            toDef: events => voiceSequenceToDef(new FlexibleSequence(events, this.vars))
+            fromDef: def => conceptualGetElements(convertSequenceDataToConceptual(def, this.vars.vars)),// todo: correct voiceNo
+            toDef: events => flexibleItemToDef(events)
         };
     }
 

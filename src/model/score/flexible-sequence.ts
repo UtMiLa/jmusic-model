@@ -75,7 +75,7 @@ export function simplifyDef(item: FlexibleItem): FlexibleItem {
     
 }
 
-function flexibleItemToDef(flex: FlexibleItem): MultiSequenceItem[] {
+export function flexibleItemToDef(flex: FlexibleItem): MultiSequenceItem[] {
     
     if (isMusicEvent(flex)) {
         if (isNote(flex)) return [noteAsLilypond(flex)];
@@ -87,7 +87,7 @@ function flexibleItemToDef(flex: FlexibleItem): MultiSequenceItem[] {
             if (flex.key) return [keyToLilypond(flex.key)];
             throw 'Never here';
         }
-        if (isLongDecoration(flex)) throw 'Long decoration';
+        if (isLongDecoration(flex)) return [flex];
         throw 'other music event';
     }
     if (R.is(Array)(flex)) return R.chain(flexibleItemToDef, flex);
@@ -116,7 +116,8 @@ export class FlexibleSequence extends BaseSequence {
     constructor(init: FlexibleItem, private repo: VariableRepository = createRepo({}), alreadySplit = false) {
         super();
 
-        const def = init; // */flexibleItemToDef(init);
+        const def = flexibleItemToDef(init);
+        //this.conceptualData = convertSequenceDataToConceptual(def, repo.vars);
 
         if (!alreadySplit) repo.observer$.subscribe(newRepo => {
             this.def = recursivelySplitStringsIn(def, newRepo);
@@ -125,6 +126,7 @@ export class FlexibleSequence extends BaseSequence {
     }
 
     private _elements: MusicEvent[] | undefined = undefined
+    private conceptualData?: ConceptualSequence;
 
     get elements(): MusicEvent[] {
         const elm = this.requireElements(isSingleStringArray, isOtherFlexibleItemArray, this._def);

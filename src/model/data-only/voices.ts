@@ -1,8 +1,9 @@
 import { VariableRef } from './variables';
 import { NoteDef, NoteDirection } from './notes';
 import { SeqFunction } from './functions';
+import { LongDecorationElement } from './decorations';
 
-export type SequenceItem = string | SeqFunction | VariableRef | NoteDef | SequenceDef | SplitSequenceDef;
+export type SequenceItem = string | SeqFunction | VariableRef | NoteDef | LongDecorationElement | SequenceDef | SplitSequenceDef;
 
 export type MultiSequenceItem = SequenceItem | SplitSequenceDef;
 

@@ -3,7 +3,7 @@ import { ClefArg, KeyArg, MeterArg, MusicEventArg } from './argument-types';
 import { ArgType, ResultAndRest, WhitespaceArg, WordArg } from './base-argument-types';
 import { many, sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
-import { Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef, isMeterChange, isClefChange, isKeyChange, FlexibleItem, SequenceItem } from './../../model';
+import { Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef, isMeterChange, isClefChange, isKeyChange, FlexibleItem, SequenceItem, flexibleItemToDef } from './../../model';
 import R = require('ramda');
 import { Either } from 'fp-ts/lib/Either';
 import { either } from 'fp-ts';
@@ -50,7 +50,7 @@ export const editCommands = [
         (sequence<SequenceItem[]>(['append', WhitespaceArg, many(MusicEventArg)])), 
         (args: [SequenceItem[]]) => (model: Model, ins: InsertionPoint): void => {
             const events = args[0];
-            const eventDef = new FlexibleSequence(events).def;
+            const eventDef = flexibleItemToDef(events);
             model.overProject(
                 R.lensPath(['score', 'staves', ins.staffNo, 'voices', ins.voiceNo, 'contentDef']),
                 (seq: MultiSequenceDef) => 
