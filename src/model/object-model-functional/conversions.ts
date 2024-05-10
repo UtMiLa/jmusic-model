@@ -1,4 +1,4 @@
-import { Time } from './../rationals/time';
+import { Time, TimeSpan } from './../rationals/time';
 import R = require('ramda');
 import { ProjectDef } from '../data-only/project';
 import { VarDict, VariableRef } from '../data-only/variables';
@@ -25,6 +25,11 @@ function isOtherFlexibleItemArray(test: unknown): test is FlexibleItem[] {
     return true;
 }
 
+function getDurationForConceptual(elem: ConceptualSequenceItem): TimeSpan {
+    if (isConceptualVarRef(elem) || isConceptualFunctionCall(elem)) return elem.duration;
+    return getDuration(elem);
+}
+
 function requireElements(
     init: FlexibleItem[],
     repo: VariableRepository
@@ -45,7 +50,7 @@ function requireElements(
                 (item: SeqFunction) => { 
                     const elems = requireElements([item.args], repo);
                     const funcRes = createFunction(item.function, item.extraArgs)(calcElements([item.args], repo));
-                    const duration = funcRes.reduce((prev, curr) => Time.addSpans(prev, getDuration(curr)), Time.NoTime);
+                    const duration = funcRes.reduce((prev, curr) => Time.addSpans(prev, getDurationForConceptual(curr)), Time.NoTime);
                     return [{
                         type: 'Func',
                         func: 'Reverse',
@@ -58,8 +63,8 @@ function requireElements(
             [
                 isVariableRef,
                 (item: VariableRef) => { 
-                    const varRes = valueOf(repo, item.variable).elements;
-                    const duration = varRes.reduce((prev, curr) => Time.addSpans(prev, getDuration(curr)), Time.NoTime);
+                    const varRes = requireElements(valueOf(repo, item.variable).elements, repo);
+                    const duration = varRes.reduce((prev, curr) => Time.addSpans(prev, getDurationForConceptual(curr)), Time.NoTime);
                     return [{ 
                         type: 'VarRef',
                         name: item.variable, 

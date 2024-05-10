@@ -93,7 +93,11 @@ export function flexibleItemToDef(flex: FlexibleItem): MultiSequenceItem[] {
     if (R.is(Array)(flex)) return R.chain(flexibleItemToDef, flex);
     if (isSeqFunction(flex)) return [flex];
     if (isVariableRef(flex)) return [flex];
-    if (isString(flex)) return [flex];
+    
+    if (isString(flex)) {
+        if (flex.trim() === '') return [];
+        return [flex];
+    }
     if (isSplitSequence(flex)) return [flex];
     
     throw 'Never here';
@@ -117,7 +121,7 @@ export class FlexibleSequence extends BaseSequence {
         super();
 
         const def = flexibleItemToDef(init);
-        //this.conceptualData = convertSequenceDataToConceptual(def, repo.vars);
+        //const conceptualData = convertSequenceDataToConceptual(def, repo.vars);
 
         if (!alreadySplit) repo.observer$.subscribe(newRepo => {
             this.def = recursivelySplitStringsIn(def, newRepo);

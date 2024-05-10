@@ -1,5 +1,5 @@
 import R = require('ramda');
-import { FlexibleSequence, JMusicSettings, ScoreDef } from '..';
+import { FlexibleSequence, JMusicSettings, ScoreDef, flexibleItemToDef } from '..';
 import { ProjectDef, FlexibleItem, isProjectDef, VariableDef, VarDict } from '..';
 import { VariableRepository, VariableRepositoryProxy, createRepo } from '../score/variables';
 import { ScoreFlex, makeScore } from './score-flex';
@@ -7,7 +7,7 @@ import { ScoreFlex, makeScore } from './score-flex';
 export type ProjectFlex = string | JMusicSettings | ScoreDef | ProjectDef;
 
 function normalizeSeq(val: FlexibleItem, repo: VariableRepository): FlexibleItem {
-    return new FlexibleSequence(val, repo).asObject;
+    return /*flexibleItemToDef(val);// */ new FlexibleSequence(val, repo).asObject;
 }
 
 function normalizeAllSeqs(val: VarDict, repo: VariableRepository): VarDict {
