@@ -10,6 +10,7 @@ export type ProjectFlex = string | JMusicSettings | ScoreDef | ProjectDef;
 export function makeProject(scoreFlex?: ScoreFlex, vars?: VarDict): ProjectDef {
     const vars1 = vars ?? (isProjectDef(scoreFlex) ? scoreFlex.vars : {});
 
+
     const score = makeScore(scoreFlex, createRepo(vars1));
 
     return {
