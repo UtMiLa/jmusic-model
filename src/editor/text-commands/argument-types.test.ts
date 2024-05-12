@@ -1,10 +1,8 @@
 import { StateChange } from './../../model/states/state';
-import { Clef, ClefType, Key, MeterFactory, Pitch, PitchClass, Time, createNote, createNoteFromLilypond } from 'model';
+import { Clef, ClefType, Key, MeterFactory, Pitch, PitchClass, Time, cloneNote, createNote, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
 import { ClefArg, KeyArg, MeterArg, NoteArg, SpacerArg,  PitchClassArg, PitchArg, SplitSequenceArg } from './argument-types';
-import { RationalArg } from './base-argument-types';
 import { createSpacerFromLilypond } from '../../model/notes/spacer';
-import { FunctionArg } from './function-argument-types';
 import { either } from 'fp-ts';
 
 describe('Argument types', () => {
@@ -36,6 +34,15 @@ describe('Argument types', () => {
         });
         it('should parse a note token with tie', () => {
             expect(NoteArg('e4~')).to.deep.eq(either.right([createNote([new Pitch(2, 3)], Time.newSpan(1, 4), true), '']));
+        });
+        it('should parse a note token with expressions', () => {
+            expect(NoteArg('e4\\staccato\\fermata')).to.deep.eq(either.right([createNote([new Pitch(2, 3)], Time.newSpan(1, 4), false, ['staccato', 'fermata']), '']));
+        });
+        it('should parse a note token with lyrics', () => {
+            expect(NoteArg('e4"Who"')).to.deep.eq(either.right([
+                cloneNote(createNote([new Pitch(2, 3)], Time.newSpan(1, 4), false), { text: ['Who'] }),
+                ''
+            ]));
         });
     });
 

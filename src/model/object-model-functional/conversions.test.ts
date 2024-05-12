@@ -1,12 +1,19 @@
 import { Time } from './../rationals/time';
-import { RetrogradeSequence } from './../score/transformations';
 import { expect } from 'chai';
-import { createTestScore } from '../../tools/test-tools';
 import { VoiceContentDef } from '../data-only/voices';
-import { conceptualGetElements, convertConceptualSequenceToData, convertSequenceDataToConceptual } from './conversions';
+import { conceptualGetElements, convertConceptualSequenceToData, convertSequenceDataToConceptual, normalizeVars } from './conversions';
 import { createNoteFromLilypond } from '../notes/note';
 import { ConceptualFunctionCall, ConceptualSequence, ConceptualVarRef } from './types';
-import { FuncDef, SeqFunction } from '../data-only/functions';
+import { SeqFunction } from '../data-only/functions';
+import { JMusic } from '../facade/jmusic';
+import { FlexibleSequence, flexibleItemToDef } from '../score/flexible-sequence';
+import { VariableRepository, VariableRepositoryProxy } from '../score/variables';
+import R = require('ramda');
+import { ProjectDef, isProjectDef } from '../data-only/project';
+import { VarDict } from '../data-only/variables';
+import { FlexibleItem } from '../score/types';
+import { lensItemOf, projectLensByIndex } from '../optics/lens';
+import { ScoreFlex, makeScore } from '../facade/score-flex';
 
 describe('Conversions', () => {
     describe('Conversions from def to conceptual', () => {
@@ -134,5 +141,46 @@ describe('Conversions', () => {
             expect(elements).to.have.length(6);
             expect(elements[4]).to.deep.eq(createNoteFromLilypond('g4.'));
         });
+
+
+        it('should support nested variables', () => {
+            const bigDef = { 
+                content: [[{ variable: 'theVar1' }, ['c4 d4 e4 f4', { variable: 'theVar2' }]], [[['c,4 d,4'], ['e,4'], 'f,4']]],
+                meter: '6/8',
+                clefs: [ 'alto', 'tenor' ],
+                key: 'g \\minor'
+            };
+            
+            const vars = { 
+                theVar1: 'a4 g4 e4 d4',
+                theVar2: ['aes4 ges4', { variable: 'theVar3' }, 'ees4 des4'],
+                theVar3: { variable: 'theVar4' },
+                theVar4: 'fis4 gis4 cis4 dis4'
+            };
+
+            const sc = new JMusic(bigDef, vars);
+   
+            const projectDef = {
+                score: sc.project.score,
+                vars: normalizeVars(vars)
+            };
+
+            const lens = projectLensByIndex(
+                sc.domainConverter,
+                {
+                    staff: 0,
+                    voice: 1,
+                    element: 7
+                });
+
+            
+            const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis16')), projectDef);
+
+            expect(res.vars.theVar4).to.deep.eq( ['fis4', 'fis16', 'cis4', 'dis4']);
+
+        });
+
+
+
     });
 });

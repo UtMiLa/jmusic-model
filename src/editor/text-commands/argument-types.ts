@@ -1,10 +1,10 @@
 import { FlexibleSequence } from './../../model/score/flexible-sequence';
 import { StateChange } from './../../model/states/state';
-import { FuncDef, Key, MeterFactory, MusicEvent, Note, NoteBase, NoteDef, Pitch, PitchClass, RationalDef, SeqFunction, SequenceDef, SequenceItem, SplitSequenceDef, Time, TimeSpan, VariableRef, createNote, 
+import { FuncDef, Key, MeterFactory, MusicEvent, Note, NoteBase, NoteDef, Pitch, PitchClass, RationalDef, SeqFunction, SequenceDef, SequenceItem, SplitSequenceDef, Time, TimeSpan, UpdateNote, VariableRef, cloneNote, createNote, 
     fromLilypondAlteration, fromLilypondOctave, fromLilypondPitchClass, isFuncDef, parseLilyClef } from '../../model';
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
-import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
+import { NoteExpression, parseLilyNoteExpression } from '../../model/notes/note-expressions';
 import { IntegerArg, FixedArg, RationalArg as R0, WordArg as W0, WhitespaceArg, ArgType } from './base-argument-types';
 
 
@@ -57,20 +57,40 @@ export const DurationArg: ArgType<TimeSpan> = mapResult((sequence([(IntegerArg),
     ));
 
 export const NoteExpressionArg: ArgType<string> = FixedArg(/\\[a-z]+/);
+export const NoteLyricArg: ArgType<string> = FixedArg(/"[^"]*"/);
 export const NoteTieArg: ArgType<string> = FixedArg('~');
 export const OptionalNoteExpressionsArg: ArgType<string[] | null> = mapResult((many((NoteExpressionArg), '\\s*', true)), res => res ? res : null);
+export const OptionalNoteLyricsArg: ArgType<string[] | null> = 
+    mapResult(
+        (many((NoteLyricArg), '\\s*', true)), 
+        res => res
+            ? res.map(s => s.replace(/"/g, '')) 
+            : null
+    );
 const ChordPitchOrRestArg: ArgType<Pitch[]> = (select([
     (mapResult((PitchArg), pitch => [pitch])), 
     (ChordArg),
     (mapResult((FixedArg('r')), () => []))
 ]));
 
-export const NoteArg: ArgType<Note> = mapResult((sequence<Pitch[], TimeSpan, string[] | null, string | null>([
+const NoteExtrasArg: ArgType<Partial<Note>> = mapResult(sequence([OptionalNoteExpressionsArg, OptionalNoteLyricsArg]),
+    args => {
+        const res: UpdateNote = {};
+        if (args[0] && args[0].length) res.expressions = args[0].map(parseLilyNoteExpression);
+        if (args[1] && args[1].length) res.text = args[1];
+        return res;
+    }
+);
+
+export const NoteArg: ArgType<Note> = mapResult((sequence<Pitch[], TimeSpan, UpdateNote, string | null>([
     (ChordPitchOrRestArg), 
     (DurationArg), 
-    (OptionalNoteExpressionsArg),
+    (NoteExtrasArg),
     (optional((NoteTieArg)))])), 
-args => createNote(args[0], args[1], !!args[3], args[2] && args[2].length ? args[2].map(parseLilyNoteExpression) : undefined));
+args => {
+    const note = createNote(args[0], args[1], !!args[3]);
+    return cloneNote(note, args[2]);
+});
 
 
 export const SpacerArg: ArgType<Spacer> = (input: string) => {

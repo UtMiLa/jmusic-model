@@ -1,39 +1,19 @@
 import R = require('ramda');
-import { FlexibleSequence, JMusicSettings, ScoreDef, flexibleItemToDef } from '..';
+import { JMusicSettings, ScoreDef, flexibleItemToDef } from '..';
 import { ProjectDef, FlexibleItem, isProjectDef, VariableDef, VarDict } from '..';
 import { VariableRepository, VariableRepositoryProxy, createRepo } from '../score/variables';
 import { ScoreFlex, makeScore } from './score-flex';
+import { normalizeVars } from '../object-model-functional/conversions';
 
 export type ProjectFlex = string | JMusicSettings | ScoreDef | ProjectDef;
 
-function normalizeSeq(val: FlexibleItem, repo: VariableRepository): FlexibleItem {
-    return /*flexibleItemToDef(val);// */ new FlexibleSequence(val, repo).asObject;
-}
-
-function normalizeAllSeqs(val: VarDict, repo: VariableRepository): VarDict {
-    return R.map(v => normalizeSeq(v, repo), val);
-}
-
 export function makeProject(scoreFlex?: ScoreFlex, vars?: VarDict): ProjectDef {
-    const varProxy = new VariableRepositoryProxy();
+    const vars1 = vars ?? (isProjectDef(scoreFlex) ? scoreFlex.vars : {});
 
-
-    //console.log('makeProject');
-    
-
-    const vars1 = 
-        vars
-            ? normalizeAllSeqs(vars, varProxy)
-            : isProjectDef(scoreFlex)
-                ? scoreFlex.vars
-                : {};
-
-    varProxy.assignVarDict(vars1);
-
-    const score = makeScore(scoreFlex, varProxy);
+    const score = makeScore(scoreFlex, createRepo(vars1));
 
     return {
         score,
-        vars: vars1
+        vars: normalizeVars(vars1)
     };
 }
