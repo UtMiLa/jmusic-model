@@ -95,6 +95,10 @@ function requireElements(
 
 //export function convertDataToConceptual(data: ProjectDef): Conce {}
 
+export function convertSequenceItemToConceptual(data: MusicEvent, vars: VarDict): ConceptualSequenceItem {
+    return requireElements(recursivelySplitStringsIn(data, createRepo(vars)), createRepo(vars))[0]; // todo: this should be possible to do nicer
+}
+
 
 export function convertSequenceDataToConceptual(data: VoiceContentDef, vars: VarDict): ConceptualSequence {
     return requireElements(recursivelySplitStringsIn(data, createRepo(vars)), createRepo(vars));

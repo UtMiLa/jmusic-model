@@ -11,8 +11,8 @@ import * as _ from 'ts-toolbelt';
 import { isSplitSequence } from '..';
 import { Note, noteAsLilypond } from '../notes/note';
 import { isSeqFunction } from '../data-only/functions';
-import { ConceptualSequence } from '../object-model-functional/types';
-import { conceptualGetElements, convertSequenceDataToConceptual } from '../object-model-functional/conversions';
+import { ConceptualSequence, ConceptualSequenceItem } from '../object-model-functional/types';
+import { conceptualGetElements, convertConceptualSequenceToData, convertSequenceDataToConceptual } from '../object-model-functional/conversions';
 import { isString } from 'fp-ts/lib/string';
 import { isSpacer, spacerAsLilypond } from '../notes/spacer';
 
@@ -125,6 +125,8 @@ export class FlexibleSequence extends BaseSequence {
 
         if (!alreadySplit) repo.observer$.subscribe(newRepo => {
             this.def = recursivelySplitStringsIn(def, newRepo);
+
+            this.conceptualData = convertSequenceDataToConceptual(def, newRepo.vars);
         });
         this.def = alreadySplit ? def as FlexibleItem[] : recursivelySplitStringsIn(init, repo);
     }
@@ -133,9 +135,9 @@ export class FlexibleSequence extends BaseSequence {
     private conceptualData: ConceptualSequence;
 
     get elements(): MusicEvent[] {
-        //return conceptualGetElements(this.conceptualData); // this works, except the mutable operations (insertElement etc), as they don't operate on conceptualData
-        const elm = this.requireElements(isSingleStringArray, isOtherFlexibleItemArray, this._def);
-        return R.flatten(elm.map((item) => isFlexibleSequence(item) ? item.elements : [item]));
+        return conceptualGetElements(this.conceptualData);
+        /*const elm = this.requireElements(isSingleStringArray, isOtherFlexibleItemArray, this._def);
+        return R.flatten(elm.map((item) => isFlexibleSequence(item) ? item.elements : [item]));*/
     }
 
     get duration(): TimeSpan {
@@ -251,11 +253,15 @@ export class FlexibleSequence extends BaseSequence {
     }
 
     appendElement(element: FlexibleItem): void {
-        if (R.is(Array, this.def)) {
+        /*if (R.is(Array, this.def)) {
             this.def = R.append(element, this.def);
         } else {
             this.def = [this.def, element];
-        }
+        }*/
+
+        const elem = convertSequenceDataToConceptual(flexibleItemToDef(element), this.repo.vars)[0];
+
+        this.conceptualData = R.append(elem, this.conceptualData);
     }    
 
 
@@ -264,7 +270,9 @@ export class FlexibleSequence extends BaseSequence {
         const path = this.indexToPath(i);
 
         if (path.length === 2) {
-            this.def = R.remove(path[0] as number, 1, this.def);
+            //this.def = R.remove(path[0] as number, 1, this.def);
+
+            this.conceptualData = R.remove(path[0] as number, 1, this.conceptualData);
             return;
         }
 
@@ -276,7 +284,17 @@ export class FlexibleSequence extends BaseSequence {
         const path = this.indexToPath(i);
         
         if (path.length === 2) {
-            this.def = R.modify(path[0] as number, fn, this.def);
+            //this.def = R.modify(path[0] as number, fn, this.def); // todo: get rid of this
+
+
+            const conceptualFn = (from: ConceptualSequenceItem): ConceptualSequenceItem => {
+                const input: FlexibleItem = convertConceptualSequenceToData([from]);
+                const res = convertSequenceDataToConceptual(flexibleItemToDef(fn(input)), this.repo.vars);
+                return res[0];
+            };
+
+            this.conceptualData = R.modify(path[0] as number, conceptualFn, this.conceptualData);
+
             return;
         }
         
@@ -291,7 +309,14 @@ export class FlexibleSequence extends BaseSequence {
         const path = this.indexToPath(i);
         //[1,0] tager def og indsætter element før index 1
         if (path.length === 2) {
-            this.def = R.insert(path[0] as number, element, this.def);
+            //this.def = R.insert(path[0] as number, element, this.def); // todo: get rid of this
+
+
+            
+            const elem = convertSequenceDataToConceptual(flexibleItemToDef(element), this.repo.vars)[0];
+            
+            this.conceptualData = R.insert(path[0] as number, elem, this.conceptualData);
+
             return;
         }
         
