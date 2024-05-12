@@ -2,8 +2,8 @@ import { Time, TimeSpan } from './../rationals/time';
 import R = require('ramda');
 import { ProjectDef } from '../data-only/project';
 import { VarDict, VariableRef } from '../data-only/variables';
-import { VoiceContentDef } from '../data-only/voices';
-import { recursivelySplitStringsIn } from '../score/flexible-sequence';
+import { MultiSequenceDef, VoiceContentDef } from '../data-only/voices';
+import { flexibleItemToDef, recursivelySplitStringsIn } from '../score/flexible-sequence';
 import { FlexibleItem } from '../score/types';
 import { VariableRepository, createRepo, isVariableRef, valueOf } from '../score/variables';
 import { ConceptualFunctionCall, ConceptualSequence, ConceptualSequenceItem, ConceptualVarRef, 
@@ -12,6 +12,7 @@ import { MusicEvent, getDuration, isMusicEvent, isNote, parseLilyElement } from 
 import { isSeqFunction, SeqFunction } from '../data-only/functions';
 import { createFunction } from '../score/functions';
 import { noteAsLilypond } from '../notes/note';
+import { map } from 'fp-ts/Record';
 
 
 function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
@@ -53,7 +54,7 @@ function requireElements(
                     const duration = funcRes.reduce((prev, curr) => Time.addSpans(prev, getDurationForConceptual(curr)), Time.NoTime);
                     return [{
                         type: 'Func',
-                        func: 'Reverse',
+                        func: item.function,
                         items: elems,
                         extraArgs: item.extraArgs,
                         duration
@@ -126,4 +127,8 @@ export function conceptualGetElements(conceptual: ConceptualSequence): MusicEven
         }
         throw 'Unknown object';
     }, conceptual);
+}
+
+export function normalizeVars(vars: VarDict): VarDict {
+    return map<FlexibleItem, FlexibleItem>(v => convertConceptualSequenceToData(convertSequenceDataToConceptual(v as MultiSequenceDef, vars)))(vars);
 }

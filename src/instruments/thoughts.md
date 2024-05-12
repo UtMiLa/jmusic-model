@@ -11,4 +11,5 @@ An instrument definition contains
 * name
 * rules for polyphony (violins can play up to 4 simultaneous notes; only two for long time)
 * special rules, like allow lyrics
+* MIDI channel
 

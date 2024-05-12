@@ -11,7 +11,7 @@ type ArgStarter<A> = [...stringInterpolation, ...ArgSimple<A>];
 type ArgDuple<A, B> = [...ArgStarter<A>, ...ArgSimple<B>];
 type ArgTriple<A, B, C> = [...ArgDuple<A, B>, ...ArgSimple<C>];
 type ArgQuadruple<A, B, C, D> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimple<D>];
-//type ArgQuintuple<A, B, C, D, E> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimple<D>, ...ArgSimple<E>];
+type ArgQuintuple<A, B, C, D, E> = [...ArgDuple<A, B>, ...ArgSimple<C>, ...ArgSimple<D>, ...ArgSimple<E>];
 
 
 function resolveSyntacticSugar<T>(arg: ArgType<T> | string | RegExp): ArgType<T | undefined> {
@@ -70,7 +70,7 @@ export function sequence<T>(types0: ArgStarter<ArgType<T>>): ArgType<[T]>;
 export function sequence<S,T>(types0: ArgDuple<ArgType<S>, ArgType<T>>): ArgType<[S, T]>;
 export function sequence<S,T,U>(types0: ArgTriple<ArgType<S>, ArgType<T>, ArgType<U>>): ArgType<[S, T, U]>;
 export function sequence<S,T,U,V>(types0: ArgQuadruple<ArgType<S>, ArgType<T>, ArgType<U>, ArgType<V>>): ArgType<[S, T, U, V]>;
-//export function sequence<S,T,U,V,W>(types0: ArgQuintuple<ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>>): ArgType<[S, T, U, V, W]>;
+export function sequence<S,T,U,V,W>(types0: ArgQuintuple<ArgType<T>, ArgType<S>, ArgType<U>, ArgType<V>, ArgType<W>>): ArgType<[S, T, U, V, W]>;
 export function sequence(types0: (ArgType<unknown> | string | RegExp)[]): ArgType<unknown> {
     const types = types0.map(resolveSyntacticSugar);
     
