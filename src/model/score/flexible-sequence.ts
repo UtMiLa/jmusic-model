@@ -12,7 +12,7 @@ import { isSplitSequence } from '..';
 import { Note, noteAsLilypond } from '../notes/note';
 import { isSeqFunction } from '../data-only/functions';
 import { ConceptualSequence } from '../object-model-functional/types';
-import { convertSequenceDataToConceptual } from '../object-model-functional/conversions';
+import { conceptualGetElements, convertSequenceDataToConceptual } from '../object-model-functional/conversions';
 import { isString } from 'fp-ts/lib/string';
 import { isSpacer, spacerAsLilypond } from '../notes/spacer';
 
@@ -121,7 +121,7 @@ export class FlexibleSequence extends BaseSequence {
         super();
 
         const def = flexibleItemToDef(init);
-        //const conceptualData = convertSequenceDataToConceptual(def, repo.vars);
+        this.conceptualData = convertSequenceDataToConceptual(def, repo.vars);
 
         if (!alreadySplit) repo.observer$.subscribe(newRepo => {
             this.def = recursivelySplitStringsIn(def, newRepo);
@@ -130,9 +130,10 @@ export class FlexibleSequence extends BaseSequence {
     }
 
     private _elements: MusicEvent[] | undefined = undefined
-    private conceptualData?: ConceptualSequence;
+    private conceptualData: ConceptualSequence;
 
     get elements(): MusicEvent[] {
+        //return conceptualGetElements(this.conceptualData); // this works, except the mutable operations (insertElement etc), as they don't operate on conceptualData
         const elm = this.requireElements(isSingleStringArray, isOtherFlexibleItemArray, this._def);
         return R.flatten(elm.map((item) => isFlexibleSequence(item) ? item.elements : [item]));
     }
