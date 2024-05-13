@@ -304,3 +304,15 @@ export function projectLensByTime(domainConverter: DomainConverter<any, any>, in
         (a: LensItem, pd: ProjectDef) => R.set(projectLensByIndex(domainConverter, timedToIndex(pd, index)), a, pd)
     ) ;
 }
+/* todo: use this to allow replacement of element by 0-many elements
+const arg = [0,1,2,3,4,5];
+
+var lensChainIndex = function lensIndex(n) {
+  return lens(
+    function(val) { return nth(n, val);},
+    (x, arr) => { const y = remove(n, 1, arr); return insertAll(n, x, y);  }
+  );
+};
+
+R.over(lensChainIndex(2), i => [2*i, 3*i], arg);
+*/

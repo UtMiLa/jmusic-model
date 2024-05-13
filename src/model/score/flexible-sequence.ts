@@ -173,24 +173,24 @@ export class FlexibleSequence extends BaseSequence {
 
 
     private requireElements(isSingleStringArray: (test: unknown) => test is string[], isOtherFlexibleItemArray: (test: unknown) => test is FlexibleItem[], init: FlexibleItem[]) {
-        if (this._elements === undefined) {
+        /*if (this._elements === undefined) {
             this._elements = R.chain(
                 R.cond([
                     [
                         R.is(String),
                         ((item: string) => item ? [parseLilyElement(item) as MusicEvent] : [])
                     ],                    
-                    /*[
+                    [
                         isMultiSequence,
                         (item: MultiSequence) => R.flatten(item.sequences.map(subSeq => calcElements([subSeq], this.repo)))
-                    ],*/
+                    ],
                     [
                         isSeqFunction,
                         (item: SeqFunction) => createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))
                     ],
                     [
                         isVariableRef,
-                        (item: VariableRef) => calcElements(valueOf(this.repo, item.variable).elements, this.repo) /*.map(timify)*/
+                        (item: VariableRef) => calcElements(valueOf(this.repo, item.variable).elements, this.repo)
                     ],
                     [
                         isSingleStringArray,
@@ -204,8 +204,8 @@ export class FlexibleSequence extends BaseSequence {
                     ]
                 ]),
                 init);
-        }
-        return this._elements;
+        }*/
+        return this.elements;
     }
 
     modifyItem(lens: R.Lens<FlexibleItem, FlexibleItem>, changer: (x: FlexibleItem) => FlexibleItem): void {
@@ -253,12 +253,6 @@ export class FlexibleSequence extends BaseSequence {
     }
 
     appendElement(element: FlexibleItem): void {
-        /*if (R.is(Array, this.def)) {
-            this.def = R.append(element, this.def);
-        } else {
-            this.def = [this.def, element];
-        }*/
-
         const elem = convertSequenceDataToConceptual(flexibleItemToDef(element), this.repo.vars)[0];
 
         this.conceptualData = R.append(elem, this.conceptualData);
@@ -270,8 +264,6 @@ export class FlexibleSequence extends BaseSequence {
         const path = this.indexToPath(i);
 
         if (path.length === 2) {
-            //this.def = R.remove(path[0] as number, 1, this.def);
-
             this.conceptualData = R.remove(path[0] as number, 1, this.conceptualData);
             return;
         }
@@ -284,9 +276,6 @@ export class FlexibleSequence extends BaseSequence {
         const path = this.indexToPath(i);
         
         if (path.length === 2) {
-            //this.def = R.modify(path[0] as number, fn, this.def); // todo: get rid of this
-
-
             const conceptualFn = (from: ConceptualSequenceItem): ConceptualSequenceItem => {
                 const input: FlexibleItem = convertConceptualSequenceToData([from]);
                 const res = convertSequenceDataToConceptual(flexibleItemToDef(fn(input)), this.repo.vars);
@@ -309,10 +298,6 @@ export class FlexibleSequence extends BaseSequence {
         const path = this.indexToPath(i);
         //[1,0] tager def og indsætter element før index 1
         if (path.length === 2) {
-            //this.def = R.insert(path[0] as number, element, this.def); // todo: get rid of this
-
-
-            
             const elem = convertSequenceDataToConceptual(flexibleItemToDef(element), this.repo.vars)[0];
             
             this.conceptualData = R.insert(path[0] as number, elem, this.conceptualData);
