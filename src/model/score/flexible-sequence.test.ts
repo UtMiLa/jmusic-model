@@ -192,7 +192,7 @@ describe('Flexible Sequence', () => {
     it('should assign decorations to the time slots of a sequence', () => {
         const seq1 = new FlexibleSequence(seq1Text);
         
-        seq1.insertElement(Time.newAbsolute(1, 4), { longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime });
+        seq1.insertElements(Time.newAbsolute(1, 4), [{ longDeco: LongDecorationType.Decrescendo, length: Time.QuarterTime }]);
 
         const slots = seq1.groupByTimeSlots('x');
         expect(slots).to.have.length(3);
@@ -207,7 +207,7 @@ describe('Flexible Sequence', () => {
     it('should assign slurs to the time slots of a sequence', () => {
         const seq1 = new FlexibleSequence(seq1Text);
         
-        seq1.insertElement(Time.newAbsolute(1, 4), { longDeco: LongDecorationType.Slur, length: Time.QuarterTime });
+        seq1.insertElements(Time.newAbsolute(1, 4), [{ longDeco: LongDecorationType.Slur, length: Time.QuarterTime }]);
 
         const slots = seq1.groupByTimeSlots('x');
         expect(slots).to.have.length(3);
@@ -283,7 +283,7 @@ describe('Flexible Sequence', () => {
         it('should support insertElement', () => {
             const seq = new FlexibleSequence(seq1Text);
 
-            seq.insertElement(Time.newAbsolute(1, 4), 'e4');
+            seq.insertElements(Time.newAbsolute(1, 4), ['e4']);
 
             expect(seq.elements).to.have.length(4);
             expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
@@ -295,7 +295,7 @@ describe('Flexible Sequence', () => {
         it('should support appendElement', () => {
             const seq = new FlexibleSequence(seq1Text);
 
-            seq.appendElement('e4');
+            seq.appendElements(['e4']);
 
             expect(seq.elements).to.have.length(4);
             expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
@@ -328,7 +328,7 @@ describe('Flexible Sequence', () => {
         it('should support insertElement, using index', () => {
             const seq = new FlexibleSequence(seq1Text);
 
-            seq.insertElement(1, 'e4');
+            seq.insertElements(1, ['e4']);
 
             expect(seq.elements).to.have.length(4);
             expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));

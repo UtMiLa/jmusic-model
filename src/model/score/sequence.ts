@@ -68,8 +68,8 @@ export interface ISequence {
     chainElements<T>(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => T[], initState?: SeqEnumerationState): T[];
     filterElements(callBack: (elm: MusicEvent, time: AbsoluteTime, state?: SeqEnumerationState) => boolean, initState?: SeqEnumerationState): MusicEvent[];
     groupByTimeSlots(keyPrefix: string): TimeSlot[];
-    insertElement(time: AbsoluteTime, elm: MusicEvent): void;
-    appendElement(elm: MusicEvent): void;
+    insertElements(time: AbsoluteTime, elm: MusicEvent[]): void;
+    appendElements(elm: MusicEvent[]): void;
     indexOfTime(time: AbsoluteTime): number;
     asObject: SequenceDef;
 }
@@ -168,8 +168,8 @@ export abstract class BaseSequence implements ISequence {
 
     /*protected uniqueId = generateUniqueId();*/
 
-    abstract insertElement(time: AbsoluteTime, elm: MusicEvent): void;
-    appendElement(elm: MusicEvent): void { throw 'appendElement not implemented'; }
+    abstract insertElements(time: AbsoluteTime, elm: MusicEvent[]): void;
+    appendElements(elm: MusicEvent[]): void { throw 'appendElement not implemented'; }
 
     getTimeSlots(): ExtendedTime[] {
         let time: ExtendedTime = Time.newAbsolute(0, 1);
@@ -326,9 +326,9 @@ export class SimpleSequence extends BaseSequence {
         this._elements.push(element);
     }
 
-    public insertElement(time: AbsoluteTime, element: MusicEvent): void {
+    public insertElements(time: AbsoluteTime, element: MusicEvent[]): void {
         const i = this.indexOfTime(time);
-        this._elements.splice(i, 0, element);
+        this._elements.splice(i, 0, ...element);
     }
 
     static createFromString(def: string): SimpleSequence {
@@ -387,7 +387,7 @@ export class CompositeSequence extends BaseSequence {
             .reduce((prev: MusicEvent[], curr: ISequence) => prev.concat(curr.elements), []);
     }
 
-    public insertElement(time: AbsoluteTime, element: MusicEvent): void {
+    public insertElements(time: AbsoluteTime, element: MusicEvent[]): void {
         throw 'CompositeSequence does not support insertElement';
     }
 

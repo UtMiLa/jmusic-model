@@ -44,7 +44,7 @@ export class LyricsSequence extends BaseSequence {
 
     duration: TimeSpan = this.sequence.duration;
 
-    insertElement(time: AbsoluteTime, elm: MusicEvent): void {
+    insertElements(time: AbsoluteTime, elm: MusicEvent[]): void {
         throw new Error('Method not implemented.');    
     }
 

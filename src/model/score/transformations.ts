@@ -37,7 +37,7 @@ export class RetrogradeSequence extends BaseSequence {
         return res;
     }
     
-    public insertElement(time: AbsoluteTime, element: MusicEvent): void {
+    public insertElements(time: AbsoluteTime, element: MusicEvent[]): void {
         throw 'RetrogradeSequence does not support insertElement';
     }
 
@@ -73,7 +73,7 @@ export class TupletSequence extends BaseSequence {
         });
     }
 
-    public insertElement(time: AbsoluteTime, element: MusicEvent): void {
+    public insertElements(time: AbsoluteTime, element: MusicEvent[]): void {
         throw 'TupletSequence does not support insertElement';
     }
     
@@ -107,7 +107,7 @@ export class GraceSequence extends BaseSequence {
         });
     }
 
-    public insertElement(time: AbsoluteTime, element: MusicEvent): void {
+    public insertElements(time: AbsoluteTime, element: MusicEvent[]): void {
         throw 'TupletSequence does not support insertElement';
     }
     
