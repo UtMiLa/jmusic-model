@@ -1,11 +1,9 @@
-import { VariableRef } from './../data-only/variables';
-import { SeqFunction } from './../data-only/functions';
-import { SequenceDef, FlexibleItem, SplitSequenceDef, VoiceContentDef, MultiSequenceItem, clefToLilypond, meterToLilypond, keyToLilypond } from './..';
+import { SequenceDef, FlexibleItem, SplitSequenceDef, MultiSequenceItem, clefToLilypond, meterToLilypond, keyToLilypond } from './..';
 import { createRepo, isVariableRef, valueOf, VariableRepository } from './variables';
 import R = require('ramda');
 import { TimeSpan, AbsoluteTime, Time } from '../rationals/time';
 import { createFunction, createInverseFunction } from './functions';
-import { BaseSequence, getDuration, isClefChange, isKeyChange, isLongDecoration, isMeterChange, isMusicEvent, isNote, isStateChange, MusicEvent, parseLilyElement, SimpleSequence, splitByNotes } from './sequence';
+import { BaseSequence, getDuration, isLongDecoration, isMusicEvent, isNote, isStateChange, MusicEvent, splitByNotes } from './sequence';
 
 import * as _ from 'ts-toolbelt';
 import { isSplitSequence } from '..';
@@ -107,14 +105,6 @@ function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEve
     return new FlexibleSequence(items, repo, true).elements;
 }
 
-function isSingleStringArray(test: unknown): test is string[] {
-    return (test as string[]).length === 1 && typeof ((test as string[])[0]) === 'string';
-}
-
-function isOtherFlexibleItemArray(test: unknown): test is FlexibleItem[] {
-    return true;
-}
-
 export class FlexibleSequence extends BaseSequence {
 
     constructor(init: FlexibleItem, private repo: VariableRepository = createRepo({}), alreadySplit = false) {
@@ -131,22 +121,19 @@ export class FlexibleSequence extends BaseSequence {
         this.def = alreadySplit ? def as FlexibleItem[] : recursivelySplitStringsIn(init, repo);
     }
 
-    private _elements: MusicEvent[] | undefined = undefined
     private conceptualData: ConceptualSequence;
 
     get elements(): MusicEvent[] {
         return conceptualGetElements(this.conceptualData);
-        /*const elm = this.requireElements(isSingleStringArray, isOtherFlexibleItemArray, this._def);
-        return R.flatten(elm.map((item) => isFlexibleSequence(item) ? item.elements : [item]));*/
     }
 
     get duration(): TimeSpan {
-        const elm = this.requireElements(isSingleStringArray, isOtherFlexibleItemArray, this._def);
+        const elm = this.requireElements();
         return elm.reduce((prev, curr) => Time.addSpans(prev, getDuration(curr)), Time.NoTime);
     }
 
     get count(): number {
-        const elm = this.requireElements(isSingleStringArray, isOtherFlexibleItemArray, this._def);
+        const elm = this.requireElements();
         return elm.reduce((prev, curr) => isFlexibleSequence(curr) ? prev + curr.count : prev + 1, 0);
     }
 
@@ -168,43 +155,10 @@ export class FlexibleSequence extends BaseSequence {
         if (!init) init = [];
 
         this._def = init;
-        this._elements = undefined;
     }
 
 
-    private requireElements(isSingleStringArray: (test: unknown) => test is string[], isOtherFlexibleItemArray: (test: unknown) => test is FlexibleItem[], init: FlexibleItem[]) {
-        /*if (this._elements === undefined) {
-            this._elements = R.chain(
-                R.cond([
-                    [
-                        R.is(String),
-                        ((item: string) => item ? [parseLilyElement(item) as MusicEvent] : [])
-                    ],                    
-                    [
-                        isMultiSequence,
-                        (item: MultiSequence) => R.flatten(item.sequences.map(subSeq => calcElements([subSeq], this.repo)))
-                    ],
-                    [
-                        isSeqFunction,
-                        (item: SeqFunction) => createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))
-                    ],
-                    [
-                        isVariableRef,
-                        (item: VariableRef) => calcElements(valueOf(this.repo, item.variable).elements, this.repo)
-                    ],
-                    [
-                        isSingleStringArray,
-                        (item: string[]) => [parseLilyElement(item[0])]
-                    ],
-                    [
-                        isMusicEvent, (item: MusicEvent) => [item]
-                    ],
-                    [
-                        isOtherFlexibleItemArray, (elm) => calcElements(elm, this.repo)
-                    ]
-                ]),
-                init);
-        }*/
+    private requireElements() {
         return this.elements;
     }
 
