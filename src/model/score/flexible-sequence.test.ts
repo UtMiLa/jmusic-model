@@ -292,7 +292,23 @@ describe('Flexible Sequence', () => {
             expect(seq.elements[3]).to.deep.eq(createNoteFromLilypond('e8'));
         });
 
-        it('should support appendElement', () => {
+        
+        it('should support insertElement with many elements', () => {
+            const seq = new FlexibleSequence(seq1Text);
+
+            seq.insertElements(Time.newAbsolute(1, 4), ['e4', 'f8', 'g8']);
+
+            expect(seq.elements).to.have.length(6);
+            expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
+            expect(seq.elements[1]).to.deep.eq(createNoteFromLilypond('e4'));
+            expect(seq.elements[2]).to.deep.eq(createNoteFromLilypond('f8'));
+            expect(seq.elements[3]).to.deep.eq(createNoteFromLilypond('g8'));
+            expect(seq.elements[4]).to.deep.eq(createNoteFromLilypond('d8'));
+            expect(seq.elements[5]).to.deep.eq(createNoteFromLilypond('e8'));
+        });
+
+
+        it('should support appendElements', () => {
             const seq = new FlexibleSequence(seq1Text);
 
             seq.appendElements(['e4']);
@@ -302,6 +318,20 @@ describe('Flexible Sequence', () => {
             expect(seq.elements[1]).to.deep.eq(createNoteFromLilypond('d8'));
             expect(seq.elements[2]).to.deep.eq(createNoteFromLilypond('e8'));
             expect(seq.elements[3]).to.deep.eq(createNoteFromLilypond('e4'));
+        });
+
+        it('should support appendElements with many elements', () => {
+            const seq = new FlexibleSequence(seq1Text);
+
+            seq.appendElements(['e4', 'f8', 'g8']);
+
+            expect(seq.elements).to.have.length(6);
+            expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
+            expect(seq.elements[1]).to.deep.eq(createNoteFromLilypond('d8'));
+            expect(seq.elements[2]).to.deep.eq(createNoteFromLilypond('e8'));
+            expect(seq.elements[3]).to.deep.eq(createNoteFromLilypond('e4'));
+            expect(seq.elements[4]).to.deep.eq(createNoteFromLilypond('f8'));
+            expect(seq.elements[5]).to.deep.eq(createNoteFromLilypond('g8'));
         });
 
         it('should support deleteElement', () => {
@@ -317,12 +347,25 @@ describe('Flexible Sequence', () => {
         it('should support modifyElement', () => {
             const seq = new FlexibleSequence(seq1Text);
 
-            seq.modifyElement(Time.newAbsolute(1, 4), () => 'f4');
+            seq.modifyElement(Time.newAbsolute(1, 4), () => ['f4']);
 
             expect(seq.elements).to.have.length(3);
             expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
             expect(seq.elements[1]).to.deep.eq(createNoteFromLilypond('f4'));
             expect(seq.elements[2]).to.deep.eq(createNoteFromLilypond('e8'));
+        });
+
+        it('should support modifyElement with many elements', () => {
+            const seq = new FlexibleSequence(seq1Text);
+
+            seq.modifyElement(Time.newAbsolute(1, 4), () => ['e4', 'f8', 'g8']);
+
+            expect(seq.elements).to.have.length(5);
+            expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
+            expect(seq.elements[1]).to.deep.eq(createNoteFromLilypond('e4'));
+            expect(seq.elements[2]).to.deep.eq(createNoteFromLilypond('f8'));
+            expect(seq.elements[3]).to.deep.eq(createNoteFromLilypond('g8'));
+            expect(seq.elements[4]).to.deep.eq(createNoteFromLilypond('e8'));
         });
 
         it('should support insertElement, using index', () => {
@@ -350,7 +393,7 @@ describe('Flexible Sequence', () => {
         it('should support modifyElement, using index', () => {
             const seq = new FlexibleSequence(seq1Text);
 
-            seq.modifyElement(1, () => 'f4');
+            seq.modifyElement(1, () => ['f4']);
 
             expect(seq.elements).to.have.length(3);
             expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));

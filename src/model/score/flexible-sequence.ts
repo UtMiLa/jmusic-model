@@ -233,7 +233,7 @@ export class FlexibleSequence extends BaseSequence {
         throw 'Not implemented';
     }
 
-    modifyElement(i: number | AbsoluteTime, fn: (from: FlexibleItem) => FlexibleItem): void {
+    modifyElement(i: number | AbsoluteTime, fn: (from: FlexibleItem) => FlexibleItem[]): void {
         if (typeof i !== 'number') i = this.indexOfTime(i);
         const path = this.indexToPath(i);
         
@@ -241,7 +241,7 @@ export class FlexibleSequence extends BaseSequence {
             const conceptualFn = (from: ConceptualSequenceItem): ConceptualSequenceItem[] => {
                 const input: FlexibleItem = convertConceptualSequenceToData([from]);
                 const res = convertSequenceDataToConceptual(flexibleItemToDef(fn(input)), this.repo.vars);
-                return [res[0]];
+                return res;
             };
 
             this.updateElement(path[0] as number, conceptualFn);
@@ -260,9 +260,9 @@ export class FlexibleSequence extends BaseSequence {
         const path = this.indexToPath(i);
         //[1,0] tager def og indsætter element før index 1
         if (path.length === 2) {
-            const elem = convertSequenceDataToConceptual(elements.map(flexibleItemToDef), this.repo.vars)[0];
+            const elem = convertSequenceDataToConceptual(elements.map(flexibleItemToDef), this.repo.vars);
             
-            this.updateElement(path[0] as number, x => [elem, x]);
+            this.updateElement(path[0] as number, x => [...elem, x]);
             return;
         }
         
