@@ -28,6 +28,7 @@ function isOtherFlexibleItemArray(test: unknown): test is FlexibleItem[] {
 
 function getDurationForConceptual(elem: ConceptualSequenceItem): TimeSpan {
     if (isConceptualVarRef(elem) || isConceptualFunctionCall(elem)) return elem.duration;
+    if (R.is(Array, elem)) return elem.reduce((accu, child) => getDurationForConceptual(child), Time.NoTime);
     return getDuration(elem);
 }
 
@@ -111,6 +112,8 @@ export function convertConceptualSequenceToData(conceptual: ConceptualSequence):
             return { variable: elem.name };
         } else if (isConceptualFunctionCall(elem)) {
             return { function: elem.func, args: convertConceptualSequenceToData(elem.items) } as SeqFunction;
+        } else if (R.is(Array, elem)) {
+            return convertConceptualSequenceToData(elem);
         } else {
             if (isNote(elem)) {
                 return noteAsLilypond(elem);
@@ -126,6 +129,8 @@ export function conceptualGetElements(conceptual: ConceptualSequence): MusicEven
             return conceptualGetElements(elem.items);
         } else if (isConceptualFunctionCall(elem)) {
             return createFunction(elem.func, elem.extraArgs)(conceptualGetElements(elem.items));
+        } else if (R.is(Array, elem)) {
+            return conceptualGetElements(elem);
         } else {
             return [elem];
         }

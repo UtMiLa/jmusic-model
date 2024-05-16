@@ -20,7 +20,7 @@ export interface ConceptualFunctionCall {
     readonly duration: TimeSpan;
 }
 
-export type ConceptualSequenceItem = MusicEvent | ConceptualVarRef | ConceptualFunctionCall;
+export type ConceptualSequenceItem = MusicEvent | ConceptualVarRef | ConceptualFunctionCall | ConceptualSequence;
 
 export type ConceptualSequence = ConceptualSequenceItem[];
 
