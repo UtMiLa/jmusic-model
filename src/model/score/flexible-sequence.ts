@@ -9,7 +9,7 @@ import * as _ from 'ts-toolbelt';
 import { isSplitSequence } from '..';
 import { Note, noteAsLilypond } from '../notes/note';
 import { isSeqFunction } from '../data-only/functions';
-import { ConceptualSequence, ConceptualSequenceItem } from '../object-model-functional/types';
+import { ConceptualSequence, ConceptualSequenceItem, isConceptualFunctionCall, isConceptualVarRef } from '../object-model-functional/types';
 import { conceptualGetElements, convertConceptualSequenceToData, convertSequenceDataToConceptual } from '../object-model-functional/conversions';
 import { isString } from 'fp-ts/lib/string';
 import { isSpacer, spacerAsLilypond } from '../notes/spacer';
@@ -200,6 +200,54 @@ export class FlexibleSequence extends BaseSequence {
         };
         
         const allPaths = itemsToPaths(this.def);
+
+        if (index >= allPaths.length) throw 'Illegal index';
+
+        return allPaths[index];
+    }
+
+
+    indexToPathC(index: number): PathElement<MusicEvent>[] {
+
+        const itemsToPaths = (item: ConceptualSequenceItem): PathElement<MusicEvent>[][] => {
+            if (typeof item === 'string') {
+                const no = splitByNotes(item).length;
+                return R.range(0, no).map(n => [n]);
+            } else if (isConceptualFunctionCall(item as ConceptualSequenceItem)) {
+                throw 'Not supported a';
+                /*return createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))
+                    .map((a, i) => [
+                        { 
+                            function: createFunction(item.function, item.extraArgs), 
+                            inverse: createInverseFunction(item.function, item.extraArgs)
+                        } as FunctionPathElement<MusicEvent[]>, 
+                        i, 
+                        0
+                    ]);*/
+            } else if (isConceptualVarRef(item)) {
+                //throw 'Not supported ba';
+                const varSeq = valueOf(this.repo, item.name);
+                return item.items.map((e, i) => [1, { variable: item.name }, ...varSeq.indexToPath(i)]); //{ variable: item.variable };
+                /*const varSeq = valueOf(this.repo, item.name);
+                return varSeq.elements.map((e, i) => [{ variable: item.variable }, ...varSeq.indexToPath(i)]); //{ variable: item.variable }*/
+            } else if (isMusicEvent(item)) {
+                return [[0]];
+            } else if (isSplitSequence(item)) {
+                throw 'Not supported b';
+            } else {
+                throw 'Not supported d';
+            }
+            throw 'Not supported c';
+        };
+        
+        
+    
+        const allPaths = (R.addIndex as addIndexFix<ConceptualSequenceItem, PathElement<MusicEvent>[][]>)(R.chain<ConceptualSequenceItem, PathElement<MusicEvent>[]>)(
+            (s: ConceptualSequenceItem, idx: number) => itemsToPaths(s).map(
+                x => x.length > 1 && typeof x[0] === 'string' ? x : [idx, ...x]
+            ), this.conceptualData
+        );
+        //itemsToPaths(this.conceptualData);
 
         if (index >= allPaths.length) throw 'Illegal index';
 
