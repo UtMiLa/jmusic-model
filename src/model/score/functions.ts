@@ -7,7 +7,8 @@ import { RationalDef } from '../rationals/rational';
 import { isNote, MusicEvent } from './sequence';
 import { mapLyricsToMusic } from '../notes/lyrics';
 import { TupletState } from '../data-only/notes';
-import { CurryMusicFunc, MusicFunc } from './function-types';
+import { CurryMusicFunc, MusicEventFunc, MusicFunc } from './function-types';
+import { identity, matchEvent, transposeKey, transposeNote } from './music-event-functions';
 
 /* todo functions:
     repeatFor       [# of times]            repeat for a timespan
@@ -71,6 +72,9 @@ import { CurryMusicFunc, MusicFunc } from './function-types';
 */
 
 
+const sequenceFunctionFromEventFunction = (eventFunction: MusicEventFunc) => (sequence: MusicEvent[]) => 
+    R.chain(eventFunction, sequence);
+
 
 const repeater = R.repeat;
 const flippedRepeater = R.flip(repeater);
@@ -97,12 +101,15 @@ const setTupletNotes = (fraction: RationalDef, notes: MusicEvent[]) => {
 };
 
 
-const transposePitch = R.curry((interval: Interval, pitch: Pitch) => addInterval(pitch, interval));
-const transposeNote = R.curry((interval: Interval, note: Note) => ({...note, pitches: note.pitches.map(pitch => transposePitch(interval, pitch))}));
+const transposeEvent = (interval: Interval) => matchEvent({
+    note: transposeNote(interval),
+    spacer: identity,
+    state: transposeKey(interval),
+    longDeco: identity
+});
 
-const transpose = R.curry((interval, sequence: MusicEvent[]) => 
-    R.map(R.when(isNote, transposeNote(interval)))(sequence));
-const inverseTranspose = R.curry((interval, sequence: MusicEvent[]) => transpose(invertInterval(interval), sequence));
+const transpose = (interval: Interval) => sequenceFunctionFromEventFunction(transposeEvent(interval));
+const inverseTranspose = R.curry((interval, sequence: MusicEvent[]) => transpose(invertInterval(interval))(sequence));
 
 const addLyrics = R.curry((lyrics: string, sequence: MusicEvent[]) => mapLyricsToMusic(lyrics, sequence));
 
