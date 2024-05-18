@@ -1,6 +1,6 @@
 import { SequenceDef } from './voices';
 
-export type FuncDef = 'Identity' | 'Relative' | 'Reverse' | 'Repeat' | 'Grace' | 'Tuplet' | 'Transpose' | 'ModalTranspose' | 'AddLyrics';
+export type FuncDef = 'Identity' | 'Relative' | 'Reverse' | 'Repeat' | 'Grace' | 'Tuplet' | 'Transpose' | 'ModalTranspose' | 'AddLyrics' | 'Augment';
 
 
 export interface SeqFunction {
@@ -16,5 +16,5 @@ export function isSeqFunction(test: unknown): test is SeqFunction {
 }
 
 export function isFuncDef(test: string): test is FuncDef {
-    return ['Identity', 'Relative', 'Reverse', 'Repeat', 'Grace', 'Tuplet', 'Transpose', 'ModalTranspose', 'AddLyrics'].includes(test);
+    return ['Identity', 'Relative', 'Reverse', 'Repeat', 'Grace', 'Tuplet', 'Transpose', 'ModalTranspose', 'AddLyrics', 'Augment'].includes(test);
 }

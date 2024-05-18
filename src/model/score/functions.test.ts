@@ -302,7 +302,27 @@ describe('Flexible sequence transformations', () => {
     });
 
     describe('Augmentation', () => {
-        it('should');
+        it('should augment a sequence', () => {
+            const seq3Text = 'c,2 d,8 <e, c>4';
+            const seq3TextAugm = 'c,1 d,4 <e, c>2';
+            const fun = createFunction('Augment', [{ numerator: 2, denominator: 1 }]);
+
+            const res = fun(new FlexibleSequence(seq3Text).elements);
+
+            expect(res).to.have.length(3);
+            expect(res).to.deep.eq(new FlexibleSequence(seq3TextAugm).elements);
+        });
+
+        it('should diminish a sequence', () => {
+            const seq3Text = 'c,2 d,8 <e, c>4';
+            const seq3TextAugm = 'c,8 d,32 <e, c>16';
+            const fun = createFunction('Augment', [{ numerator: 1, denominator: 4 }]);
+
+            const res = fun(new FlexibleSequence(seq3Text).elements);
+
+            expect(res).to.have.length(3);
+            expect(res).to.deep.eq(new FlexibleSequence(seq3TextAugm).elements);
+        });
     });
 
     describe('ReplaceValue', () => {

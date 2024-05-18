@@ -1,20 +1,20 @@
 import { FuncDef } from './../data-only/functions';
 import R = require('ramda');
 import { Note, setGrace, setPitches, setTupletFactor, setTupletGroup } from '../notes/note';
-import { addInterval, Interval, invertInterval } from '../pitches/intervals';
+import { Interval, invertInterval } from '../pitches/intervals';
 import { Pitch } from '../pitches/pitch';
 import { RationalDef } from '../rationals/rational';
 import { isNote, MusicEvent } from './sequence';
 import { mapLyricsToMusic } from '../notes/lyrics';
 import { TupletState } from '../data-only/notes';
 import { CurryMusicFunc, MusicEventFunc, MusicFunc } from './function-types';
-import { identity, matchEvent, transposeKey, transposeNote } from './music-event-functions';
+import { augment, identity, matchEvent, transposeKey, transposeNote } from './music-event-functions';
 
 /* todo functions:
     repeatFor       [# of times]            repeat for a timespan
     repeatUntil     [absTime or fixpoint]   repeat until an absoluteTime (which can be a variable timeMark defined in another voice)
-    extendFor       [absTime]               extend a note
-    extendUntil     [fixpoint]
+    extendFor       [timeSpan]              extend a note
+    extendUntil     [absTime orfixpoint]
     restFor         [absTime]               rest
     restUntil       [fixpoint]
 
@@ -76,9 +76,10 @@ const sequenceFunctionFromEventFunction = (eventFunction: MusicEventFunc) => (se
     R.chain(eventFunction, sequence);
 
 
-const repeater = R.repeat;
-const flippedRepeater = R.flip(repeater);
-const flattenedRepeater = R.curry(R.pipe(flippedRepeater, R.flatten as any));
+const repeater: (a: MusicEvent[], n: number) => MusicEvent[][] = R.repeat<MusicEvent[]>;
+const flippedRepeater: (n: number, elements: MusicEvent[]) => MusicEvent[][] = R.flip(repeater);
+const unnestedRepeater: (n: number, elements: MusicEvent[]) => MusicEvent[] = R.pipe(flippedRepeater, R.unnest<MusicEvent[][]>);
+const flattenedRepeater = R.curry(unnestedRepeater);
 
 const reverseTuplets = R.modify<'tupletGroup', TupletState, TupletState>('tupletGroup', 
     (tg: TupletState) => tg === TupletState.Begin
@@ -109,7 +110,10 @@ const transposeEvent = (interval: Interval) => matchEvent({
 });
 
 const transpose = (interval: Interval) => sequenceFunctionFromEventFunction(transposeEvent(interval));
-const inverseTranspose = R.curry((interval, sequence: MusicEvent[]) => transpose(invertInterval(interval))(sequence));
+const inverseTranspose = (interval: Interval) => transpose(invertInterval(interval));
+
+const augmentSeq = (ratio: RationalDef) => sequenceFunctionFromEventFunction(augment(ratio));
+const augmentSeqInverse = (ratio: RationalDef) => augmentSeq({ numerator: ratio.denominator, denominator: ratio.numerator });
 
 const addLyrics = R.curry((lyrics: string, sequence: MusicEvent[]) => mapLyricsToMusic(lyrics, sequence));
 
@@ -156,7 +160,8 @@ const internal_functions: {[key: string]: MusicFunc | CurryMusicFunc } = {
     'Tuplet': R.curry(setTupletNotes) as CurryMusicFunc,
     'Transpose': transpose as CurryMusicFunc,
     'ModalTranspose': R.identity,
-    'AddLyrics': addLyrics as CurryMusicFunc
+    'AddLyrics': addLyrics as CurryMusicFunc,
+    'Augment': augmentSeq as CurryMusicFunc
 };
 
 const throwFunction = () => { throw 'Cannot invert function'; };
@@ -170,7 +175,8 @@ const internal_inverse_functions: {[key: string]: MusicFunc | CurryMusicFunc } =
     'Tuplet': throwFunction,
     'Transpose': inverseTranspose as CurryMusicFunc,
     'ModalTranspose': throwFunction,
-    'AddLyrics': throwFunction
+    'AddLyrics': throwFunction,
+    'Augment': augmentSeqInverse as CurryMusicFunc
 };
 
 export function createFunction(funcDef: FuncDef, extraArgs?: unknown[]): (elements: MusicEvent[]) => MusicEvent[] {

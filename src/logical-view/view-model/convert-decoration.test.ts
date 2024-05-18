@@ -2,7 +2,7 @@ import { JMusic } from './../../model/facade/jmusic';
 import { Time } from './../../model/rationals/time';
 import { LongDecorationType } from './../../model';
 import { expect } from 'chai';
-import { LongDecoToView } from './convert-decoration';
+import { LongDecoToView as longDecoToView } from './convert-decoration';
 
 describe('View model: Decorations', () => {
 
@@ -23,7 +23,7 @@ describe('View model: Decorations', () => {
         it('should convert a crescendo to view model', () => {
             const decrescDeco = { longDeco: LongDecorationType.Decrescendo, length: Time.HalfTime };
             const ts1 = score.staves[0].voices[1].content.groupByTimeSlots('0-1');
-            const view1 = LongDecoToView(decrescDeco, Time.newAbsolute(3, 4), ts1);
+            const view1 = longDecoToView(decrescDeco, Time.newAbsolute(3, 4), ts1);
             expect(view1).to.deep.equal({ 
                 type: LongDecorationType.Decrescendo, 
                 noteRefs: [
@@ -34,7 +34,7 @@ describe('View model: Decorations', () => {
 
             const crescDeco = { longDeco: LongDecorationType.Crescendo, length: Time.WholeTime };
             const ts2 = score.staves[0].voices[1].content.groupByTimeSlots('0-0');
-            const view2 = LongDecoToView(crescDeco, Time.newAbsolute(1, 2), ts2);
+            const view2 = longDecoToView(crescDeco, Time.newAbsolute(1, 2), ts2);
             expect(view2).to.deep.equal({ 
                 type: LongDecorationType.Crescendo, 
                 noteRefs: [
@@ -48,7 +48,7 @@ describe('View model: Decorations', () => {
         it('should convert a slur to view model', () => {
             const slurDeco = { longDeco: LongDecorationType.Slur, length: Time.HalfTime };
             const ts1 = score.staves[0].voices[1].content.groupByTimeSlots('0-1');
-            const view1 = LongDecoToView(slurDeco, Time.newAbsolute(3, 4), ts1);
+            const view1 = longDecoToView(slurDeco, Time.newAbsolute(3, 4), ts1);
             expect(view1).to.deep.equal({ 
                 type: LongDecorationType.Slur, 
                 noteRefs: [

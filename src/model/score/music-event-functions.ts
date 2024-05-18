@@ -1,12 +1,16 @@
+import { multiply } from 'ramda';
 
-import { Note } from '../notes/note';
-import { isSpacer } from '../notes/spacer';
+import { Note, cloneNote } from '../notes/note';
+import { Spacer, isSpacer } from '../notes/spacer';
 import { Interval, addInterval } from '../pitches/intervals';
 import { Pitch } from '../pitches/pitch';
+import { RationalDef } from '../rationals/rational';
 import { Key } from '../states/key';
 import { StateChange } from '../states/state';
 import { LongDecoFunc, MusicEventFunc, NoteFunc, SpacerFunc, StateFunc } from './function-types';
 import { MusicEvent, isKeyChange, isLongDecoration, isNote, isStateChange } from './sequence';
+import { Time } from '../rationals/time';
+import { LongDecorationElement } from '../data-only/decorations';
 
 
 export interface MatchEventStruct {
@@ -49,3 +53,20 @@ export const transposeKey = (interval: Interval) => (element: StateChange): Musi
     return [element];
 };
 
+
+const augmentNote = (r: RationalDef) => (n: Note) => {
+    return [cloneNote(n, { nominalDuration: Time.scale(n.nominalDuration, r.numerator, r.denominator) })];
+};
+const augmentSpacer = (r: RationalDef) => (s: Spacer) => {
+    return [{...s, duration: Time.scale(s.duration, r.numerator, r.denominator) }];
+};
+const augmentLongDeco = (r: RationalDef) => (s: LongDecorationElement) => {
+    return [{...s, length: Time.scale(s.length, r.numerator, r.denominator) }];
+};
+
+export const augment = (r: RationalDef): MusicEventFunc => matchEvent({
+    note: augmentNote(r),
+    spacer: augmentSpacer(r),
+    state: identity,
+    longDeco: augmentLongDeco(r)
+});
