@@ -111,6 +111,16 @@ describe('Key', () => {
         expect(key3.equals(key1)).to.be.false;
     });
 
+    it('should transpose a key', () => {
+        expect(parseLilyKey('\\key d \\major').transpose({ interval: 0, alteration: 0})).to.deep.eq(parseLilyKey('\\key d \\major'));
+        expect(parseLilyKey('\\key d \\major').transpose({ interval: 1, alteration: 1})).to.deep.eq(parseLilyKey('\\key e \\major'));
+        expect(parseLilyKey('\\key d \\major').transpose({ interval: -1, alteration: -1})).to.deep.eq(parseLilyKey('\\key c \\major'));
+        expect(parseLilyKey('\\key d \\major').transpose({ interval: 2, alteration: -1})).to.deep.eq(parseLilyKey('\\key f \\major'));
+        expect(parseLilyKey('\\key c \\major').transpose({ interval: -1, alteration: -1})).to.deep.eq(parseLilyKey('\\key bes \\major'));
+        expect(parseLilyKey('\\key c \\major').transpose({ interval: 1, alteration: 1})).to.deep.eq(parseLilyKey('\\key d \\major'));
+        expect(parseLilyKey('\\key bes \\major').transpose({ interval: 1, alteration: 1})).to.deep.eq(parseLilyKey('\\key c \\major'));
+    });
+
     describe('Accidental rule', () => {
         it('should correctly set accidentals', () => {
             const accMan = new AccidentalManager();

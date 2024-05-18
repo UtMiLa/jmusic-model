@@ -35,7 +35,7 @@ export function addInterval(pitch: Pitch, interval: Interval): Pitch {
     let alt = interval.alteration;
 
     if(alt){
-        const baseInterval = interval.interval % 7;
+        const baseInterval = R.mathMod(interval.interval, 7);
         if (baseInterval === 0 || baseInterval === 3 || baseInterval === 4) {
             // pure/augm/dim
             if (alt < 0) alt++; else alt--;

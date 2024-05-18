@@ -1,9 +1,10 @@
+import { Spacer } from './../notes/spacer';
 import { FlexibleSequence } from './flexible-sequence';
-import { ISequence } from './sequence';
+import { ISequence, parseLilyElement } from './sequence';
 import { expect } from 'chai';
 import { Note, createNoteFromLilypond } from '../notes/note';
 import { MeterFactory } from '../states/meter';
-import { MatchEventStruct, empty, identity, matchEvent, transposeNote } from './music-event-functions';
+import { MatchEventStruct, empty, identity, matchEvent, transposeKey, transposeNote } from './music-event-functions';
 import { Key } from '../states/key';
 import { Interval } from '../pitches/intervals';
 
@@ -56,5 +57,37 @@ describe('MusicEvent functions', () => {
         expect(transposeNote(interval)(sequence.elements[2] as Note)).to.deep.eq([createNoteFromLilypond('d\'8')]);
     });
 
+    it('should transpose key signature', () => {
+        const interval: Interval = {
+            interval: 2,
+            alteration: -1
+        };
+        expect(transposeKey(interval)({ isState: true, key: new Key({ accidental: -1, count: 1 })})).to.deep.eq([{ isState: true, key: new Key({ accidental: -1, count: 4 })}]);
+        expect(transposeKey(interval)({ isState: true, key: new Key({ accidental: 1, count: 1 })})).to.deep.eq([{ isState: true, key: new Key({ accidental: -1, count: 2 })}]);
+        expect(transposeKey(interval)({ isState: true, key: new Key({ accidental: 0, count: 0 })})).to.deep.eq([{ isState: true, key: new Key({ accidental: -1, count: 3 })}]);
+        expect(transposeKey(interval)({ isState: true, key: new Key({ accidental: 1, count: 3 })})).to.deep.eq([{ isState: true, key: new Key({ accidental: 0, count: 0 })}]);
+    });
+
+    
+    it('should transpose by pattern', () => {
+        const interval: Interval = {
+            interval: 2,
+            alteration: -1
+        };
+        const pattern: MatchEventStruct = {
+            note: transposeNote(interval),
+            spacer: identity,
+            state: transposeKey(interval),
+            longDeco: identity
+        };
+        const f = matchEvent(pattern);
+        expect(f(sequence.elements[0])).to.deep.eq([createNoteFromLilypond('ees\'4.')]);
+        expect(f(sequence.elements[1])).to.deep.eq([createNoteFromLilypond('f\'8')]);
+        expect(f(sequence.elements[2])).to.deep.eq([createNoteFromLilypond('d\'8')]);
+        expect(f(sequence.elements[3])).to.deep.eq([{ isState: true, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 })}]);
+        expect(f(sequence.elements[4])).to.deep.eq([ { isState: true, key: new Key({ accidental: -1, count: 4 })}]);
+        expect(matchEvent(pattern)(sequence.elements[6])).to.deep.eq([parseLilyElement('s1')]);
+
+    });
 
 });

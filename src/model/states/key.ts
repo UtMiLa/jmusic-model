@@ -1,6 +1,7 @@
 import { KeyDef } from './../data-only/states';
 import { add, mathMod, multiply, pipe, range, times, __ } from 'ramda';
 import { Alteration, Pitch, PitchClass, Accidental } from './../pitches/pitch';
+import { Interval, addInterval } from '../pitches/intervals';
 
 /*export interface KeyDef {
     accidental: Alteration;
@@ -45,6 +46,12 @@ export class Key {
         }
 
         return new Key({accidental: Math.sign(no) as (0 | 1 | -1), count: Math.abs(no)});
+    }
+
+    transpose(interval: Interval): Key {
+        const tonic = PitchClass.fromCircleOf5(this.def.accidental * this.def.count);
+        const changedTonic = addInterval(new Pitch(tonic.pitchClass, 4, tonic.alteration), interval);
+        return Key.fromMode(changedTonic.pitchClass, 'major');
     }
 
     equals(key: Key): boolean {        

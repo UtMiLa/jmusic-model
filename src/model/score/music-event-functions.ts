@@ -3,8 +3,10 @@ import { Note } from '../notes/note';
 import { isSpacer } from '../notes/spacer';
 import { Interval, addInterval } from '../pitches/intervals';
 import { Pitch } from '../pitches/pitch';
+import { Key } from '../states/key';
+import { StateChange } from '../states/state';
 import { LongDecoFunc, MusicEventFunc, NoteFunc, SpacerFunc, StateFunc } from './function-types';
-import { MusicEvent, isLongDecoration, isNote, isStateChange } from './sequence';
+import { MusicEvent, isKeyChange, isLongDecoration, isNote, isStateChange } from './sequence';
 
 
 export interface MatchEventStruct {
@@ -37,5 +39,13 @@ const _transposeNote = ((interval: Interval, note: Note) => ({...note, pitches: 
 
 export const transposeNote = (interval: Interval) => (element: Note): MusicEvent[] => {
     return [_transposeNote(interval, element)];
+};
+
+export const transposeKey = (interval: Interval) => (element: StateChange): MusicEvent[] => {
+    if (isKeyChange(element)) {
+        const key = element.key as Key;
+        return [{ isState: true, key: key.transpose(interval) }];
+    }
+    return [element];
 };
 
