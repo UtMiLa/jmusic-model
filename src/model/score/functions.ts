@@ -7,6 +7,7 @@ import { RationalDef } from '../rationals/rational';
 import { isNote, MusicEvent } from './sequence';
 import { mapLyricsToMusic } from '../notes/lyrics';
 import { TupletState } from '../data-only/notes';
+import { CurryMusicFunc, MusicFunc } from './function-types';
 
 /* todo functions:
     repeatFor       [# of times]            repeat for a timespan
@@ -70,8 +71,6 @@ import { TupletState } from '../data-only/notes';
 */
 
 
-type MusicFunc = (elements: MusicEvent[]) => MusicEvent[];
-type CurryMusicFunc = (...args: unknown[]) => MusicFunc;
 
 const repeater = R.repeat;
 const flippedRepeater = R.flip(repeater);
