@@ -5,7 +5,7 @@ import { ISequence, parseLilyElement } from './sequence';
 import { expect } from 'chai';
 import { Note, createNoteFromLilypond } from '../notes/note';
 import { MeterFactory } from '../states/meter';
-import { MatchEventStruct, augment, empty, identity, matchEvent, transposeKey, transposeNote } from './music-event-functions';
+import { MatchEventStruct, augment, empty, identity, matchEvent, transposeKey, transposeNote, tremolo } from './music-event-functions';
 import { Key } from '../states/key';
 import { Interval } from '../pitches/intervals';
 import { Rational } from '../rationals/rational';
@@ -116,6 +116,25 @@ describe('MusicEvent functions', () => {
 
         sequence.insertElements(Time.newAbsolute(3, 8), [{ longDeco: LongDecorationType.Slur, length: Time.HalfTime }]);
         expect(augment({ numerator: 1, denominator: 2 })(sequence.elements[1])).to.deep.eq([{ longDeco: LongDecorationType.Slur, length: Time.QuarterTime }]);
+    });
+
+    it('should tremulate notes', () => {
+        const note1 = createNoteFromLilypond('c\'8');
+        const note2 = createNoteFromLilypond('d\'8');
+        const note3 = createNoteFromLilypond('b8');
+        
+        expect(tremolo(Time.newSpan(1, 8))(sequence.elements[0])).to.deep.eq([note1, note1, note1]);
+        expect(tremolo(Time.newSpan(1, 8))(sequence.elements[1])).to.deep.eq([note2]);
+        expect(tremolo(Time.newSpan(1, 8))(sequence.elements[2])).to.deep.eq([note3]);
+        expect(tremolo(Time.newSpan(1, 8))(sequence.elements[3])).to.deep.eq([sequence.elements[3]]);
+        expect(tremolo(Time.newSpan(1, 8))(sequence.elements[4])).to.deep.eq([sequence.elements[4]]);
+        expect(tremolo(Time.newSpan(1, 8))(sequence.elements[6])).to.deep.eq([parseLilyElement('s1')]);
+
+        expect(() => tremolo(Time.newSpan(1, 4))(sequence.elements[0])).to.throw(/Cannot/);
+        expect(() => tremolo(Time.newSpan(1, 4))(sequence.elements[2])).to.throw(/Cannot/);
+
+        sequence.insertElements(Time.newAbsolute(3, 8), [{ longDeco: LongDecorationType.Slur, length: Time.HalfTime }]);
+        expect(tremolo(Time.newSpan(1, 8))(sequence.elements[1])).to.deep.eq([{ longDeco: LongDecorationType.Slur, length: Time.HalfTime }]);
     });
 
 });

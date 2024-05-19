@@ -301,6 +301,19 @@ describe('Flexible sequence transformations', () => {
         it('should');
     });
 
+    describe('Tremolo', () => {
+        it('should replace notes with repeated notes of given value', () => {
+            const seq3Text = 'c,2 d,8 <e, c>4';
+            const seq3TextTremo = 'c,8 c,8 c,8 c,8 d,8 <e, c>8 <e, c>8';
+            const fun = createFunction('Tremolo', [Time.EightsTime]);
+
+            const res = fun(new FlexibleSequence(seq3Text).elements);
+
+            expect(res).to.have.length(7);
+            expect(res).to.deep.eq(new FlexibleSequence(seq3TextTremo).elements);
+        });
+    });
+
     describe('Augmentation', () => {
         it('should augment a sequence', () => {
             const seq3Text = 'c,2 d,8 <e, c>4';

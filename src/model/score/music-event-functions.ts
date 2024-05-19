@@ -8,9 +8,10 @@ import { RationalDef } from '../rationals/rational';
 import { Key } from '../states/key';
 import { StateChange } from '../states/state';
 import { LongDecoFunc, MusicEventFunc, NoteFunc, SpacerFunc, StateFunc } from './function-types';
-import { MusicEvent, isKeyChange, isLongDecoration, isNote, isStateChange } from './sequence';
-import { Time } from '../rationals/time';
+import { MusicEvent, getDuration, isKeyChange, isLongDecoration, isNote, isStateChange } from './sequence';
+import { Time, TimeSpan } from '../rationals/time';
 import { LongDecorationElement } from '../data-only/decorations';
+import R = require('ramda');
 
 
 export interface MatchEventStruct {
@@ -69,4 +70,19 @@ export const augment = (r: RationalDef): MusicEventFunc => matchEvent({
     spacer: augmentSpacer(r),
     state: identity,
     longDeco: augmentLongDeco(r)
+});
+
+const tremoloNote = (span: TimeSpan) => (n: Note): MusicEvent[] => {
+    const totalTime = getDuration(n);
+    const numberOfNotes = Time.scale(totalTime, span.denominator, span.numerator);
+    if (numberOfNotes.denominator !== 1) throw 'Cannot tremulate shorter values';
+    const newNote = cloneNote(n, { nominalDuration: span });
+    return R.repeat(newNote, numberOfNotes.numerator);
+};
+
+export const tremolo = (span: TimeSpan): MusicEventFunc => matchEvent({
+    note: tremoloNote(span),
+    spacer: identity,
+    state: identity,
+    longDeco: identity
 });
