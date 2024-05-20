@@ -1,11 +1,11 @@
 import { Pitch } from './../pitches/pitch';
-import { createNoteFromLilypond, Note, setDuration } from './../notes/note';
+import { createNoteFromLilypond } from './../notes/note';
 import { Time } from '../rationals/time';
 import { parseLilyClef } from './sequence';
 import { expect } from 'chai';
-import { LongDecorationType, NoteDirection } from '../';
-import { FlexibleSequence, recursivelySplitStringsIn } from './flexible-sequence';
-import { createRepo, VariableRepository, VariableRepositoryProxy } from './variables';
+import { LongDecorationType, NoteDirection, SeqFunction } from '../';
+import { FlexibleSequence } from './flexible-sequence';
+import { createRepo, VariableRepository } from './variables';
 describe('Flexible Sequence', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';
@@ -253,6 +253,52 @@ describe('Flexible Sequence', () => {
         expect(seq.elements[0]).to.deep.eq(createNoteFromLilypond('c4'));
         //expect(seq.elements[1]).to.deep.eq(createNoteFromLilypond('c,2'));
     });*/
+
+    describe('Variables and Functions', () => {
+        const variablesAndFunctionsVars = {
+            var1: ['c\'4. d\'8'],
+            var2: ['e\'4 g\'4'],
+            varOfVars: [{variable: 'var2'}, {variable: 'var1'}],
+            funcOfConst: [{ function: 'Transpose', args: ['c\'4. d\'8'], extraArgs: [{interval: 2, alteration: -1}] } as SeqFunction],
+            funcOfVar: [{ function: 'Transpose', args: [{variable: 'var1'}], extraArgs: [{interval: 2, alteration: -1}] } as SeqFunction]
+        };
+        let repo: VariableRepository;
+    
+        beforeEach(() => {
+            repo = createRepo(variablesAndFunctionsVars);
+        });
+
+        it('should allow a variable reference', () => {
+            const seq = new FlexibleSequence([{variable: 'var1'}], repo);
+    
+            expect(seq.count).to.eq(2);
+            expect(seq.elements).to.deep.eq(new FlexibleSequence(['c\'4. d\'8']).elements);
+        });
+    
+    
+        it('should allow a variable referencing other variables', () => {
+            const seq = new FlexibleSequence([{variable: 'varOfVars'}], repo);
+    
+            expect(seq.count).to.eq(4);
+            expect(seq.elements).to.deep.eq(new FlexibleSequence(['e\'4 g\'4 c\'4. d\'8']).elements);
+        });
+    
+
+        it('should allow a function of a variable', () => {
+            const seq = new FlexibleSequence([{variable: 'funcOfVar'}], repo);
+    
+            expect(seq.count).to.eq(2);
+            expect(seq.elements).to.deep.eq(new FlexibleSequence(['ees\'4. f\'8']).elements);
+        });
+        
+        it('should allow a function of a constant', () => {
+            const seq = new FlexibleSequence([{variable: 'funcOfConst'}], repo);
+    
+            expect(seq.count).to.eq(2);
+            expect(seq.elements).to.deep.eq(new FlexibleSequence(['ees\'4. f\'8']).elements);
+        });
+    
+    });
 
     describe('Serialisation', () => {
         it('should simplify notes to lilypond strings', () => {

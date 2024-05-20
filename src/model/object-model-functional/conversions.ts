@@ -111,7 +111,9 @@ export function convertConceptualSequenceToData(conceptual: ConceptualSequence):
         if (isConceptualVarRef(elem)) {
             return { variable: elem.name };
         } else if (isConceptualFunctionCall(elem)) {
-            return { function: elem.func, args: convertConceptualSequenceToData(elem.items) } as SeqFunction;
+            const res = { function: elem.func, args: convertConceptualSequenceToData(elem.items) } as SeqFunction;
+            if (elem.extraArgs) res.extraArgs = elem.extraArgs;
+            return res;
         } else if (R.is(Array, elem)) {
             return convertConceptualSequenceToData(elem);
         } else {

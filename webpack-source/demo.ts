@@ -4,7 +4,7 @@ import { Cursor } from './../src/physical-view/physical/cursor';
 import { InsertionPoint } from './../src/editor/insertion-point';
 import { MultiFlexibleSequence } from './../src/model/score/multi-flexible-sequence';
 import { MyCanvasRenderer, PhysicalModel, StandardMetrics, renderOnRenderer, viewModelToPhysical } from '../src/physical-view';
-import { ClefType, JMusic, NoteDirection, ScoreDef, Time } from '../src/model';
+import { ClefType, JMusic, JMusicSettings, NoteDirection, ScoreDef, SeqFunction, Time } from '../src/model';
 import { scoreModelToViewModel } from '../src/logical-view';
 import { RenderPosition } from '../src/physical-view/render/render-types';
 import { ProjectFlex } from '../src/model/facade/project-flex';
@@ -14,6 +14,36 @@ import { SelectionAll, SelectionVoiceTime } from '../src/selection/query';
 import { option } from 'fp-ts';
 
 //console.log('Demo');
+
+
+const variablesAndFunctionsVars = {
+    var1: ['c\'4. d\'8'],
+    var2: ['e\'4 g\'4'],
+    varOfVars: [{variable: 'var2'}, {variable: 'var1'}],
+    funcOfConst: [{ function: 'Transpose', args: ['c\'4. d\'8'], extraArgs: [{interval: 2, alteration: -1}] } as SeqFunction],
+    funcOfVar: [{ function: 'Transpose', args: [{variable: 'var1'}], extraArgs: [{interval: 2, alteration: -1}] } as SeqFunction]
+};
+  
+const variablesAndFunctions = {
+    content: [
+        [
+            [
+                {variable: 'var1'},
+                {variable: 'var2'},
+                {variable: 'varOfVars'},
+                {variable: 'funcOfConst'},
+                {variable: 'funcOfVar'}
+            ]
+        ]
+    ],
+    clefs: ['treble'],
+    meter: '4/4',
+    key: 'c \\major'
+  
+} as JMusicSettings;
+
+
+
 
 function myRenderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition) {
     renderOnRenderer(physicalModel, new MyCanvasRenderer(canvas), position);
@@ -113,7 +143,7 @@ const musicDef: ScoreDef = {
     
 };
 
-const jMusic = new JMusic(musicDef);
+const jMusic = new JMusic(variablesAndFunctions, variablesAndFunctionsVars);
 const insertionPoint = new InsertionPoint(jMusic);
 
 input.addEventListener('keydown', ev => {
