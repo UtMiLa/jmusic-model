@@ -35,19 +35,19 @@ describe('Flexible Sequence', () => {
         const seq = new FlexibleSequence([seq1Text, seq2Text]);
 
         expect(seq.count).to.eq(7);
-        expect(seq.def).to.deep.eq([['c4', 'd8', 'e8'], ['c,2', 'd,8', 'e,8', 'c4']]);
+        expect(seq.def).to.deep.eq(['c4', 'd8', 'e8', 'c,2', 'd,8', 'e,8', 'c4']);
 
         
         const seq2 = new FlexibleSequence([seq1Text, [seq3Text, seq2Text]]);
 
         expect(seq2.count).to.eq(10);
-        expect(seq2.def).to.deep.eq([['c4', 'd8', 'e8'], [['c,2', 'd,8', '<e, c>4'], ['c,2', 'd,8', 'e,8', 'c4']]]);
+        expect(seq2.def).to.deep.eq(['c4', 'd8', 'e8', 'c,2', 'd,8', '<e, c>4', 'c,2', 'd,8', 'e,8', 'c4']);
     });
 
     it('should simplify the depth of arrays in sequence definition', () => {
         const seq2 = new FlexibleSequence([seq1Text.split(' '), [seq3Text, seq2Text.split(' ')]]);
 
-        expect(seq2.def).to.deep.eq([['c4', 'd8', 'e8'], [['c,2', 'd,8', '<e, c>4'], ['c,2', 'd,8', 'e,8', 'c4']]]);
+        expect(seq2.def).to.deep.eq(['c4', 'd8', 'e8', 'c,2', 'd,8', '<e, c>4', 'c,2', 'd,8', 'e,8', 'c4']);
     });
 
     /*it('should calculate an internal structure including correct times', () => {
@@ -463,7 +463,7 @@ describe('Flexible Sequence', () => {
             expect(new FlexibleSequence([]).asObject).to.deep.eq([]);
         });
         it('should serialize an empty sequence correctly', () => {
-            expect(new FlexibleSequence('').asObject).to.deep.eq(['']);
+            expect(new FlexibleSequence('').asObject).to.deep.eq([]);
         });
         it('should serialize an ordinary sequence correctly', () => {
             expect(new FlexibleSequence('c4. e8').asObject).to.deep.eq(['c4.', 'e8']);

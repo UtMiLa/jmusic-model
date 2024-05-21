@@ -179,7 +179,7 @@ describe('Lenses', () => {
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef);
 
-            expect(res.score.staves[0].voices[1].contentDef).to.deep.eq([['c4', 'd4', 'e4', 'fis4'], {variable: 'theVar'}]);
+            expect(res.score.staves[0].voices[1].contentDef).to.deep.eq(['c4', 'd4', 'e4', 'fis4', {variable: 'theVar'}]);
         });
 
         it('should read a nested element at an index lens', () => {
@@ -207,7 +207,7 @@ describe('Lenses', () => {
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('des,4')), projectDef);
 
-            expect(res.score.staves[1].voices[0].contentDef).to.deep.eq([['c,4', 'des,4'], 'e,4', 'f,4']);
+            expect(res.score.staves[1].voices[0].contentDef).to.deep.eq(['c,4', 'des,4', 'e,4', 'f,4']);
         });
 
         it('should read an element from a variable', () => {
@@ -418,7 +418,7 @@ describe('Lenses', () => {
 
             const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis,4')), projectDef);
 
-            expect(res.score.staves[1].voices[0].contentDef).to.deep.eq([['c,4', 'fis,4'], 'e,4', 'f,4']);
+            expect(res.score.staves[1].voices[0].contentDef).to.deep.eq(['c,4', 'fis,4', 'e,4', 'f,4']);
         });
 
         it('should read an element from a variable using a time lens', () => {

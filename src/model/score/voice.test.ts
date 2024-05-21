@@ -50,7 +50,7 @@ describe('Voices', () => {
 
         const multi = voiceDefToVoice(voiceDef) as any;
 
-        console.log('Multi', multi[0].content._def[0].sequences);
+        //console.log('Multi', multi[0].content.def[0].sequences);
  
         expect(multi.length).to.eq(2);
     });

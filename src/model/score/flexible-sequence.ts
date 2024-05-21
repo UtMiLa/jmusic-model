@@ -145,16 +145,21 @@ export class FlexibleSequence extends BaseSequence {
         this.def = value as FlexibleItem[];
     }
 
-    private _def!: FlexibleItem[];
+    //private _def!: FlexibleItem[];
     public get def(): FlexibleItem[] {
-        if (!R.is(Array, this._def))
+        return convertConceptualSequenceToData(this.conceptualData) as FlexibleItem[];
+        /*if (!R.is(Array, this._def))
             return simplifyDef(this._def) as any;
-        return this._def.map(simplifyDef);
+        return this._def.map(simplifyDef);*/
     }
-    public set def(init: FlexibleItem[]) {
+    private set def(init: FlexibleItem[]) {
         if (!init) init = [];
 
-        this._def = init;
+        //this._def = init;
+
+        const def = flexibleItemToDef(init);
+        this.conceptualData = convertSequenceDataToConceptual(def, this.repo.vars);
+
     }
 
 
