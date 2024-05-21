@@ -1,4 +1,4 @@
-import { AbsoluteTime, Model, Time } from '../../model';
+import { AbsoluteTime, EditableView, Model, Time } from '../../model';
 import { InsertionPoint } from '../insertion-point';
 import { SelectionAll, SelectionVoiceTime } from './../../selection/query';
 import { Selection } from './../../selection/selection-types';
@@ -7,9 +7,9 @@ import { VoiceNo, VoiceNoArg } from './argument-types';
 import { ArgType, FixedArg, IntegerArg, RationalArg, WhitespaceArg } from './base-argument-types';
 
 
-export type ProtoSelection = (model: Model, insertionPoint: InsertionPoint) => Selection;
+export type ProtoSelection = (model: EditableView, insertionPoint: InsertionPoint) => Selection;
 
-const protoSelectionAll: ProtoSelection = (model: Model, insertionPoint: InsertionPoint) => {
+const protoSelectionAll: ProtoSelection = (model: EditableView, insertionPoint: InsertionPoint) => {
     return new SelectionAll();
 };
 
@@ -18,7 +18,7 @@ const protoSelectionVoiceTime = (
     voiceNo: number | 'this', 
     fromTime: AbsoluteTime | 'this', 
     toTime: AbsoluteTime | 'this'
-): ProtoSelection => (model: Model, insertionPoint: InsertionPoint) =>{
+): ProtoSelection => (model: EditableView, insertionPoint: InsertionPoint) =>{
     const staffNo1 = staffNo === 'this' ? insertionPoint.staffNo : staffNo - 1;
     const voiceNo1 = voiceNo === 'this' ? insertionPoint.voiceNo : voiceNo - 1;
     const fromTime1 = fromTime === 'this' ? insertionPoint.time : fromTime;

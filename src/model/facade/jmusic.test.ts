@@ -185,6 +185,31 @@ describe('Facade', () => {
         });
     
 
+        it('should create a score using functions', () => {
+            const sc = new JMusic(
+                { content: [[['c4', { function: 'Relative', args: ['e4 \\clef bass d4'], extraArgs: ['c,'] }]]]}                
+            );
+
+            expect(sc.staves).to.have.length(1);
+            expect(sc.staves[0].voices[0].content.duration).to.deep.eq(Time.newSpan(3, 4));
+            expect(sc.staves[0].voices[0].content.elements).to.have.length(4);
+            expect(sc.staves[0].voices[0].content.elements[3]).to.deep.eq(createNoteFromLilypond('d,4'));
+        });
+    
+
+        it('should create a score using functions in variables', () => {
+            const sc = new JMusic(
+                { content: [[['c4', { variable: 'varTest' }]]]},
+                { varTest: [{ function: 'Relative', args: ['e4 \\clef bass d4'], extraArgs: ['c,'] }] }
+            );
+
+            expect(sc.staves).to.have.length(1);
+            expect(sc.staves[0].voices[0].content.duration).to.deep.eq(Time.newSpan(3, 4));
+            expect(sc.staves[0].voices[0].content.elements).to.have.length(4);
+            expect(sc.staves[0].voices[0].content.elements[3]).to.deep.eq(createNoteFromLilypond('d,4'));
+        });
+    
+
     });
     describe('Operations', () => {
         let score: JMusic;

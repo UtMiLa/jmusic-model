@@ -64,7 +64,7 @@ export class VariableView extends EditView implements EditableView {
         this.parent.setProject(lens, lensItem);        
         this.didChange();
     }
-    overProject(lens: ProjectLens<LensItem>, noteConverter: (fromNote: LensItem) => LensItem): void {
+    overProject<T>(lens: ProjectLens<T>, noteConverter: (fromNote: T) => T): void {
         this.parent.overProject(lens, noteConverter);
         this.didChange();
     }

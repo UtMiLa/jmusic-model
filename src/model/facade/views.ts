@@ -51,6 +51,8 @@ export interface EditableView extends DisplayableView {
     addKeyChg(ins: InsertionPoint, key: KeyFlex): void;
     addClefChg(ins: InsertionPoint, clef: ClefFlex): void;
     getView(varname?: string): EditableView;
+    //overProject(lens: ProjectLens<LensItem>, noteConverter: (fromNote: LensItem) => LensItem): void;
+    overProject<T>(lens: ProjectLens<T>, noteConverter: (fromNote: T) => T): void
 }
 
 export abstract class EditView implements EditableView {
@@ -77,7 +79,7 @@ export abstract class EditView implements EditableView {
     abstract appendElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent): void;
 
     abstract setProject(lens: ProjectLens<LensItem>, lensItem: LensItem): void;
-    abstract overProject(lens: ProjectLens<LensItem>, noteConverter: (fromNote: LensItem) => LensItem): void;
+    abstract overProject<T>(lens: ProjectLens<T>, noteConverter: (fromNote: T) => T): void;
 
     abstract createProjectLens(ins: InsertionPoint): ProjectLens<LensItem>;
 

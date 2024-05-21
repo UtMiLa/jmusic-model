@@ -2,6 +2,7 @@ import { AbsoluteTime, Time } from './../model/rationals/time';
 import { Model } from './../model/model';
 import { MusicEvent, getDuration } from './../model/score/sequence';
 import { ElementIdentifier, Selection } from './selection-types';
+import { EditableView } from '~/model';
 
 
 export type ElementPredicate = (element: ElementIdentifier) => boolean;
@@ -20,7 +21,7 @@ export class SelectionAll extends SelectionBy {
     }
 }
 
-export function getTimeFromIdentifier(model: Model, element: ElementIdentifier): AbsoluteTime {
+export function getTimeFromIdentifier(model: EditableView, element: ElementIdentifier): AbsoluteTime {
     const voice = model.staves[element.staffNo].voices[element.voiceNo];
     const elements = voice.content.elements.slice(0, element.elementNo);
     return elements.reduce<AbsoluteTime>((sum: AbsoluteTime, element: MusicEvent) => Time.addTime(sum, getDuration(element)), Time.StartTime);
@@ -29,7 +30,7 @@ export function getTimeFromIdentifier(model: Model, element: ElementIdentifier):
 
 export class SelectionVoiceTime extends SelectionBy {
 
-    constructor(private model: Model, private staffNo: number, private voiceNo: number, private from: AbsoluteTime, private to: AbsoluteTime) {
+    constructor(private model: EditableView, private staffNo: number, private voiceNo: number, private from: AbsoluteTime, private to: AbsoluteTime) {
         //
         super((element: ElementIdentifier): boolean => {
             //console.log('isSelected', this, element);

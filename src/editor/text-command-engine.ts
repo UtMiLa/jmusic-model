@@ -1,6 +1,6 @@
 import { SelectionManager } from './../selection/selection-types';
 import { InsertionPoint } from './insertion-point';
-import { Model } from '../model';
+import { EditableView, Model } from '../model';
 import R = require('ramda');
 import { navigationCommands } from './text-commands/navigation-commands';
 import { editCommands } from './text-commands/edit-commands';
@@ -8,15 +8,15 @@ import { either } from 'fp-ts';
 import { selectionCommands } from './text-commands/selection-commands';
 
 export interface TextCommand {
-    execute(model: Model, ins: InsertionPoint, selMan?: SelectionManager): any;
+    execute(model: EditableView, ins: InsertionPoint, selMan?: SelectionManager): any;
 }
 
 
 
 export class CustomTextCommand<T> implements TextCommand {
-    constructor(private f: (model: Model, ins: InsertionPoint, selMan?: SelectionManager) => T) { }
+    constructor(private f: (model: EditableView, ins: InsertionPoint, selMan?: SelectionManager) => T) { }
 
-    execute(model: Model, ins: InsertionPoint, selMan: SelectionManager): T {
+    execute(model: EditableView, ins: InsertionPoint, selMan: SelectionManager): T {
         return this.f(model, ins, selMan);
     }
 }

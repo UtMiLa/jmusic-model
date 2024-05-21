@@ -2,8 +2,10 @@ import { VariableRef } from './variables';
 import { NoteDef, NoteDirection } from './notes';
 import { SeqFunction } from './functions';
 import { LongDecorationElement } from './decorations';
+import { StateChangeDef } from './states';
+import { StateChange } from '../states/state';
 
-export type SequenceItem = string | SeqFunction | VariableRef | NoteDef | LongDecorationElement | SequenceDef | SplitSequenceDef;
+export type SequenceItem = string | SeqFunction | VariableRef | NoteDef | StateChange | LongDecorationElement | SequenceDef | SplitSequenceDef;
 
 export type MultiSequenceItem = SequenceItem | SplitSequenceDef;
 

@@ -8,11 +8,13 @@ import { FlexibleItem } from '../score/types';
 import { VariableRepository, createRepo, isVariableRef, valueOf } from '../score/variables';
 import { ConceptualFunctionCall, ConceptualSequence, ConceptualSequenceItem, ConceptualVarRef, 
     isConceptualFunctionCall, isConceptualVarRef } from './types';
-import { MusicEvent, getDuration, isMusicEvent, isNote, parseLilyElement } from '../score/sequence';
+import { MusicEvent, getDuration, isMusicEvent, isNote, isStateChange, parseLilyElement } from '../score/sequence';
 import { isSeqFunction, SeqFunction } from '../data-only/functions';
 import { createFunction } from '../score/functions';
 import { noteAsLilypond } from '../notes/note';
 import { map } from 'fp-ts/Record';
+import { ClefType } from '../data-only/states';
+import { Clef } from '../states/clef';
 
 
 function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
@@ -119,6 +121,9 @@ export function convertConceptualSequenceToData(conceptual: ConceptualSequence):
         } else {
             if (isNote(elem)) {
                 return noteAsLilypond(elem);
+            }
+            if (isStateChange(elem)) {
+                return elem;
             }
         }
         throw 'Unknown object';
