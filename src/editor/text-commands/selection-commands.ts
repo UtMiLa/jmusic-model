@@ -11,6 +11,7 @@ import { SelectionLens } from '../../selection/selection-lens';
 import { option } from 'fp-ts';
 import { ConceptualSequence } from '../../model/object-model-functional/types';
 import { pipe } from 'fp-ts/lib/function';
+import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
 
 
 
@@ -38,11 +39,12 @@ export const selectionCommands = [
         ([selection]: [ProtoSelection]) => (model: EditableView, ins: InsertionPoint, selMgr?: SelectionManager) => selMgr?.excludeSelection(selection(model, ins))
     ),
     commandDescriptor(  
-        (sequence<string>([/selection +/, FixedArg('staccato')])), 
+        (sequence<string>([/selection +/, FixedArg(/\\\w+/)])), 
         ([expr]: [string]) => (model: EditableView, ins: InsertionPoint, selMgr?: SelectionManager) => 
         {
             //console.log('selection staccato');
             if (!selMgr) return;
+            const expression = parseLilyNoteExpression(expr);
             //console.log('selection ok');
             
             const domainConverter: DomainConverter<VoiceContentDef, ConceptualSequence> = {
@@ -63,7 +65,7 @@ export const selectionCommands = [
                     //R.tap(console.log),
                     option.map((sel: SelectionFunc) => new SelectionLens({ isSelected: sel })),
                     //R.tap(console.log),
-                    option.map((l: SelectionLens) => l.change(proj.score, (note) => [isNote(note) ? {...note, expressions: [...note.expressions ?? [], 'staccato'] } : note], domainConverter, {})),
+                    option.map((l: SelectionLens) => l.change(proj.score, (note) => [isNote(note) ? {...note, expressions: [...note.expressions ?? [], expression] } : note], domainConverter, {})),
                     //R.tap(console.log),
                     option.map((score: ScoreDef) => ({ score, vars: model.vars.vars } as ProjectDef)),
                     //R.tap(console.log),

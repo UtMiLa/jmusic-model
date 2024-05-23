@@ -264,7 +264,7 @@ describe('Text commands', () => {
              
         
         it('should set selection to all', () => {
-            const cmd = TextCommandEngine.parse('selection  set all');
+            const cmd = TextCommandEngine.parse('select  set all');
 
             const jMusic = new JMusic('c4 c4 c4 c4', { varX: 'g2 a2'});
             const ins1 = new InsertionPoint(jMusic);
@@ -279,7 +279,7 @@ describe('Text commands', () => {
 
         
         it('should set selection to one voice', () => {
-            const cmd = TextCommandEngine.parse('selection set  voice 1:2');
+            const cmd = TextCommandEngine.parse('select set  voice 1:2');
 
             const jMusic = new JMusic('c4 c4 c4 c4', { varX: 'g2 a2'});
             const ins1 = new InsertionPoint(jMusic);
@@ -294,7 +294,7 @@ describe('Text commands', () => {
 
 
         it('should set selection to one voice on staff given by inspoint', () => {
-            const cmd = TextCommandEngine.parse('selection set  voice 2');
+            const cmd = TextCommandEngine.parse('select set  voice 2');
 
             const jMusic = new JMusic('c4 c4 c4 c4', { varX: 'g2 a2'});
             const ins1 = new InsertionPoint(jMusic);
@@ -311,7 +311,7 @@ describe('Text commands', () => {
 
         
         it('should set selection to the voice given by inspoint', () => {
-            const cmd = TextCommandEngine.parse('selection set voice this');
+            const cmd = TextCommandEngine.parse('select set voice this');
 
             const jMusic = new JMusic('c4 c4 c4 c4', { varX: 'g2 a2'});
             const ins1 = new InsertionPoint(jMusic);
@@ -327,7 +327,7 @@ describe('Text commands', () => {
 
 
         it('should set selection to the current voice from the inspoint to the end', () => {
-            const cmd = TextCommandEngine.parse('selection set voice this to end');
+            const cmd = TextCommandEngine.parse('select set voice this to end');
 
             const jMusic = new JMusic('c4 c4 c4 c4', { varX: 'g2 a2'});
             const ins1 = new InsertionPoint(jMusic);
@@ -344,7 +344,7 @@ describe('Text commands', () => {
 
         
         it('should clear the selection', () => {
-            const cmd = TextCommandEngine.parse('selection clear');
+            const cmd = TextCommandEngine.parse('select clear');
 
             const jMusic = new JMusic('c4 c4 c4 c4', { varX: 'g2 a2'});
             const ins1 = new InsertionPoint(jMusic);
@@ -368,10 +368,10 @@ describe('Text commands', () => {
         let selMan: SelectionManager;
 
         beforeEach(() => {
-            cmd1 = TextCommandEngine.parse('selection set voice this from start');
-            cmd2 = TextCommandEngine.parse('selection also voice this to end');
-            cmd3 = TextCommandEngine.parse('selection restrict voice this to end');
-            cmd4 = TextCommandEngine.parse('selection except voice this to end');
+            cmd1 = TextCommandEngine.parse('select set voice this from start');
+            cmd2 = TextCommandEngine.parse('select also voice this to end');
+            cmd3 = TextCommandEngine.parse('select restrict voice this to end');
+            cmd4 = TextCommandEngine.parse('select except voice this to end');
 
             jMusic = new JMusic('c4 c4 c4 c4', { varX: 'g2 a2'});
             ins1 = new InsertionPoint(jMusic);
