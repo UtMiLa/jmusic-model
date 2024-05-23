@@ -12,8 +12,10 @@ import { KeyDef } from '..';
 import { makeClef } from './clef-flex';
 import { makeKey } from './key-flex';
 import { makeMeter } from './meter-flex';
+import { ignoreIfUndefined } from '../../tools/ignore-if-undefined';
 
 export type ScoreFlex = string | JMusicSettings | ScoreDef | ProjectDef;
+
 
 function multiSeqVoicesToSingleSeqVoices(voices: VoiceDef[], vars: VariableRepository): VoiceDef[] {
 
@@ -25,7 +27,7 @@ function multiSeqVoicesToSingleSeqVoices(voices: VoiceDef[], vars: VariableRepos
         //console.log('multiSeq', multiSeq, multiSeq.seqs.length, idx);
         return multiSeq.seqs.map((seq, seqIndx) => ({
             contentDef: seq.asObject,
-            noteDirection: multiSeq.seqs.length === 1 ? cnt.noteDirection : seqIndx % 2 === 0 ? NoteDirection.Up : NoteDirection.Down
+            ...ignoreIfUndefined('noteDirection', multiSeq.seqs.length === 1 ? cnt.noteDirection : seqIndx % 2 === 0 ? NoteDirection.Up : NoteDirection.Down)
         } as VoiceDef));
     };
 
@@ -49,11 +51,11 @@ export function makeScore(voice: string | JMusicSettings | ScoreDef | ProjectDef
         }];
     } else if (isProjectDef(voice)) {
         score.staves = [...voice.score.staves];
-        score.repeats = voice.score.repeats ?? [];
+        if (voice.score.repeats) score.repeats = voice.score.repeats;
     } else if (isScoreDef(voice)) {
         //console.log('makeScore scoreDef');
         score.staves = voice.staves.map(staff => ({...staff, voices: multiSeqVoicesToSingleSeqVoices(staff.voices, vars)}));
-        score.repeats = voice.repeats ?? [];
+        if (voice.repeats) score.repeats = voice.repeats;
     } else if (typeof (voice) === 'object') {
         //console.log('makeScore object');
         const settings = voice as JMusicSettings;

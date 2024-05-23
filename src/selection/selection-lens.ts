@@ -28,36 +28,40 @@ export class SelectionLens {
     }
 
 
-    change(source: ScoreDef, modifier: (element: MusicEvent) => MusicEvent[], domainConverter: DomainConverter<VoiceContentDef, ConceptualSequence>, vars: VarDict): ScoreDef {
+    change(source: ProjectDef, modifier: (element: MusicEvent) => MusicEvent[], domainConverter: DomainConverter<VoiceContentDef, ConceptualSequence>, vars: VarDict): ProjectDef {
 
         const result = {
             ...source, 
-            staves: source.staves.map((staff, staffNo) => { 
-                return {
-                    ...staff,
-                    voices: staff.voices.map((voice, voiceNo) => {
-                        const elements1 = domainConverter.fromDef(flexibleItemToDef(voice.contentDef));
-
-                        const newElements1 = pipe(
-                            elements1, 
-                            chainWithIndex((elementNo: number, element: ConceptualSequenceItem) => {
-                                const elementIdentifier: ElementIdentifier = {
-                                    staffNo, voiceNo, elementNo
-                                };
-                                if (this.selection.isSelected(elementIdentifier)) {
-                                    if (isMusicEvent(element))
-                                        return modifier(element);
-                                }
-                                return [element];
-                            }));
-                        const voiceContentNew = domainConverter.toDef(newElements1);
-                        return {
-                            ...voice,
-                            contentDef: voiceContentNew
-                        };
-                    })
-                }; 
-            }).filter(staff => staff)
+            score: {
+                ...source.score,
+                staves: source.score.staves.map((staff, staffNo) => { 
+                    return {
+                        ...staff,
+                        voices: staff.voices.map((voice, voiceNo) => {
+                            const elements1 = domainConverter.fromDef(flexibleItemToDef(voice.contentDef));
+    
+                            const newElements1 = pipe(
+                                elements1, 
+                                chainWithIndex((elementNo: number, element: ConceptualSequenceItem) => {
+                                    const elementIdentifier: ElementIdentifier = {
+                                        staffNo, voiceNo, elementNo
+                                    };
+                                    if (this.selection.isSelected(elementIdentifier)) {
+                                        if (isMusicEvent(element))
+                                            return modifier(element);
+                                    }
+                                    return [element];
+                                }));
+                            const voiceContentNew = domainConverter.toDef(newElements1);
+                            return {
+                                ...voice,
+                                contentDef: voiceContentNew
+                            };
+                        })
+                    }; 
+                }).filter(staff => staff)
+            },
+            vars: source.vars
         };
         return result;
     }

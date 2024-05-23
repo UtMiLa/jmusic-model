@@ -1,3 +1,4 @@
+import { ignoreIfEmpty } from '../../tools/ignore-if-undefined';
 import { ScoreDef } from './../data-only/score';
 import { RepeatDef } from './repeats';
 import { Staff, staffDefToStaff } from './staff';
@@ -15,8 +16,8 @@ export interface Score {
 export function scoreDefToScore(def: ScoreDef, repo?: VariableRepository): Score {
     if (!repo) repo = createRepo({});
     return {
-        repeats: def.repeats,
-        staves: def.staves.map(sd => staffDefToStaff(sd, repo))
+        staves: def.staves.map(sd => staffDefToStaff(sd, repo)),
+        ...ignoreIfEmpty('repeats', def.repeats)
     };
 }
 

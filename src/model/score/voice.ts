@@ -30,7 +30,14 @@ export function voiceDefToVoice(voiceDef: VoiceDef, repo?: VariableRepository): 
     
     return seq.map((seq, idx) => ({
         content: seq,
-        noteDirection: seqCount === 1 ? voiceDef.noteDirection : idx === 0 ? NoteDirection.Up : NoteDirection.Down
+        ...(
+            seqCount === 1 
+                ? (voiceDef.noteDirection === undefined ? {} : {noteDirection: voiceDef.noteDirection})
+                : idx === 0 
+                    ? {noteDirection: NoteDirection.Up} 
+                    : {noteDirection: NoteDirection.Down}
+        ) 
+        
     }));
 }
 
