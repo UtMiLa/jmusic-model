@@ -3,8 +3,8 @@ import { pipe } from 'fp-ts/lib/function';
 import { DomainConverter, MultiSequenceDef, MusicEvent, NoteBase, ProjectDef, ScoreDef, VarDict, VoiceContentDef, flexibleItemToDef, isMusicEvent, lensFromLensDef, voiceContentToSequence, voiceSequenceToDef } from '../model';
 import { Selection, ElementIdentifier } from './selection-types';
 import { chainWithIndex, map } from 'fp-ts/Array';
-import { convertConceptualSequenceToData, convertSequenceDataToConceptual, convertSequenceItemToConceptual } from '~/model/object-model-functional/conversions';
-import { ConceptualSequenceItem } from '~/model/object-model-functional/types';
+import { convertConceptualSequenceToData, convertSequenceDataToConceptual, convertSequenceItemToConceptual } from '../model/object-model-functional/conversions';
+import { ConceptualSequenceItem } from '../model/object-model-functional/types';
 
 export class SelectionLens {
     constructor(private selection: Selection) {}

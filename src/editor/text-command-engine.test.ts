@@ -1,15 +1,13 @@
 
-import { Selection, SelectionManager } from './../selection/selection-types';
+import { SelectionManager } from './../selection/selection-types';
 import { expect } from 'chai';
 import { InsertionPoint } from './insertion-point';
 import Sinon = require('sinon');
 import { Clef, ClefType, JMusic, Key, MeterFactory, Time, createNoteFromLilypond, isClefChange, isKeyChange, isMeterChange, valueOf } from '../model';
 import { TextCommand, TextCommandEngine } from './text-command-engine';
 import { StateChange } from '../model/states/state';
-import { SelectionAll, SelectionBy, SelectionVoiceTime } from '../selection/query';
-import { Right } from 'fp-ts/lib/Either';
-import { either, option } from 'fp-ts';
-import { selectUnion } from '~/selection/selection-combiners';
+import { SelectionAll, SelectionVoiceTime } from '../selection/query';
+import { option } from 'fp-ts';
 import R = require('ramda');
 
 

@@ -7,7 +7,7 @@ import { Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSe
 import R = require('ramda');
 import { Either } from 'fp-ts/lib/Either';
 import { either } from 'fp-ts';
-import { SelectionManager } from '~/selection/selection-types';
+import { SelectionManager } from '../../selection/selection-types';
 
 
 function addStaff(model: EditableView, ins: InsertionPoint): any {

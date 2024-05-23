@@ -6,7 +6,7 @@ import { createTestScore } from '../tools/test-tools';
 import { SelectionVoiceTime } from './query';
 import { SelectionLens } from './selection-lens';
 import R = require('ramda');
-import { convertSequenceDataToConceptual, convertConceptualSequenceToData } from '~/model/object-model-functional/conversions';
+import { convertSequenceDataToConceptual, convertConceptualSequenceToData } from '../model/object-model-functional/conversions';
 
 describe('Selection lensing', () => {
     let source: ScoreDef;
