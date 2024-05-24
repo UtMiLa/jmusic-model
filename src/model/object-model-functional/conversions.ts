@@ -2,11 +2,14 @@ import { Time, TimeSpan } from './../rationals/time';
 import R = require('ramda');
 import { ProjectDef } from '../data-only/project';
 import { VarDict, VariableRef } from '../data-only/variables';
-import { MultiSequenceDef, VoiceContentDef } from '../data-only/voices';
+import { MultiSequenceDef, SequenceDef, VoiceContentDef, VoiceDef } from '../data-only/voices';
 import { flexibleItemToDef, recursivelySplitStringsIn } from '../score/flexible-sequence';
 import { FlexibleItem } from '../score/types';
 import { VariableRepository, createRepo, isVariableRef, valueOf } from '../score/variables';
-import { ActiveFunctionCall, ActiveSequence, ActiveSequenceItem, ActiveVarRef, 
+import { ActiveFunctionCall, ActiveProject, ActiveScore, ActiveSequence, ActiveSequenceItem, ActiveStaff, ActiveVarRef, 
+    ActiveVarRepo, 
+    ActiveVarsAnd, 
+    ActiveVoice, 
     isActiveFunctionCall, isActiveVarRef } from './types';
 import { MusicEvent, getDuration, isMusicEvent, isNote, isStateChange, parseLilyElement } from '../score/sequence';
 import { isSeqFunction, SeqFunction } from '../data-only/functions';
@@ -15,6 +18,7 @@ import { noteAsLilypond } from '../notes/note';
 import { map } from 'fp-ts/Record';
 import { ClefType } from '../data-only/states';
 import { Clef } from '../states/clef';
+import { ScoreDef, StaffDef } from '../data-only/score';
 
 
 function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
@@ -147,4 +151,43 @@ export function activeGetElements(active: ActiveSequence): MusicEvent[] {
 
 export function normalizeVars(vars: VarDict): VarDict {
     return map<FlexibleItem, FlexibleItem>(v => convertActiveSequenceToData(convertSequenceDataToActive(v as MultiSequenceDef, vars)))(vars);
+}
+
+export function convertVarDataToActive(vars: VarDict): ActiveVarRepo {
+    return R.map((value: FlexibleItem) => convertSequenceDataToActive(flexibleItemToDef(value), vars), vars);
+}
+
+export function convertVoiceDataToActive(voiceDef: VoiceDef, vars: VarDict): ActiveVarsAnd<ActiveVoice> {
+    return {
+        item: { 
+            content: convertSequenceDataToActive(voiceDef.contentDef, vars) 
+        },
+        vars: convertVarDataToActive(vars)
+    };
+}
+
+export function convertStaffDataToActive(staffDef: StaffDef, vars: VarDict): ActiveVarsAnd<ActiveStaff> {
+    return {
+        item: {
+            voices: staffDef.voices.map(voice => convertVoiceDataToActive(voice, vars).item)
+        },
+        vars: convertVarDataToActive(vars)
+    };
+}
+
+
+export function convertScoreDataToActive(scoreDef: ScoreDef, vars: VarDict): ActiveVarsAnd<ActiveScore> {
+    return {
+        item: {
+            staves: scoreDef.staves.map(staff => convertStaffDataToActive(staff, vars).item)
+        },
+        vars: convertVarDataToActive(vars)
+    };
+}
+
+export function convertProjectDataToActive(projectDef: ProjectDef): ActiveProject {
+    return {
+        score: convertScoreDataToActive(projectDef.score, projectDef.vars).item,
+        vars: convertVarDataToActive(projectDef.vars)
+    };
 }

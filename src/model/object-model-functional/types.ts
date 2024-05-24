@@ -1,4 +1,5 @@
 import { FuncDef } from '../data-only/functions';
+import { NoteDirection } from '../data-only/notes';
 import { TimeSpan } from '../rationals/time';
 import { MusicEvent, isMusicEvent } from '../score/sequence';
 
@@ -21,6 +22,34 @@ export interface ActiveFunctionCall {
 export type ActiveSequenceItem = MusicEvent | ActiveVarRef | ActiveFunctionCall | ActiveSequence;
 
 export type ActiveSequence = ActiveSequenceItem[];
+
+export interface ActiveVoice {
+    content: ActiveSequence;
+    noteDirection?: NoteDirection;
+}
+
+export interface ActiveStaff {
+    voices: ActiveVoice[];
+}
+export interface ActiveScore {
+    staves: ActiveStaff[];
+}
+
+export interface ActiveVarRepo {
+    [key: string]: ActiveSequence;
+}
+
+export interface ActiveProject {
+    score: ActiveScore;
+    vars: ActiveVarRepo;
+}
+
+export interface ActiveVarsAnd<T> {
+    vars: ActiveVarRepo;
+    item: T
+}
+
+
 
 export function isActiveVarRef(item: ActiveSequenceItem): item is ActiveVarRef {
     return (item as ActiveVarRef).type === 'VarRef';

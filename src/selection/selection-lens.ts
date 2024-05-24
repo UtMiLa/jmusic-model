@@ -12,9 +12,9 @@ import { ActiveSequenceItem } from '../model/object-model-functional/types';
 export class SelectionLens {
     constructor(private selection: Selection) {}
 
-    get(source: ScoreDef, domainConverter: DomainConverter<VoiceContentDef, ActiveSequence>): VoiceContentDef {
+    get(source: ProjectDef, domainConverter: DomainConverter<VoiceContentDef, ActiveSequence>): VoiceContentDef {
         const result: ActiveSequence = [];
-        source.staves.forEach((staff, staffNo) => {
+        source.score.staves.forEach((staff, staffNo) => {
             staff.voices.forEach((voice, voiceNo) => {
                 const elements = domainConverter.fromDef(voice.contentDef);
                 elements.forEach((element, elementNo) => {
@@ -31,7 +31,7 @@ export class SelectionLens {
     }
 
 
-    change(source: ProjectDef, modifier: (element: MusicEvent) => MusicEvent[], domainConverter: DomainConverter<VoiceContentDef, ActiveSequence>, vars: VarDict): ProjectDef {
+    change(source: ProjectDef, modifier: (element: MusicEvent) => MusicEvent[], domainConverter: DomainConverter<VoiceContentDef, ActiveSequence>): ProjectDef {
 
         /*const res = new JMusic(source);
         source.score.staves.forEach((staff, staffNo) => {
@@ -40,7 +40,7 @@ export class SelectionLens {
                 seq.elements.forEach((elem, elemNo) => {
                     if (this.selection.isSelected({ elementNo: elemNo, staffNo: staffNo, voiceNo: voiceNo })) {
                         const lens = projectLensByIndex(domainConverter, { element: elemNo, staff: staffNo, voice: voiceNo });
-                        res.overProject<LensItem>(lens, modifier);
+                        res.overProject<LensItem>(lens, modifier as any);
                     }
                 });
                 
@@ -92,6 +92,7 @@ export class SelectionLens {
 Thougts about the "real" way to change selected items:
 
 Convert domain from def to active
+    Domain should include vars!
 Iterate through elements
 FlatMap:
     Convert element to domain
@@ -102,4 +103,7 @@ Convert domain back to def
 
 Big question: what if element from variable is included twice in selection? Modify twice?
 If element is modified to another count and duration, we need to make sure the remaining elements still are selected correctly.
+
+Probably the safest alternative is to throw if trying to modify a variable. But often the preferred way to structure a document is to
+make all music in variables, and let score refer to variables.
 */

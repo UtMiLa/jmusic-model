@@ -60,6 +60,13 @@ export interface DomainConverter<Def, Model> {
     toDef(model: Model): Def;
 }
 
+export type ProMap<A, B> = (domainConverter: DomainConverter<A, B>, modifier: (elm: B) => B) => (source: A) => A;
+
+export const proMap = <A, B>(domainConverter: DomainConverter<A, B>, modifier: (elm: B) => B) => (source: A): A => {
+    return domainConverter.toDef(modifier(domainConverter.fromDef(source)));
+};
+
+
 export type ProjectLens<T> = R.Lens<ProjectDef, T>;
 
 export interface NaturalLensIndexScore {

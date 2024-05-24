@@ -1,9 +1,9 @@
 import { Time } from './../rationals/time';
 import { expect } from 'chai';
-import { VoiceContentDef } from '../data-only/voices';
-import { activeGetElements, convertActiveSequenceToData, convertSequenceDataToActive, normalizeVars } from './conversions';
+import { VoiceContentDef, VoiceDef } from '../data-only/voices';
+import { activeGetElements, convertActiveSequenceToData, convertProjectDataToActive, convertScoreDataToActive, convertSequenceDataToActive, convertStaffDataToActive, convertVoiceDataToActive, normalizeVars } from './conversions';
 import { createNoteFromLilypond } from '../notes/note';
-import { ActiveFunctionCall, ActiveSequence, ActiveVarRef } from './types';
+import { ActiveFunctionCall, ActiveSequence, ActiveVarRef, ActiveVarRepo } from './types';
 import { SeqFunction } from '../data-only/functions';
 import { JMusic } from '../facade/jmusic';
 import { FlexibleSequence, flexibleItemToDef } from '../score/flexible-sequence';
@@ -18,6 +18,8 @@ import { Clef } from '../states/clef';
 import { parseLilyClef, parseLilyKey, parseLilyMeter } from '../score/sequence';
 import { StateChange } from '../states/state';
 import { ClefType } from '../data-only/states';
+import { NoteDirection } from '../data-only/notes';
+import { ScoreDef, StaffDef } from '../data-only/score';
 
 describe('Conversions', () => {
     describe('Conversions from def to active', () => {
@@ -239,5 +241,79 @@ describe('Conversions', () => {
             expect(res).to.deep.eq(variablesAndFunctionsVarsOut);
         });
 
+    });
+
+    describe('Applying scores and staves etc', () => {
+        let projectData: ProjectDef;
+        let activeVars: ActiveVarRepo;
+
+        beforeEach(() => {
+            projectData = {
+                score: {
+                    staves: [{
+                        voices: [
+                            {
+                                contentDef: ['c4 d4 e4 f4'],
+                                noteDirection: NoteDirection.Up
+                            },
+                            {
+                                contentDef: ['c,4 d,4', { variable: 'v1'}],
+                                noteDirection: NoteDirection.Down
+                            }
+                        ],
+                        initialClef: Clef.clefBass.def,
+                        initialKey: { accidental: 0, count: 0 }
+                    }]
+                },
+                vars: {
+                    v1: 'e,4 f,4'
+                }
+            };
+            activeVars = { 
+                v1: [createNoteFromLilypond('e,4'), createNoteFromLilypond('f,4')]
+            };
+        });
+        
+        it('should convert data-only voice to active voice', () => {
+            const data = projectData.score.staves[0].voices[0];
+            
+            const active = convertVoiceDataToActive(data, projectData.vars);
+
+            expect(active.item.content.length).to.eq(4);
+            expect(active.item.content[2]).to.deep.eq(createNoteFromLilypond('e4'));
+            expect(active.vars).to.deep.eq(activeVars);
+        });
+
+        it('should convert data-only staff to active staff', () => {
+            const data = projectData.score.staves[0];
+            
+            const active = convertStaffDataToActive(data, projectData.vars);
+
+            expect(active.item.voices[0].content.length).to.eq(4);
+            expect(active.item.voices[1].content[2]).to.include({ name: 'v1', type: 'VarRef' });
+            expect(active.vars).to.deep.eq(activeVars);
+        });
+     
+        it('should convert data-only score to active score', () => {
+            const data = projectData.score;
+            
+            const active = convertScoreDataToActive(data, projectData.vars);
+
+            expect(active.item.staves[0].voices[0].content.length).to.eq(4);
+            expect(active.item.staves[0].voices[1].content[2]).to.include({ name: 'v1', type: 'VarRef' });
+            expect(active.vars).to.deep.eq(activeVars);
+        });
+     
+        
+        it('should convert data-only project to active project', () => {
+            const data = projectData;
+            
+            const active = convertProjectDataToActive(data);
+
+            expect(active.score.staves[0].voices[0].content.length).to.eq(4);
+            expect(active.score.staves[0].voices[1].content[2]).to.include({ name: 'v1', type: 'VarRef' });
+            expect(active.vars).to.deep.eq(activeVars);
+        });
+    
     });
 });

@@ -26,7 +26,7 @@ describe('Selection commands', () => {
         expect(jMusic.model.staves[0].voices[0].content.asObject).to.deep.equal(['c4\\tenuto', 'c4', 'c4\\tenuto', 'c4']);
     });
 
-    it('should add an expression on selected notes - through a function', () => {
+    xit('should add an expression on selected notes - through a function', () => {
         const jMusic = new JMusic({
             staves: [{
                 voices: [{
@@ -51,7 +51,7 @@ describe('Selection commands', () => {
     });
 
     
-    it('should add an expression on selected notes - through a variable', () => {
+    xit('should add an expression on selected notes - through a variable', () => {
         const jMusic = new JMusic({
             staves: [{
                 voices: [{

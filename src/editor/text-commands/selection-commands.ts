@@ -65,9 +65,7 @@ export const selectionCommands = [
                     //R.tap(console.log),
                     option.map((sel: SelectionFunc) => new SelectionLens({ isSelected: sel })),
                     //R.tap(console.log),
-                    option.map((l: SelectionLens) => l.change(proj, (note) => [isNote(note) ? {...note, expressions: [...note.expressions ?? [], expression] } : note], domainConverter, {})),
-                    //R.tap(console.log),
-                    //option.map((score: ProjectDef) => ({ score, vars: model.vars.vars } as ProjectDef)),
+                    option.map((l: SelectionLens) => l.change(proj, (note) => [isNote(note) ? {...note, expressions: [...note.expressions ?? [], expression] } : note], domainConverter)),
                     //R.tap(console.log),
                     option.getOrElse(() => proj)
                 );                
