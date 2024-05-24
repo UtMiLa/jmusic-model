@@ -13,7 +13,7 @@ import { VariableRepository, valueOf } from '../score/variables';
 import { EditView, EditableView } from './views';
 import { makeScore } from './score-flex';
 import R = require('ramda');
-import { conceptualGetElements, convertSequenceDataToConceptual } from '../object-model-functional/conversions';
+import { activeGetElements, convertSequenceDataToActive } from '../object-model-functional/conversions';
 
 export class VariableView extends EditView implements EditableView {
     constructor(private parent: JMusic, private variableName: string) {
@@ -50,7 +50,7 @@ export class VariableView extends EditView implements EditableView {
     }
     get domainConverter(): DomainConverter<SequenceDef | MultiSequenceDef, MusicEvent[]> {
         return {
-            fromDef: def => conceptualGetElements(convertSequenceDataToConceptual(def, this.vars.vars)),
+            fromDef: def => activeGetElements(convertSequenceDataToActive(def, this.vars.vars)),
             toDef: events => flexibleItemToDef(events)
         };
     }

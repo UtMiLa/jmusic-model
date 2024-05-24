@@ -1,4 +1,4 @@
-import { convertSequenceDataToConceptual, convertConceptualSequenceToData } from '../../model/object-model-functional/conversions';
+import { convertSequenceDataToActive, convertActiveSequenceToData } from '../../model/object-model-functional/conversions';
 import { Selection, SelectionFunc, SelectionManager } from './../../selection/selection-types';
 import { sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
@@ -9,7 +9,7 @@ import { ProtoSelection, SelectionArg } from './selection-argument-types';
 import { FixedArg } from './base-argument-types';
 import { SelectionLens } from '../../selection/selection-lens';
 import { option } from 'fp-ts';
-import { ConceptualSequence } from '../../model/object-model-functional/types';
+import { ActiveSequence } from '../../model/object-model-functional/types';
 import { pipe } from 'fp-ts/lib/function';
 import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
 
@@ -47,9 +47,9 @@ export const selectionCommands = [
             const expression = parseLilyNoteExpression(expr);
             //console.log('selection ok');
             
-            const domainConverter: DomainConverter<VoiceContentDef, ConceptualSequence> = {
-                fromDef: def => convertSequenceDataToConceptual(def, model.vars.vars),
-                toDef: events => convertConceptualSequenceToData(events)
+            const domainConverter: DomainConverter<VoiceContentDef, ActiveSequence> = {
+                fromDef: def => convertSequenceDataToActive(def, model.vars.vars),
+                toDef: events => convertActiveSequenceToData(events)
             };
             const projectLens: ProjectLens<ProjectDef> = R.lens(
                 (p) => p,

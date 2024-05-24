@@ -6,8 +6,8 @@ import { MultiSequenceDef, VoiceContentDef } from '../data-only/voices';
 import { flexibleItemToDef, recursivelySplitStringsIn } from '../score/flexible-sequence';
 import { FlexibleItem } from '../score/types';
 import { VariableRepository, createRepo, isVariableRef, valueOf } from '../score/variables';
-import { ConceptualFunctionCall, ConceptualSequence, ConceptualSequenceItem, ConceptualVarRef, 
-    isConceptualFunctionCall, isConceptualVarRef } from './types';
+import { ActiveFunctionCall, ActiveSequence, ActiveSequenceItem, ActiveVarRef, 
+    isActiveFunctionCall, isActiveVarRef } from './types';
 import { MusicEvent, getDuration, isMusicEvent, isNote, isStateChange, parseLilyElement } from '../score/sequence';
 import { isSeqFunction, SeqFunction } from '../data-only/functions';
 import { createFunction } from '../score/functions';
@@ -18,7 +18,7 @@ import { Clef } from '../states/clef';
 
 
 function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
-    return conceptualGetElements(requireElements(items, repo));
+    return activeGetElements(requireElements(items, repo));
 }
 function isSingleStringArray(test: unknown): test is string[] {
     return (test as string[]).length === 1 && typeof ((test as string[])[0]) === 'string';
@@ -28,22 +28,22 @@ function isOtherFlexibleItemArray(test: unknown): test is FlexibleItem[] {
     return true;
 }
 
-function getDurationForConceptual(elem: ConceptualSequenceItem): TimeSpan {
-    if (isConceptualVarRef(elem) || isConceptualFunctionCall(elem)) return elem.duration;
-    if (R.is(Array, elem)) return elem.reduce((accu, child) => getDurationForConceptual(child), Time.NoTime);
+function getDurationForActive(elem: ActiveSequenceItem): TimeSpan {
+    if (isActiveVarRef(elem) || isActiveFunctionCall(elem)) return elem.duration;
+    if (R.is(Array, elem)) return elem.reduce((accu, child) => getDurationForActive(child), Time.NoTime);
     return getDuration(elem);
 }
 
 function requireElements(
     init: FlexibleItem[],
     repo: VariableRepository
-): ConceptualSequence {
+): ActiveSequence {
     
-    const elements: ConceptualSequence = R.chain(
+    const elements: ActiveSequence = R.chain(
         R.cond([
             [
                 R.is(String),
-                ((item: string): ConceptualSequenceItem[] => item ? [parseLilyElement(item) as MusicEvent] : [])
+                ((item: string): ActiveSequenceItem[] => item ? [parseLilyElement(item) as MusicEvent] : [])
             ],                    
             /*[
                 isMultiSequence,
@@ -54,38 +54,38 @@ function requireElements(
                 (item: SeqFunction) => { 
                     const elems = requireElements([item.args], repo);
                     const funcRes = createFunction(item.function, item.extraArgs)(calcElements([item.args], repo));
-                    const duration = funcRes.reduce((prev, curr) => Time.addSpans(prev, getDurationForConceptual(curr)), Time.NoTime);
+                    const duration = funcRes.reduce((prev, curr) => Time.addSpans(prev, getDurationForActive(curr)), Time.NoTime);
                     return [{
                         type: 'Func',
                         func: item.function,
                         items: elems,
                         extraArgs: item.extraArgs,
                         duration
-                    } as ConceptualSequenceItem];
+                    } as ActiveSequenceItem];
                 }
             ],
             [
                 isVariableRef,
                 (item: VariableRef) => { 
                     const varRes = requireElements(valueOf(repo, item.variable).elements, repo);
-                    const duration = varRes.reduce((prev, curr) => Time.addSpans(prev, getDurationForConceptual(curr)), Time.NoTime);
+                    const duration = varRes.reduce((prev, curr) => Time.addSpans(prev, getDurationForActive(curr)), Time.NoTime);
                     return [{ 
                         type: 'VarRef',
                         name: item.variable, 
                         items: varRes, 
                         duration
-                    }] as ConceptualSequenceItem[];
+                    }] as ActiveSequenceItem[];
                 }
             ],
             [
                 isSingleStringArray,
-                (item: string[]) => [parseLilyElement(item[0])] as ConceptualSequenceItem[]
+                (item: string[]) => [parseLilyElement(item[0])] as ActiveSequenceItem[]
             ],
             [
-                isMusicEvent, (item: MusicEvent) => [item as ConceptualSequenceItem]
+                isMusicEvent, (item: MusicEvent) => [item as ActiveSequenceItem]
             ],
             [
-                isOtherFlexibleItemArray, (elm) => requireElements(elm, repo) as ConceptualSequenceItem[]
+                isOtherFlexibleItemArray, (elm) => requireElements(elm, repo) as ActiveSequenceItem[]
             ]
         ]),
         init);
@@ -96,28 +96,28 @@ function requireElements(
 
 
 
-//export function convertDataToConceptual(data: ProjectDef): Conce {}
+//export function convertDataToActive(data: ProjectDef): Conce {}
 
-export function convertSequenceItemToConceptual(data: MusicEvent, vars: VarDict): ConceptualSequenceItem {
+export function convertSequenceItemToActive(data: MusicEvent, vars: VarDict): ActiveSequenceItem {
     return requireElements(recursivelySplitStringsIn(data, createRepo(vars)), createRepo(vars))[0]; // todo: this should be possible to do nicer
 }
 
 
-export function convertSequenceDataToConceptual(data: VoiceContentDef, vars: VarDict): ConceptualSequence {
+export function convertSequenceDataToActive(data: VoiceContentDef, vars: VarDict): ActiveSequence {
     return requireElements(recursivelySplitStringsIn(data, createRepo(vars)), createRepo(vars));
 }
 
 
-export function convertConceptualSequenceToData(conceptual: ConceptualSequence): VoiceContentDef {
-    return conceptual.map(elem => {
-        if (isConceptualVarRef(elem)) {
+export function convertActiveSequenceToData(active: ActiveSequence): VoiceContentDef {
+    return active.map(elem => {
+        if (isActiveVarRef(elem)) {
             return { variable: elem.name };
-        } else if (isConceptualFunctionCall(elem)) {
-            const res = { function: elem.func, args: convertConceptualSequenceToData(elem.items) } as SeqFunction;
+        } else if (isActiveFunctionCall(elem)) {
+            const res = { function: elem.func, args: convertActiveSequenceToData(elem.items) } as SeqFunction;
             if (elem.extraArgs) res.extraArgs = elem.extraArgs;
             return res;
         } else if (R.is(Array, elem)) {
-            return convertConceptualSequenceToData(elem);
+            return convertActiveSequenceToData(elem);
         } else {
             if (isNote(elem)) {
                 return noteAsLilypond(elem);
@@ -130,21 +130,21 @@ export function convertConceptualSequenceToData(conceptual: ConceptualSequence):
     });
 }
 
-export function conceptualGetElements(conceptual: ConceptualSequence): MusicEvent[] {
+export function activeGetElements(active: ActiveSequence): MusicEvent[] {
     return R.chain(elem => {
-        if (isConceptualVarRef(elem)) {
-            return conceptualGetElements(elem.items);
-        } else if (isConceptualFunctionCall(elem)) {
-            return createFunction(elem.func, elem.extraArgs)(conceptualGetElements(elem.items));
+        if (isActiveVarRef(elem)) {
+            return activeGetElements(elem.items);
+        } else if (isActiveFunctionCall(elem)) {
+            return createFunction(elem.func, elem.extraArgs)(activeGetElements(elem.items));
         } else if (R.is(Array, elem)) {
-            return conceptualGetElements(elem);
+            return activeGetElements(elem);
         } else {
             return [elem];
         }
         throw 'Unknown object';
-    }, conceptual);
+    }, active);
 }
 
 export function normalizeVars(vars: VarDict): VarDict {
-    return map<FlexibleItem, FlexibleItem>(v => convertConceptualSequenceToData(convertSequenceDataToConceptual(v as MultiSequenceDef, vars)))(vars);
+    return map<FlexibleItem, FlexibleItem>(v => convertActiveSequenceToData(convertSequenceDataToActive(v as MultiSequenceDef, vars)))(vars);
 }

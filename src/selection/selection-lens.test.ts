@@ -1,4 +1,4 @@
-import { ConceptualSequence } from './../model/object-model-functional/types';
+import { ActiveSequence } from './../model/object-model-functional/types';
 import { Time } from './../model/rationals/time';
 import { expect } from 'chai';
 import { Clef, ClefType, DomainConverter, FlexibleSequence, JMusic, Key, MusicEvent, ProjectDef, ScoreDef, VariableRepositoryProxy, VoiceContentDef, createRepo, isNote, voiceContentToSequence, voiceSequenceToDef } from '../model';
@@ -6,12 +6,12 @@ import { createTestScore } from '../tools/test-tools';
 import { SelectionVoiceTime } from './query';
 import { SelectionLens } from './selection-lens';
 import R = require('ramda');
-import { convertSequenceDataToConceptual, convertConceptualSequenceToData } from '../model/object-model-functional/conversions';
+import { convertSequenceDataToActive, convertActiveSequenceToData } from '../model/object-model-functional/conversions';
 
 describe('Selection lensing', () => {
     let source: ScoreDef;
     let proj: ProjectDef;
-    let domainConverter: DomainConverter<VoiceContentDef, ConceptualSequence>;
+    let domainConverter: DomainConverter<VoiceContentDef, ActiveSequence>;
 
     beforeEach(() => {
         source = createTestScore([['c\'4 d\'2 e\'8 f\'8 g\'4'], ['c8 d8 e8 f8 g4. f8 e4 d4 c2']], [4, 4], [0, 0]);
@@ -21,8 +21,8 @@ describe('Selection lensing', () => {
             vars: vars.vars
         };
         domainConverter = {
-            fromDef: def => convertSequenceDataToConceptual(def, vars.vars),
-            toDef: events => convertConceptualSequenceToData(events)
+            fromDef: def => convertSequenceDataToActive(def, vars.vars),
+            toDef: events => convertActiveSequenceToData(events)
         };
     });
 
@@ -83,8 +83,8 @@ describe('Selection lensing', () => {
         const setterLens = new SelectionLens(selection);
 
         domainConverter = {
-            fromDef: def => convertSequenceDataToConceptual(def, vars),
-            toDef: events => convertConceptualSequenceToData(events)
+            fromDef: def => convertSequenceDataToActive(def, vars),
+            toDef: events => convertActiveSequenceToData(events)
         };
 
         const items = setterLens.change(source.model.project, () => [], domainConverter, vars);

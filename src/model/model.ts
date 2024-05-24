@@ -13,7 +13,7 @@ import { Staff, staffDefToStaff } from './score/staff';
 import { VarDict, ProjectDef, FlexibleItem } from '.';
 import { VariableRepository, createRepo, setVar } from './score/variables';
 import { voiceSequenceToDef, VoiceContentDef, voiceContentToSequence } from '.';
-import { conceptualGetElements, convertSequenceDataToConceptual } from './object-model-functional/conversions';
+import { activeGetElements, convertSequenceDataToActive } from './object-model-functional/conversions';
 
 
 export class Model {
@@ -79,7 +79,7 @@ export class Model {
 
     get domainConverter(): DomainConverter<VoiceContentDef, MusicEvent[]> {
         return {
-            fromDef: def => conceptualGetElements(convertSequenceDataToConceptual(def, this.vars.vars)),// todo: correct voiceNo
+            fromDef: def => activeGetElements(convertSequenceDataToActive(def, this.vars.vars)),// todo: correct voiceNo
             toDef: events => flexibleItemToDef(events)
         };
     }
