@@ -9,8 +9,8 @@ import * as _ from 'ts-toolbelt';
 import { isSplitSequence } from '..';
 import { Note, noteAsLilypond } from '../notes/note';
 import { isSeqFunction } from '../data-only/functions';
-import { ConceptualSequence, ConceptualSequenceItem, isConceptualFunctionCall, isConceptualVarRef } from '../object-model-functional/types';
-import { conceptualGetElements, convertConceptualSequenceToData, convertSequenceDataToConceptual } from '../object-model-functional/conversions';
+import { ActiveSequence, ActiveSequenceItem, isActiveFunctionCall, isActiveVarRef } from '../object-model-functional/types';
+import { activeGetElements, convertActiveSequenceToData, convertSequenceDataToActive } from '../object-model-functional/conversions';
 import { isString } from 'fp-ts/lib/string';
 import { isSpacer, spacerAsLilypond } from '../notes/spacer';
 
@@ -111,20 +111,20 @@ export class FlexibleSequence extends BaseSequence {
         super();
 
         const def = flexibleItemToDef(init);
-        this.conceptualData = convertSequenceDataToConceptual(def, repo.vars);
+        this.activeData = convertSequenceDataToActive(def, repo.vars);
 
         if (!alreadySplit) repo.observer$.subscribe(newRepo => {
             this.def = recursivelySplitStringsIn(def, newRepo);
 
-            this.conceptualData = convertSequenceDataToConceptual(def, newRepo.vars);
+            this.activeData = convertSequenceDataToActive(def, newRepo.vars);
         });
         this.def = alreadySplit ? def as FlexibleItem[] : recursivelySplitStringsIn(init, repo);
     }
 
-    private conceptualData: ConceptualSequence;
+    private activeData: ActiveSequence;
 
     get elements(): MusicEvent[] {
-        return conceptualGetElements(this.conceptualData);
+        return activeGetElements(this.activeData);
     }
 
     get duration(): TimeSpan {
@@ -214,11 +214,11 @@ export class FlexibleSequence extends BaseSequence {
 
     indexToPathC(index: number): PathElement<MusicEvent>[] {
 
-        const itemsToPaths = (item: ConceptualSequenceItem): PathElement<MusicEvent>[][] => {
+        const itemsToPaths = (item: ActiveSequenceItem): PathElement<MusicEvent>[][] => {
             if (typeof item === 'string') {
                 const no = splitByNotes(item).length;
                 return R.range(0, no).map(n => [n]);
-            } else if (isConceptualFunctionCall(item as ConceptualSequenceItem)) {
+            } else if (isActiveFunctionCall(item as ActiveSequenceItem)) {
                 throw 'Not supported a';
                 /*return createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))
                     .map((a, i) => [
@@ -229,7 +229,7 @@ export class FlexibleSequence extends BaseSequence {
                         i, 
                         0
                     ]);*/
-            } else if (isConceptualVarRef(item)) {
+            } else if (isActiveVarRef(item)) {
                 //throw 'Not supported ba';
                 const varSeq = valueOf(this.repo, item.name);
                 return item.items.map((e, i) => [1, { variable: item.name }, ...varSeq.indexToPath(i)]); //{ variable: item.variable };
@@ -247,30 +247,30 @@ export class FlexibleSequence extends BaseSequence {
         
         
     
-        const allPaths = (R.addIndex as addIndexFix<ConceptualSequenceItem, PathElement<MusicEvent>[][]>)(R.chain<ConceptualSequenceItem, PathElement<MusicEvent>[]>)(
-            (s: ConceptualSequenceItem, idx: number) => itemsToPaths(s).map(
+        const allPaths = (R.addIndex as addIndexFix<ActiveSequenceItem, PathElement<MusicEvent>[][]>)(R.chain<ActiveSequenceItem, PathElement<MusicEvent>[]>)(
+            (s: ActiveSequenceItem, idx: number) => itemsToPaths(s).map(
                 x => x.length > 1 && typeof x[0] === 'string' ? x : [idx, ...x]
-            ), this.conceptualData
+            ), this.activeData
         );
-        //itemsToPaths(this.conceptualData);
+        //itemsToPaths(this.activeData);
 
         if (index >= allPaths.length) throw 'Illegal index';
 
         return allPaths[index];
     }
 
-    updateElement(index: number, func: (elem: ConceptualSequenceItem) => ConceptualSequenceItem[]): ConceptualSequenceItem {
-        const before = this.conceptualData[index];
+    updateElement(index: number, func: (elem: ActiveSequenceItem) => ActiveSequenceItem[]): ActiveSequenceItem {
+        const before = this.activeData[index];
         const changed = func(before);
-        const y = R.remove(index, 1, this.conceptualData); 
-        this.conceptualData = R.insertAll(index, changed, y);
+        const y = R.remove(index, 1, this.activeData); 
+        this.activeData = R.insertAll(index, changed, y);
         return before;
     }
 
     appendElements(elements: FlexibleItem[]): void {
-        const elems = convertSequenceDataToConceptual(elements.map(flexibleItemToDef), this.repo.vars);
+        const elems = convertSequenceDataToActive(elements.map(flexibleItemToDef), this.repo.vars);
 
-        this.updateElement(this.conceptualData.length - 1, x => [x, ...elems]);
+        this.updateElement(this.activeData.length - 1, x => [x, ...elems]);
     }    
 
 
@@ -291,13 +291,13 @@ export class FlexibleSequence extends BaseSequence {
         const path = this.indexToPath(i);
         
         if (path.length === 2) {
-            const conceptualFn = (from: ConceptualSequenceItem): ConceptualSequenceItem[] => {
-                const input: FlexibleItem = convertConceptualSequenceToData([from]);
-                const res = convertSequenceDataToConceptual(flexibleItemToDef(fn(input)), this.repo.vars);
+            const activeFn = (from: ActiveSequenceItem): ActiveSequenceItem[] => {
+                const input: FlexibleItem = convertActiveSequenceToData([from]);
+                const res = convertSequenceDataToActive(flexibleItemToDef(fn(input)), this.repo.vars);
                 return res;
             };
 
-            this.updateElement(path[0] as number, conceptualFn);
+            this.updateElement(path[0] as number, activeFn);
 
             return;
         }
@@ -313,7 +313,7 @@ export class FlexibleSequence extends BaseSequence {
         const path = this.indexToPath(i);
         //[1,0] tager def og indsætter element før index 1
         if (path.length === 2) {
-            const elem = convertSequenceDataToConceptual(elements.map(flexibleItemToDef), this.repo.vars);
+            const elem = convertSequenceDataToActive(elements.map(flexibleItemToDef), this.repo.vars);
             
             this.updateElement(path[0] as number, x => [...elem, x]);
             return;

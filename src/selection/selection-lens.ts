@@ -1,17 +1,20 @@
-import { ConceptualSequence } from './../model/object-model-functional/types';
+import { LensItem } from './../model/optics/lens';
+import { JMusic } from './../model/facade/jmusic';
+import { FlexibleSequence } from './../model/score/flexible-sequence';
+import { ActiveSequence } from './../model/object-model-functional/types';
 import { pipe } from 'fp-ts/lib/function';
-import { DomainConverter, MultiSequenceDef, MusicEvent, NoteBase, ProjectDef, ScoreDef, VarDict, VoiceContentDef, flexibleItemToDef, isMusicEvent, lensFromLensDef, voiceContentToSequence, voiceSequenceToDef } from '../model';
+import { DomainConverter, MultiSequenceDef, MusicEvent, NoteBase, ProjectDef, ScoreDef, VarDict, VoiceContentDef, createRepo, flexibleItemToDef, isMusicEvent, lensFromLensDef, projectLensByIndex, voiceContentToSequence, voiceSequenceToDef } from '../model';
 import { Selection, ElementIdentifier } from './selection-types';
 import { chainWithIndex, map } from 'fp-ts/Array';
-import { convertConceptualSequenceToData, convertSequenceDataToConceptual, convertSequenceItemToConceptual } from '~/model/object-model-functional/conversions';
-import { ConceptualSequenceItem } from '~/model/object-model-functional/types';
+import { convertActiveSequenceToData, convertSequenceDataToActive, convertSequenceItemToActive } from '../model/object-model-functional/conversions';
+import { ActiveSequenceItem } from '../model/object-model-functional/types';
 
 export class SelectionLens {
     constructor(private selection: Selection) {}
 
-    get(source: ScoreDef, domainConverter: DomainConverter<VoiceContentDef, ConceptualSequence>): VoiceContentDef {
-        const result: ConceptualSequence = [];
-        source.staves.forEach((staff, staffNo) => {
+    get(source: ProjectDef, domainConverter: DomainConverter<VoiceContentDef, ActiveSequence>): VoiceContentDef {
+        const result: ActiveSequence = [];
+        source.score.staves.forEach((staff, staffNo) => {
             staff.voices.forEach((voice, voiceNo) => {
                 const elements = domainConverter.fromDef(voice.contentDef);
                 elements.forEach((element, elementNo) => {
@@ -28,37 +31,79 @@ export class SelectionLens {
     }
 
 
-    change(source: ScoreDef, modifier: (element: MusicEvent) => MusicEvent[], domainConverter: DomainConverter<VoiceContentDef, ConceptualSequence>, vars: VarDict): ScoreDef {
+    change(source: ProjectDef, modifier: (element: MusicEvent) => MusicEvent[], domainConverter: DomainConverter<VoiceContentDef, ActiveSequence>): ProjectDef {
+
+        /*const res = new JMusic(source);
+        source.score.staves.forEach((staff, staffNo) => {
+            staff.voices.forEach((voice, voiceNo) => {
+                const seq = new FlexibleSequence(voice.contentDef, createRepo(source.vars));
+                seq.elements.forEach((elem, elemNo) => {
+                    if (this.selection.isSelected({ elementNo: elemNo, staffNo: staffNo, voiceNo: voiceNo })) {
+                        const lens = projectLensByIndex(domainConverter, { element: elemNo, staff: staffNo, voice: voiceNo });
+                        res.overProject<LensItem>(lens, modifier as any);
+                    }
+                });
+                
+            });
+        });
+
+
+        return res.project;*/
 
         const result = {
             ...source, 
-            staves: source.staves.map((staff, staffNo) => { 
-                return {
-                    ...staff,
-                    voices: staff.voices.map((voice, voiceNo) => {
-                        const elements1 = domainConverter.fromDef(flexibleItemToDef(voice.contentDef));
-
-                        const newElements1 = pipe(
-                            elements1, 
-                            chainWithIndex((elementNo: number, element: ConceptualSequenceItem) => {
-                                const elementIdentifier: ElementIdentifier = {
-                                    staffNo, voiceNo, elementNo
-                                };
-                                if (this.selection.isSelected(elementIdentifier)) {
-                                    if (isMusicEvent(element))
-                                        return modifier(element);
-                                }
-                                return [element];
-                            }));
-                        const voiceContentNew = domainConverter.toDef(newElements1);
-                        return {
-                            ...voice,
-                            contentDef: voiceContentNew
-                        };
-                    })
-                }; 
-            }).filter(staff => staff)
+            score: {
+                ...source.score,
+                staves: source.score.staves.map((staff, staffNo) => { 
+                    return {
+                        ...staff,
+                        voices: staff.voices.map((voice, voiceNo) => {
+                            const elements1 = domainConverter.fromDef(flexibleItemToDef(voice.contentDef));
+    
+                            const newElements1 = pipe(
+                                elements1, 
+                                chainWithIndex((elementNo: number, element: ActiveSequenceItem) => {
+                                    const elementIdentifier: ElementIdentifier = {
+                                        staffNo, voiceNo, elementNo
+                                    };
+                                    if (this.selection.isSelected(elementIdentifier)) {
+                                        if (isMusicEvent(element))
+                                            return modifier(element);
+                                    }
+                                    return [element];
+                                }));
+                            const voiceContentNew = domainConverter.toDef(newElements1);
+                            return {
+                                ...voice,
+                                contentDef: voiceContentNew
+                            };
+                        })
+                    }; 
+                }).filter(staff => staff)
+            },
+            vars: source.vars
         };
         return result;
     }
 }
+
+/*
+
+Thougts about the "real" way to change selected items:
+
+Convert domain from def to active
+    Domain should include vars!
+Iterate through elements
+FlatMap:
+    Convert element to domain
+    Call modifier if selected
+    Convert modified from domain
+    Return results
+Convert domain back to def
+
+Big question: what if element from variable is included twice in selection? Modify twice?
+If element is modified to another count and duration, we need to make sure the remaining elements still are selected correctly.
+
+Probably the safest alternative is to throw if trying to modify a variable. But often the preferred way to structure a document is to
+make all music in variables, and let score refer to variables.
+*/

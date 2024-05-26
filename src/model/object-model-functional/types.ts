@@ -1,37 +1,64 @@
 import { FuncDef } from '../data-only/functions';
+import { NoteDirection } from '../data-only/notes';
 import { TimeSpan } from '../rationals/time';
 import { MusicEvent, isMusicEvent } from '../score/sequence';
 
-// todo: Find a better name than "Conceptual" - maybe "structural" or "internal"?
-
-export interface ConceptualVarRef {
+export interface ActiveVarRef {
     type: 'VarRef';
     name: string;
-    items: ConceptualSequence;
+    items: ActiveSequence;
     readonly duration: TimeSpan;
 }
 
-export interface ConceptualFunctionCall {
+export interface ActiveFunctionCall {
     type: 'Func';
     name: string;
     func: FuncDef;
-    items: ConceptualSequence;
+    items: ActiveSequence;
     extraArgs: any[];
     readonly duration: TimeSpan;
 }
 
-export type ConceptualSequenceItem = MusicEvent | ConceptualVarRef | ConceptualFunctionCall | ConceptualSequence;
+export type ActiveSequenceItem = MusicEvent | ActiveVarRef | ActiveFunctionCall | ActiveSequence;
 
-export type ConceptualSequence = ConceptualSequenceItem[];
+export type ActiveSequence = ActiveSequenceItem[];
 
-export function isConceptualVarRef(item: ConceptualSequenceItem): item is ConceptualVarRef {
-    return (item as ConceptualVarRef).type === 'VarRef';
+export interface ActiveVoice {
+    content: ActiveSequence;
+    noteDirection?: NoteDirection;
 }
 
-export function isConceptualFunctionCall(item: ConceptualSequenceItem): item is ConceptualFunctionCall {
-    return (item as ConceptualFunctionCall).type === 'Func';
+export interface ActiveStaff {
+    voices: ActiveVoice[];
+}
+export interface ActiveScore {
+    staves: ActiveStaff[];
 }
 
-export function isConceptualMusicEvent(item: ConceptualSequenceItem): item is MusicEvent {
+export interface ActiveVarRepo {
+    [key: string]: ActiveSequence;
+}
+
+export interface ActiveProject {
+    score: ActiveScore;
+    vars: ActiveVarRepo;
+}
+
+export interface ActiveVarsAnd<T> {
+    vars: ActiveVarRepo;
+    item: T
+}
+
+
+
+export function isActiveVarRef(item: ActiveSequenceItem): item is ActiveVarRef {
+    return (item as ActiveVarRef).type === 'VarRef';
+}
+
+export function isActiveFunctionCall(item: ActiveSequenceItem): item is ActiveFunctionCall {
+    return (item as ActiveFunctionCall).type === 'Func';
+}
+
+export function isActiveMusicEvent(item: ActiveSequenceItem): item is MusicEvent {
     return isMusicEvent(item);
 }

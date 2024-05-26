@@ -7,7 +7,7 @@ The view model can be converted to a physical model with full instructions for h
 
 This is under development. If you find it interesting and want to contribute, feel free to contact me or make a pull request.
 
-The library is supposed to be lightweight, and I will not make complicated spacing algorithms to provide typesetting quality. There will be a function to export in Lilypond format for this purpose.
+The library is supposed to be lightweight, and I will not make complicated spacing algorithms to provide typesetting quality. There will be a function to export to Lilypond format for this purpose.
 
 ## Install
 Not in npm yet.
@@ -82,7 +82,7 @@ Controls in Angular/React (probably in a sub-project):
 Model and draw:
 * staff expressions (textual, including M.M.)
 * long expressions (trill extensions, ottavas)
-* manual override note direction, accidentals
+* manual override note direction, accidentals, beaming
 
 Functionality:
 * Show selected notes, and select using mouse
@@ -113,6 +113,7 @@ Transformations on sequences:
 
 Controls in Angular/React (probably in a sub-project):
 * Score overview (measure map)
+* Piano roll view
 * Meter entry
 * Key entry
 * Clef entry
