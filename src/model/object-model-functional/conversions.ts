@@ -17,9 +17,12 @@ import { createFunction } from '../score/functions';
 import { noteAsLilypond } from '../notes/note';
 import { map } from 'fp-ts/Record';
 import { ClefType } from '../data-only/states';
-import { Clef } from '../states/clef';
+import { ignoreIfUndefined } from '../../tools/ignore-if-undefined';
 import { isSpacer, spacerAsLilypond } from '../notes/spacer';
 import { ScoreDef, StaffDef } from '../data-only/score';
+import { Clef } from '../states/clef';
+import { Key } from '../states/key';
+import { MeterFactory } from '../states/meter';
 
 
 function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
@@ -164,10 +167,15 @@ export function convertVarDataToActive(vars: VarDict): ActiveVarRepo {
     return R.map((value: FlexibleItem) => convertSequenceDataToActive(flexibleItemToDef(value), vars), vars);
 }
 
+export function convertVarActiveToData(vars: ActiveVarRepo): VarDict {
+    return R.map((value: ActiveSequence) => convertActiveSequenceToData(value), vars);
+}
+
 export function convertVoiceDataToActive(voiceDef: VoiceDef, vars: VarDict): ActiveVarsAnd<ActiveVoice> {
     return {
         item: { 
-            content: convertSequenceDataToActive(voiceDef.contentDef, vars) 
+            content: convertSequenceDataToActive(voiceDef.contentDef, vars),
+            ...ignoreIfUndefined('noteDirection', voiceDef.noteDirection)
         },
         vars: convertVarDataToActive(vars)
     };
@@ -176,7 +184,10 @@ export function convertVoiceDataToActive(voiceDef: VoiceDef, vars: VarDict): Act
 export function convertStaffDataToActive(staffDef: StaffDef, vars: VarDict): ActiveVarsAnd<ActiveStaff> {
     return {
         item: {
-            voices: staffDef.voices.map(voice => convertVoiceDataToActive(voice, vars).item)
+            voices: staffDef.voices.map(voice => convertVoiceDataToActive(voice, vars).item),
+            initialClef: new Clef(staffDef.initialClef),
+            initialKey: new Key(staffDef.initialKey),
+            ...ignoreIfUndefined('initialMeter', staffDef.initialMeter ? MeterFactory.createRegularMeter(staffDef.initialMeter) : undefined)
         },
         vars: convertVarDataToActive(vars)
     };
@@ -198,3 +209,38 @@ export function convertProjectDataToActive(projectDef: ProjectDef): ActiveProjec
         vars: convertVarDataToActive(projectDef.vars)
     };
 }
+
+export function convertVoiceActiveToData(activeVoice: ActiveVoice): VoiceDef {
+    return {
+        contentDef: convertActiveSequenceToData(activeVoice.content),
+        ...ignoreIfUndefined('noteDirection', activeVoice.noteDirection)
+    };
+}
+
+export function convertStaffActiveToData(activeStaff: ActiveStaff): StaffDef {
+    return {
+        voices: activeStaff.voices.map(convertVoiceActiveToData),
+        initialClef: activeStaff.initialClef.def,
+        initialKey: activeStaff.initialKey.def,
+        ...ignoreIfUndefined('initialMeter', activeStaff.initialMeter)
+    } as any;
+}
+
+
+export function convertScoreActiveToData(activeScore: ActiveScore): ScoreDef {
+    return {
+        staves: activeScore.staves.map(convertStaffActiveToData)
+    };
+}
+
+
+export function convertProjectActiveToData(activeProject: ActiveProject): ProjectDef {
+    return {
+        score: convertScoreActiveToData(activeProject.score),
+        vars: convertVarActiveToData(activeProject.vars)
+    };
+}
+
+
+
+

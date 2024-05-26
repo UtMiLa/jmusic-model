@@ -2,6 +2,9 @@ import { FuncDef } from '../data-only/functions';
 import { NoteDirection } from '../data-only/notes';
 import { TimeSpan } from '../rationals/time';
 import { MusicEvent, isMusicEvent } from '../score/sequence';
+import { Clef } from '../states/clef';
+import { Key } from '../states/key';
+import { Meter } from '../states/meter';
 
 export interface ActiveVarRef {
     type: 'VarRef';
@@ -30,6 +33,9 @@ export interface ActiveVoice {
 
 export interface ActiveStaff {
     voices: ActiveVoice[];
+    initialClef: Clef;
+    initialKey: Key;
+    initialMeter?: Meter;
 }
 export interface ActiveScore {
     staves: ActiveStaff[];

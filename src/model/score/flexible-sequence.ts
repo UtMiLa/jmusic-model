@@ -147,7 +147,7 @@ export class FlexibleSequence extends BaseSequence {
 
     //private _def!: FlexibleItem[];
     public get def(): FlexibleItem[] {
-        return convertConceptualSequenceToData(this.conceptualData) as FlexibleItem[];
+        return convertActiveSequenceToData(this.activeData) as FlexibleItem[];
         /*if (!R.is(Array, this._def))
             return simplifyDef(this._def) as any;
         return this._def.map(simplifyDef);*/
@@ -158,7 +158,7 @@ export class FlexibleSequence extends BaseSequence {
         //this._def = init;
 
         const def = flexibleItemToDef(init);
-        this.conceptualData = convertSequenceDataToConceptual(def, this.repo.vars);
+        this.activeData = convertSequenceDataToActive(def, this.repo.vars);
 
     }
 
