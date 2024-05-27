@@ -11,6 +11,7 @@ import { ActiveFunctionCall, ActiveProject, ActiveScore, ActiveSequence, ActiveS
     ActiveVarRepo, 
     ActiveVarsAnd, 
     ActiveVoice, 
+    ElementDescriptor, 
     isActiveFunctionCall, isActiveVarRef } from './types';
 import { isSeqFunction, SeqFunction } from '../data-only/functions';
 import { createFunction } from '../score/functions';
@@ -23,6 +24,7 @@ import { ScoreDef, StaffDef } from '../data-only/score';
 import { Clef } from '../states/clef';
 import { Key } from '../states/key';
 import { MeterFactory } from '../states/meter';
+import { array } from 'fp-ts';
 
 
 function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
@@ -144,8 +146,8 @@ export function convertActiveSequenceToData(active: ActiveSequence): VoiceConten
     });
 }
 
-export function activeGetElements(active: ActiveSequence): MusicEvent[] {
-    return R.chain(elem => {
+export function activeGetPositionedElements(active: ActiveSequence): ElementDescriptor[] {
+    return array.chainWithIndex((i, elem: ActiveSequenceItem) => {
         if (isActiveVarRef(elem)) {
             return activeGetElements(elem.items);
         } else if (isActiveFunctionCall(elem)) {
@@ -156,7 +158,26 @@ export function activeGetElements(active: ActiveSequence): MusicEvent[] {
             return [elem];
         }
         throw 'Unknown object';
-    }, active);
+    })(active).map( (elm, i) => ({ position: {
+        staffNo: -1, voiceNo: -1, elementNo: i
+    }, element: elm }));
+}
+
+
+export function activeGetElements(active: ActiveSequence): MusicEvent[] {
+    return activeGetPositionedElements(active).map(res => res.element);
+    /*return R.chain(elem => {
+        if (isActiveVarRef(elem)) {
+            return activeGetElements(elem.items);
+        } else if (isActiveFunctionCall(elem)) {
+            return createFunction(elem.func, elem.extraArgs)(activeGetElements(elem.items));
+        } else if (R.is(Array, elem)) {
+            return activeGetElements(elem);
+        } else {
+            return [elem];
+        }
+        throw 'Unknown object';
+    }, active);*/
 }
 
 export function normalizeVars(vars: VarDict): VarDict {

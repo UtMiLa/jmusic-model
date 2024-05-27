@@ -5,6 +5,7 @@ import { Clef } from '../states/clef';
 import { ActiveProject } from './types';
 import { convertProjectDataToActive } from './def-to-active';
 import { getProjectElements } from './project-iteration';
+import { createNoteFromLilypond } from '../notes/note';
 
 describe('Iterating project', () => {
     let projectData: ProjectDef;
@@ -38,6 +39,18 @@ describe('Iterating project', () => {
     it('should iterate over elements in project', () => {
         const elems = getProjectElements(projectActive);
         expect(elems).to.have.length(8);
+    });
+
+    it('should iterate over elements in project', () => {
+        const elems = getProjectElements(projectActive);
+        expect(elems[2]).to.deep.include({
+            position: {
+                staffNo: 0,
+                voiceNo: 0,
+                elementNo: 2
+            },
+            element: createNoteFromLilypond('e4')
+        });
     });
 
 });

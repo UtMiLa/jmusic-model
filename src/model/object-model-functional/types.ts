@@ -1,3 +1,4 @@
+import { ElementIdentifier } from './../../selection/selection-types';
 import { FuncDef } from '../data-only/functions';
 import { NoteDirection } from '../data-only/notes';
 import { TimeSpan } from '../rationals/time';
@@ -55,7 +56,10 @@ export interface ActiveVarsAnd<T> {
     item: T
 }
 
-
+export interface ElementDescriptor {
+    position: ElementIdentifier;
+    element: MusicEvent;
+}
 
 export function isActiveVarRef(item: ActiveSequenceItem): item is ActiveVarRef {
     return (item as ActiveVarRef).type === 'VarRef';
@@ -68,3 +72,4 @@ export function isActiveFunctionCall(item: ActiveSequenceItem): item is ActiveFu
 export function isActiveMusicEvent(item: ActiveSequenceItem): item is MusicEvent {
     return isMusicEvent(item);
 }
+
