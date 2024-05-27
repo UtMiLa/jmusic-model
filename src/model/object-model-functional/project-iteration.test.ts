@@ -5,12 +5,15 @@ import { NoteDirection } from '../data-only/notes';
 import { Clef } from '../states/clef';
 import { ActiveProject } from './types';
 import { convertProjectDataToActive } from './def-to-active';
-import { getProjectElements, getSelected } from './project-iteration';
+import { getProjectElements, getSelected, modifyProject } from './project-iteration';
 import { createNoteFromLilypond } from '../notes/note';
 import { pipe } from 'fp-ts/lib/function';
 import { SelectionVoiceTime } from '~/selection/query';
 import { Time } from '../rationals/time';
 import { JMusic } from '../facade/jmusic';
+import { convertProjectActiveToData } from './active-to-def';
+import { createFunction } from '../score/functions';
+import { augment } from '../score/music-event-functions';
 
 describe('Iterating project', () => {
     let projectData: ProjectDef;
@@ -22,11 +25,11 @@ describe('Iterating project', () => {
                 staves: [{
                     voices: [
                         {
-                            contentDef: ['c4 d4 e4 f4'],
+                            contentDef: ['c4', 'd4', 'e4', 'f4'],
                             noteDirection: NoteDirection.Up
                         },
                         {
-                            contentDef: ['c,4 d,4', { variable: 'v1'}],
+                            contentDef: ['c,4', 'd,4', { variable: 'v1'}],
                             noteDirection: NoteDirection.Down
                         }
                     ],
@@ -35,47 +38,95 @@ describe('Iterating project', () => {
                 }]
             },
             vars: {
-                v1: 'e,4 f,4'
+                v0: ['e,4', 'f,4'],
+                v1: ['e,4', 'f,4']
             }
         };
         projectActive = convertProjectDataToActive(projectData);
     });
 
-    it('should iterate over elements in project', () => {
-        const elems = getProjectElements(projectActive);
-        expect(elems).to.have.length(8);
+    describe('Getting elements', () => {
+        it('should iterate over elements in project', () => {
+            const elems = getProjectElements(projectActive);
+            expect(elems).to.have.length(8);
+        });
+
+        it('should iterate over elements in project', () => {
+            const elems = getProjectElements(projectActive);
+            expect(elems[2]).to.deep.eq({
+                position: {
+                    staffNo: 0,
+                    voiceNo: 0,
+                    elementNo: 2
+                },
+                element: createNoteFromLilypond('e4')
+            });
+        });
+
+        
+        it('should filter selected elements in project', () => {
+            const selection = new SelectionVoiceTime(new JMusic(projectData), 0, 1, Time.StartTime, Time.EternityTime);
+
+            const elems = pipe(
+                projectActive,
+                getProjectElements,
+                getSelected(selection)
+            );
+            expect(elems).to.have.length(4);
+            expect(elems[2]).to.deep.eq({
+                position: {
+                    staffNo: 0,
+                    voiceNo: 1,
+                    elementNo: 2
+                },
+                element: createNoteFromLilypond('e,4')
+            });
+        });
+
     });
 
-    it('should iterate over elements in project', () => {
-        const elems = getProjectElements(projectActive);
-        expect(elems[2]).to.deep.include({
-            position: {
-                staffNo: 0,
-                voiceNo: 0,
-                elementNo: 2
-            },
-            element: createNoteFromLilypond('e4')
+    describe('Changing elements', () => {
+        it('should should not change anything when modifier function is identity', () => {
+            const newProj = pipe(
+                projectActive,
+                modifyProject(x => [x]),
+                convertProjectActiveToData
+            );
+
+            expect(newProj).to.deep.eq(projectData);
+        });
+        
+        it('should should change time on all timed events', () => {
+
+            const augmenter = augment({ numerator: 1, denominator: 2 });
+
+            const newProj = pipe(
+                projectActive,
+                modifyProject(augmenter),
+                convertProjectActiveToData
+            );
+
+            expect(newProj.score.staves[0].voices[0].contentDef).to.deep.eq(['c8', 'd8', 'e8', 'f8']);
+        });
+
+        
+        it('should should change time on referenced variables too', () => {
+
+            const augmenter = augment({ numerator: 1, denominator: 2 });
+
+            const newProj = pipe(
+                projectActive,
+                modifyProject(augmenter),
+                convertProjectActiveToData
+            );
+
+            expect(newProj.vars).to.deep.eq({
+                v0: ['e,4', 'f,4'],
+                v1: ['e,8', 'f,8']
+            });
+            
         });
     });
-
-    
-    it('should filter selected elements in project', () => {
-        const selection = new SelectionVoiceTime(new JMusic(projectData), 0, 1, Time.StartTime, Time.EternityTime);
-
-        const elems = pipe(
-            projectActive,
-            getProjectElements,
-            getSelected(selection)
-        );
-        expect(elems).to.have.length(4);
-        expect(elems[2]).to.deep.include({
-            position: {
-                staffNo: 0,
-                voiceNo: 1,
-                elementNo: 2
-            },
-            element: createNoteFromLilypond('e,4')
-        });
-    });
-
 });
+
+
