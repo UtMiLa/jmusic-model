@@ -1,4 +1,5 @@
-import { array } from 'fp-ts';
+import { Selection, SelectionManager } from './../../selection/selection-types';
+import { array, option } from 'fp-ts';
 import { MusicEvent } from '../score/sequence';
 import { ActiveProject, ActiveStaff, ActiveVoice, ElementDescriptor } from './types';
 import { activeGetElements, activeGetPositionedElements } from './conversions';
@@ -20,3 +21,7 @@ export function getProjectElements(project: ActiveProject): ElementDescriptor[] 
     })(project.score.staves);
     return events;
 }
+
+export const getSelected = (selection: Selection) => (elements: ElementDescriptor[]): ElementDescriptor[] => {
+    return elements.filter(element => selection.isSelected(element.position));
+};

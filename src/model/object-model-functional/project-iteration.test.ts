@@ -1,11 +1,16 @@
+import { SelectionManager } from './../../selection/selection-types';
 import { expect } from 'chai';
 import { ProjectDef } from '../data-only/project';
 import { NoteDirection } from '../data-only/notes';
 import { Clef } from '../states/clef';
 import { ActiveProject } from './types';
 import { convertProjectDataToActive } from './def-to-active';
-import { getProjectElements } from './project-iteration';
+import { getProjectElements, getSelected } from './project-iteration';
 import { createNoteFromLilypond } from '../notes/note';
+import { pipe } from 'fp-ts/lib/function';
+import { SelectionVoiceTime } from '~/selection/query';
+import { Time } from '../rationals/time';
+import { JMusic } from '../facade/jmusic';
 
 describe('Iterating project', () => {
     let projectData: ProjectDef;
@@ -50,6 +55,26 @@ describe('Iterating project', () => {
                 elementNo: 2
             },
             element: createNoteFromLilypond('e4')
+        });
+    });
+
+    
+    it('should filter selected elements in project', () => {
+        const selection = new SelectionVoiceTime(new JMusic(projectData), 0, 1, Time.StartTime, Time.EternityTime);
+
+        const elems = pipe(
+            projectActive,
+            getProjectElements,
+            getSelected(selection)
+        );
+        expect(elems).to.have.length(4);
+        expect(elems[2]).to.deep.include({
+            position: {
+                staffNo: 0,
+                voiceNo: 1,
+                elementNo: 2
+            },
+            element: createNoteFromLilypond('e,4')
         });
     });
 
