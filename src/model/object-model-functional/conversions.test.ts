@@ -1,26 +1,16 @@
 import { Time } from './../rationals/time';
 import { expect } from 'chai';
-import { VoiceContentDef, VoiceDef } from '../data-only/voices';
+import { VoiceContentDef } from '../data-only/voices';
 import { activeGetElements, convertActiveSequenceToData, convertSequenceDataToActive, normalizeVars } from './conversions';
 import { createNoteFromLilypond } from '../notes/note';
-import { ActiveFunctionCall, ActiveProject, ActiveSequence, ActiveVarRef, ActiveVarRepo } from './types';
+import { ActiveFunctionCall, ActiveSequence, ActiveVarRef } from './types';
 import { SeqFunction } from '../data-only/functions';
 import { JMusic } from '../facade/jmusic';
-import { FlexibleSequence, flexibleItemToDef } from '../score/flexible-sequence';
-import { VariableRepository, VariableRepositoryProxy } from '../score/variables';
 import R = require('ramda');
-import { ProjectDef, isProjectDef } from '../data-only/project';
-import { VarDict } from '../data-only/variables';
-import { FlexibleItem } from '../score/types';
 import { lensItemOf, projectLensByIndex } from '../optics/lens';
-import { ScoreFlex, makeScore } from '../facade/score-flex';
 import { Clef } from '../states/clef';
 import { parseLilyClef, parseLilyKey, parseLilyMeter } from '../score/sequence';
 import { StateChange } from '../states/state';
-import { ClefType } from '../data-only/states';
-import { NoteDirection } from '../data-only/notes';
-import { ScoreDef, StaffDef } from '../data-only/score';
-import { Key } from '../states/key';
 
 describe('Conversions', () => {
     describe('Conversions from def to active', () => {
