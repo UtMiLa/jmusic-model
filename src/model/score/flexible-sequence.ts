@@ -232,7 +232,7 @@ export class FlexibleSequence extends BaseSequence {
                 const varSeq = valueOf(this.repo, item.name);
                 return item.items.map((e, i) => [{ variable: item.name }, ...varSeq.indexToPath(i)]);
             } else if (isMusicEvent(item)) {
-                return [[0]];
+                return [[]];
             } else if (isSplitSequence(item)) {
                 throw 'Not supported b';
             } else {
@@ -274,7 +274,7 @@ export class FlexibleSequence extends BaseSequence {
         if (typeof i !== 'number') i = this.indexOfTime(i);
         const path = this.indexToPath(i);
 
-        if (path.length === 2) {
+        if (path.length === 1) {
             this.updateElement(path[0] as number, () => []);
             return;
         }
@@ -286,7 +286,7 @@ export class FlexibleSequence extends BaseSequence {
         if (typeof i !== 'number') i = this.indexOfTime(i);
         const path = this.indexToPath(i);
         
-        if (path.length === 2) {
+        if (path.length === 1) {
             const activeFn = (from: ActiveSequenceItem): ActiveSequenceItem[] => {
                 const input: FlexibleItem = convertActiveSequenceToData([from]);
                 const res = convertSequenceDataToActive(flexibleItemToDef(fn(input)), this.repo.vars);
@@ -308,7 +308,7 @@ export class FlexibleSequence extends BaseSequence {
         if (typeof i !== 'number') i = this.indexOfTime(i);
         const path = this.indexToPath(i);
         //[1,0] tager def og indsætter element før index 1
-        if (path.length === 2) {
+        if (path.length === 1) {
             const elem = convertSequenceDataToActive(elements.map(flexibleItemToDef), this.repo.vars);
             
             this.updateElement(path[0] as number, x => [...elem, x]);

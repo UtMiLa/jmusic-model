@@ -79,17 +79,17 @@ describe('Flexible Sequence', () => {
     it('should map an element index to a path', () => {
         const seq1 = new FlexibleSequence(seq1Text);
 
-        expect(seq1.indexToPath(0)).to.deep.eq([0, 0]);
-        expect(seq1.indexToPath(2)).to.deep.eq([2, 0]);
+        expect(seq1.indexToPath(0)).to.deep.eq([0]);
+        expect(seq1.indexToPath(2)).to.deep.eq([2]);
         expect(() => seq1.indexToPath(3)).to.throw();
 
         const seq2 = new FlexibleSequence([seq1Text, [seq3Text, seq2Text]]);
 
-        expect(seq2.indexToPath(0)).to.deep.eq([0, 0]);
-        expect(seq2.indexToPath(3)).to.deep.eq([3, 0]);
-        expect(seq2.indexToPath(5)).to.deep.eq([5, 0]);
-        expect(seq2.indexToPath(6)).to.deep.eq([6, 0]);
-        expect(seq2.indexToPath(9)).to.deep.eq([9, 0]);
+        expect(seq2.indexToPath(0)).to.deep.eq([0]);
+        expect(seq2.indexToPath(3)).to.deep.eq([3]);
+        expect(seq2.indexToPath(5)).to.deep.eq([5]);
+        expect(seq2.indexToPath(6)).to.deep.eq([6]);
+        expect(seq2.indexToPath(9)).to.deep.eq([9]);
         expect(() => seq2.indexToPath(10)).to.throw();
     });
 

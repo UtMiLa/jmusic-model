@@ -1,29 +1,20 @@
 import { Time, TimeSpan } from './../rationals/time';
 import R = require('ramda');
-import { ProjectDef } from '../data-only/project';
 import { VarDict, VariableRef } from '../data-only/variables';
-import { MultiSequenceDef, SequenceDef, VoiceContentDef, VoiceDef, isSplitSequence } from '../data-only/voices';
-import { FlexibleSequence, FunctionPathElement, PathElement, flexibleItemToDef, isVariablePathElement, recursivelySplitStringsIn } from '../score/flexible-sequence';
+import { MultiSequenceDef, VoiceContentDef, isSplitSequence } from '../data-only/voices';
+import { FunctionPathElement, PathElement, isVariablePathElement, recursivelySplitStringsIn } from '../score/flexible-sequence';
 import { FlexibleItem } from '../score/types';
 import { VariableRepository, createRepo, isVariableRef, valueOf } from '../score/variables';
-import { MusicEvent, getDuration, isLongDecoration, isMusicEvent, isNote, isStateChange, parseLilyElement, splitByNotes } from '../score/sequence';
-import { ActiveFunctionCall, ActiveProject, ActiveScore, ActiveSequence, ActiveSequenceItem, ActiveStaff, ActiveVarRef, 
+import { MusicEvent, getDuration, isLongDecoration, isMusicEvent, isNote, isStateChange, parseLilyElement } from '../score/sequence';
+import { ActiveProject, ActiveSequence, ActiveSequenceItem, 
     ActiveVarRepo, 
-    ActiveVarsAnd, 
-    ActiveVoice, 
     ElementDescriptor, 
     isActiveFunctionCall, isActiveVarRef } from './types';
 import { isSeqFunction, SeqFunction } from '../data-only/functions';
 import { createFunction, createInverseFunction } from '../score/functions';
 import { noteAsLilypond } from '../notes/note';
 import { map } from 'fp-ts/Record';
-import { ClefType } from '../data-only/states';
-import { ignoreIfUndefined } from '../../tools/ignore-if-undefined';
 import { isSpacer, spacerAsLilypond } from '../notes/spacer';
-import { ScoreDef, StaffDef } from '../data-only/score';
-import { Clef } from '../states/clef';
-import { Key } from '../states/key';
-import { MeterFactory } from '../states/meter';
 import { array } from 'fp-ts';
 
 
@@ -179,10 +170,7 @@ export function normalizeVars(vars: VarDict): VarDict {
 
 function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: number): PathElement<MusicEvent>[] {
     const itemsToPaths = (item: ActiveSequenceItem): PathElement<MusicEvent>[][] => {
-        /*if (typeof item === 'string') {
-            const no = splitByNotes(item).length;
-            return R.range(0, no).map(n => [n]);
-        } else*/ if (isActiveFunctionCall(item)) {                
+        if (isActiveFunctionCall(item)) {                
             return createFunction(item.func, item.extraArgs)(activeGetElements(item.items))
                 .map((a, i) => [
                     { 
@@ -196,7 +184,7 @@ function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: numb
             const varSeq = repo[item.name];
             return item.items.map((e, i) => [{ variable: item.name }, ...indexToPath0(varSeq, repo, i)]);
         } else if (isMusicEvent(item)) {
-            return [[0]];
+            return [[]];
         } else if (isSplitSequence(item)) {
             throw 'Not supported b';
         } else {
@@ -209,7 +197,7 @@ function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: numb
 
     const allPaths = array.chainWithIndex<ActiveSequenceItem, PathElement<MusicEvent>[]>(
         (idx: number, s: ActiveSequenceItem) => itemsToPaths(s).map<PathElement<MusicEvent>[]>(
-            x => x.length > 1 && (typeof x[0] === 'string' || isVariableRef(x[0] as any)) ? x : [idx, ...x]
+            x => x.length > 1 && (isVariableRef(x[0] as any)) ? x : [idx, ...x]
         ))(sequence);
 
     if (index >= allPaths.length) throw 'Illegal index';

@@ -1,7 +1,7 @@
 import { Selection } from './../../selection/selection-types';
 import { array, record } from 'fp-ts';
 import { MusicEvent } from '../score/sequence';
-import { ActiveProject, ActiveSequence, ActiveSequenceItem, ActiveStaff, ActiveVoice, ElementDescriptor } from './types';
+import { ActiveProject, ActiveSequence, ActiveSequenceItem, ActiveStaff, ActiveVoice, ElementDescriptor, isActiveFunctionCall } from './types';
 import { activeGetPositionedElements, indexToPath } from './conversions';
 import { pipe } from 'fp-ts/lib/function';
 import R = require('ramda');
@@ -43,7 +43,13 @@ export const modifyProject = (modifier: (x: MusicEvent) => MusicEvent[]) => (pro
     });
 
     const modifySeq = (path: PathElement<MusicEvent>[]) => array.chainWithIndex((elementNo, e: ActiveSequenceItem) => {
-        const findChanges = changes.find(change => R.equals<PathElement<MusicEvent>[]>(change.ref.path, [...path, elementNo, 0]));
+        /*if (isActiveFunctionCall(e)) {
+            const findChanges = changes.find(change => R.equals<PathElement<MusicEvent>[]>(change.ref.path, [...path, elementNo]));
+            if (findChanges) {
+                return findChanges.changeTo;    
+            }
+        }*/
+        const findChanges = changes.find(change => R.equals<PathElement<MusicEvent>[]>(change.ref.path, [...path, elementNo]));
         if (findChanges) {
             return findChanges.changeTo;    
         }

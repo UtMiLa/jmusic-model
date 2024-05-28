@@ -30,10 +30,10 @@ describe('Variables', () => {
 
         const seq1 = new FlexibleSequence(seq1Text, vars);
 
-        expect(seq1.indexToPath(0)).to.deep.eq([0, 0]);
-        expect(seq1.indexToPath(1)).to.deep.eq([1, { variable: 'var1'}, 0, 0]);
-        expect(seq1.indexToPath(2)).to.deep.eq([1, { variable: 'var1'}, 1, 0]);
-        expect(seq1.indexToPath(3)).to.deep.eq([2, 0]);
+        expect(seq1.indexToPath(0)).to.deep.eq([0]);
+        expect(seq1.indexToPath(1)).to.deep.eq([1, { variable: 'var1'}, 0]);
+        expect(seq1.indexToPath(2)).to.deep.eq([1, { variable: 'var1'}, 1]);
+        expect(seq1.indexToPath(3)).to.deep.eq([2]);
         expect(() => seq1.indexToPath(4)).to.throw();
     });
 

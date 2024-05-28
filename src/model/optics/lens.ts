@@ -240,7 +240,6 @@ function sequenceElementSetter(domainConverter: DomainConverter<any, any>, index
         const seq = new MultiFlexibleSequence(pd.score.staves[index.staff].voices[index.voice].contentDef, createRepo(pd.vars));
         const path = seq.indexToPath(index.element);
         //console.log(path);
-        path.pop(); // todo: remove annoying last 0 from path
 
         const value: FlexibleItem = a ? simplifyDef(a) : [];
 

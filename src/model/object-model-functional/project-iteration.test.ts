@@ -1,3 +1,4 @@
+import { Interval } from './../../../dist/model/pitches/intervals.d';
 import { expect } from 'chai';
 import { ProjectDef } from '../data-only/project';
 import { NoteDirection } from '../data-only/notes';
@@ -14,6 +15,7 @@ import { convertProjectActiveToData } from './active-to-def';
 import { augment } from '../score/music-event-functions';
 import { isNote } from '../score/sequence';
 import { elem } from 'fp-ts/lib/Option';
+import { VariableDef } from '../data-only/variables';
 
 describe('Iterating project', () => {
     let projectData: ProjectDef;
@@ -30,6 +32,10 @@ describe('Iterating project', () => {
                         },
                         {
                             contentDef: ['c,4', 'd,4', { variable: 'v1'}],
+                            noteDirection: NoteDirection.Down
+                        },
+                        {
+                            contentDef: ['c,4', 'd,4', { function: 'Transpose', args: ['c,,4', 'd,,4'], extraArgs: [{alteration: 0, interval: 1} as  Interval] }],
                             noteDirection: NoteDirection.Down
                         }
                     ],
@@ -48,7 +54,7 @@ describe('Iterating project', () => {
     describe('Getting elements', () => {
         it('should iterate over elements in project', () => {
             const elems = getProjectElements(projectActive);
-            expect(elems).to.have.length(8);
+            expect(elems).to.have.length(12);
         });
 
         it('should iterate over elements in project', () => {
@@ -59,7 +65,7 @@ describe('Iterating project', () => {
                     voiceNo: 0,
                     elementNo: 2
                 },
-                path: ['score', 'staves', 0, 'voices', 0, 'content', 2, 0],
+                path: ['score', 'staves', 0, 'voices', 0, 'content', 2],
                 element: createNoteFromLilypond('e4')
             });
         });
@@ -80,7 +86,7 @@ describe('Iterating project', () => {
                     voiceNo: 1,
                     elementNo: 2
                 },
-                path: [{ variable: 'v1'}, 0, 0],
+                path: [{ variable: 'v1'}, 0],
                 element: createNoteFromLilypond('e,4')
             });
         });
@@ -127,6 +133,21 @@ describe('Iterating project', () => {
                 v1: ['e,8', 'f,8']
             });
             
+        });
+
+
+        
+        it('should should change time on function arguments too', () => {
+
+            const augmenter = augment({ numerator: 1, denominator: 2 });
+
+            const newProj = pipe(
+                projectActive,
+                modifyProject(augmenter),
+                convertProjectActiveToData
+            );
+
+            expect(newProj.score.staves[0].voices[2].contentDef).to.deep.eq(['c,8', 'd,8', { function: 'Transpose', args: ['c,,8', 'd,,8'], extraArgs: [{alteration: 0, interval: 1} as  Interval] }]);
         });
 
 
