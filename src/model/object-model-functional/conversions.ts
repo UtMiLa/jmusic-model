@@ -179,10 +179,10 @@ export function normalizeVars(vars: VarDict): VarDict {
 
 function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: number): PathElement<MusicEvent>[] {
     const itemsToPaths = (item: ActiveSequenceItem): PathElement<MusicEvent>[][] => {
-        if (typeof item === 'string') {
+        /*if (typeof item === 'string') {
             const no = splitByNotes(item).length;
             return R.range(0, no).map(n => [n]);
-        } else if (isActiveFunctionCall(item)) {                
+        } else*/ if (isActiveFunctionCall(item)) {                
             return createFunction(item.func, item.extraArgs)(activeGetElements(item.items))
                 .map((a, i) => [
                     { 
@@ -209,7 +209,7 @@ function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: numb
 
     const allPaths = array.chainWithIndex<ActiveSequenceItem, PathElement<MusicEvent>[]>(
         (idx: number, s: ActiveSequenceItem) => itemsToPaths(s).map<PathElement<MusicEvent>[]>(
-            x => x.length > 1 && typeof x[0] === 'string' ? x : [idx, ...x]
+            x => x.length > 1 && (typeof x[0] === 'string' || isVariableRef(x[0] as any)) ? x : [idx, ...x]
         ))(sequence);
 
     if (index >= allPaths.length) throw 'Illegal index';
@@ -227,7 +227,7 @@ export function indexToPath(project: ActiveProject, elmDesc: ElementDescriptor):
 
     const varPath = path.find(n => isVariablePathElement(n));
 
-    if (varPath) return array.dropLeft(1)(path); // todo: find out why we need to drop 1
+    if (varPath) return path;
 
     return ['score', 'staves', elmDesc.position.staffNo, 'voices', elmDesc.position.voiceNo, 'content', 
         ...path

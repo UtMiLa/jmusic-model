@@ -12,6 +12,8 @@ import { Time } from '../rationals/time';
 import { JMusic } from '../facade/jmusic';
 import { convertProjectActiveToData } from './active-to-def';
 import { augment } from '../score/music-event-functions';
+import { isNote } from '../score/sequence';
+import { elem } from 'fp-ts/lib/Option';
 
 describe('Iterating project', () => {
     let projectData: ProjectDef;
@@ -123,6 +125,24 @@ describe('Iterating project', () => {
             expect(newProj.vars).to.deep.eq({
                 v0: ['e,4', 'f,4'],
                 v1: ['e,8', 'f,8']
+            });
+            
+        });
+
+
+        
+        it('should double notes on voices and referenced variables', () => {
+
+            const newProj = pipe(
+                projectActive,
+                modifyProject(element => isNote(element) ? [element, element] : [element]),
+                convertProjectActiveToData
+            );
+
+            expect(newProj.score.staves[0].voices[0].contentDef).to.deep.eq(['c4', 'c4', 'd4', 'd4', 'e4', 'e4', 'f4', 'f4']);
+            expect(newProj.vars).to.deep.eq({
+                v0: ['e,4', 'f,4'],
+                v1: ['e,4', 'e,4', 'f,4', 'f,4']
             });
             
         });

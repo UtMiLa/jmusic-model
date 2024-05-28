@@ -1,9 +1,8 @@
-import { Score } from './../score/score';
-import { ElementIdentifier, Selection, SelectionManager } from './../../selection/selection-types';
-import { array, option, record, string } from 'fp-ts';
-import { MusicEvent, isMusicEvent } from '../score/sequence';
+import { Selection } from './../../selection/selection-types';
+import { array, record } from 'fp-ts';
+import { MusicEvent } from '../score/sequence';
 import { ActiveProject, ActiveSequence, ActiveSequenceItem, ActiveStaff, ActiveVoice, ElementDescriptor } from './types';
-import { activeGetElements, activeGetPositionedElements, indexToPath } from './conversions';
+import { activeGetPositionedElements, indexToPath } from './conversions';
 import { pipe } from 'fp-ts/lib/function';
 import R = require('ramda');
 import { PathElement } from '../score/flexible-sequence';
@@ -61,21 +60,13 @@ export const modifyProject = (modifier: (x: MusicEvent) => MusicEvent[]) => (pro
                         (voice, voiceNo) => ({
                             ...voice,
                             content: modifySeq(['score', 'staves', staffNo, 'voices', voiceNo, 'content'])(voice.content)
-                            /*array.chainWithIndex((elementNo, e: ActiveSequenceItem) => {
-                                const findChanges = changes.find(change => R.equals<PathElement<MusicEvent>[]>(change.ref.path, ['score', 'staves', staffNo, 'voices', voiceNo, 'content', elementNo, 0]));
-                                if (findChanges) {
-                                    return findChanges.changeTo;    
-                                }
-                                modifySeq(['score', 'staves', staffNo, 'voices', voiceNo, 'content', elementNo, 0])(voice.content);
-                            })(voice.content)*/
                         })
                     )
                 })
             )
         },
-        vars: record.mapWithIndex<string, ActiveSequence, ActiveSequence>((varName: string, seq) => {
-            return modifySeq([{ variable: varName } ])(seq);
-        })(project.vars)
+        vars: record.mapWithIndex<string, ActiveSequence, ActiveSequence>((varName: string, seq) => 
+            modifySeq([{ variable: varName }])(seq))(project.vars)
     };
     
     return newProject;
