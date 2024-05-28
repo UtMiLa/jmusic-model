@@ -171,9 +171,9 @@ export class FlexibleSequence extends BaseSequence {
         R.over(lens, changer);
     }
 
-
+    /*
     indexToPath(index: number): PathElement<MusicEvent>[] {
-
+        return this.indexToPathC(index);
         const itemsToPaths = (item: FlexibleItem): PathElement<MusicEvent>[][] => {
             if (typeof item === 'string') {
                 const no = splitByNotes(item).length;
@@ -211,30 +211,26 @@ export class FlexibleSequence extends BaseSequence {
         return allPaths[index];
     }
 
-
-    indexToPathC(index: number): PathElement<MusicEvent>[] {
+*/
+    indexToPath(index: number): PathElement<MusicEvent>[] {
 
         const itemsToPaths = (item: ActiveSequenceItem): PathElement<MusicEvent>[][] => {
             if (typeof item === 'string') {
                 const no = splitByNotes(item).length;
                 return R.range(0, no).map(n => [n]);
-            } else if (isActiveFunctionCall(item as ActiveSequenceItem)) {
-                throw 'Not supported a';
-                /*return createFunction(item.function, item.extraArgs)(calcElements([item.args], this.repo))
+            } else if (isActiveFunctionCall(item)) {                
+                return createFunction(item.func, item.extraArgs)(activeGetElements(item.items))
                     .map((a, i) => [
                         { 
-                            function: createFunction(item.function, item.extraArgs), 
-                            inverse: createInverseFunction(item.function, item.extraArgs)
+                            function: createFunction(item.func, item.extraArgs), 
+                            inverse: createInverseFunction(item.func, item.extraArgs)
                         } as FunctionPathElement<MusicEvent[]>, 
                         i, 
                         0
-                    ]);*/
+                    ]);
             } else if (isActiveVarRef(item)) {
-                //throw 'Not supported ba';
                 const varSeq = valueOf(this.repo, item.name);
-                return item.items.map((e, i) => [1, { variable: item.name }, ...varSeq.indexToPath(i)]); //{ variable: item.variable };
-                /*const varSeq = valueOf(this.repo, item.name);
-                return varSeq.elements.map((e, i) => [{ variable: item.variable }, ...varSeq.indexToPath(i)]); //{ variable: item.variable }*/
+                return item.items.map((e, i) => [{ variable: item.name }, ...varSeq.indexToPath(i)]);
             } else if (isMusicEvent(item)) {
                 return [[0]];
             } else if (isSplitSequence(item)) {

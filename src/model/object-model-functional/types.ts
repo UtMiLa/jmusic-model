@@ -6,6 +6,7 @@ import { MusicEvent, isMusicEvent } from '../score/sequence';
 import { Clef } from '../states/clef';
 import { Key } from '../states/key';
 import { Meter } from '../states/meter';
+import { PathElement } from '../score/flexible-sequence';
 
 export interface ActiveVarRef {
     type: 'VarRef';
@@ -58,6 +59,7 @@ export interface ActiveVarsAnd<T> {
 
 export interface ElementDescriptor {
     position: ElementIdentifier;
+    path: PathElement<MusicEvent>[];
     element: MusicEvent;
 }
 

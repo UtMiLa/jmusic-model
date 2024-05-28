@@ -1,4 +1,3 @@
-import { SelectionManager } from './../../selection/selection-types';
 import { expect } from 'chai';
 import { ProjectDef } from '../data-only/project';
 import { NoteDirection } from '../data-only/notes';
@@ -12,7 +11,6 @@ import { SelectionVoiceTime } from '~/selection/query';
 import { Time } from '../rationals/time';
 import { JMusic } from '../facade/jmusic';
 import { convertProjectActiveToData } from './active-to-def';
-import { createFunction } from '../score/functions';
 import { augment } from '../score/music-event-functions';
 
 describe('Iterating project', () => {
@@ -59,6 +57,7 @@ describe('Iterating project', () => {
                     voiceNo: 0,
                     elementNo: 2
                 },
+                path: ['score', 'staves', 0, 'voices', 0, 'content', 2, 0],
                 element: createNoteFromLilypond('e4')
             });
         });
@@ -79,6 +78,7 @@ describe('Iterating project', () => {
                     voiceNo: 1,
                     elementNo: 2
                 },
+                path: [{ variable: 'v1'}, 0, 0],
                 element: createNoteFromLilypond('e,4')
             });
         });

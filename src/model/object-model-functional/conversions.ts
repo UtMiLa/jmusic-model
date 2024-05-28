@@ -2,11 +2,11 @@ import { Time, TimeSpan } from './../rationals/time';
 import R = require('ramda');
 import { ProjectDef } from '../data-only/project';
 import { VarDict, VariableRef } from '../data-only/variables';
-import { MultiSequenceDef, SequenceDef, VoiceContentDef, VoiceDef } from '../data-only/voices';
-import { flexibleItemToDef, recursivelySplitStringsIn } from '../score/flexible-sequence';
+import { MultiSequenceDef, SequenceDef, VoiceContentDef, VoiceDef, isSplitSequence } from '../data-only/voices';
+import { FlexibleSequence, FunctionPathElement, PathElement, flexibleItemToDef, isVariablePathElement, recursivelySplitStringsIn } from '../score/flexible-sequence';
 import { FlexibleItem } from '../score/types';
 import { VariableRepository, createRepo, isVariableRef, valueOf } from '../score/variables';
-import { MusicEvent, getDuration, isLongDecoration, isMusicEvent, isNote, isStateChange, parseLilyElement } from '../score/sequence';
+import { MusicEvent, getDuration, isLongDecoration, isMusicEvent, isNote, isStateChange, parseLilyElement, splitByNotes } from '../score/sequence';
 import { ActiveFunctionCall, ActiveProject, ActiveScore, ActiveSequence, ActiveSequenceItem, ActiveStaff, ActiveVarRef, 
     ActiveVarRepo, 
     ActiveVarsAnd, 
@@ -14,7 +14,7 @@ import { ActiveFunctionCall, ActiveProject, ActiveScore, ActiveSequence, ActiveS
     ElementDescriptor, 
     isActiveFunctionCall, isActiveVarRef } from './types';
 import { isSeqFunction, SeqFunction } from '../data-only/functions';
-import { createFunction } from '../score/functions';
+import { createFunction, createInverseFunction } from '../score/functions';
 import { noteAsLilypond } from '../notes/note';
 import { map } from 'fp-ts/Record';
 import { ClefType } from '../data-only/states';
@@ -147,6 +147,7 @@ export function convertActiveSequenceToData(active: ActiveSequence): VoiceConten
 }
 
 export function activeGetPositionedElements(active: ActiveSequence): ElementDescriptor[] {
+
     return array.chainWithIndex((i, elem: ActiveSequenceItem) => {
         if (isActiveVarRef(elem)) {
             return activeGetElements(elem.items);
@@ -158,28 +159,77 @@ export function activeGetPositionedElements(active: ActiveSequence): ElementDesc
             return [elem];
         }
         throw 'Unknown object';
-    })(active).map( (elm, i) => ({ position: {
-        staffNo: -1, voiceNo: -1, elementNo: i
-    }, element: elm }));
+    })(active).map( (elm, i) => ({ 
+        position: {
+            staffNo: -1, voiceNo: -1, elementNo: i
+        }, 
+        path: [],
+        element: elm 
+    }));
 }
 
 
 export function activeGetElements(active: ActiveSequence): MusicEvent[] {
     return activeGetPositionedElements(active).map(res => res.element);
-    /*return R.chain(elem => {
-        if (isActiveVarRef(elem)) {
-            return activeGetElements(elem.items);
-        } else if (isActiveFunctionCall(elem)) {
-            return createFunction(elem.func, elem.extraArgs)(activeGetElements(elem.items));
-        } else if (R.is(Array, elem)) {
-            return activeGetElements(elem);
-        } else {
-            return [elem];
-        }
-        throw 'Unknown object';
-    }, active);*/
 }
 
 export function normalizeVars(vars: VarDict): VarDict {
     return map<FlexibleItem, FlexibleItem>(v => convertActiveSequenceToData(convertSequenceDataToActive(v as MultiSequenceDef, vars)))(vars);
+}
+
+function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: number): PathElement<MusicEvent>[] {
+    const itemsToPaths = (item: ActiveSequenceItem): PathElement<MusicEvent>[][] => {
+        if (typeof item === 'string') {
+            const no = splitByNotes(item).length;
+            return R.range(0, no).map(n => [n]);
+        } else if (isActiveFunctionCall(item)) {                
+            return createFunction(item.func, item.extraArgs)(activeGetElements(item.items))
+                .map((a, i) => [
+                    { 
+                        function: createFunction(item.func, item.extraArgs), 
+                        inverse: createInverseFunction(item.func, item.extraArgs)
+                    } as FunctionPathElement<MusicEvent[]>, 
+                    i, 
+                    0
+                ]);
+        } else if (isActiveVarRef(item)) {
+            const varSeq = repo[item.name];
+            return item.items.map((e, i) => [{ variable: item.name }, ...indexToPath0(varSeq, repo, i)]);
+        } else if (isMusicEvent(item)) {
+            return [[0]];
+        } else if (isSplitSequence(item)) {
+            throw 'Not supported b';
+        } else {
+            throw 'Not supported d';
+        }
+        throw 'Not supported c';
+    };
+    
+    
+
+    const allPaths = array.chainWithIndex<ActiveSequenceItem, PathElement<MusicEvent>[]>(
+        (idx: number, s: ActiveSequenceItem) => itemsToPaths(s).map<PathElement<MusicEvent>[]>(
+            x => x.length > 1 && typeof x[0] === 'string' ? x : [idx, ...x]
+        ))(sequence);
+
+    if (index >= allPaths.length) throw 'Illegal index';
+
+    return allPaths[index];
+}
+
+
+export function indexToPath(project: ActiveProject, elmDesc: ElementDescriptor): PathElement<MusicEvent>[] {
+    const path = indexToPath0(
+        project.score.staves[elmDesc.position.staffNo].voices[elmDesc.position.voiceNo].content, 
+        project.vars, 
+        elmDesc.position.elementNo
+    );
+
+    const varPath = path.find(n => isVariablePathElement(n));
+
+    if (varPath) return array.dropLeft(1)(path); // todo: find out why we need to drop 1
+
+    return ['score', 'staves', elmDesc.position.staffNo, 'voices', elmDesc.position.voiceNo, 'content', 
+        ...path
+    ];
 }
