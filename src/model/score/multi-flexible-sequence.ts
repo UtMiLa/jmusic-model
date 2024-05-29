@@ -43,7 +43,7 @@ export class MultiFlexibleSequence implements ISequenceCollection {
                             type: 'spacer'
                         } as Spacer, repo);
                     });
-                    return new FlexibleSequence(elements.map(elm => elm.asObject), repo);
+                    return new FlexibleSequence(elements.map(elm => elm.asObject), repo); // todo: everything here stinks!
                 });
             }
             return [new FlexibleSequence(item as FlexibleItem, repo)];

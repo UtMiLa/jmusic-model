@@ -297,7 +297,9 @@ describe('Lenses', () => {
                 });
 
 
-            const res = R.set(lens, lensItemOf(createNoteFromLilypond('fis4')), projectDef as any);
+            const note = createNoteFromLilypond('fis4');
+            const lensItem = lensItemOf(note);
+            const res = R.set(lens, lensItem, projectDef as any);
 
             expect((res.score.staves[0].voices[2].contentDef as SequenceDef)[1]).to.deep.eq({
                 function: 'Identity',

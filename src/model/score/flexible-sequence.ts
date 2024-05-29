@@ -219,11 +219,11 @@ export class FlexibleSequence extends BaseSequence {
                 const no = splitByNotes(item).length;
                 return R.range(0, no).map(n => [n]);
             } else if (isActiveFunctionCall(item)) {                
-                return createFunction(item.func, item.extraArgs)(activeGetElements(item.items))
+                return createFunction(item.name, item.extraArgs)(activeGetElements(item.items))
                     .map((a, i) => [
                         { 
-                            function: createFunction(item.func, item.extraArgs), 
-                            inverse: createInverseFunction(item.func, item.extraArgs)
+                            function: createFunction(item.name, item.extraArgs), 
+                            inverse: createInverseFunction(item.name, item.extraArgs)
                         } as FunctionPathElement<MusicEvent[]>, 
                         i, 
                         0

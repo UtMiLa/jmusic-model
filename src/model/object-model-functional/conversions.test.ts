@@ -9,7 +9,7 @@ import { JMusic } from '../facade/jmusic';
 import R = require('ramda');
 import { lensItemOf, projectLensByIndex } from '../optics/lens';
 import { Clef } from '../states/clef';
-import { parseLilyClef, parseLilyKey, parseLilyMeter } from '../score/sequence';
+import { MusicEvent, parseLilyClef, parseLilyKey, parseLilyMeter } from '../score/sequence';
 import { StateChange } from '../states/state';
 
 describe('Conversions', () => {
@@ -44,7 +44,7 @@ describe('Conversions', () => {
 
             expect(active.length).to.eq(5);
             const funcref = active[4] as ActiveFunctionCall;
-            expect(funcref.func).to.deep.eq('Reverse');
+            expect(funcref.name).to.deep.eq('Reverse');
             expect(funcref.items).to.have.length(2);
             expect(funcref.items[0]).to.deep.eq(createNoteFromLilypond('a4'));
             expect(funcref.duration).to.deep.eq(Time.newSpan(5, 8));
@@ -95,7 +95,8 @@ describe('Conversions', () => {
                 {
                     type: 'Func',
                     name: 'Reverse',
-                    func: 'Reverse',
+                    /*func: R.reverse<MusicEvent>,
+                    inverse: R.reverse<MusicEvent>,*/
                     items: [
                         createNoteFromLilypond('g4'), 
                         createNoteFromLilypond('a4.')

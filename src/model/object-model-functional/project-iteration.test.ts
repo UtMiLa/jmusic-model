@@ -35,7 +35,7 @@ describe('Iterating project', () => {
                             noteDirection: NoteDirection.Down
                         },
                         {
-                            contentDef: ['c,4', 'd,4', { function: 'Transpose', args: ['c,,4', 'd,,4'], extraArgs: [{alteration: 0, interval: 1} as  Interval] }],
+                            contentDef: ['c,4', 'd,4', { function: 'Transpose', args: ['c,,4', 'd,,4'], extraArgs: [{alteration: 1, interval: 1} as  Interval] }],
                             noteDirection: NoteDirection.Down
                         }
                     ],
@@ -147,7 +147,7 @@ describe('Iterating project', () => {
                 convertProjectActiveToData
             );
 
-            expect(newProj.score.staves[0].voices[2].contentDef).to.deep.eq(['c,8', 'd,8', { function: 'Transpose', args: ['c,,8', 'd,,8'], extraArgs: [{alteration: 0, interval: 1} as  Interval] }]);
+            expect(newProj.score.staves[0].voices[2].contentDef).to.deep.eq(['c,8', 'd,8', { function: 'Transpose', args: ['c,,8', 'd,,8'], extraArgs: [{alteration: 1, interval: 1} as  Interval] }]);
         });
 
 

@@ -54,11 +54,14 @@ function requireElements(
                 isSeqFunction,
                 (item: SeqFunction) => { 
                     const elems = requireElements([item.args], repo);
-                    const funcRes = createFunction(item.function, item.extraArgs)(calcElements([item.args], repo));
+                    const func = createFunction(item.function, item.extraArgs);
+                    const funcRes = func(calcElements([item.args], repo));
                     const duration = funcRes.reduce((prev, curr) => Time.addSpans(prev, getDurationForActive(curr)), Time.NoTime);
                     return [{
                         type: 'Func',
-                        func: item.function,
+                        name: item.function,
+                        /*func: createFunction(item.function, item.extraArgs),
+                        inverse: createInverseFunction(item.function, item.extraArgs),*/
                         items: elems,
                         extraArgs: item.extraArgs,
                         duration
@@ -80,7 +83,14 @@ function requireElements(
             ],
             [
                 isSingleStringArray,
-                (item: string[]) => [parseLilyElement(item[0])] as ActiveSequenceItem[]
+                (item: string[]) => { 
+                    try {
+                        return [parseLilyElement(item[0])] as ActiveSequenceItem[];
+                    } catch (e) {
+                        console.log('How did we end up here?');
+                        
+                    }
+                }
             ],
             [
                 isMusicEvent, (item: MusicEvent) => [item as ActiveSequenceItem]
@@ -114,7 +124,7 @@ export function convertActiveSequenceToData(active: ActiveSequence): VoiceConten
         if (isActiveVarRef(elem)) {
             return { variable: elem.name };
         } else if (isActiveFunctionCall(elem)) {
-            const res = { function: elem.func, args: convertActiveSequenceToData(elem.items) } as SeqFunction;
+            const res = { function: elem.name, args: convertActiveSequenceToData(elem.items) } as SeqFunction;
             if (elem.extraArgs) res.extraArgs = elem.extraArgs;
             return res;
         } else if (R.is(Array, elem)) {
@@ -143,7 +153,7 @@ export function activeGetPositionedElements(active: ActiveSequence): ElementDesc
         if (isActiveVarRef(elem)) {
             return activeGetElements(elem.items);
         } else if (isActiveFunctionCall(elem)) {
-            return createFunction(elem.func, elem.extraArgs)(activeGetElements(elem.items));
+            return createFunction(elem.name, elem.extraArgs)(activeGetElements(elem.items));
         } else if (R.is(Array, elem)) {
             return activeGetElements(elem);
         } else {
@@ -171,14 +181,14 @@ export function normalizeVars(vars: VarDict): VarDict {
 function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: number): PathElement<MusicEvent>[] {
     const itemsToPaths = (item: ActiveSequenceItem): PathElement<MusicEvent>[][] => {
         if (isActiveFunctionCall(item)) {                
-            return createFunction(item.func, item.extraArgs)(activeGetElements(item.items))
+            return createFunction(item.name, item.extraArgs)(activeGetElements(item.items))
                 .map((a, i) => [
-                    { 
+                    /*{ 
                         function: createFunction(item.func, item.extraArgs), 
                         inverse: createInverseFunction(item.func, item.extraArgs)
-                    } as FunctionPathElement<MusicEvent[]>, 
-                    i, 
-                    0
+                    } as FunctionPathElement<MusicEvent[]>, */
+                    'args',
+                    i
                 ]);
         } else if (isActiveVarRef(item)) {
             const varSeq = repo[item.name];

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { addInterval, diffPitch, Enharmonic, enharmonicChange, Interval } from './intervals';
+import { addInterval, diffPitch, Enharmonic, enharmonicChange, Interval, invertInterval } from './intervals';
 import { Pitch, PitchClass } from './pitch';
 describe('Intervals', () => {
     let pc: Pitch, pd: Pitch, pb: Pitch, pe: Pitch;
@@ -52,6 +52,25 @@ describe('Intervals', () => {
         expectAddInterval('d', 'b', { interval: 5, alteration: 1 });
         expectAddInterval('d', 'bes', { interval: 5, alteration: -1 });
     });
+
+
+
+    it('should invert an interval correctly', () => {
+        expectAddInterval('c', 'c', invertInterval({ interval: 0, alteration: 0 }));
+        expectAddInterval('f', 'c', invertInterval({ interval: 3, alteration: 0 }));
+        expectAddInterval('gis', 'c', invertInterval({ interval: 4, alteration: 2 }));
+        expectAddInterval('cis', 'c', invertInterval({ interval: 0, alteration: 2 }));
+        expectAddInterval('cis', 'cis', invertInterval({ interval: 0, alteration: 0 }));
+        expectAddInterval('f', 'cis', invertInterval({ interval: 3, alteration: -2 }));
+        expectAddInterval('gis', 'cis', invertInterval({ interval: 4, alteration: 0 }));
+        expectAddInterval('ges', 'cis', invertInterval({ interval: 4, alteration: -3 }));
+        expectAddInterval('d', 'c', invertInterval({ interval: 1, alteration: 1 }));
+        expectAddInterval('f', 'e', invertInterval({ interval: 1, alteration: -1 }));
+        expectAddInterval('fis', 'ees', invertInterval({ interval: 1, alteration: 2 }));
+        expectAddInterval('b', 'd', invertInterval({ interval: 5, alteration: 1 }));
+        expectAddInterval('bes', 'd', invertInterval({ interval: 5, alteration: -1 }));
+    });
+
 
     it('should handle octaves correctly when finding intervals between pitches', () => {
         expectPitchDiff('c', 'c\'', { interval: 7, alteration: 0 });

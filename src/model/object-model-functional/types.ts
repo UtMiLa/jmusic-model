@@ -17,10 +17,11 @@ export interface ActiveVarRef {
 
 export interface ActiveFunctionCall {
     type: 'Func';
-    name: string;
-    func: FuncDef;
+    name: FuncDef;
+    /*func?: (element: MusicEvent[]) => MusicEvent[];
+    inverse?: (element: MusicEvent[]) => MusicEvent[];*/
     items: ActiveSequence;
-    extraArgs: any[];
+    extraArgs?: any[];
     readonly duration: TimeSpan;
 }
 

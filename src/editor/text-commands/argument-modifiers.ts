@@ -102,7 +102,8 @@ export function select(types0: (ArgType<any> | string)[]): ArgType<any> {
     const types = types0.map(resolveSyntacticSugar);
     return (input: string) => {
         const match = types.find(type => matches((type), input)); // cache result
-        if (!match) return either.left('Syntax error');
+        if (!match) 
+            return either.left('Syntax error');
 
         return match(input);
     };
