@@ -40,7 +40,7 @@ function requireElements(
     repo: VariableRepository
 ): ActiveSequence {
     
-    const elements: ActiveSequence = R.chain(
+    const elements: ActiveSequence = array.chain(
         R.cond([
             [
                 R.is(String),
@@ -87,8 +87,8 @@ function requireElements(
                     try {
                         return [parseLilyElement(item[0])] as ActiveSequenceItem[];
                     } catch (e) {
-                        console.log('How did we end up here?');
-                        
+                        //console.log('How did we end up here?');
+                        return [];
                     }
                 }
             ],
@@ -98,8 +98,7 @@ function requireElements(
             [
                 isOtherFlexibleItemArray, (elm) => requireElements(elm, repo) as ActiveSequenceItem[]
             ]
-        ]),
-        init);
+        ]))(init);
     
     return elements;
 }
@@ -183,10 +182,6 @@ function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: numb
         if (isActiveFunctionCall(item)) {                
             return createFunction(item.name, item.extraArgs)(activeGetElements(item.items))
                 .map((a, i) => [
-                    /*{ 
-                        function: createFunction(item.func, item.extraArgs), 
-                        inverse: createInverseFunction(item.func, item.extraArgs)
-                    } as FunctionPathElement<MusicEvent[]>, */
                     'args',
                     i
                 ]);
