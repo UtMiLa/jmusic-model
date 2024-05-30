@@ -31,7 +31,7 @@ export function convertStaffActiveToData(activeStaff: ActiveStaff): StaffDef {
         voices: activeStaff.voices.map(convertVoiceActiveToData),
         initialClef: activeStaff.initialClef.def,
         initialKey: activeStaff.initialKey.def,
-        ...ignoreIfUndefined('initialMeter', activeStaff.initialMeter)
+        ...ignoreIfUndefined('initialMeter', activeStaff.initialMeter?.def)
     } as any;
 }
 

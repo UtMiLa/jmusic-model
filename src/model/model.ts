@@ -14,14 +14,18 @@ import { VarDict, ProjectDef, FlexibleItem } from '.';
 import { VariableRepository, createRepo, setVar } from './score/variables';
 import { voiceSequenceToDef, VoiceContentDef, voiceContentToSequence } from '.';
 import { activeGetElements, convertSequenceDataToActive } from './object-model-functional/conversions';
+import { ActiveProject } from './object-model-functional/types';
+import { convertProjectDataToActive } from './object-model-functional/def-to-active';
 
 
 export class Model {
     constructor(scoreFlex?: ProjectFlex, vars?: VarDict) {
         this.project = makeProject(scoreFlex, vars);
+        this.activeProject = convertProjectDataToActive(this.project);
     }
 
     project: ProjectDef;
+    activeProject: ActiveProject;
 
     public get staves(): Staff[] {
         return this.project.score.staves.map(sd => staffDefToStaff(sd, this.vars));

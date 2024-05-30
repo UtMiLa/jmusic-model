@@ -1,3 +1,4 @@
+import { ignoreIfUndefined } from '~/tools/ignore-if-undefined';
 import { Selection } from './../../selection/selection-types';
 import { array, record } from 'fp-ts';
 import { MusicEvent } from '../score/sequence';
@@ -34,15 +35,16 @@ export const getSelected = (selection: Selection) => (elements: ElementDescripto
     return elements.filter(element => selection.isSelected(element.position));
 };
 
-export const modifyProject = (modifier: (x: MusicEvent) => MusicEvent[]) => (project: ActiveProject): ActiveProject => {
+export const modifyProject = (modifier: (x: MusicEvent) => MusicEvent[], selection?: Selection) => (project: ActiveProject): ActiveProject => {
 
     const items = getProjectElements(project);
-    const changes = items.map(item => {
-        return {
+    const changes = array.chain((item: ElementDescriptor) => {
+        if (selection && !selection.isSelected(item.position)) return [];
+        return [{
             ref: item,
             changeTo: modifier(item.element)
-        };
-    });
+        }];
+    })(items);
 
     const matchPath = (path1: PathElement<MusicEvent>[], path2: PathElement<MusicEvent>[]): boolean => {
         return R.equals<PathElement<MusicEvent>[]>(path1, path2); // todo: replace function refs

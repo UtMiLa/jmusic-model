@@ -11,8 +11,6 @@ import { createNoteFromLilypond, getRealDuration, Note, setNoteId } from '../not
 import { Time, TimeSpan } from '../rationals/time';
 import { Clef } from '../states/clef';
 import { EventType, getExtendedTime } from './timing-order';
-import R = require('ramda');
-import { FlexibleItem, MultiFlexibleItem } from '..';
 import { Spacer, createSpacerFromLilypond, isSpacer } from '../notes/spacer';
 
 export type MusicEvent = Note | Spacer | StateChange | LongDecorationElement;
