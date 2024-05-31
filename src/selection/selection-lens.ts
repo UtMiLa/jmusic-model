@@ -1,16 +1,10 @@
 import { modifyProject } from './../model/object-model-functional/project-iteration';
-import { LensItem } from './../model/optics/lens';
-import { JMusic } from './../model/facade/jmusic';
-import { FlexibleSequence } from './../model/score/flexible-sequence';
 import { ActiveSequence } from './../model/object-model-functional/types';
 import { pipe } from 'fp-ts/lib/function';
-import { DomainConverter, MultiSequenceDef, MusicEvent, NoteBase, ProjectDef, ScoreDef, VarDict, VoiceContentDef, createRepo, flexibleItemToDef, isMusicEvent, lensFromLensDef, projectLensByIndex, voiceContentToSequence, voiceSequenceToDef } from '../model';
+import { DomainConverter, MusicEvent, ProjectDef, VoiceContentDef } from '../model';
 import { Selection, ElementIdentifier } from './selection-types';
-import { chainWithIndex, map } from 'fp-ts/Array';
-import { convertActiveSequenceToData, convertSequenceDataToActive, convertSequenceItemToActive } from '../model/object-model-functional/conversions';
-import { ActiveSequenceItem } from '../model/object-model-functional/types';
-import { convertProjectDataToActive } from '~/model/object-model-functional/def-to-active';
-import { convertProjectActiveToData } from '~/model/object-model-functional/active-to-def';
+import { convertProjectDataToActive } from '../model/object-model-functional/def-to-active';
+import { convertProjectActiveToData } from '../model/object-model-functional/active-to-def';
 
 export class SelectionLens {
     constructor(private selection: Selection) {}
@@ -38,9 +32,9 @@ export class SelectionLens {
 
         const projectRes = pipe(
             source,
-            convertProjectDataToActive,
-            modifyProject(modifier, this.selection),
-            convertProjectActiveToData
+            convertProjectDataToActive, // Convert domain from def to active
+            modifyProject(modifier, this.selection), // Modify selected elements
+            convertProjectActiveToData // Convert domain back to def
         );
 
         return projectRes;
@@ -48,19 +42,6 @@ export class SelectionLens {
 }
 
 /*
-
-Thougts about the "real" way to change selected items:
-
-Convert domain from def to active
-    Domain should include vars!
-Iterate through elements
-FlatMap:
-    Convert element to domain
-    Call modifier if selected
-    Convert modified from domain
-    Return results
-Convert domain back to def
-
 Big question: what if element from variable is included twice in selection? Modify twice?
 If element is modified to another count and duration, we need to make sure the remaining elements still are selected correctly.
 

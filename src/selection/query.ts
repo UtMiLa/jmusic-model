@@ -2,7 +2,8 @@ import { AbsoluteTime, Time } from './../model/rationals/time';
 import { Model } from './../model/model';
 import { MusicEvent, getDuration } from './../model/score/sequence';
 import { ElementIdentifier, Selection } from './selection-types';
-import { EditableView } from '../model';
+import { EditableView, Staff } from '../model';
+import { InsertionPoint } from '~/editor/insertion-point';
 
 
 export type ElementPredicate = (element: ElementIdentifier) => boolean;
@@ -21,7 +22,7 @@ export class SelectionAll extends SelectionBy {
     }
 }
 
-export function getTimeFromIdentifier(model: EditableView, element: ElementIdentifier): AbsoluteTime {
+export function getTimeFromIdentifier(model: { staves: Staff[] }, element: ElementIdentifier): AbsoluteTime {
     const voice = model.staves[element.staffNo].voices[element.voiceNo];
     const elements = voice.content.elements.slice(0, element.elementNo);
     return elements.reduce<AbsoluteTime>((sum: AbsoluteTime, element: MusicEvent) => Time.addTime(sum, getDuration(element)), Time.StartTime);
@@ -43,4 +44,19 @@ export class SelectionVoiceTime extends SelectionBy {
         });
     }
 
+}
+
+
+export class SelectionInsertionPoint extends SelectionBy {
+    constructor(private insertionPoint: InsertionPoint) {
+        super((element: ElementIdentifier) => {
+            if (element.staffNo !== this.insertionPoint.staffNo || element.voiceNo !== this.insertionPoint.voiceNo) return false;
+            const time = getTimeFromIdentifier(this.insertionPoint.score, element);
+            //console.log('isSelected time', time);
+            if (Time.sortComparison(time, this.insertionPoint.time) !== 0) return false;
+            //console.log('isSelected true');
+            return true;
+
+        });
+    }
 }

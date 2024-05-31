@@ -1,7 +1,7 @@
 import { ActiveSequence } from './../model/object-model-functional/types';
 import { Time } from './../model/rationals/time';
 import { expect } from 'chai';
-import { Clef, ClefType, DomainConverter, FlexibleSequence, JMusic, Key, MusicEvent, ProjectDef, ScoreDef, VariableRepositoryProxy, VoiceContentDef, createRepo, isNote, voiceContentToSequence, voiceSequenceToDef } from '../model';
+import { Clef, DomainConverter, JMusic, ProjectDef, ScoreDef, VoiceContentDef, createRepo, isNote } from '../model';
 import { createTestScore } from '../tools/test-tools';
 import { SelectionVoiceTime } from './query';
 import { SelectionLens } from './selection-lens';
