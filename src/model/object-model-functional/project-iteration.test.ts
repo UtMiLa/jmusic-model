@@ -8,7 +8,7 @@ import { convertProjectDataToActive } from './def-to-active';
 import { getProjectElements, getSelected, modifyProject } from './project-iteration';
 import { createNoteFromLilypond } from '../notes/note';
 import { pipe } from 'fp-ts/lib/function';
-import { SelectionVoiceTime } from '~/selection/query';
+import { SelectionVoiceTime } from '../../selection/query';
 import { Time } from '../rationals/time';
 import { JMusic } from '../facade/jmusic';
 import { convertProjectActiveToData } from './active-to-def';

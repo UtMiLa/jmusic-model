@@ -1,9 +1,8 @@
 import { AbsoluteTime, Time } from './../model/rationals/time';
-import { Model } from './../model/model';
 import { MusicEvent, getDuration } from './../model/score/sequence';
 import { ElementIdentifier, Selection } from './selection-types';
 import { EditableView, Staff } from '../model';
-import { InsertionPoint } from '~/editor/insertion-point';
+import { InsertionPoint } from '../editor/insertion-point';
 
 
 export type ElementPredicate = (element: ElementIdentifier) => boolean;

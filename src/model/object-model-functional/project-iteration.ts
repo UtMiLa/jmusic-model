@@ -1,4 +1,3 @@
-import { ignoreIfUndefined } from '~/tools/ignore-if-undefined';
 import { Selection } from './../../selection/selection-types';
 import { array, record } from 'fp-ts';
 import { MusicEvent } from '../score/sequence';

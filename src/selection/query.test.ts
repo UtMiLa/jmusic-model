@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { SelectionAll, SelectionInsertionPoint, SelectionVoiceTime } from './query';
 import { createTestScore } from '../tools/test-tools';
 import { ElementIdentifier } from './selection-types';
-import { InsertionPoint } from '~/editor/insertion-point';
+import { InsertionPoint } from '../editor/insertion-point';
 
 
 describe('Queries', () => {

@@ -1,4 +1,4 @@
-import { ignoreIfUndefined } from '~/tools/ignore-if-undefined';
+import { ignoreIfUndefined } from '../../tools/ignore-if-undefined';
 import { ProjectDef } from '../data-only/project';
 import { StaffDef, ScoreDef } from '../data-only/score';
 import { VarDict } from '../data-only/variables';

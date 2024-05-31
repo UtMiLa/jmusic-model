@@ -7,7 +7,7 @@ import { JMusic } from './../../model/facade/jmusic';
 import { expect } from 'chai';
 import { InsertionPoint } from '../insertion-point';
 import { TextCommandEngine } from '../text-command-engine';
-import { FlexibleSequence } from '~/model';
+import { FlexibleSequence } from '../../model';
 
 describe('Selection commands', () => {
 

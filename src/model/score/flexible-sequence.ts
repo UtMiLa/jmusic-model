@@ -101,9 +101,9 @@ export function flexibleItemToDef(flex: FlexibleItem): MultiSequenceItem[] {
     throw 'Never here';
 }
 
-function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
+/*function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
     return new FlexibleSequence(items, repo, true).elements;
-}
+}*/
 
 export class FlexibleSequence extends BaseSequence {
 
@@ -137,7 +137,6 @@ export class FlexibleSequence extends BaseSequence {
         return elm.reduce((prev, curr) => isFlexibleSequence(curr) ? prev + curr.count : prev + 1, 0);
     }
 
-    private _asObject: SequenceDef = [];
     public get asObject(): SequenceDef {
         return this.def as SequenceDef;
     }
@@ -145,17 +144,11 @@ export class FlexibleSequence extends BaseSequence {
         this.def = value as FlexibleItem[];
     }
 
-    //private _def!: FlexibleItem[];
     public get def(): FlexibleItem[] {
         return convertActiveSequenceToData(this.activeData) as FlexibleItem[];
-        /*if (!R.is(Array, this._def))
-            return simplifyDef(this._def) as any;
-        return this._def.map(simplifyDef);*/
     }
     private set def(init: FlexibleItem[]) {
         if (!init) init = [];
-
-        //this._def = init;
 
         const def = flexibleItemToDef(init);
         this.activeData = convertSequenceDataToActive(def, this.repo.vars);
