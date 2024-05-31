@@ -34,7 +34,7 @@ export class SelectionLens {
     }
 
 
-    change(source: ProjectDef, modifier: (element: MusicEvent) => MusicEvent[], domainConverter: DomainConverter<VoiceContentDef, ActiveSequence>): ProjectDef {
+    change(source: ProjectDef, modifier: (element: MusicEvent) => MusicEvent[]): ProjectDef {
 
         const projectRes = pipe(
             source,

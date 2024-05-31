@@ -47,10 +47,6 @@ export const selectionCommands = [
             const expression = parseLilyNoteExpression(expr);
             //console.log('selection ok');
             
-            const domainConverter: DomainConverter<VoiceContentDef, ActiveSequence> = {
-                fromDef: def => convertSequenceDataToActive(def, model.vars.vars),
-                toDef: events => convertActiveSequenceToData(events)
-            };
             const projectLens: ProjectLens<ProjectDef> = R.lens(
                 (p) => p,
                 (a: ProjectDef, orig: ProjectDef) => a
@@ -65,7 +61,7 @@ export const selectionCommands = [
                     //R.tap(console.log),
                     option.map((sel: SelectionFunc) => new SelectionLens({ isSelected: sel })),
                     //R.tap(console.log),
-                    option.map((l: SelectionLens) => l.change(proj, (note) => [isNote(note) ? {...note, expressions: [...note.expressions ?? [], expression] } : note], domainConverter)),
+                    option.map((l: SelectionLens) => l.change(proj, (note) => [isNote(note) ? {...note, expressions: [...note.expressions ?? [], expression] } : note])),
                     //R.tap(console.log),
                     option.getOrElse(() => proj)
                 );                
