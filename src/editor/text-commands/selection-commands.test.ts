@@ -51,7 +51,7 @@ describe('Selection commands', () => {
     });
 
     
-    xit('should add an expression on selected notes - through a variable', () => {
+    it('should add an expression on selected notes - through a variable', () => {
         const jMusic = new JMusic({
             staves: [{
                 voices: [{

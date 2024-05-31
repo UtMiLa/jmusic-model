@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { ProjectDef } from '../data-only/project';
 import { NoteDirection } from '../data-only/notes';
 import { Clef } from '../states/clef';
-import { ActiveProject } from './types';
+import { ActiveFunctionCall, ActiveProject, ElementDescriptor } from './types';
 import { convertProjectDataToActive } from './def-to-active';
 import { getProjectElements, getSelected, modifyProject } from './project-iteration';
 import { createNoteFromLilypond } from '../notes/note';
@@ -13,7 +13,7 @@ import { Time } from '../rationals/time';
 import { JMusic } from '../facade/jmusic';
 import { convertProjectActiveToData } from './active-to-def';
 import { augment } from '../score/music-event-functions';
-import { isNote } from '../score/sequence';
+import { MusicEvent, isNote } from '../score/sequence';
 import { elem } from 'fp-ts/lib/Option';
 import { VariableDef } from '../data-only/variables';
 
@@ -94,7 +94,7 @@ describe('Iterating project', () => {
     });
 
     describe('Changing elements', () => {
-        it('should should not change anything when modifier function is identity', () => {
+        it('should not change anything when modifier function is identity', () => {
             const newProj = pipe(
                 projectActive,
                 modifyProject(x => [x]),
@@ -104,7 +104,7 @@ describe('Iterating project', () => {
             expect(newProj).to.deep.eq(projectData);
         });
         
-        it('should should change time on all timed events', () => {
+        it('should change time on all timed events', () => {
 
             const augmenter = augment({ numerator: 1, denominator: 2 });
 
@@ -118,7 +118,7 @@ describe('Iterating project', () => {
         });
 
         
-        it('should should change time on referenced variables too', () => {
+        it('should change time on referenced variables too', () => {
 
             const augmenter = augment({ numerator: 1, denominator: 2 });
 
@@ -137,7 +137,7 @@ describe('Iterating project', () => {
 
 
         
-        it('should should change time on function arguments too', () => {
+        it('should change time on function arguments too', () => {
 
             const augmenter = augment({ numerator: 1, denominator: 2 });
 
@@ -147,7 +147,38 @@ describe('Iterating project', () => {
                 convertProjectActiveToData
             );
 
-            expect(newProj.score.staves[0].voices[2].contentDef).to.deep.eq(['c,8', 'd,8', { function: 'Transpose', args: ['c,,8', 'd,,8'], extraArgs: [{alteration: 1, interval: 1} as  Interval] }]);
+            expect(newProj.score.staves[0].voices[2].contentDef).to.deep.eq([
+                'c,8', 'd,8', 
+                { function: 'Transpose', args: ['c,,8', 'd,,8'], extraArgs: [{alteration: 1, interval: 1} as  Interval] }
+            ]);
+
+            /*expect(projectActive.score.staves[0].voices[2].content).to.deep.eq([
+                createNoteFromLilypond('c,4'), createNoteFromLilypond('d,4'), 
+                { 
+                    type: 'Func',
+                    name: 'Transpose', 
+                    items: [
+                        createNoteFromLilypond('c,,4'), 
+                        createNoteFromLilypond('d,,4')
+                    ], 
+                    extraArgs: [{alteration: 1, interval: 1} as  Interval] ,
+                    duration: Time.HalfTime
+                }
+            ]);
+
+            expect(newProj.score.staves[0].voices[2].content).to.deep.eq([
+                createNoteFromLilypond('c,8'), createNoteFromLilypond('d,8'), 
+                { 
+                    type: 'Func',
+                    name: 'Transpose', 
+                    items: [
+                        createNoteFromLilypond('c,,8'), 
+                        createNoteFromLilypond('d,,8')
+                    ], 
+                    extraArgs: [{alteration: 1, interval: 1} as  Interval] ,
+                    duration: Time.HalfTime
+                }
+            ]);*/
         });
 
 
@@ -167,6 +198,26 @@ describe('Iterating project', () => {
             });
             
         });
+    });
+    describe('Bugfixes', () => {
+        /*it('should not transpose notes in function arguments', () => {
+            const changes = [{ element: createNoteFromLilypond('c4'), path: ['score', 0, 'args', 0], position: {elementNo: 0, voiceNo: 0, staffNo: 0} } as ElementDescriptor ];
+            //const modifier = (a: MusicEvent) => [a, a];
+            const augmenter = augment({ numerator: 1, denominator: 2 });
+            const res = _internal.modifySeq(['score'],
+                changes,
+                augmenter
+            )([{ type: 'Func', name: 'Transpose', extraArgs: [{ interval: 1, alteration: 1 } as Interval], items: [createNoteFromLilypond('c4')] } as ActiveFunctionCall]);
+
+            expect(res).to.deep.eq([
+                { 
+                    type: 'Func', 
+                    name: 'Transpose', 
+                    items: [createNoteFromLilypond('c8')],
+                    extraArgs: [{ interval: 1, alteration: 1 } as Interval]
+                } as ActiveFunctionCall
+            ]);
+        });*/
     });
 });
 
