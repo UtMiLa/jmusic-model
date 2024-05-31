@@ -9,7 +9,7 @@ describe('Voices', () => {
     const seq2Text = 'c,2 d,8 e,8 c4';
 
 
-    xit('should support multiple simultaneous sequences', () => {
+    it('should support multiple simultaneous sequences', () => {
 
         const multiSeq: SplitSequenceDef = {
             type: 'multi',
