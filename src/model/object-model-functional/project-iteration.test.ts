@@ -199,6 +199,88 @@ describe('Iterating project', () => {
             
         });
     });
+
+
+    xdescribe('Complex functions and variables', () => { // todo: should allow editing nested variables and functions
+
+        let projectData: ProjectDef;
+        let projectActive: ActiveProject;
+    
+        beforeEach(() => {
+            projectData = {
+                score: {
+                    staves: [{
+                        voices: [
+                            {
+                                contentDef: ['c4', 'd4', { variable: 'v0'}],
+                                noteDirection: NoteDirection.Up
+                            },
+                            {
+                                contentDef: ['c,4', 'd,4', { variable: 'v2'}],
+                                noteDirection: NoteDirection.Down
+                            },
+                            {
+                                contentDef: ['c,4', 'd,4', { 
+                                    function: 'Transpose', 
+                                    args: ['c,,4', { 
+                                        function: 'Augment', args: ['c,,4', 'd,,4'], extraArgs: [{ numerator: 1, denominator: 2 }] 
+                                    }], 
+                                    extraArgs: [{alteration: 1, interval: 1} as  Interval] 
+                                }],
+                                noteDirection: NoteDirection.Down
+                            }
+                        ],
+                        initialClef: Clef.clefBass.def,
+                        initialKey: { accidental: 0, count: 0 }
+                    }]
+                },
+                vars: {
+                    v0: ['e,4', { function: 'Transpose', args: ['c,,4', { variable: 'v1'}], extraArgs: [{alteration: 1, interval: 1} as  Interval] }],
+                    v1: ['e,4', 'f,4'],
+                    v2: ['e,4', { variable: 'v1'}]
+                }
+            };
+            projectActive = convertProjectDataToActive(projectData);
+        });
+    
+
+
+        it('should replace correctly a nested function', () => {
+            
+            const newProj = pipe(
+                projectActive,
+                modifyProject(element => isNote(element) ? [element, element] : [element]),
+                convertProjectActiveToData
+            );
+
+            expect(newProj.score.staves[0].voices[2].contentDef).to.deep.eq(['c,4', 'c,4', 'd,4', 'd,4', { 
+                function: 'Transpose', 
+                args: ['c,,4', 'c,,4', { 
+                    function: 'Augment', args: ['c,,4', 'c,,4', 'd,,4', 'd,,4'], extraArgs: [{ numerator: 1, denominator: 2 }] 
+                }], 
+                extraArgs: [{alteration: 1, interval: 1} as  Interval] 
+            }]);
+            expect(newProj.vars).to.deep.eq(projectData.vars);
+        });
+
+
+        
+        it('should replace correctly a nested variable', () => {            
+            const newProj = pipe(
+                projectActive,
+                modifyProject(element => isNote(element) ? [element, element] : [element]),
+                convertProjectActiveToData
+            );
+            expect(newProj.vars).to.deep.eq({
+                v0: ['e,4', 'e,4', { function: 'Transpose', args: ['c,,4', 'c,,4', { variable: 'v1'}], extraArgs: [{alteration: 1, interval: 1} as  Interval] }],
+                v1: ['e,4', 'e,4', 'f,4', 'f,4'],
+                v2: ['e,4', 'e,4', { variable: 'v1'}]
+            });
+        });
+
+
+    });
+
     describe('Bugfixes', () => {
         /*it('should not transpose notes in function arguments', () => {
             const changes = [{ element: createNoteFromLilypond('c4'), path: ['score', 0, 'args', 0], position: {elementNo: 0, voiceNo: 0, staffNo: 0} } as ElementDescriptor ];
@@ -218,6 +300,7 @@ describe('Iterating project', () => {
                 } as ActiveFunctionCall
             ]);
         });*/
+
     });
 });
 

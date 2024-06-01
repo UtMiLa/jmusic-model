@@ -1,7 +1,7 @@
 import { Selection } from './../../selection/selection-types';
 import { array, record } from 'fp-ts';
 import { MusicEvent } from '../score/sequence';
-import { ActiveFunctionCall, ActiveProject, ActiveSequence, ActiveSequenceItem, ActiveStaff, ActiveVoice, ElementDescriptor, isActiveFunctionCall } from './types';
+import { ActiveFunctionCall, ActiveProject, ActiveSequence, ActiveSequenceItem, ActiveStaff, ActiveVoice, ElementDescriptor, isActiveFunctionCall, isActiveVarRef } from './types';
 import { activeGetPositionedElements, indexToPath } from './conversions';
 import { pipe } from 'fp-ts/lib/function';
 import R = require('ramda');
@@ -50,7 +50,6 @@ export const modifyProject = (modifier: (x: MusicEvent) => MusicEvent[], selecti
 
     const modifyFunctionCall = (
         path: PathElement<MusicEvent>[], 
-        changes: ElementDescriptor[], 
         modifier: (x: MusicEvent) => MusicEvent[],
         elementNo: number, 
         e: ActiveFunctionCall) => 
@@ -62,19 +61,18 @@ export const modifyProject = (modifier: (x: MusicEvent) => MusicEvent[], selecti
         // * return modified function args
 
         const functionPath = [...path, elementNo, 'args'];
-        const fUp = (x: MusicEvent[]): MusicEvent[] => { 
+        /*const fUp = (x: MusicEvent[]): MusicEvent[] => { 
             const result = createFunction(e.name, e.extraArgs)(x);
-            //console.log('fUp', (x as any)[0].pitches, (result as any)[0].pitches); 
             return result;
         };
-        const fDown = (x: MusicEvent[]): MusicEvent[] => { 
+        /*const fDown = (x: MusicEvent[]): MusicEvent[] => { 
             const result = createInverseFunction(e.name, e.extraArgs)(x);
-            //console.log('fDown', (x as any)[0].pitches, (result as any)[0].pitches); 
             return result;
-        };
-            //const fDown = createInverseFunction(e.name, e.extraArgs);
+        };*/
+        const fUp = createFunction(e.name, e.extraArgs);
+        const fDown = createInverseFunction(e.name, e.extraArgs);
         const newModifier = (x: MusicEvent) => fDown(array.chain(modifier)(fUp([x])));
-        const newArgs = modifySeq(functionPath, changes, newModifier)(e.items); // todo: figure out how function and inverseFunction works on selected/unselected items
+        const newArgs = modifySeq(functionPath, newModifier)(e.items);
         //const elems = (activeGetElements(newArgs)); // todo: take care of nested functions
         return [{
             ...e,
@@ -85,16 +83,21 @@ export const modifyProject = (modifier: (x: MusicEvent) => MusicEvent[], selecti
 
     const modifySeq = (
         path: PathElement<MusicEvent>[], 
-        changes: ElementDescriptor[], 
         modifier: (x: MusicEvent) => MusicEvent[]
     ) => array.chainWithIndex((elementNo, e: ActiveSequenceItem): ActiveSequence => 
     {
         if (isActiveFunctionCall(e)) {
-            return modifyFunctionCall(path, changes, modifier, elementNo, e);
+            return modifyFunctionCall(path, modifier, elementNo, e);
+        }
+        if (isActiveVarRef(e)) {
+            return [e];
+        }
+        if (R.is(Array)(e)) {
+            return modifySeq([...path, elementNo], modifier)(e);
         }
         const findChanges = changes.find(change => matchPath(change.path, [...path, elementNo]));
         if (findChanges) {
-            return modifier(e as MusicEvent);    
+            return modifier(e);
         }
         return [e];
     });
@@ -108,14 +111,14 @@ export const modifyProject = (modifier: (x: MusicEvent) => MusicEvent[], selecti
                     voices: staff.voices.map(
                         (voice, voiceNo) => ({
                             ...voice,
-                            content: modifySeq(['score', 'staves', staffNo, 'voices', voiceNo, 'content'], changes, modifier)(voice.content)
+                            content: modifySeq(['score', 'staves', staffNo, 'voices', voiceNo, 'content'], modifier)(voice.content)
                         })
                     )
                 })
             )
         },
         vars: record.mapWithIndex<string, ActiveSequence, ActiveSequence>((varName: string, seq) => 
-            modifySeq([{ variable: varName }], changes, modifier)(seq))(project.vars)
+            modifySeq([{ variable: varName }], modifier)(seq))(project.vars)
     };
     
     return newProject;
