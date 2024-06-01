@@ -5,11 +5,12 @@ import { ISequence, parseLilyElement } from './sequence';
 import { expect } from 'chai';
 import { Note, createNoteFromLilypond } from '../notes/note';
 import { MeterFactory } from '../states/meter';
-import { MatchEventStruct, augment, empty, identity, matchEvent, transposeKey, transposeNote, tremolo } from './music-event-functions';
+import { MatchEventStruct, augment, empty, identity, invertNote, matchEvent, transposeKey, transposeNote, tremolo } from './music-event-functions';
 import { Key } from '../states/key';
 import { Interval } from '../pitches/intervals';
 import { Rational } from '../rationals/rational';
 import { LongDecorationElement, LongDecorationType } from '../data-only/decorations';
+import { Pitch } from '../pitches/pitch';
 
 describe('MusicEvent functions', () => {
 
@@ -91,6 +92,13 @@ describe('MusicEvent functions', () => {
         expect(f(sequence.elements[4])).to.deep.eq([ { isState: true, key: new Key({ accidental: -1, count: 4 })}]);
         expect(matchEvent(pattern)(sequence.elements[6])).to.deep.eq([parseLilyElement('s1')]);
 
+    });
+
+    it('should invert notes', () => {        
+        const pitch = Pitch.parseLilypond('g');
+        expect(invertNote(pitch)(sequence.elements[0] as Note)).to.deep.eq([createNoteFromLilypond('d4.')]);
+        expect(invertNote(pitch)(sequence.elements[1] as Note)).to.deep.eq([createNoteFromLilypond('c8')]);
+        expect(invertNote(pitch)(sequence.elements[2] as Note)).to.deep.eq([createNoteFromLilypond('ees8')]);
     });
 
     it('should augment notes', () => {

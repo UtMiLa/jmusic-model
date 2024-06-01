@@ -1,6 +1,6 @@
 import { FuncDef } from './../data-only/functions';
 import R = require('ramda');
-import { Note, setGrace, setPitches, setTupletFactor, setTupletGroup } from '../notes/note';
+import { Note, UpdateNote, setGrace, setPitches, setTupletFactor, setTupletGroup } from '../notes/note';
 import { Interval, invertInterval } from '../pitches/intervals';
 import { Pitch } from '../pitches/pitch';
 import { RationalDef } from '../rationals/rational';
@@ -8,7 +8,7 @@ import { isNote, MusicEvent } from './sequence';
 import { mapLyricsToMusic } from '../notes/lyrics';
 import { TupletState } from '../data-only/notes';
 import { CurryMusicFunc, MusicEventFunc, MusicFunc } from './function-types';
-import { augment, identity, matchEvent, transposeKey, transposeNote, tremolo } from './music-event-functions';
+import { augment, identity, invertNote, matchEvent, transposeKey, transposeNote, tremolo, updateNote } from './music-event-functions';
 import { TimeSpan } from '../rationals/time';
 
 /* todo functions:
@@ -113,6 +113,25 @@ const transposeEvent = (interval: Interval) => matchEvent({
 const transpose = (interval: Interval) => sequenceFunctionFromEventFunction(transposeEvent(interval));
 const inverseTranspose = (interval: Interval) => transpose(invertInterval(interval));
 
+
+const invertEvent = (pitch: Pitch) => matchEvent({
+    note: invertNote(pitch),
+    spacer: identity,
+    state: identity,
+    longDeco: identity
+});
+
+const invert = (pitch: Pitch) => sequenceFunctionFromEventFunction(invertEvent(pitch));
+
+const updateEvent = (update: UpdateNote) => matchEvent({
+    note: updateNote(update),
+    spacer: identity,
+    state: identity,
+    longDeco: identity
+});
+
+const updateNotes = (update: UpdateNote) => sequenceFunctionFromEventFunction(updateEvent(update));
+
 const augmentSeq = (ratio: RationalDef) => sequenceFunctionFromEventFunction(augment(ratio));
 const augmentSeqInverse = (ratio: RationalDef) => augmentSeq({ numerator: ratio.denominator, denominator: ratio.numerator });
 
@@ -165,7 +184,9 @@ const internal_functions: {[key: string]: MusicFunc | CurryMusicFunc } = {
     'ModalTranspose': R.identity,
     'AddLyrics': addLyrics as CurryMusicFunc,
     'Augment': augmentSeq as CurryMusicFunc,
-    'Tremolo': tremoloSeq as CurryMusicFunc
+    'Tremolo': tremoloSeq as CurryMusicFunc,
+    'Invert': invert as CurryMusicFunc,
+    'UpdateNote': updateNotes as CurryMusicFunc
 };
 
 const throwFunction = () => { throw 'Cannot invert function'; };
@@ -181,7 +202,9 @@ const internal_inverse_functions: {[key: string]: MusicFunc | CurryMusicFunc } =
     'ModalTranspose': throwFunction,
     'AddLyrics': throwFunction,
     'Augment': augmentSeqInverse as CurryMusicFunc,
-    'Tremolo': throwFunction
+    'Tremolo': throwFunction,
+    'Invert': invert as CurryMusicFunc,
+    'UpdateNote': throwFunction
 };
 
 export function createFunction(funcDef: FuncDef, extraArgs?: unknown[]): (elements: MusicEvent[]) => MusicEvent[] {

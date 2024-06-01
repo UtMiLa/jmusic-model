@@ -4,7 +4,7 @@ import { Time } from '../rationals/time';
 import { getDuration } from './sequence';
 import { expect } from 'chai';
 import { FlexibleSequence } from './flexible-sequence';
-import { createFunction } from './functions';
+import { createFunction, createInverseFunction } from './functions';
 import { FuncDef, SeqFunction, SequenceItem, TupletState } from '..';
 
 // Inspiration: Lilypond functions https://lilypond.org/doc/v2.25/Documentation/notation/available-music-functions
@@ -233,19 +233,19 @@ describe('Flexible sequence transformations', () => {
         });
 
 
-        /*xit('should map inverse function', () => {
+        it('should map inverse function', () => {
             const seq = new FlexibleSequence('cis4 des4 e8 f4.');
 
             const fun = createFunction('Transpose', [{ interval: 3, alteration: 0 }]);
 
             const res = fun(seq.elements);
 
-            //const inverseFun = createInverseFunction('Transpose', [{ interval: 3, alteration: 0 }]);
+            const inverseFun = createInverseFunction('Transpose', [{ interval: 3, alteration: 0 }]);
 
-            // update(seq, elementNo, updater: (oldNote) => [newNotes])
-            // 
-            // ( R.promap(transpose(interval), transpose(-interval), updater)
-        });*/
+            const inverseRes = inverseFun(res);
+
+            expect(inverseRes).to.deep.eq(seq.elements);
+        });
     });
 
     describe('Relative', () => {
@@ -278,15 +278,42 @@ describe('Flexible sequence transformations', () => {
     });
 
     describe('Retrograde', () => {
-        it('should');
+        it('should revert notes', () => {
+            const seq = new FlexibleSequence('cis4 des4 e8 f4.');
+
+            const fun = createFunction('Reverse');
+
+            const res = fun(seq.elements);
+
+            expect(res).to.have.length(4);
+            expect(res).to.deep.eq(new FlexibleSequence('f4. e8 des4 cis4').elements);
+        });
     });
 
     describe('Inversion', () => {
-        it('should');
+        it('should invert notes', () => {
+            const seq = new FlexibleSequence('cis4 r4 des4 e8 f4.');
+
+            const fun = createFunction('Invert', [Pitch.parseLilypond('g')]);
+
+            const res = fun(seq.elements);
+
+            expect(res).to.have.length(5);
+            expect(res).to.deep.eq(new FlexibleSequence('des\'4 r4 cis\'4 bes8 a4.').elements);
+        });
     });
 
     describe('Change node properties', () => {
-        it('should');
+        it('should update notes', () => {
+            const seq = new FlexibleSequence('cis4 r4 des4 e8 f4.');
+
+            const fun = createFunction('UpdateNote', [{ expressions: ['staccato'] }]);
+
+            const res = fun(seq.elements);
+
+            expect(res).to.have.length(5);
+            expect(res).to.deep.eq(new FlexibleSequence('cis4\\staccato r4 des4\\staccato e8\\staccato f4.\\staccato').elements);
+        });
     });
 
     describe('Repeat', () => {

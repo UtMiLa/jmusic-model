@@ -1,8 +1,9 @@
+import { UpdateNote } from './../notes/note';
 import { multiply } from 'ramda';
 
 import { Note, cloneNote } from '../notes/note';
 import { Spacer, isSpacer } from '../notes/spacer';
-import { Interval, addInterval } from '../pitches/intervals';
+import { Interval, addInterval, diffPitch } from '../pitches/intervals';
 import { Pitch } from '../pitches/pitch';
 import { RationalDef } from '../rationals/rational';
 import { Key } from '../states/key';
@@ -54,6 +55,20 @@ export const transposeKey = (interval: Interval) => (element: StateChange): Musi
     return [element];
 };
 
+const invertPitch = (center: Pitch) => (input: Pitch): Pitch => {
+    const interval = diffPitch(center, input);
+    return addInterval(center, interval);
+};
+
+export const invertNote = (center: Pitch) => (element: Note): MusicEvent[] => {
+    if (!element.pitches || !element.pitches.length) return [element];
+    return [cloneNote(element, { pitches: element.pitches.map(invertPitch(center)) })];
+};
+
+export const updateNote = (add: UpdateNote) => (element: Note): MusicEvent[] => {
+    if (!element.pitches || !element.pitches.length) return [element];
+    return [cloneNote(element, add)];
+};
 
 const augmentNote = (r: RationalDef) => (n: Note) => {
     return [cloneNote(n, { nominalDuration: Time.scale(n.nominalDuration, r.numerator, r.denominator) })];
