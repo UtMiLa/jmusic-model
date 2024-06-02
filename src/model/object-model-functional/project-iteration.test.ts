@@ -201,10 +201,11 @@ describe('Iterating project', () => {
     });
 
 
-    xdescribe('Complex functions and variables', () => { // todo: should allow editing nested variables and functions
+    describe('Complex functions and variables', () => { // todo: should allow editing nested variables and functions
 
         let projectData: ProjectDef;
         let projectActive: ActiveProject;
+        let projectElements: ElementDescriptor[];
     
         beforeEach(() => {
             projectData = {
@@ -212,11 +213,11 @@ describe('Iterating project', () => {
                     staves: [{
                         voices: [
                             {
-                                contentDef: ['c4', 'd4', { variable: 'v0'}],
+                                contentDef: ['c4', 'd4', { variable: 'v0'}], //6
                                 noteDirection: NoteDirection.Up
                             },
                             {
-                                contentDef: ['c,4', 'd,4', { variable: 'v2'}],
+                                contentDef: ['c,4', 'd,4', { variable: 'v2'}], //5
                                 noteDirection: NoteDirection.Down
                             },
                             {
@@ -232,7 +233,23 @@ describe('Iterating project', () => {
                         ],
                         initialClef: Clef.clefBass.def,
                         initialKey: { accidental: 0, count: 0 }
-                    }]
+                    },
+                
+                    {
+                        voices: [
+                            {
+                                contentDef: ['c,4', 'd,4', { 
+                                    function: 'Transpose', 
+                                    args: ['c,,4', { variable: 'v1' }], 
+                                    extraArgs: [{alteration: 1, interval: 1} as  Interval] 
+                                }],
+                                noteDirection: NoteDirection.Undefined
+                            }
+                        ],
+                        initialClef: Clef.clefBass.def,
+                        initialKey: { accidental: 0, count: 0 }
+                    }
+                    ]
                 },
                 vars: {
                     v0: ['e,4', { function: 'Transpose', args: ['c,,4', { variable: 'v1'}], extraArgs: [{alteration: 1, interval: 1} as  Interval] }],
@@ -241,11 +258,26 @@ describe('Iterating project', () => {
                 }
             };
             projectActive = convertProjectDataToActive(projectData);
+
+            projectElements = getProjectElements(projectActive);
         });
     
 
+        it('should resolve correct path to a var in a var', () => {
+            expect(projectElements[9].path).to.deep.eq([{ variable: 'v2' }, { variable: 'v1' }, 0]);
+        });
 
-        it('should replace correctly a nested function', () => {
+        xit('should resolve correct path to a function of a var', () => {
+            expect(projectElements[19].path).to.deep.eq([{ variable: 'v1' }, 1]); // this is uncertain
+        });
+        it('should resolve correct path to a function in a var', () => {
+            expect(projectElements[3].path).to.deep.eq([{ variable: 'v0' }, 1, 'args', 0]);
+        });
+        xit('should resolve correct path to a function of a function', () => {
+            expect(projectElements[16].path).to.deep.eq(['score', 'staves', 1, 'voices', 0, 'content', 2, 'args', 0, 'args', 1]);
+        });
+
+        xit('should replace correctly a nested function', () => {
             
             const newProj = pipe(
                 projectActive,
@@ -253,6 +285,7 @@ describe('Iterating project', () => {
                 convertProjectActiveToData
             );
 
+            // path does find [v0 0] and [v0 1 args 0], but not [v0 1 args 1 var v1 0] (say [v0 1 args 1])
             expect(newProj.score.staves[0].voices[2].contentDef).to.deep.eq(['c,4', 'c,4', 'd,4', 'd,4', { 
                 function: 'Transpose', 
                 args: ['c,,4', 'c,,4', { 
@@ -271,6 +304,7 @@ describe('Iterating project', () => {
                 modifyProject(element => isNote(element) ? [element, element] : [element]),
                 convertProjectActiveToData
             );
+            // [path [v2 v1 x] should match [v1 x] ]
             expect(newProj.vars).to.deep.eq({
                 v0: ['e,4', 'e,4', { function: 'Transpose', args: ['c,,4', 'c,,4', { variable: 'v1'}], extraArgs: [{alteration: 1, interval: 1} as  Interval] }],
                 v1: ['e,4', 'e,4', 'f,4', 'f,4'],

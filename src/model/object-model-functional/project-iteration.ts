@@ -1,11 +1,11 @@
 import { Selection } from './../../selection/selection-types';
-import { array, record } from 'fp-ts';
+import { array, option, record } from 'fp-ts';
 import { MusicEvent } from '../score/sequence';
 import { ActiveFunctionCall, ActiveProject, ActiveSequence, ActiveSequenceItem, ActiveStaff, ActiveVoice, ElementDescriptor, isActiveFunctionCall, isActiveVarRef } from './types';
 import { activeGetPositionedElements, indexToPath } from './conversions';
 import { pipe } from 'fp-ts/lib/function';
 import R = require('ramda');
-import { PathElement } from '../score/flexible-sequence';
+import { PathElement, isVariablePathElement } from '../score/flexible-sequence';
 import { createFunction, createInverseFunction } from '../score/functions';
 
 export function getProjectElements(project: ActiveProject): ElementDescriptor[] {
@@ -45,6 +45,11 @@ export const modifyProject = (modifier: (x: MusicEvent) => MusicEvent[], selecti
     })(items);
 
     const matchPath = (path1: PathElement<MusicEvent>[], path2: PathElement<MusicEvent>[]): boolean => {
+        const varRefIdx = pipe(path1,
+            array.findLastIndex(isVariablePathElement),
+            option.getOrElse(() => -1)
+        );
+        if (varRefIdx > 0) path1 = path1.slice(varRefIdx);
         return R.equals<PathElement<MusicEvent>[]>(path1, path2); // todo: replace function refs
     };
 

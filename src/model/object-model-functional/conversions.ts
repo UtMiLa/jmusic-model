@@ -16,6 +16,7 @@ import { noteAsLilypond } from '../notes/note';
 import { map } from 'fp-ts/Record';
 import { isSpacer, spacerAsLilypond } from '../notes/spacer';
 import { array } from 'fp-ts';
+import { pipe } from 'fp-ts/lib/function';
 
 
 function calcElements(items: FlexibleItem[], repo: VariableRepository): MusicEvent[] {
@@ -148,24 +149,28 @@ export function convertActiveSequenceToData(active: ActiveSequence): VoiceConten
 
 export function activeGetPositionedElements(active: ActiveSequence): ElementDescriptor[] {
 
-    return array.chainWithIndex((i, elem: ActiveSequenceItem) => {
-        if (isActiveVarRef(elem)) {
-            return activeGetElements(elem.items);
-        } else if (isActiveFunctionCall(elem)) {
-            return createFunction(elem.name, elem.extraArgs)(activeGetElements(elem.items));
-        } else if (R.is(Array, elem)) {
-            return activeGetElements(elem);
-        } else {
-            return [elem];
-        }
-        throw 'Unknown object';
-    })(active).map( (elm, i) => ({ 
-        position: {
-            staffNo: -1, voiceNo: -1, elementNo: i
-        }, 
-        path: [],
-        element: elm 
-    }));
+    return pipe(
+        active,
+        array.chainWithIndex((i, elem: ActiveSequenceItem) => {
+            if (isActiveVarRef(elem)) {
+                return activeGetPositionedElements(elem.items).map(res => res.element);  // todo: let position pass through 
+            } else if (isActiveFunctionCall(elem)) {
+                return createFunction(elem.name, elem.extraArgs)(activeGetPositionedElements(elem.items).map(res => res.element));
+            } else if (R.is(Array, elem)) {
+                return activeGetPositionedElements(elem).map(res => res.element);
+            } else {
+                return [elem];
+            }
+            throw 'Unknown object';
+        }),
+        array.mapWithIndex( (i: number, elm: MusicEvent) => ({ 
+            position: {
+                staffNo: -1, voiceNo: -1, elementNo: i
+            }, 
+            path: [],
+            element: elm 
+        }))
+    );     
 }
 
 
