@@ -153,22 +153,34 @@ export function activeGetPositionedElements(active: ActiveSequence): ElementDesc
         active,
         array.chainWithIndex((i, elem: ActiveSequenceItem) => {
             if (isActiveVarRef(elem)) {
-                return activeGetPositionedElements(elem.items).map(res => res.element);  // todo: let position pass through 
+                return activeGetPositionedElements(elem.items);  // todo: let position pass through 
             } else if (isActiveFunctionCall(elem)) {
-                return createFunction(elem.name, elem.extraArgs)(activeGetPositionedElements(elem.items).map(res => res.element));
+                return array.mapWithIndex( (i: number, elm: MusicEvent) => ({ 
+                    position: {
+                        staffNo: -1, voiceNo: -1, elementNo: i
+                    }, 
+                    path: [],
+                    element: elm 
+                }))(createFunction(elem.name, elem.extraArgs)(activeGetPositionedElements(elem.items).map(res => res.element)));
             } else if (R.is(Array, elem)) {
-                return activeGetPositionedElements(elem).map(res => res.element);
+                return activeGetPositionedElements(elem);
             } else {
-                return [elem];
+                return [{ 
+                    position: {
+                        staffNo: -1, voiceNo: -1, elementNo: i
+                    }, 
+                    path: [],
+                    element: elem 
+                }];
             }
             throw 'Unknown object';
         }),
-        array.mapWithIndex( (i: number, elm: MusicEvent) => ({ 
+        array.mapWithIndex( (i: number, elm: ElementDescriptor) => ({ 
             position: {
                 staffNo: -1, voiceNo: -1, elementNo: i
             }, 
-            path: [],
-            element: elm 
+            path: elm.path,
+            element: elm.element 
         }))
     );     
 }
