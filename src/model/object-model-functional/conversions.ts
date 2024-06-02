@@ -196,12 +196,9 @@ export function normalizeVars(vars: VarDict): VarDict {
 
 function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: number): PathElement<MusicEvent>[] {
     const itemsToPaths = (item: ActiveSequenceItem): PathElement<MusicEvent>[][] => {
-        if (isActiveFunctionCall(item)) {                
-            return createFunction(item.name, item.extraArgs)(activeGetElements(item.items))
-                .map((a, i) => [
-                    'args',
-                    i
-                ]);
+        if (isActiveFunctionCall(item)) {
+            const itemPaths = activeGetElements(item.items).map((elm, j) => ['args', ...indexToPath0(item.items, repo, j)]);
+            return itemPaths;
         } else if (isActiveVarRef(item)) {
             const varSeq = repo[item.name];
             return item.items.map((e, i) => [{ variable: item.name }, ...indexToPath0(varSeq, repo, i)]);
@@ -222,7 +219,10 @@ function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: numb
             x => x.length > 1 && (isVariableRef(x[0] as any)) ? x : [idx, ...x]
         ))(sequence);
 
-    if (index >= allPaths.length) throw 'Illegal index';
+    if (index >= allPaths.length) {
+        console.log(index, allPaths);
+        throw 'Illegal index';
+    }
 
     return allPaths[index];
 }
