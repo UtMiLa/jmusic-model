@@ -15,7 +15,7 @@ import { TimeSpan } from '../rationals/time';
     repeatFor       [# of times]            repeat for a timespan
     repeatUntil     [absTime or fixpoint]   repeat until an absoluteTime (which can be a variable timeMark defined in another voice)
     extendFor       [timeSpan]              extend a note
-    extendUntil     [absTime orfixpoint]
+    extendUntil     [absTime or fixpoint]
     restFor         [absTime]               rest
     restUntil       [fixpoint]
 
@@ -30,7 +30,7 @@ import { TimeSpan } from '../rationals/time';
     mensuration     [fromTime; toTime]      change all values by mensuration rules
     replaceValue    [fromValue; toValue; mode]    replace a time value with another
                                                 and fill with rests (c2 d4. e8 -> c8 r4. d8 r4 e8)
-                                                and repeat notes (c2 d4. e8 -> c8 c8 c8 c8 d8 d8 d8 e8)
+                                                and repeat notes (c2 d4. e8 -> c8 c8 c8 c8 d8 d8 d8 e8) (=tremolo)
                                                 and change rhythm (c2 d4. e8 -> c8 d8 e8)
 
     replacePattern  (complex)
@@ -186,7 +186,8 @@ const internal_functions: {[key: string]: MusicFunc | CurryMusicFunc } = {
     'Augment': augmentSeq as CurryMusicFunc,
     'Tremolo': tremoloSeq as CurryMusicFunc,
     'Invert': invert as CurryMusicFunc,
-    'UpdateNote': updateNotes as CurryMusicFunc
+    'UpdateNote': updateNotes as CurryMusicFunc,
+    'Rest': updateNotes({ pitches: [] })
 };
 
 const throwFunction = () => { throw 'Cannot invert function'; };
@@ -204,7 +205,8 @@ const internal_inverse_functions: {[key: string]: MusicFunc | CurryMusicFunc } =
     'Augment': augmentSeqInverse as CurryMusicFunc,
     'Tremolo': throwFunction,
     'Invert': invert as CurryMusicFunc,
-    'UpdateNote': throwFunction
+    'UpdateNote': throwFunction,
+    'Rest': throwFunction
 };
 
 export function createFunction(funcDef: FuncDef, extraArgs?: unknown[]): (elements: MusicEvent[]) => MusicEvent[] {

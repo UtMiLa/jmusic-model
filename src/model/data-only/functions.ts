@@ -1,7 +1,7 @@
 import { SequenceDef } from './voices';
 
 export type FuncDef = 'Identity' | 'Relative' | 'Reverse' | 'Repeat' | 'Grace' | 'Tuplet' | 'Transpose' | 'ModalTranspose' 
-| 'AddLyrics' | 'Augment' | 'Tremolo' | 'Invert' | 'UpdateNote';
+| 'AddLyrics' | 'Augment' | 'Tremolo' | 'Invert' | 'UpdateNote' | 'Rest';
 
 
 
@@ -19,5 +19,5 @@ export function isSeqFunction(test: unknown): test is SeqFunction {
 
 export function isFuncDef(test: string): test is FuncDef {
     return ['Identity', 'Relative', 'Reverse', 'Repeat', 'Grace', 'Tuplet', 'Transpose', 
-        'ModalTranspose', 'AddLyrics', 'Augment', 'Tremolo', 'Invert', 'UpdateNote'].includes(test);
+        'ModalTranspose', 'AddLyrics', 'Augment', 'Tremolo', 'Invert', 'UpdateNote', 'Rest'].includes(test);
 }

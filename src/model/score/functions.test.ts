@@ -317,11 +317,29 @@ describe('Flexible sequence transformations', () => {
     });
 
     describe('Repeat', () => {
-        it('should');
+        it('should repeat notes n times', () => {
+            const seq = new FlexibleSequence('cis4 r4 des4 e8 f4.');
+
+            const fun = createFunction('Repeat', [3]);
+
+            const res = fun(seq.elements);
+
+            expect(res).to.have.length(15);
+            expect(res).to.deep.eq(new FlexibleSequence('cis4 r4 des4 e8 f4. cis4 r4 des4 e8 f4. cis4 r4 des4 e8 f4.').elements);
+        });
     });
 
     describe('Rest', () => {
-        it('should');
+        it('should make notes to rests', () => {
+            const seq = new FlexibleSequence('cis4 r4 des4 e8 f4.');
+
+            const fun = createFunction('Rest');
+
+            const res = fun(seq.elements);
+
+            expect(res).to.have.length(5);
+            expect(res).to.deep.eq(new FlexibleSequence('r4 r4 r4 r8 r4.').elements);
+        });
     });
 
     describe('Extend', () => {

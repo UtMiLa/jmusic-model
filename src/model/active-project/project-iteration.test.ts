@@ -198,6 +198,16 @@ describe('Iterating project', () => {
             });
             
         });
+
+
+        it('should fail when updating non-invertible function', () => {
+
+            projectData.score.staves[0].voices[2].contentDef = ['c,4', 'd,4', { function: 'Rest', args: ['c,,4', 'd,,4'] }];
+            const projectActive1 = convertProjectDataToActive(projectData);
+
+            expect(() => modifyProject(element => isNote(element) ? [element, element] : [element])(projectActive1)).to.throw(/Cannot invert/);
+        });
+
     });
 
 
@@ -297,7 +307,7 @@ describe('Iterating project', () => {
         });
 
 
-        
+
         it('should replace correctly a nested variable', () => {            
             const newProj = pipe(
                 projectActive,
@@ -309,6 +319,23 @@ describe('Iterating project', () => {
                 v0: ['e,4', 'e,4', { function: 'Transpose', args: ['c,,4', 'c,,4', { variable: 'v1'}], extraArgs: [{alteration: 1, interval: 1} as  Interval] }],
                 v1: ['e,4', 'e,4', 'f,4', 'f,4'],
                 v2: ['e,4', 'e,4', { variable: 'v1'}]
+            });
+        });
+
+        
+        it('should replace correctly a function of a variable', () => {
+            const model = new JMusic(projectData);
+
+            const newProj = pipe(
+                projectActive,
+                modifyProject(element => isNote(element) ? [element, element] : [element], new SelectionVoiceTime(model, 1, 0, Time.StartTime, Time.EternityTime)),
+                convertProjectActiveToData
+            );
+            // [path [v2 v1 x] should match [v1 x] ]
+            expect(newProj.vars).to.deep.eq({
+                v0: ['e,4', { function: 'Transpose', args: ['c,,4', { variable: 'v1'}], extraArgs: [{alteration: 1, interval: 1} as  Interval] }],
+                v1: ['e,4', 'e,4', 'f,4', 'f,4'],
+                v2: ['e,4', { variable: 'v1'}]
             });
         });
 
