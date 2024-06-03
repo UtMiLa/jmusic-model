@@ -1,8 +1,6 @@
 import { MultiFlexibleItem, VoiceContentDef } from '..';
-import { FlexibleSequence } from './flexible-sequence';
 import { MultiFlexibleSequence } from './multi-flexible-sequence';
 import { ISequence } from './sequence';
-import { SplitSequenceDef } from '..';
 import { VariableRepository } from './variables';
 import { VoiceDef } from '../data-only/voices';
 import { NoteDirection } from '../data-only/notes';

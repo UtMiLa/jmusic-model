@@ -1,4 +1,4 @@
-import { Selection } from './../../selection/selection-types';
+import { Selection } from '../../selection/selection-types';
 import { array, option, record } from 'fp-ts';
 import { MusicEvent } from '../score/sequence';
 import { ActiveFunctionCall, ActiveProject, ActiveSequence, ActiveSequenceItem, ActiveStaff, ActiveVoice, ElementDescriptor, isActiveFunctionCall, isActiveVarRef } from './types';

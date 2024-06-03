@@ -1,10 +1,10 @@
-import { modifyProject } from './../model/object-model-functional/project-iteration';
-import { ActiveSequence } from './../model/object-model-functional/types';
+import { modifyProject } from '../model/active-project/project-iteration';
+import { ActiveSequence } from '../model/active-project/types';
 import { pipe } from 'fp-ts/lib/function';
 import { DomainConverter, MusicEvent, ProjectDef, VoiceContentDef } from '../model';
 import { Selection, ElementIdentifier } from './selection-types';
-import { convertProjectDataToActive } from '../model/object-model-functional/def-to-active';
-import { convertProjectActiveToData } from '../model/object-model-functional/active-to-def';
+import { convertProjectDataToActive } from '../model/active-project/def-to-active';
+import { convertProjectActiveToData } from '../model/active-project/active-to-def';
 
 export class SelectionLens {
     constructor(private selection: Selection) {}

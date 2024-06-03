@@ -13,7 +13,7 @@ import { VariableRepository, valueOf } from '../score/variables';
 import { EditView, EditableView } from './views';
 import { makeScore } from './score-flex';
 import R = require('ramda');
-import { activeGetElements, convertSequenceDataToActive } from '../object-model-functional/conversions';
+import { activeGetElements, convertSequenceDataToActive } from '../active-project/conversions';
 
 export class VariableView extends EditView implements EditableView {
     constructor(private parent: JMusic, private variableName: string) {

@@ -3,7 +3,7 @@ import { JMusicSettings, ScoreDef, flexibleItemToDef } from '..';
 import { ProjectDef, FlexibleItem, isProjectDef, VariableDef, VarDict } from '..';
 import { VariableRepository, VariableRepositoryProxy, createRepo } from '../score/variables';
 import { ScoreFlex, makeScore } from './score-flex';
-import { normalizeVars } from '../object-model-functional/conversions';
+import { normalizeVars } from '../active-project/conversions';
 
 export type ProjectFlex = string | JMusicSettings | ScoreDef | ProjectDef;
 

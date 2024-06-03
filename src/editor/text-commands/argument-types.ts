@@ -1,11 +1,10 @@
-import { FlexibleSequence } from './../../model/score/flexible-sequence';
 import { StateChange } from './../../model/states/state';
-import { FuncDef, Key, MeterFactory, MusicEvent, Note, NoteBase, NoteDef, Pitch, PitchClass, RationalDef, SeqFunction, SequenceDef, SequenceItem, SplitSequenceDef, Time, TimeSpan, UpdateNote, VariableRef, cloneNote, createNote, 
-    fromLilypondAlteration, fromLilypondOctave, fromLilypondPitchClass, isFuncDef, parseLilyClef } from '../../model';
+import { Key, MeterFactory, Note, NoteBase, Pitch, PitchClass, RationalDef, SequenceItem, SplitSequenceDef, Time, TimeSpan, UpdateNote, VariableRef, cloneNote, createNote, 
+    fromLilypondAlteration, fromLilypondOctave, fromLilypondPitchClass, parseLilyClef } from '../../model';
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
-import { Spacer, createSpacerFromLilypond } from '../../model/notes/spacer';
-import { NoteExpression, parseLilyNoteExpression } from '../../model/notes/note-expressions';
-import { IntegerArg, FixedArg, RationalArg as R0, WordArg as W0, WhitespaceArg, ArgType } from './base-argument-types';
+import { Spacer } from '../../model/notes/spacer';
+import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
+import { IntegerArg, FixedArg, RationalArg as R0, WordArg as W0, ArgType } from './base-argument-types';
 
 
 const RationalArg = (R0);
@@ -127,12 +126,13 @@ export const VariableReferenceArg = mapResult((sequence(['\\$', WordArg])), ([wo
 export const SplitSequenceArg = mapResult(sequence(['<< *', many(NoteArg), /\s*\\\\\s+/, many(NoteArg),  ' *>>']), ([v1Notes, v2Notes]: [NoteBase[], NoteBase[]]) => {
     return ({
         type: 'multi',
-        sequences: [new FlexibleSequence(v1Notes).def, new FlexibleSequence(v2Notes).def]
+        sequences: [convertActiveSequenceToData(v1Notes), convertActiveSequenceToData(v2Notes)]
     });
 }) as ArgType<SplitSequenceDef>;
 
 import { FunctionArg } from './function-argument-types';
 import { either } from 'fp-ts';
+import { convertActiveSequenceToData } from '~/model/active-project/conversions';
 
 export const MusicEventArg = (select(
     [NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg, VariableReferenceArg, FunctionArg, SplitSequenceArg])

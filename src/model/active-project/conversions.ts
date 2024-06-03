@@ -1,4 +1,4 @@
-import { Time, TimeSpan } from './../rationals/time';
+import { Time, TimeSpan } from '../rationals/time';
 import R = require('ramda');
 import { VarDict, VariableRef } from '../data-only/variables';
 import { MultiSequenceDef, VoiceContentDef, isSplitSequence } from '../data-only/voices';

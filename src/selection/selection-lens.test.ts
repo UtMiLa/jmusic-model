@@ -1,4 +1,4 @@
-import { ActiveSequence } from './../model/object-model-functional/types';
+import { ActiveSequence } from '../model/active-project/types';
 import { Time } from './../model/rationals/time';
 import { expect } from 'chai';
 import { Clef, DomainConverter, JMusic, ProjectDef, ScoreDef, VoiceContentDef, createRepo, isNote } from '../model';
@@ -6,7 +6,7 @@ import { createTestScore } from '../tools/test-tools';
 import { SelectionVoiceTime } from './query';
 import { SelectionLens } from './selection-lens';
 import R = require('ramda');
-import { convertSequenceDataToActive, convertActiveSequenceToData } from '../model/object-model-functional/conversions';
+import { convertSequenceDataToActive, convertActiveSequenceToData } from '../model/active-project/conversions';
 
 describe('Selection lensing', () => {
     let source: ScoreDef;

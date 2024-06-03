@@ -1,4 +1,4 @@
-import { Time } from './../rationals/time';
+import { Time } from '../rationals/time';
 import { expect } from 'chai';
 import { VoiceContentDef } from '../data-only/voices';
 import { activeGetElements, convertActiveSequenceToData, convertSequenceDataToActive, normalizeVars } from './conversions';

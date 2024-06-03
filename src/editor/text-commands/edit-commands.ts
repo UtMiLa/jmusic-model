@@ -3,9 +3,8 @@ import { ClefArg, KeyArg, MeterArg, MusicEventArg } from './argument-types';
 import { ArgType, ResultAndRest, WhitespaceArg, WordArg } from './base-argument-types';
 import { many, sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
-import { Model, MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, MusicEvent, FlexibleSequence, NoteDef, ClefType, StaffDef, isMeterChange, isClefChange, isKeyChange, FlexibleItem, SequenceItem, flexibleItemToDef, EditableView } from './../../model';
+import { MultiSequenceDef, MultiSequenceItem, SplitSequenceDef, isSplitSequence, ClefType, StaffDef, isMeterChange, isClefChange, isKeyChange, FlexibleItem, SequenceItem, flexibleItemToDef, EditableView } from './../../model';
 import R = require('ramda');
-import { Either } from 'fp-ts/lib/Either';
 import { either } from 'fp-ts';
 import { SelectionManager } from '../../selection/selection-types';
 

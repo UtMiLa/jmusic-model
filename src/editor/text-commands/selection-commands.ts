@@ -1,4 +1,4 @@
-import { convertSequenceDataToActive, convertActiveSequenceToData } from '../../model/object-model-functional/conversions';
+import { convertSequenceDataToActive, convertActiveSequenceToData } from '../../model/active-project/conversions';
 import { Selection, SelectionFunc, SelectionManager } from './../../selection/selection-types';
 import { sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
@@ -9,7 +9,7 @@ import { ProtoSelection, SelectionArg } from './selection-argument-types';
 import { FixedArg } from './base-argument-types';
 import { SelectionLens } from '../../selection/selection-lens';
 import { option } from 'fp-ts';
-import { ActiveSequence } from '../../model/object-model-functional/types';
+import { ActiveSequence } from '../../model/active-project/types';
 import { pipe } from 'fp-ts/lib/function';
 import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
 

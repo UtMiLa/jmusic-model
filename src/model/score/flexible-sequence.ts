@@ -9,8 +9,8 @@ import * as _ from 'ts-toolbelt';
 import { isSplitSequence } from '..';
 import { Note, noteAsLilypond } from '../notes/note';
 import { isSeqFunction } from '../data-only/functions';
-import { ActiveSequence, ActiveSequenceItem, isActiveFunctionCall, isActiveVarRef } from '../object-model-functional/types';
-import { activeGetElements, convertActiveSequenceToData, convertSequenceDataToActive } from '../object-model-functional/conversions';
+import { ActiveSequence, ActiveSequenceItem, isActiveFunctionCall, isActiveVarRef } from '../active-project/types';
+import { activeGetElements, convertActiveSequenceToData, convertSequenceDataToActive } from '../active-project/conversions';
 import { isString } from 'fp-ts/lib/string';
 import { isSpacer, spacerAsLilypond } from '../notes/spacer';
 

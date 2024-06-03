@@ -1,4 +1,4 @@
-import { ElementIdentifier } from './../../selection/selection-types';
+import { ElementIdentifier } from '../../selection/selection-types';
 import { FuncDef } from '../data-only/functions';
 import { NoteDirection } from '../data-only/notes';
 import { TimeSpan } from '../rationals/time';
