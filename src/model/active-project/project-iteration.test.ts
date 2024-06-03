@@ -291,15 +291,15 @@ describe('Iterating project', () => {
             
             const newProj = pipe(
                 projectActive,
-                modifyProject(element => isNote(element) ? [element, element] : [element]),
+                modifyProject(element => isNote(element) ? [element, createNoteFromLilypond('c4')] : [element]),
                 convertProjectActiveToData
             );
 
             // path does find [v0 0] and [v0 1 args 0], but not [v0 1 args 1 var v1 0] (say [v0 1 args 1])
-            expect(newProj.score.staves[0].voices[2].contentDef).to.deep.eq(['c,4', 'c,4', 'd,4', 'd,4', { 
+            expect(newProj.score.staves[0].voices[2].contentDef).to.deep.eq(['c,4', 'c4', 'd,4', 'c4', { 
                 function: 'Transpose', 
-                args: ['c,,4', 'c,,4', { 
-                    function: 'Augment', args: ['c,,4', 'c,,4', 'd,,4', 'd,,4'], extraArgs: [{ numerator: 1, denominator: 2 }] 
+                args: ['c,,4', 'bes,4', { 
+                    function: 'Augment', args: ['c,,4', 'bes,2', 'd,,4', 'bes,2'], extraArgs: [{ numerator: 1, denominator: 2 }] 
                 }], 
                 extraArgs: [{alteration: 1, interval: 1} as  Interval] 
             }]);
@@ -311,14 +311,15 @@ describe('Iterating project', () => {
         it('should replace correctly a nested variable', () => {            
             const newProj = pipe(
                 projectActive,
-                modifyProject(element => isNote(element) ? [element, element] : [element]),
+                modifyProject(element => isNote(element) ? [element, createNoteFromLilypond('c4')] : [element]),
                 convertProjectActiveToData
-            );
+            ); 
+            // todo: make clear how to replace when a variable is referenced more than once in the selection. As of now, it makes the first replacement only.
             // [path [v2 v1 x] should match [v1 x] ]
             expect(newProj.vars).to.deep.eq({
-                v0: ['e,4', 'e,4', { function: 'Transpose', args: ['c,,4', 'c,,4', { variable: 'v1'}], extraArgs: [{alteration: 1, interval: 1} as  Interval] }],
-                v1: ['e,4', 'e,4', 'f,4', 'f,4'],
-                v2: ['e,4', 'e,4', { variable: 'v1'}]
+                v0: ['e,4', 'c4', { function: 'Transpose', args: ['c,,4', 'bes,4', { variable: 'v1'}], extraArgs: [{alteration: 1, interval: 1} as  Interval] }],
+                v1: ['e,4', 'c4', 'f,4', 'c4'],
+                v2: ['e,4', 'c4', { variable: 'v1'}]
             });
         });
 
@@ -328,13 +329,13 @@ describe('Iterating project', () => {
 
             const newProj = pipe(
                 projectActive,
-                modifyProject(element => isNote(element) ? [element, element] : [element], new SelectionVoiceTime(model, 1, 0, Time.StartTime, Time.EternityTime)),
+                modifyProject(element => isNote(element) ? [element, createNoteFromLilypond('c4')] : [element], new SelectionVoiceTime(model, 1, 0, Time.StartTime, Time.EternityTime)),
                 convertProjectActiveToData
             );
             // [path [v2 v1 x] should match [v1 x] ]
             expect(newProj.vars).to.deep.eq({
                 v0: ['e,4', { function: 'Transpose', args: ['c,,4', { variable: 'v1'}], extraArgs: [{alteration: 1, interval: 1} as  Interval] }],
-                v1: ['e,4', 'e,4', 'f,4', 'f,4'],
+                v1: ['e,4', 'bes,4', 'f,4', 'bes,4'],
                 v2: ['e,4', { variable: 'v1'}]
             });
         });

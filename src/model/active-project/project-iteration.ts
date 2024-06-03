@@ -66,19 +66,10 @@ export const modifyProject = (modifier: (x: MusicEvent) => MusicEvent[], selecti
         // * return modified function args
 
         const functionPath = [...path, elementNo, 'args'];
-        /*const fUp = (x: MusicEvent[]): MusicEvent[] => { 
-            const result = createFunction(e.name, e.extraArgs)(x);
-            return result;
-        };
-        /*const fDown = (x: MusicEvent[]): MusicEvent[] => { 
-            const result = createInverseFunction(e.name, e.extraArgs)(x);
-            return result;
-        };*/
         const fUp = createFunction(e.name, e.extraArgs);
         const fDown = createInverseFunction(e.name, e.extraArgs);
         const newModifier = (x: MusicEvent) => fDown(array.chain(modifier)(fUp([x])));
         const newArgs = modifySeq(functionPath, newModifier)(e.items);
-        //const elems = (activeGetElements(newArgs)); // todo: take care of nested functions
         return [{
             ...e,
             items: newArgs
