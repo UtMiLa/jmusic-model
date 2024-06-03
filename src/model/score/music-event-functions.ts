@@ -1,6 +1,4 @@
 import { UpdateNote } from './../notes/note';
-import { multiply } from 'ramda';
-
 import { Note, cloneNote } from '../notes/note';
 import { Spacer, isSpacer } from '../notes/spacer';
 import { Interval, addInterval, diffPitch } from '../pitches/intervals';
@@ -13,6 +11,8 @@ import { MusicEvent, getDuration, isKeyChange, isLongDecoration, isNote, isState
 import { Time, TimeSpan } from '../rationals/time';
 import { LongDecorationElement } from '../data-only/decorations';
 import R = require('ramda');
+import { SequenceDef } from '../data-only/voices';
+import { FlexibleSequence } from './flexible-sequence';
 
 
 export interface MatchEventStruct {
@@ -101,3 +101,20 @@ export const tremolo = (span: TimeSpan): MusicEventFunc => matchEvent({
     state: identity,
     longDeco: identity
 });
+
+
+
+const mapChord = (pattern: Note[], chord: Note): MusicEvent[] => {
+    return pattern.map((note: Note) => {
+        return cloneNote(note, { pitches: [chord.pitches[note.pitches[0].diatonicNumber + 7]] });
+    });
+};
+
+export const chordToArpeggio = (pattern: SequenceDef) => (chord: Note) => {
+    const patternActive = new FlexibleSequence(pattern);
+    const numberOfArpeggios = Time.scale(getDuration(chord), patternActive.duration.denominator, patternActive.duration.numerator);
+    if (numberOfArpeggios.denominator !== 1) throw 'Cannot arpeggiate chord shorter than pattern';
+
+    return R.flatten(R.repeat(mapChord(patternActive.elements.filter(isNote), chord), numberOfArpeggios.numerator));
+};
+

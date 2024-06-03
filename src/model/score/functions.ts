@@ -8,8 +8,9 @@ import { isNote, MusicEvent } from './sequence';
 import { mapLyricsToMusic } from '../notes/lyrics';
 import { TupletState } from '../data-only/notes';
 import { CurryMusicFunc, MusicEventFunc, MusicFunc } from './function-types';
-import { augment, identity, invertNote, matchEvent, transposeKey, transposeNote, tremolo, updateNote } from './music-event-functions';
+import { augment, chordToArpeggio, identity, invertNote, matchEvent, transposeKey, transposeNote, tremolo, updateNote } from './music-event-functions';
 import { TimeSpan } from '../rationals/time';
+import { SequenceDef } from '../data-only/voices';
 
 /* todo functions:
     repeatFor       [# of times]            repeat for a timespan
@@ -173,6 +174,17 @@ const relative = R.curry((pitch: Pitch, seq: MusicEvent[]) => seq.reduce<{accu: 
     }
 }, { accu: [], pitch: typeof(pitch) === 'string' ? Pitch.parseLilypond(pitch) : pitch }).accu);
 
+
+const arpeggioEvent = (pattern: SequenceDef) => matchEvent({
+    note: chordToArpeggio(pattern),
+    spacer: identity,
+    state: identity,
+    longDeco: identity
+});
+
+const chordsToArpeggio = (pattern: SequenceDef) => sequenceFunctionFromEventFunction(arpeggioEvent(pattern));
+
+
 const internal_functions: {[key: string]: MusicFunc | CurryMusicFunc } = {
     'Identity': R.identity,
     'Relative': relative as CurryMusicFunc,
@@ -187,7 +199,8 @@ const internal_functions: {[key: string]: MusicFunc | CurryMusicFunc } = {
     'Tremolo': tremoloSeq as CurryMusicFunc,
     'Invert': invert as CurryMusicFunc,
     'UpdateNote': updateNotes as CurryMusicFunc,
-    'Rest': updateNotes({ pitches: [] })
+    'Rest': updateNotes({ pitches: [] }),
+    'Arpeggio': chordsToArpeggio as CurryMusicFunc
 };
 
 const throwFunction = () => { throw 'Cannot invert function'; };
@@ -206,7 +219,8 @@ const internal_inverse_functions: {[key: string]: MusicFunc | CurryMusicFunc } =
     'Tremolo': throwFunction,
     'Invert': invert as CurryMusicFunc,
     'UpdateNote': throwFunction,
-    'Rest': throwFunction
+    'Rest': throwFunction,
+    'Arpeggio': throwFunction
 };
 
 export function createFunction(funcDef: FuncDef, extraArgs?: unknown[]): (elements: MusicEvent[]) => MusicEvent[] {

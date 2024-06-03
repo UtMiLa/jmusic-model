@@ -416,7 +416,16 @@ describe('Flexible sequence transformations', () => {
     });
 
     describe('Arpeggiate', () => {
-        it('should');
+        it('should arpeggiate a sequence', () => {
+            const seq3Text = '<gis, cis e>1 <gis, dis fis>2 <gis, cis e>2';
+            const seq3Pattern = 'c8. d16 e8 d8';
+            const seq3TextArp = 'gis,8. cis16 e8 cis8 gis,8. cis16 e8 cis8 gis,8. dis16 fis8 dis8 gis,8. cis16 e8 cis8';
+            const fun = createFunction('Arpeggio', [seq3Pattern]);
+
+            const res = fun(new FlexibleSequence(seq3Text).elements);
+
+            expect(res).to.deep.eq(new FlexibleSequence(seq3TextArp).elements);
+        });
     });
 
     describe('Collapse arpeggios to chords', () => {

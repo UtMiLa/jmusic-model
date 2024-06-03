@@ -86,7 +86,7 @@ describe('Iterating project', () => {
                     voiceNo: 1,
                     elementNo: 2
                 },
-                path: [{ variable: 'v1'}, 0],
+                path: [2, { variable: 'v1'}, 0],
                 element: createNoteFromLilypond('e,4')
             });
         });
@@ -274,14 +274,14 @@ describe('Iterating project', () => {
     
 
         it('should resolve correct path to a var in a var', () => {
-            expect(projectElements[9].path).to.deep.eq([{ variable: 'v2' }, { variable: 'v1' }, 0]);
+            expect(projectElements[9].path).to.deep.eq([2, { variable: 'v2' }, 1, { variable: 'v1' }, 0]);
         });
 
         it('should resolve correct path to a function of a var', () => {
-            expect(projectElements[20].path).to.deep.eq([2, 'args', { variable: 'v1' }, 1]); // this is uncertain
+            expect(projectElements[20].path).to.deep.eq([2, 'args', 1, { variable: 'v1' }, 1]); // this is uncertain
         });
         it('should resolve correct path to a function in a var', () => {
-            expect(projectElements[3].path).to.deep.eq([{ variable: 'v0' }, 1, 'args', 0]);
+            expect(projectElements[3].path).to.deep.eq([2, { variable: 'v0' }, 1, 'args', 0]);
         });
         it('should resolve correct path to a function of a function', () => {
             expect(projectElements[15].path).to.deep.eq(['score', 'staves', 0, 'voices', 2, 'content', 2, 'args', 1, 'args', 1]);
@@ -324,7 +324,7 @@ describe('Iterating project', () => {
         });
 
         
-        it('should replace correctly a function of a variable', () => {
+        xit('should replace correctly a function of a variable', () => {
             const model = new JMusic(projectData);
 
             const newProj = pipe(

@@ -216,7 +216,7 @@ function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: numb
 
     const allPaths = array.chainWithIndex<ActiveSequenceItem, PathElement<MusicEvent>[]>(
         (idx: number, s: ActiveSequenceItem) => itemsToPaths(s).map<PathElement<MusicEvent>[]>(
-            x => x.length > 1 && (isVariableRef(x[0] as any)) ? x : [idx, ...x]
+            x => x.length > 1 && (isVariableRef(x[0] as any)) ? [idx, ...x] : [idx, ...x]
         ))(sequence);
 
     if (index >= allPaths.length) {
