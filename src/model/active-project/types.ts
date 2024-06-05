@@ -58,10 +58,17 @@ export interface ActiveVarsAnd<T> {
     item: T
 }
 
+export interface FunctionPathItem {
+    function: FuncDef;
+    extraArgs?: any[];
+    //index: number;
+}
+
 export interface ElementDescriptor {
     position: ElementIdentifier;
     path: PathElement<MusicEvent>[];
     element: MusicEvent;
+    functionPath: FunctionPathItem[];
 }
 
 export function isActiveVarRef(item: ActiveSequenceItem): item is ActiveVarRef {

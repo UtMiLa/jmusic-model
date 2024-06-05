@@ -66,7 +66,8 @@ describe('Iterating project', () => {
                     elementNo: 2
                 },
                 path: ['score', 'staves', 0, 'voices', 0, 'content', 2],
-                element: createNoteFromLilypond('e4')
+                element: createNoteFromLilypond('e4'),
+                functionPath: []
             });
         });
 
@@ -87,7 +88,8 @@ describe('Iterating project', () => {
                     elementNo: 2
                 },
                 path: [2, { variable: 'v1'}, 0],
-                element: createNoteFromLilypond('e,4')
+                element: createNoteFromLilypond('e,4'),
+                functionPath: []
             });
         });
 
@@ -276,15 +278,52 @@ describe('Iterating project', () => {
         it('should resolve correct path to a var in a var', () => {
             expect(projectElements[9].path).to.deep.eq([2, { variable: 'v2' }, 1, { variable: 'v1' }, 0]);
         });
+        it('should resolve correct function path to a functionless element', () => {
+            expect(projectElements[9].functionPath).to.deep.eq([]);
+        });
 
         it('should resolve correct path to a function of a var', () => {
             expect(projectElements[20].path).to.deep.eq([2, 'args', 1, { variable: 'v1' }, 1]); // this is uncertain
         });
+        it('should resolve correct function path to a function of a var', () => {
+            expect(projectElements[20].functionPath).to.deep.eq([{ function: 'Transpose', extraArgs: [{alteration: 1, interval: 1} as  Interval] }]);
+        });
         it('should resolve correct path to a function in a var', () => {
             expect(projectElements[3].path).to.deep.eq([2, { variable: 'v0' }, 1, 'args', 0]);
         });
+        xit('should resolve correct function path to a function in a var', () => { // todo: functions of function need thorough analysis
+            expect(projectElements[3].functionPath).to.deep.eq([{ function: 'Transpose', extraArgs: [{alteration: 1, interval: 1} as  Interval] }]);
+        });
+        /*
+        
+        Thoughts about functions:
+            * no problem when one note -> one note with inverse function
+            * when not inversible:
+            * * if pitch(es) are inversible but not times, it can allow changing pitches but fail when changing times
+            * * if times are inversible but not pitches, it can allow changing times but fail when changing pitches
+            * when one note -> many notes, it might be possible to change both pitch and time, depending on function
+            * when many notes -> one note, it is probably not possible to edit directly
+            * functions should not just calculate results, but also provide some means for identifying original note
+            * functions can have defined a descriptor about which parts are editable
+        Sometimes it might be adviceable to prompt the user (using DialogProvider) if a partially reversible function should be:
+            * ignored, but make rest of the edits
+            * flattened (function(values) replaced by calculated values)
+            * partially applied (using best guess)
+            * open function argument in a new editor
+            * abort whole edit
+        */
         it('should resolve correct path to a function of a function', () => {
             expect(projectElements[15].path).to.deep.eq(['score', 'staves', 0, 'voices', 2, 'content', 2, 'args', 1, 'args', 1]);
+        });
+        xit('should resolve correct function path to a function of a function', () => { // todo: functions of function need thorough analysis
+            expect(projectElements[15].functionPath).to.deep.eq([
+                { 
+                    function: 'Transpose', extraArgs: [{alteration: 1, interval: 1} as  Interval] 
+                },
+                { 
+                    function: 'Augment', args: ['c,,4', 'd,,4'], extraArgs: [{ numerator: 1, denominator: 2 }] 
+                }
+            ]);
         });
 
         it('should replace correctly a nested function', () => {
@@ -301,7 +340,7 @@ describe('Iterating project', () => {
                 args: ['c,,4', 'bes,4', { 
                     function: 'Augment', args: ['c,,4', 'bes,2', 'd,,4', 'bes,2'], extraArgs: [{ numerator: 1, denominator: 2 }] 
                 }], 
-                extraArgs: [{alteration: 1, interval: 1} as  Interval] 
+                extraArgs: [{alteration: 1, interval: 1} as  Interval]
             }]);
             //expect(newProj.vars).to.deep.eq(projectData.vars);
         });

@@ -426,6 +426,34 @@ describe('Flexible sequence transformations', () => {
 
             expect(res).to.deep.eq(new FlexibleSequence(seq3TextArp).elements);
         });
+        
+        it('should arpeggiate a sequence with tuplets', () => {
+            const seq3Text = '<gis, cis e>1 <gis, dis fis>4 <gis, cis e>4';
+            const seq3Pattern = [{ 'function': 'Tuplet', extraArgs: [{ numerator: 2, denominator: 3 }], args: ['c8 d8 e8'] }];
+            const seq3TextArp = [
+                { 'function': 'Tuplet' as FuncDef, extraArgs: [{ numerator: 2, denominator: 3 }], args: ['gis,8 cis8 e8'] },
+                { 'function': 'Tuplet' as FuncDef, extraArgs: [{ numerator: 2, denominator: 3 }], args: ['gis,8 cis8 e8'] },
+                { 'function': 'Tuplet' as FuncDef, extraArgs: [{ numerator: 2, denominator: 3 }], args: ['gis,8 cis8 e8'] },
+                { 'function': 'Tuplet' as FuncDef, extraArgs: [{ numerator: 2, denominator: 3 }], args: ['gis,8 cis8 e8'] },
+                { 'function': 'Tuplet' as FuncDef, extraArgs: [{ numerator: 2, denominator: 3 }], args: ['gis,8 dis8 fis8'] },
+                { 'function': 'Tuplet' as FuncDef, extraArgs: [{ numerator: 2, denominator: 3 }], args: ['gis,8 cis8 e8'] }
+            ];
+            const fun = createFunction('Arpeggio', [seq3Pattern]);
+
+            const res = fun(new FlexibleSequence(seq3Text).elements);
+
+            expect(res).to.deep.eq(new FlexibleSequence(seq3TextArp).elements);
+        });
+
+
+                
+        it('should fail if note is shorter than pattern', () => {
+            const seq3Text = '<gis, cis e>1 <gis, dis fis>8 <gis, cis e>4';
+            const seq3Pattern = [{ 'function': 'Tuplet', extraArgs: [{ numerator: 2, denominator: 3 }], args: ['c8 d8 e8'] }];
+            const fun = createFunction('Arpeggio', [seq3Pattern]);
+
+            expect(() => fun(new FlexibleSequence(seq3Text).elements)).to.throw(/Cannot arpeggiate chord shorter/);
+        });
     });
 
     describe('Collapse arpeggios to chords', () => {

@@ -7,6 +7,7 @@ import { pipe } from 'fp-ts/lib/function';
 import R = require('ramda');
 import { PathElement, isVariablePathElement } from '../score/flexible-sequence';
 import { createFunction, createInverseFunction } from '../score/functions';
+import { FuncDef } from '../data-only/functions';
 
 export function getProjectElements(project: ActiveProject): ElementDescriptor[] {
     const events = array.chainWithIndex((staffNo: number, staff: ActiveStaff) => { 
@@ -19,7 +20,8 @@ export function getProjectElements(project: ActiveProject): ElementDescriptor[] 
                         return {
                             element: elem.element,
                             path: indexToPath(project, {...elem, position}),
-                            position: position
+                            position: position,
+                            functionPath: elem.functionPath
                         };
                     })
                 );
@@ -32,9 +34,6 @@ export function getProjectElements(project: ActiveProject): ElementDescriptor[] 
 export const getSelected = (selection: Selection) => (elements: ElementDescriptor[]): ElementDescriptor[] => {
     return elements.filter(element => selection.isSelected(element.position));
 };
-
-
-
 
 export const modifyProject = (modifier: (x: MusicEvent) => MusicEvent[], selection?: Selection) => (project: ActiveProject): ActiveProject => {
 

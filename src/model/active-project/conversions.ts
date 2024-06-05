@@ -155,13 +155,20 @@ export function activeGetPositionedElements(active: ActiveSequence): ElementDesc
             if (isActiveVarRef(elem)) {
                 return activeGetPositionedElements(elem.items);  // todo: let position pass through 
             } else if (isActiveFunctionCall(elem)) {
-                return array.mapWithIndex( (i: number, elm: MusicEvent) => ({ 
-                    position: {
-                        staffNo: -1, voiceNo: -1, elementNo: i
-                    }, 
-                    path: [],
-                    element: elm 
-                }))(createFunction(elem.name, elem.extraArgs)(activeGetPositionedElements(elem.items).map(res => res.element)));
+                const children = activeGetPositionedElements(elem.items);
+                return pipe(children,
+                    array.map(res => res.element),
+                    createFunction(elem.name, elem.extraArgs),
+                    array.mapWithIndex( (i: number, elm: MusicEvent) => ({ 
+                        position: {
+                            staffNo: -1, voiceNo: -1, elementNo: i
+                        }, 
+                        path: [],
+                        element: elm,
+                        functionPath: [{ function: elem.name, extraArgs: elem.extraArgs }]
+                    })
+                    )
+                );
             } else if (R.is(Array, elem)) {
                 return activeGetPositionedElements(elem);
             } else {
@@ -170,7 +177,8 @@ export function activeGetPositionedElements(active: ActiveSequence): ElementDesc
                         staffNo: -1, voiceNo: -1, elementNo: i
                     }, 
                     path: [],
-                    element: elem 
+                    element: elem,
+                    functionPath: []
                 }];
             }
             throw 'Unknown object';
@@ -180,7 +188,8 @@ export function activeGetPositionedElements(active: ActiveSequence): ElementDesc
                 staffNo: -1, voiceNo: -1, elementNo: i
             }, 
             path: elm.path,
-            element: elm.element 
+            element: elm.element,
+            functionPath: elm.functionPath
         }))
     );     
 }
