@@ -5,6 +5,8 @@ import { many, mapResult, optional, select, sequence } from './argument-modifier
 import { Spacer } from '../../model/notes/spacer';
 import { parseLilyNoteExpression } from '../../model/notes/note-expressions';
 import { IntegerArg, FixedArg, RationalArg as R0, WordArg as W0, ArgType } from './base-argument-types';
+import { either } from 'fp-ts';
+import { convertActiveSequenceToData } from '../../model/active-project/conversions';
 
 
 const RationalArg = (R0);
@@ -131,8 +133,6 @@ export const SplitSequenceArg = mapResult(sequence(['<< *', many(NoteArg), /\s*\
 }) as ArgType<SplitSequenceDef>;
 
 import { FunctionArg } from './function-argument-types';
-import { either } from 'fp-ts';
-import { convertActiveSequenceToData } from '~/model/active-project/conversions';
 
 export const MusicEventArg = (select(
     [NoteArg, KeyArg, MeterArg, ClefArg, SpacerArg, VariableReferenceArg, FunctionArg, SplitSequenceArg])

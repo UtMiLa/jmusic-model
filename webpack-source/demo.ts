@@ -42,6 +42,37 @@ const variablesAndFunctions = {
   
 } as JMusicSettings;
 
+export const moonlightScoreDef = {
+    content: [
+        [
+            [
+                {
+                    function: 'Arpeggio',
+                    extraArgs: [
+                        { 
+                            'function': 'Tuplet', 
+                            extraArgs: [{ numerator: 2, denominator: 3 }], 
+                            args: ['c8 d8 e8'] 
+                        }
+                    ], 
+                    args: ['<gis cis\' e\'>1 <gis dis\' fis\'>1 <gis cis\' e\'>2'] 
+                }
+            ]
+        ],
+        [
+            [
+                '<gis cis\' e\'>1 <gis dis\' fis\'>1 <gis cis\' e\'>2'
+            ]
+        ]
+    ],
+    clefs: ['treble', 'bass'],
+    meter: '4/4',
+    key: 'cis \\minor'
+  
+} as JMusicSettings;
+
+const moonlightVars = {};
+
 
 export const contrapunctusVars = {
     soprano:  [{
@@ -230,7 +261,7 @@ const musicDef: ScoreDef = {
     
 };
 
-const jMusic = new JMusic(contrapunctus, contrapunctusVars);
+const jMusic = new JMusic(moonlightScoreDef, moonlightVars);
 const insertionPoint = new InsertionPoint(jMusic);
 
 input.addEventListener('keydown', ev => {

@@ -6,7 +6,7 @@ import { JMusic } from './../../model/facade/jmusic';
 import { expect } from 'chai';
 import { InsertionPoint } from '../insertion-point';
 import { TextCommandEngine } from '../text-command-engine';
-import { activeGetElements, convertSequenceDataToActive } from '~/model/active-project/conversions';
+import { activeGetElements, convertSequenceDataToActive } from '../../model/active-project/conversions';
 
 describe('Selection commands', () => {
 
