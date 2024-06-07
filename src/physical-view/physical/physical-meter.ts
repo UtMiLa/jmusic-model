@@ -3,6 +3,7 @@ import { MeterViewModel } from './../../logical-view';
 import { PhysicalElementBase, PhysicalFixedSizeElement } from './physical-elements';
 import { Metrics } from './metrics';
 import { MeterTextPart } from '~/model';
+import { array } from 'fp-ts';
 /*
 export function testMeter(viewModel: any): MeterViewModel | undefined {
     return viewModel.keyPositions ? viewModel as KeyViewModel : undefined;
@@ -27,9 +28,13 @@ function numberToGlyph(n: string): GlyphCode[] {
     return n.split('').map(ch => glyphNumbers[ch]);
 }
 
-export function convertMeter(meter: MeterViewModel, xPos: number, settings: Metrics): PhysicalElementBase[] {
-    const numerator = numberToGlyph(meter.meterText[0][0]);
-    const denominator = numberToGlyph((meter.meterText[0] as any)[1]);
+export function convertSimpleMeter(meter: MeterTextPart, xPos: number, settings: Metrics): PhysicalElementBase[] {
+    if (meter.length === 1) {
+        return [];
+    }
+
+    const numerator = numberToGlyph(meter[0]);
+    const denominator = numberToGlyph(meter[1]);
 
     const lengthDiff = numerator.length - denominator.length;
     const xOffsetNum = 0;
@@ -55,6 +60,13 @@ export function convertMeter(meter: MeterViewModel, xPos: number, settings: Metr
         });
     });
     return res;
+}
+
+
+
+export function convertMeter(meter: MeterViewModel, xPos: number, settings: Metrics): PhysicalElementBase[] {
+    return array.chain((mvp: MeterTextPart) => convertSimpleMeter(mvp, xPos, settings))(meter.meterText);
+
 }
 
 

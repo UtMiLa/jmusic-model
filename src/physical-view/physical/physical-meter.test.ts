@@ -89,6 +89,37 @@ describe('Physical model, meter', () => {
         ]);
     });
 
+    
+    
+    it('should make a physical 2/4 + 1/8 meter', () => {
+        const meterView: MeterViewModel = { meterText: [['2', '4'], ['+'], ['1', '8']] };
+
+        const res = convertMeter(meterView, 50, defaultMetrics);
+
+        expect(res).to.deep.equal([
+            {
+                glyph: 'two',
+                position: { x: 50, y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY}
+            },
+            {
+                glyph: 'four',
+                position: { x: 50, y: defaultMetrics.meterAdjustY  }
+            },
+            {
+                glyph: 'plus',
+                position: { x: 50 + defaultMetrics.meterNumberSpacing, y: defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY}
+            },
+            {
+                glyph: 'one',
+                position: { x: 50 + 2*defaultMetrics.meterNumberSpacing, y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY }
+            },
+            {
+                glyph: 'eight',
+                position: { x: 50 + 2*defaultMetrics.meterNumberSpacing, y: defaultMetrics.meterAdjustY  }
+            }
+        ]);
+    });
+
     it('should calculate the physical width of a meter', () => {
         expect(calculateMeterWidth( { meterText: [['1', '1']] }, defaultMetrics)).to.eq(defaultMetrics.meterNumberSpacing);
         expect(calculateMeterWidth( { meterText: [['9', '8']] }, defaultMetrics)).to.eq(defaultMetrics.meterNumberSpacing);
