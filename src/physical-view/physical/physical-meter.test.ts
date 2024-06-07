@@ -5,7 +5,7 @@ import { Key } from './../../model/states/key';
 /* eslint-disable comma-dangle */
 import { Metrics, StandardMetrics } from './metrics';
 import { convertKey } from './physical-key';
-import { calculateWidth, convertMeter } from './physical-meter';
+import { calculateMeterWidth, convertMeter } from './physical-meter';
 
 describe('Physical model, meter', () => {
     let defaultMetrics: Metrics;
@@ -90,9 +90,18 @@ describe('Physical model, meter', () => {
     });
 
     it('should calculate the physical width of a meter', () => {
-        expect(calculateWidth( { meterText: [['1', '1']] }, defaultMetrics)).to.eq(defaultMetrics.meterNumberSpacing);
-        expect(calculateWidth( { meterText: [['9', '8']] }, defaultMetrics)).to.eq(defaultMetrics.meterNumberSpacing);
-        expect(calculateWidth( { meterText: [['12', '16']] }, defaultMetrics)).to.eq(2*defaultMetrics.meterNumberSpacing);
+        expect(calculateMeterWidth( { meterText: [['1', '1']] }, defaultMetrics)).to.eq(defaultMetrics.meterNumberSpacing);
+        expect(calculateMeterWidth( { meterText: [['9', '8']] }, defaultMetrics)).to.eq(defaultMetrics.meterNumberSpacing);
+        expect(calculateMeterWidth( { meterText: [['12', '16']] }, defaultMetrics)).to.eq(2*defaultMetrics.meterNumberSpacing);
+        expect(calculateMeterWidth( { meterText: [['9', '16']] }, defaultMetrics)).to.eq(2*defaultMetrics.meterNumberSpacing);
+        expect(calculateMeterWidth( { meterText: [['12', '8']] }, defaultMetrics)).to.eq(2*defaultMetrics.meterNumberSpacing);
+        expect(calculateMeterWidth( { meterText: [['2+3+3', '8']] }, defaultMetrics)).to.eq(5*defaultMetrics.meterNumberSpacing);
     });
+
+    it('should calculate the physical width of a composite meter', () => {
+        expect(calculateMeterWidth( { meterText: [['1', '1'], ['+'],  ['1', '4']] }, defaultMetrics)).to.eq(3 * defaultMetrics.meterNumberSpacing);
+        expect(calculateMeterWidth( { meterText: [['9', '16'], ['+'],  ['12', '8']] }, defaultMetrics)).to.eq(5 * defaultMetrics.meterNumberSpacing);
+    });
+
 
 });

@@ -4,7 +4,7 @@ import { AbsoluteTime, Time } from './../../model';
 import { Metrics } from './metrics';
 import { ScoreViewModel, StaffViewModel, TimeSlotViewModel } from './../../logical-view';
 import { yToStaffLine } from './functions';
-import { calculateWidth } from './physical-meter';
+import { calculateMeterWidth } from './physical-meter';
 
 export type MeasureMapXValueItem = {
     [index in XValueKey]: number;
@@ -231,7 +231,7 @@ export function getTimeSlotSpacing(slot: TimeSlotViewModel, settings: Metrics): 
         res.width += res.widths.key;
     }
     if (slot.meter) {
-        res.widths.meter = settings.defaultSpacing - settings.meterNumberSpacing + calculateWidth(slot.meter, settings);
+        res.widths.meter = settings.defaultSpacing - settings.meterNumberSpacing + calculateMeterWidth(slot.meter, settings);
         res.offsets.meter = 0;
         res.width += res.widths.meter;
     }

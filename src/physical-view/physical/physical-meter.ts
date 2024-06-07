@@ -2,6 +2,7 @@ import { GlyphCode } from './glyphs';
 import { MeterViewModel } from './../../logical-view';
 import { PhysicalElementBase, PhysicalFixedSizeElement } from './physical-elements';
 import { Metrics } from './metrics';
+import { MeterTextPart } from '~/model';
 /*
 export function testMeter(viewModel: any): MeterViewModel | undefined {
     return viewModel.keyPositions ? viewModel as KeyViewModel : undefined;
@@ -57,9 +58,12 @@ export function convertMeter(meter: MeterViewModel, xPos: number, settings: Metr
 }
 
 
-export function calculateWidth(meter: MeterViewModel, settings: Metrics): number {
-    const upperLength = meter.meterText.reduce((prev, curr) => prev + curr[0].length, 0);
-    const lowerLength = meter.meterText.reduce((prev, curr) => prev + (curr.length === 1 ? curr[0] : curr[1]).length, 0);
-    const maxLength = Math.max(upperLength, lowerLength);
-    return settings.meterNumberSpacing * maxLength;
+export function calculateMeterWidth(meter: MeterViewModel, settings: Metrics): number {
+
+    const widthOfMeterTextPart = (meter: MeterTextPart): number => {
+        return meter.reduce((prev, curr) => Math.max(prev, curr.length), 0);
+    };
+
+    const totalLength = meter.meterText.reduce((prev, curr) => prev + widthOfMeterTextPart(curr), 0);
+    return settings.meterNumberSpacing * totalLength;
 }

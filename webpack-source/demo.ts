@@ -122,7 +122,7 @@ const musicDef: ScoreDef = {
         {
             initialClef: { clefType: ClefType.F, line: 2 },
             initialKey: { accidental: 0, count: 0 },
-            initialMeter: { count: 4, value: 4 },
+            initialMeter: { meters: [{ count: 3, value: 8}, { count: 3, value: 8}, { count: 2, value: 8}] },
             voices: [
                 {
                     contentDef: ['g4 r4 a2', 'c4 d4~ d4 g4'],
