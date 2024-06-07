@@ -32,6 +32,19 @@ export interface CompositeMeterDef {
     commonDenominator?: boolean;
 }
 
+export type MeterDef = RegularMeterDef | CompositeMeterDef;
+
+export function isRegularMeterDef(input: any): input is RegularMeterDef {
+    return !!input.count && !! input.value;
+}
+
+export function isCompositeMeterDef(input: any): input is CompositeMeterDef {
+    return !!input.meters && !! input.meters.length && isRegularMeterDef(input.meters[0]);
+}
+
+export function isMeterDef(input: any): input is MeterDef {
+    return isRegularMeterDef(input) || isCompositeMeterDef(input);
+}
 
 export interface StateChangeDef {
     clef?: ClefDef;

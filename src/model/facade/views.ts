@@ -192,7 +192,7 @@ export abstract class EditView implements EditableView {
     addMeterChg(ins: InsertionPoint, meter: MeterFlex): void {
         const m = makeMeter(meter);
         
-        this.insertElementAtInsertionPoint(ins, StateChange.newMeterChange(MeterFactory.createRegularMeter(m)), isMeterChange);
+        this.insertElementAtInsertionPoint(ins, StateChange.newMeterChange(MeterFactory.createMeter(m)), isMeterChange);
         this.didChange();
     }
 

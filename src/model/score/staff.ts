@@ -1,4 +1,4 @@
-import { RegularMeterDef, StaffDef } from './../';
+import { MeterDef, RegularMeterDef, StaffDef } from './../';
 import { Voice, voiceDefToVoice, voiceSequenceToDef } from './voice';
 import { KeyDef } from './../';
 import { ISequence } from './sequence';
@@ -17,7 +17,7 @@ import R = require('ramda');
 export interface Staff {
     initialClef: ClefDef;
     initialKey: KeyDef;
-    initialMeter?: RegularMeterDef;
+    initialMeter?: MeterDef;
     voices: Voice[];}
 
 

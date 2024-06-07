@@ -26,7 +26,7 @@ export function convertStaffDataToActive(staffDef: StaffDef, vars: VarDict): Act
             voices: staffDef.voices.map(voice => convertVoiceDataToActive(voice, vars).item),
             initialClef: new Clef(staffDef.initialClef),
             initialKey: new Key(staffDef.initialKey),
-            ...ignoreIfUndefined('initialMeter', staffDef.initialMeter ? MeterFactory.createRegularMeter(staffDef.initialMeter) : undefined)
+            ...ignoreIfUndefined('initialMeter', staffDef.initialMeter ? MeterFactory.createMeter(staffDef.initialMeter) : undefined)
         },
         vars: convertVarDataToActive(vars)
     };

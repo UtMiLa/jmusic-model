@@ -80,7 +80,7 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
         }
     ];
 
-    const meter = def.initialMeter ? MeterFactory.createRegularMeter(def.initialMeter) : undefined;
+    const meter = def.initialMeter ? MeterFactory.createMeter(def.initialMeter) : undefined;
     const meterMap = new MeterMap();
 
     if (meter) {
@@ -131,7 +131,7 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
 
     const initialStates = getStateAt(stateMap, restrictions.startTime, staffNo);
     if (!initialStates.clef) initialStates.clef = new Clef(def.initialClef);
-    if (!initialStates.meter && def.initialMeter) initialStates.meter = MeterFactory.createRegularMeter(def.initialMeter);
+    if (!initialStates.meter && def.initialMeter) initialStates.meter = MeterFactory.createMeter(def.initialMeter);
     if (!initialStates.key) initialStates.key = new Key(def.initialKey);
 
     const res = { 

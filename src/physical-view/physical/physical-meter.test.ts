@@ -5,7 +5,7 @@ import { Key } from './../../model/states/key';
 /* eslint-disable comma-dangle */
 import { Metrics, StandardMetrics } from './metrics';
 import { convertKey } from './physical-key';
-import { convertMeter } from './physical-meter';
+import { calculateWidth, convertMeter } from './physical-meter';
 
 describe('Physical model, meter', () => {
     let defaultMetrics: Metrics;
@@ -87,6 +87,12 @@ describe('Physical model, meter', () => {
                 position: { x: 50 + defaultMetrics.meterNumberSpacing, y: defaultMetrics.meterAdjustY  }
             }
         ]);
+    });
+
+    it('should calculate the physical width of a meter', () => {
+        expect(calculateWidth( { meterText: [['1', '1']] }, defaultMetrics)).to.eq(defaultMetrics.meterNumberSpacing);
+        expect(calculateWidth( { meterText: [['9', '8']] }, defaultMetrics)).to.eq(defaultMetrics.meterNumberSpacing);
+        expect(calculateWidth( { meterText: [['12', '16']] }, defaultMetrics)).to.eq(2*defaultMetrics.meterNumberSpacing);
     });
 
 });

@@ -1,4 +1,4 @@
-import { CompositeMeterDef, RegularMeterDef } from './../data-only/states';
+import { CompositeMeterDef, MeterDef, RegularMeterDef, isCompositeMeterDef, isRegularMeterDef } from './../data-only/states';
 import { Rational, RationalDef } from '../rationals/rational';
 import { TimeMap } from '../../tools/time-map';
 import { AbsoluteTime } from './../rationals/time';
@@ -28,6 +28,11 @@ export class MeterFactory {
     }
     static createCompositeMeter(def: CompositeMeterDef): CompositeMeter {
         return new CompositeMeter(def);
+    }
+    static createMeter(def: MeterDef): Meter {
+        if (isRegularMeterDef(def)) return this.createRegularMeter(def);
+        if (isCompositeMeterDef(def)) return this.createCompositeMeter(def);
+        throw 'Illegal meter definition';
     }
 }
 

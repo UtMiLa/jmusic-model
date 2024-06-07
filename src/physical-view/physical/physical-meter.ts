@@ -55,3 +55,11 @@ export function convertMeter(meter: MeterViewModel, xPos: number, settings: Metr
     });
     return res;
 }
+
+
+export function calculateWidth(meter: MeterViewModel, settings: Metrics): number {
+    const upperLength = meter.meterText.reduce((prev, curr) => prev + curr[0].length, 0);
+    const lowerLength = meter.meterText.reduce((prev, curr) => prev + (curr.length === 1 ? curr[0] : curr[1]).length, 0);
+    const maxLength = Math.max(upperLength, lowerLength);
+    return settings.meterNumberSpacing * maxLength;
+}

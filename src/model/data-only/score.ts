@@ -1,11 +1,11 @@
 import { AbsoluteTime } from '../rationals/time';
-import { ClefDef, KeyDef, RegularMeterDef } from './states';
+import { ClefDef, KeyDef, MeterDef, RegularMeterDef } from './states';
 import { VoiceDef } from './voices';
 
 export interface StaffDef {
     initialClef: ClefDef;
     initialKey: KeyDef;
-    initialMeter?: RegularMeterDef;
+    initialMeter?: MeterDef;
     voices: VoiceDef[];
 }
 
