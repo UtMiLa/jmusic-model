@@ -18,7 +18,8 @@ const glyphNumbers = {
     '6': 'six', 
     '7': 'seven', 
     '8': 'eight', 
-    '9': 'nine'
+    '9': 'nine',
+    '+': 'plus'
 } as { [key: string]: GlyphCode };
 
 function numberToGlyph(n: string): GlyphCode[] {
@@ -29,12 +30,16 @@ export function convertMeter(meter: MeterViewModel, xPos: number, settings: Metr
     const numerator = numberToGlyph(meter.meterText[0][0]);
     const denominator = numberToGlyph((meter.meterText[0] as any)[1]);
 
+    const lengthDiff = numerator.length - denominator.length;
+    const xOffsetNum = 0;
+    const xOffsetDen = lengthDiff / 2;
+
     const res = [] as PhysicalFixedSizeElement[];
     numerator.forEach((glyph, i) => {
         res.push({
             glyph,
             position: {
-                x: xPos + i * settings.meterNumberSpacing, 
+                x: xPos + (i + xOffsetNum) * settings.meterNumberSpacing, 
                 y: 2 * settings.scaleDegreeUnit*2 + settings.meterAdjustY
             }
         });
@@ -43,7 +48,7 @@ export function convertMeter(meter: MeterViewModel, xPos: number, settings: Metr
         res.push({
             glyph,
             position: {
-                x: xPos + i * settings.meterNumberSpacing, 
+                x: xPos + (i + xOffsetDen) * settings.meterNumberSpacing, 
                 y: settings.meterAdjustY
             }
         });

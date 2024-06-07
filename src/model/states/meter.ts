@@ -120,6 +120,13 @@ export class CompositeMeter implements Meter {
         return this.internalMeters.reduce((t2: TimeSpan, t1: Meter) => Time.addSpans(t2, t1.measureLength), Time.NoTime);
     }
     get text(): MeterText {
+        if (this.def.commonDenominator) {
+            const denominator = this.internalMeters[0].def.value;
+            const failing = this.internalMeters.find(item => item.def.value !== denominator);
+            if (failing) throw 'Cannot have common denominator';
+            const resUpper = this.internalMeters.map(item => item.def.count).join('+');
+            return [[resUpper, '' + denominator]];
+        }
         return R.intersperse<MeterTextPart>(['+'], array.chain<Meter, MeterTextPart>(mt => mt.text)(this.internalMeters));
     }
     get firstBarTime(): AbsoluteTime {

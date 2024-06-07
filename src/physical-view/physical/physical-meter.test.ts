@@ -61,4 +61,32 @@ describe('Physical model, meter', () => {
         ]);
     });
 
+
+
+    
+    it('should make a physical 3+2/4 meter', () => {
+        const meterView: MeterViewModel = { meterText: [['3+2', '8']] };
+
+        const res = convertMeter(meterView, 50, defaultMetrics);
+
+        expect(res).to.deep.equal([
+            {
+                glyph: 'three',
+                position: { x: 50, y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY}
+            },
+            {
+                glyph: 'plus',
+                position: { x: 50 + defaultMetrics.meterNumberSpacing, y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY}
+            },
+            {
+                glyph: 'two',
+                position: { x: 50 + 2*defaultMetrics.meterNumberSpacing, y: 2 * defaultMetrics.scaleDegreeUnit*2 + defaultMetrics.meterAdjustY }
+            },
+            {
+                glyph: 'eight',
+                position: { x: 50 + defaultMetrics.meterNumberSpacing, y: defaultMetrics.meterAdjustY  }
+            }
+        ]);
+    });
+
 });

@@ -173,7 +173,11 @@ describe('Meter', () => {
             expect(meter.text).to.be.deep.eq([['3', '4'], ['+'], ['1', '8']]);
         });
 
-                
+        it('should format a composite meter with a common denominator', () => {
+            const meter = MeterFactory.createCompositeMeter({ meters: [meter1, meter1a], commonDenominator: true });
+            expect(meter.text).to.be.deep.eq([['3+3', '4']]);
+        });
+        
     });
 
 
