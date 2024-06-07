@@ -17,12 +17,12 @@ describe('View model: Meters', () => {
 
     it('should convert a meter to view model', () => {
         const meterView = meterToView(meter4_4);
-        expect(meterView).to.deep.equal({ meterText: ['4', '4'] });
+        expect(meterView).to.deep.equal({ meterText: [['4', '4']] });
     });
 
     it('should convert a meter with more digits to view model', () => {
         const meterView = meterToView(meter12_16);
-        expect(meterView).to.deep.equal({ meterText: ['12', '16'] });
+        expect(meterView).to.deep.equal({ meterText: [['12', '16']] });
     });
 
 });

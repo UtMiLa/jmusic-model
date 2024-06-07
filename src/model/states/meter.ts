@@ -3,34 +3,36 @@ import { Rational, RationalDef } from '../rationals/rational';
 import { TimeMap } from '../../tools/time-map';
 import { AbsoluteTime } from './../rationals/time';
 import { Time, TimeSpan } from '../rationals/time';
+import R = require('ramda');
+import { array } from 'fp-ts';
+
+
+export type MeterTextPart = [string, string] | [string];
+
+export type MeterText = MeterTextPart[];
+
 export interface Meter {
     equals(meter: Meter): boolean;
+    type: string;
     measureLength: TimeSpan;
     countingTime: TimeSpan;
-    text: string[];
+    text: MeterText;
     firstBarTime: AbsoluteTime;
     upbeat: TimeSpan;
     def: RegularMeterDef | CompositeMeterDef;
 }
 
-/*export interface RegularMeterDef {
-    count: number;
-    value: number;
-    upBeat?: TimeSpan;
-}
-
-export interface CompositeMeterDef {
-    meters: RegularMeterDef[];
-    commonDenominator?: boolean;
-}*/
-
 export class MeterFactory {
-    static createRegularMeter(def: RegularMeterDef): Meter {
+    static createRegularMeter(def: RegularMeterDef): RegularMeter {
         return new RegularMeter(def);
     }
-    /*static createCompositeMeter(def: CompositeMeterDef): Meter {
+    static createCompositeMeter(def: CompositeMeterDef): CompositeMeter {
         return new CompositeMeter(def);
-    }*/
+    }
+}
+
+function isRegularMeter(meter: Meter): meter is RegularMeter {
+    return meter.type === 'RegularMeter';
 }
 
 class RegularMeter implements Meter {
@@ -38,8 +40,10 @@ class RegularMeter implements Meter {
     constructor(def: RegularMeterDef) {
         this.def = {...def};
     }
+    get type() { return 'RegularMeter'; }
+
     equals(meter: Meter): boolean {
-        if (!(meter as RegularMeter).def) return false;
+        if (!isRegularMeter(meter)) return false;
 
         if (this.def.upBeat && ! (meter as RegularMeter).def.upBeat) return false;
         if (!this.def.upBeat && (meter as RegularMeter).def.upBeat) return false;
@@ -63,8 +67,8 @@ class RegularMeter implements Meter {
     get measureLength(): TimeSpan {
         return Time.shorten(Time.newSpan(this.def.count, this.def.value));
     }
-    get text(): string[] {
-        return ['' + this.def.count, '' + this.def.value];
+    get text(): MeterText {
+        return [['' + this.def.count, '' + this.def.value]];
     }
 
     get firstBarTime(): AbsoluteTime {        
@@ -79,21 +83,44 @@ class RegularMeter implements Meter {
 
 }
 
-/*class CompositeMeter implements Meter {
-    private def: CompositeMeterDef;
+function isCompositeMeter(meter: Meter): meter is CompositeMeter {
+    return meter.type === 'CompositeMeter';
+}
+
+export class CompositeMeter implements Meter {
+    def: CompositeMeterDef;
+
     constructor(def: CompositeMeterDef) {
         if (!def.meters.length) throw 'Empty meter';
         this.def = {...def};
+        this.internalMeters = def.meters.map(meterDef => MeterFactory.createRegularMeter(meterDef));
     }
+
+    get type(): string { return 'CompositeMeter'; }
+
+    internalMeters: RegularMeter[];
+
+    equals(meter: Meter): boolean {
+        if (!isCompositeMeter(meter)) return false;
+
+        if (this.def.commonDenominator !== meter.def.commonDenominator) return false;
+        if (this.def.meters.length !== meter.def.meters?.length) return false;
+
+        for (let i = 0; i < this.internalMeters.length; i++) {
+            if (!this.internalMeters[i].equals(meter?.internalMeters[i])) return false;
+        }
+
+        return true;
+    }
+
     get countingTime(): TimeSpan {
         return { numerator: 1, denominator: this.def.meters[0].value, type: 'span' };
     }
     get measureLength(): TimeSpan {
-        //return { ...Rational.shorten({}), type: 'span'};
-        return { numerator: 1, denominator: 1, type: 'span' };
+        return this.internalMeters.reduce((t2: TimeSpan, t1: Meter) => Time.addSpans(t2, t1.measureLength), Time.NoTime);
     }
-    get text(): string[] {
-        return ['4', '4'];
+    get text(): MeterText {
+        return R.intersperse<MeterTextPart>(['+'], array.chain<Meter, MeterTextPart>(mt => mt.text)(this.internalMeters));
     }
     get firstBarTime(): AbsoluteTime {
         return Time.fromStart(this.measureLength);
@@ -102,7 +129,7 @@ class RegularMeter implements Meter {
         return Time.newSpan(0, 1);
     }
 
-}*/
+}
 
 
 export function* getAllBars(meter: Meter, startTime?: AbsoluteTime): IterableIterator<AbsoluteTime> {

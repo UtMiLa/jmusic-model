@@ -518,7 +518,7 @@ describe('State change view model', () => {
 
             //expect(score.staves[0].timeSlots).to.have.length(10);
 
-            expect(score.staves[0].timeSlots[6].meter).to.deep.eq({ meterText: ['5', '8']});
+            expect(score.staves[0].timeSlots[6].meter).to.deep.eq({ meterText: [['5', '8']]});
                 
         });
 
@@ -608,7 +608,7 @@ describe('State change view model', () => {
             }));
 
             expect(score.staves[1].timeSlots.find(ts => Time.equals(ts.absTime, getExtendedTime(Time.newAbsolute(7, 8), EventType.MeterChg)))).to.exist;
-            expect(score.staves[1].timeSlots.find(ts => Time.equals(ts.absTime, getExtendedTime(Time.newAbsolute(7, 8), EventType.MeterChg)))).to.deep.include({ meter: { meterText: ['4', '4']}});
+            expect(score.staves[1].timeSlots.find(ts => Time.equals(ts.absTime, getExtendedTime(Time.newAbsolute(7, 8), EventType.MeterChg)))).to.deep.include({ meter: { meterText: [['4', '4']]}});
     
         });
 

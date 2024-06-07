@@ -279,7 +279,7 @@ describe('Staff view model', () => {
 
         expect(vm.timeSlots[0].meter).to.deep.equal({
                     
-            meterText: ['12', '8']
+            meterText: [['12', '8']]
             
         });
     });

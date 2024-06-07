@@ -122,11 +122,16 @@ describe('Meter', () => {
     });
 
 
-    /*describe('Composite meter', () => {
-        let meter1: RegularMeterDef, meter2: RegularMeterDef, meter3: RegularMeterDef;
+    describe('Composite meter', () => {
+        let meter1: RegularMeterDef, meter1a: RegularMeterDef, meter2: RegularMeterDef, meter3: RegularMeterDef;
         
         beforeEach(() => {
             meter1 = {
+                count: 3,
+                value: 4,
+                upBeat: undefined
+            };
+            meter1a = {
                 count: 3,
                 value: 4,
                 upBeat: undefined
@@ -147,8 +152,29 @@ describe('Meter', () => {
         it('should create a composite meter', () => {
             const meter = MeterFactory.createCompositeMeter({ meters: [meter1, meter3] });
             expect(meter.countingTime).to.be.deep.eq({ numerator: 1, denominator: 4, type: 'span' });
+            expect(meter.measureLength).to.be.deep.eq({ numerator: 7, denominator: 8, type: 'span' });
         });
-    });*/
+
+        
+        it('should compare composite meters', () => {
+            const meterA = MeterFactory.createCompositeMeter({ meters: [meter1, meter3] });
+            const meterB = MeterFactory.createCompositeMeter({ meters: [meter1, meter2] });
+            const meterC = MeterFactory.createCompositeMeter({ meters: [meter1a, meter3] });
+            const meterD = MeterFactory.createCompositeMeter({ meters: [meter2, meter3] });
+            expect(meterA.equals(meterB)).to.be.false;
+            expect(meterA.equals(meterC)).to.be.true;
+            expect(meterA.equals(meterD)).to.be.false;
+            expect(meterC.equals(meterB)).to.be.false;
+        });
+
+
+        it('should format a composite meter', () => {
+            const meter = MeterFactory.createCompositeMeter({ meters: [meter1, meter3] });
+            expect(meter.text).to.be.deep.eq([['3', '4'], ['+'], ['1', '8']]);
+        });
+
+                
+    });
 
 
     describe('Meter map', () => {

@@ -1,8 +1,8 @@
-import { Meter } from './../../model';
+import { Meter, MeterTextPart } from './../../model';
 
 
 export interface MeterViewModel {
-    meterText: string[];
+    meterText: MeterTextPart[];
 }
 
 

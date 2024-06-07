@@ -21,7 +21,7 @@ describe('Physical model, meter', () => {
 
 
     it('should make a physical 6/8 meter', () => {
-        const meterView: MeterViewModel = { meterText: ['6', '8'] };
+        const meterView: MeterViewModel = { meterText: [['6', '8']] };
 
         const res = convertMeter(meterView, 40, defaultMetrics);
 
@@ -37,7 +37,7 @@ describe('Physical model, meter', () => {
     });
     
     it('should make a physical 12/16 meter', () => {
-        const meterView: MeterViewModel = { meterText: ['12', '16'] };
+        const meterView: MeterViewModel = { meterText: [['12', '16']] };
 
         const res = convertMeter(meterView, 50, defaultMetrics);
 

@@ -26,8 +26,8 @@ function numberToGlyph(n: string): GlyphCode[] {
 }
 
 export function convertMeter(meter: MeterViewModel, xPos: number, settings: Metrics): PhysicalElementBase[] {
-    const numerator = numberToGlyph(meter.meterText[0]);
-    const denominator = numberToGlyph(meter.meterText[1]);
+    const numerator = numberToGlyph(meter.meterText[0][0]);
+    const denominator = numberToGlyph((meter.meterText[0] as any)[1]);
 
     const res = [] as PhysicalFixedSizeElement[];
     numerator.forEach((glyph, i) => {

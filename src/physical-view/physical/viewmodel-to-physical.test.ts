@@ -982,7 +982,7 @@ describe('Physical model', () => {
                                 transposition: 0
                             },
                             meter: {
-                                meterText: ['5', '4']
+                                meterText: [['5', '4']]
                             },
                             notes: [                
 
@@ -1027,7 +1027,7 @@ describe('Physical model', () => {
                                 keyPositions: [{ alteration: -1, position: 3}, { alteration: -1, position: 6}]
                             },
                             meter: {
-                                meterText: ['5', '4']
+                                meterText: [['5', '4']]
                             },
                             notes: [                
 
@@ -1286,7 +1286,7 @@ describe('Physical model', () => {
         it('should calculate the width of a meter', () => {
             const timeSlot: TimeSlotViewModel = {
                 absTime: Time.newAbsolute(1,1),
-                meter: { meterText: ['3', '4'] } as MeterViewModel,
+                meter: { meterText: [['3', '4']] } as MeterViewModel,
                 notes: []
             };
             const res = getTimeSlotWidth(timeSlot, defaultMetrics);
@@ -1363,7 +1363,7 @@ describe('Physical model', () => {
                 clef: { clefType: ClefType.G, line: 2 } as ClefViewModel,
                 bar: { barType: BarType.Simple },
                 key: { keyPositions: [{ alteration: -1, position: 1 }] } as KeyViewModel,
-                meter: { meterText: ['3', '4'] } as MeterViewModel,
+                meter: { meterText: [['3', '4']] } as MeterViewModel,
                 notes: [{noteType: NoteType.NWhole, positions: [1], direction: NoteDirection.Undefined }]
             };
             const res = getTimeSlotWidth(timeSlot, defaultMetrics);
