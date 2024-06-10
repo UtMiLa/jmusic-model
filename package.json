@@ -12,7 +12,7 @@
     "test": "mocha --config .mocharc.json --watch src/**/*.test.ts",
     "coverage": "nyc mocha --config .mocharc.json src/**/*.test.ts",
     "lint": "eslint src/**/*.ts --fix",
-    "serve": "webpack serve --open",
+    "serve": "webpack serve --mode development --open",
     "start:dev": "nodemon --config .nodemonrc.json src/index.ts",
     "start:prod": "node dist/index.js",
     "prepub": "npm version patch & copy package.json dist",

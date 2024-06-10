@@ -220,6 +220,19 @@ export class MeterMap extends TimeMap<Meter> {
 }
 
 export function meterToLilypond(meter: Meter): string {
-    const regularDef = meter.def as RegularMeterDef;
-    return `\\meter ${regularDef.count}/${regularDef.value}`;
+    if (isRegularMeter(meter)) {
+        const regularDef = meter.def;
+        return `\\meter ${regularDef.count}/${regularDef.value}`;
+    }
+    if (isCompositeMeter(meter)) {
+        if (meter.def.commonDenominator) {
+            return '\\compoundMeter #\'' + '((' + meter.internalMeters.map(intMet => {
+                return `${intMet.def.count}`;
+            }).join(' ') + ` ${meter.internalMeters[0].def.value}))`;
+        }
+        return '\\compoundMeter #\'' + '(' + meter.internalMeters.map(intMet => {
+            return `(${intMet.def.count} ${intMet.def.value})`;
+        }).join(' ') + ')';
+    }
+    throw 'Illegal meter';
 }

@@ -177,6 +177,24 @@ describe('Meter', () => {
             const meter = MeterFactory.createCompositeMeter({ meters: [meter1, meter1a], commonDenominator: true });
             expect(meter.text).to.be.deep.eq([['3+3', '4']]);
         });
+
+
+            
+        it('should parse different composite meter changes', () => {
+            /*expect(parseLilyMeter('\\meter 3/4')).to.deep.eq(MeterFactory.createRegularMeter({ count: 3, value: 4 }));
+            expect(parseLilyMeter('\\meter 2/2')).to.deep.eq(MeterFactory.createRegularMeter({ count: 2, value: 2 }));
+            expect(parseLilyMeter('\\meter 6/8')).to.deep.eq(MeterFactory.createRegularMeter({ count: 6, value: 8 }));
+            expect(parseLilyMeter('\\meter 12/16')).to.deep.eq(MeterFactory.createRegularMeter({ count: 12, value: 16 }));
+            expect(parseLilyMeter('\\meter 4/4')).to.deep.eq(MeterFactory.createRegularMeter({ count: 4, value: 4 }));    */
+        });
+    
+        it('should convert different composite meter changes to Lilypond', () => {
+            expect(meterToLilypond(MeterFactory.createCompositeMeter({ meters: [meter1, meter3] }))).to.deep.eq('\\compoundMeter #\'((3 4) (1 8))');
+            expect(meterToLilypond(MeterFactory.createCompositeMeter({ meters: [meter1, meter1a] }))).to.deep.eq('\\compoundMeter #\'((3 4) (3 4))');
+            expect(meterToLilypond(MeterFactory.createCompositeMeter({ meters: [meter1, meter3, meter1] }))).to.deep.eq('\\compoundMeter #\'((3 4) (1 8) (3 4))');
+            expect(meterToLilypond(MeterFactory.createCompositeMeter({ meters: [meter1, meter1a], commonDenominator: true }))).to.deep.eq('\\compoundMeter #\'((3 3 4))');
+        });
+    
         
     });
 
