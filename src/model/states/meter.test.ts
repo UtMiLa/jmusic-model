@@ -32,10 +32,10 @@ describe('Meter', () => {
 
         it('should have a counting time', () => {
             const meter = MeterFactory.createRegularMeter(meter1);
-            expect(meter.countingTime).to.be.deep.eq({ numerator: 1, denominator: 4, type: 'span' });
+            expect(meter.countingTime).to.be.deep.eq([{ numerator: 1, denominator: 4, type: 'span' }]);
 
             const meter68 = MeterFactory.createRegularMeter(meter3);
-            expect(meter68.countingTime).to.be.deep.eq({ numerator: 3, denominator: 8, type: 'span' });
+            expect(meter68.countingTime).to.be.deep.eq([{ numerator: 3, denominator: 8, type: 'span' }]);
 
         });
 
@@ -151,7 +151,7 @@ describe('Meter', () => {
 
         it('should create a composite meter', () => {
             const meter = MeterFactory.createCompositeMeter({ meters: [meter1, meter3] });
-            expect(meter.countingTime).to.be.deep.eq({ numerator: 1, denominator: 4, type: 'span' });
+            expect(meter.countingTime).to.be.deep.eq([{ numerator: 3, denominator: 4, type: 'span' }, { numerator: 1, denominator: 8, type: 'span' }]);
             expect(meter.measureLength).to.be.deep.eq({ numerator: 7, denominator: 8, type: 'span' });
         });
 
@@ -198,7 +198,43 @@ describe('Meter', () => {
             expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(15, 4)});
             expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(9, 2)});
             expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(21, 4)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(6, 1)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(27, 4)});
         });
+
+        it('should generate correct bars after composite meter change', () => {
+            const meterMap = new MeterMap();
+
+            meterMap.add(Time.newAbsolute(0, 1), MeterFactory.createRegularMeter({ count: 4, value: 4 }));
+            meterMap.add(Time.newAbsolute(1, 1), MeterFactory.createCompositeMeter({ 
+                meters: [
+                    { count: 3, value: 8 }, 
+                    { count: 3, value: 8 }, 
+                    { count: 2, value: 8 }
+                ],
+                commonDenominator: true
+            }));
+            meterMap.add(Time.newAbsolute(3, 1), MeterFactory.createRegularMeter({ count: 3, value: 4 }));
+            meterMap.add(Time.newAbsolute(5, 1), MeterFactory.createCompositeMeter({ 
+                meters: [
+                    { count: 3, value: 4 }, 
+                    { count: 1, value: 8 }
+                ],
+                commonDenominator: false
+            }));
+
+            const barsIterator = meterMap.getAllBars();
+
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(0, 1)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(1, 1)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(2, 1)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(3, 1)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(15, 4)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(9, 2)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(21, 4)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(49, 8)});
+        });
+
 
         it('should generate correct bars after meter change with upbeat', () => {
             const meterMap = new MeterMap();
@@ -236,6 +272,44 @@ describe('Meter', () => {
             expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(19, 8)});
             expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(11, 4)});
         });
+
+        it('should generate correct beats after composite meter change', () => {
+            const meterMap = new MeterMap();
+
+            meterMap.add(Time.newAbsolute(0, 1), MeterFactory.createRegularMeter({ count: 4, value: 4 }));
+            meterMap.add(Time.newAbsolute(1, 1), MeterFactory.createCompositeMeter({ 
+                meters: [
+                    { count: 3, value: 8 }, 
+                    { count: 3, value: 8 }, 
+                    { count: 2, value: 8 }
+                ],
+                commonDenominator: true
+            }));
+            //meterMap.add(Time.newAbsolute(5, 1), MeterFactory.createRegularMeter({ count: 3, value: 4 }));
+
+            const barsIterator = meterMap.getAllBeats();
+
+            // 4/4
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(1, 4)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(1, 2)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(3, 4)});
+
+            // 3+3+2/8
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(1, 1)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(11, 8)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(7, 4)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(2, 1)});
+
+
+            /*barsIterator.next();
+            barsIterator.next();
+            barsIterator.next();
+
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(2, 1)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(19, 8)});
+            expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(11, 4)});*/
+        });
+
 
     });
 });

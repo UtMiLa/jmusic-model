@@ -2,6 +2,7 @@ import { SelectionManager } from './../src/selection/selection-types';
 import { TextCommandEngine } from './../src/editor/text-command-engine';
 import { Cursor } from './../src/physical-view/physical/cursor';
 import { InsertionPoint } from './../src/editor/insertion-point';
+import { meterModel } from './demodata/time-changes';
 import { MultiFlexibleSequence } from './../src/model/score/multi-flexible-sequence';
 import { MyCanvasRenderer, PhysicalModel, StandardMetrics, renderOnRenderer, viewModelToPhysical } from '../src/physical-view';
 import { ClefType, JMusic, JMusicSettings, NoteDirection, ScoreDef, SeqFunction, Time } from '../src/model';
@@ -142,7 +143,7 @@ const musicDef: ScoreDef = {
     
 };
 
-const jMusic = new JMusic(musicDef, {});
+const jMusic = new JMusic(meterModel);
 //const jMusic = new JMusic(moonlightScoreDef, moonlightVars);
 const insertionPoint = new InsertionPoint(jMusic);
 

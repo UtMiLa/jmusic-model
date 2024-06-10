@@ -15,7 +15,7 @@ export interface Meter {
     equals(meter: Meter): boolean;
     type: string;
     measureLength: TimeSpan;
-    countingTime: TimeSpan;
+    countingTime: TimeSpan[];
     text: MeterText;
     firstBarTime: AbsoluteTime;
     upbeat: TimeSpan;
@@ -63,11 +63,11 @@ class RegularMeter implements Meter {
             this.def.value === (meter as RegularMeter).def.value && 
             upbeatIdentical;
     }
-    get countingTime(): TimeSpan {
+    get countingTime(): TimeSpan[] {
         if (this.def.count % 3 === 0 && this.def.count !== 3) {
-            return { numerator: 3, denominator: this.def.value, type: 'span' };    
+            return [{ numerator: 3, denominator: this.def.value, type: 'span' }];    
         }
-        return { numerator: 1, denominator: this.def.value, type: 'span' };
+        return [{ numerator: 1, denominator: this.def.value, type: 'span' }];
     }
     get measureLength(): TimeSpan {
         return Time.shorten(Time.newSpan(this.def.count, this.def.value));
@@ -118,8 +118,8 @@ export class CompositeMeter implements Meter {
         return true;
     }
 
-    get countingTime(): TimeSpan {
-        return { numerator: 1, denominator: this.def.meters[0].value, type: 'span' };
+    get countingTime(): TimeSpan[] {
+        return this.internalMeters.map(m => m.measureLength);
     }
     get measureLength(): TimeSpan {
         return this.internalMeters.reduce((t2: TimeSpan, t1: Meter) => Time.addSpans(t2, t1.measureLength), Time.NoTime);
@@ -154,12 +154,17 @@ export function* getAllBars(meter: Meter, startTime?: AbsoluteTime): IterableIte
 
 export function* getAllBeats(meter: Meter, startTime?: AbsoluteTime): IterableIterator<AbsoluteTime> {
     let time = startTime ? startTime : Time.fromStart(meter.upbeat);
+    let beatIndex = 0;
+    const meterGroups = meter.countingTime;
+    const meterGroupLength = meterGroups.length;
+
     if (Time.equals(time, Time.newAbsolute(0, 1))) {
-        time = Time.fromStart(meter.countingTime);
+        time = Time.fromStart(meter.countingTime[beatIndex % meterGroupLength]);
     }
     while (true) {
         yield time;
-        time = Time.addTime(time, meter.countingTime);
+        time = Time.addTime(time, meter.countingTime[beatIndex % meterGroupLength]);
+        beatIndex++;
     }
 }
 
@@ -168,6 +173,12 @@ export class MeterMap extends TimeMap<Meter> {
         let meter = this.items[0].value;
         let time = meter.upbeat ? Time.fromStart(meter.upbeat) : Time.newAbsolute(0, 1);
         let iterator = getAllBeats(meter, time);
+
+        let beatIndex = 0;
+        const meterGroups = meter.countingTime;
+        const meterGroupLength = meterGroups.length;
+    
+
         while (true) {
             const latestMeter = this.peekLatest(time);
             if (latestMeter && latestMeter !== meter) {
@@ -180,7 +191,8 @@ export class MeterMap extends TimeMap<Meter> {
             const res = iterator.next();
             if (res.done) return;
             yield res.value;
-            time = Time.addTime(time, meter.countingTime);
+            time = Time.addTime(time, meter.countingTime[beatIndex % meterGroupLength]);
+            beatIndex++;
         }        
     }
 
