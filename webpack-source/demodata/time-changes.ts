@@ -11,7 +11,7 @@ export const meterModel = {
                 noteDirection: NoteDirection.Up,
                 contentDef: 'c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 ' +
                   '\\meter 4/4 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 ' +
-                  '\\meter 2/2 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 ' +
+                  '\\compoundMeter #\'((2 2) (1 8)) c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 ' +
                   '\\meter 6/8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 ' +
                   '\\meter 3/4 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8'
             }

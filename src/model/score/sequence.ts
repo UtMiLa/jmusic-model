@@ -191,7 +191,7 @@ export function parseLilyElement(ly: string): Note | Spacer | StateChange {
         const sc = new StateChange();
         sc.key = parseLilyKey(ly);
         return sc;
-    } else if (ly.startsWith('\\meter')) {
+    } else if (ly.startsWith('\\meter') || ly.startsWith('\\compoundMeter')) {
         const sc = new StateChange();
         sc.meter = parseLilyMeter(ly);
         return sc;
@@ -450,6 +450,9 @@ export function splitByNotes(def: string): string[] {
                 prev[prev.length - 1] += ` ${curr}`;
                 return prev;
             } else if (prev[prev.length - 1].match(/^\\(meter)$/)) {
+                prev[prev.length - 1] += ` ${curr}`;
+                return prev;
+            } else if (prev[prev.length - 1].match(/^\\(compoundMeter)/) && !prev[prev.length - 1].match(/\)\)/)) {
                 prev[prev.length - 1] += ` ${curr}`;
                 return prev;
             } else if (prev[prev.length - 1].match(/^\\(key)( \w+)?$/)) {

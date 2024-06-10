@@ -45,6 +45,16 @@ describe('Sequence', () => {
         expect(seq1).to.deep.equal(['c,2', 'd,8', '<e, c>4']);
     });
 
+    it('should parse regular meters in chunks', () => {
+        const seq1 = splitByNotes('c,2 \\meter 5/4 c,4 \\meter 7/8 c,8');
+        expect(seq1).to.deep.equal(['c,2', '\\meter 5/4', 'c,4', '\\meter 7/8', 'c,8']);
+    });
+
+    it('should parse composite meters in chunks', () => {
+        const seq1 = splitByNotes('c,2 \\compoundMeter #\'((3 2 2 3 8)) c,4 \\compoundMeter #\'((1 2) (2 2) (3 4)) c,8');
+        expect(seq1).to.deep.equal(['c,2', '\\compoundMeter #\'((3 2 2 3 8))', 'c,4', '\\compoundMeter #\'((1 2) (2 2) (3 4))', 'c,8']);
+    });
+
     it('should calculate the length of a sequence', () => {
         const seq1 = SimpleSequence.createFromString(seq1Text);
         expect(seq1.duration).to.deep.equal(Time.HalfTime);
