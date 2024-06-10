@@ -4,6 +4,7 @@ import { PhysicalElementBase, PhysicalFixedSizeElement } from './physical-elemen
 import { Metrics } from './metrics';
 import { MeterTextPart } from '~/model';
 import { array } from 'fp-ts';
+import R = require('ramda');
 /*
 export function testMeter(viewModel: any): MeterViewModel | undefined {
     return viewModel.keyPositions ? viewModel as KeyViewModel : undefined;
@@ -30,7 +31,15 @@ function numberToGlyph(n: string): GlyphCode[] {
 
 export function convertSimpleMeter(meter: MeterTextPart, xPos: number, settings: Metrics): PhysicalElementBase[] {
     if (meter.length === 1) {
-        return [];
+        return numberToGlyph(meter[0]).map((glyph, i) => {
+            return ({
+                glyph,
+                position: {
+                    x: xPos + i * settings.meterNumberSpacing, 
+                    y: settings.scaleDegreeUnit*2 + settings.meterAdjustY
+                }
+            });
+        });
     }
 
     const numerator = numberToGlyph(meter[0]);
@@ -40,9 +49,9 @@ export function convertSimpleMeter(meter: MeterTextPart, xPos: number, settings:
     const xOffsetNum = 0;
     const xOffsetDen = lengthDiff / 2;
 
-    const res = [] as PhysicalFixedSizeElement[];
-    numerator.forEach((glyph, i) => {
-        res.push({
+    //const res = [] as PhysicalFixedSizeElement[];
+    const numGlyphs = numerator.map((glyph, i) => {
+        return ({
             glyph,
             position: {
                 x: xPos + (i + xOffsetNum) * settings.meterNumberSpacing, 
@@ -50,8 +59,8 @@ export function convertSimpleMeter(meter: MeterTextPart, xPos: number, settings:
             }
         });
     });
-    denominator.forEach((glyph, i) => {
-        res.push({
+    const denGlyphs = denominator.map((glyph, i) => {
+        return ({
             glyph,
             position: {
                 x: xPos + (i + xOffsetDen) * settings.meterNumberSpacing, 
@@ -59,22 +68,25 @@ export function convertSimpleMeter(meter: MeterTextPart, xPos: number, settings:
             }
         });
     });
-    return res;
+    return [...numGlyphs, ...denGlyphs];
 }
 
 
 
-export function convertMeter(meter: MeterViewModel, xPos: number, settings: Metrics): PhysicalElementBase[] {
-    return array.chain((mvp: MeterTextPart) => convertSimpleMeter(mvp, xPos, settings))(meter.meterText);
+const widthOfMeterTextPart = (meter: MeterTextPart): number => {
+    return meter.reduce((prev, curr) => Math.max(prev, curr.length), 0);
+};
 
+export function convertMeter(meter: MeterViewModel, xPos: number, settings: Metrics): PhysicalElementBase[] {
+    const meterWidths = meter.meterText.map(widthOfMeterTextPart);
+
+    const offsets = R.scan<number, number>((acc, elem) => acc + elem * settings.meterNumberSpacing, xPos)(meterWidths);
+    
+    return array.chainWithIndex((i: number, mvp: MeterTextPart) => convertSimpleMeter(mvp, offsets[i], settings))(meter.meterText);
 }
 
 
 export function calculateMeterWidth(meter: MeterViewModel, settings: Metrics): number {
-
-    const widthOfMeterTextPart = (meter: MeterTextPart): number => {
-        return meter.reduce((prev, curr) => Math.max(prev, curr.length), 0);
-    };
 
     const totalLength = meter.meterText.reduce((prev, curr) => prev + widthOfMeterTextPart(curr), 0);
     return settings.meterNumberSpacing * totalLength;
