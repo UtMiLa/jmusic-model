@@ -97,8 +97,31 @@ export function parseLilyKey(ly: string): Key {
     throw 'Illegal key change: ' + ly;
 }
 
-export function parseLilyMeter(ly: string): Meter {
+export function parseLilyMeter(ly: string): Meter {    
     const tokens = ly.split(' ');
+    if (!tokens.length) throw 'Illegal meter change: ' + ly;
+
+    if (tokens[0] === '\\compoundMeter') {
+        const match = /^\\compoundMeter #'\((\(.*\) ?)+\)$/.exec(ly);
+        if (!match) throw 'Illegal compound meter change: ' + ly;
+
+        const parts = match[1].split(/\) \(/);
+
+        return MeterFactory.createCompositeMeter({
+            meters: parts
+                .map(part => part.replace(/[()]/g, ''))
+                .map(s => {
+                    const match3 = s.split(' ');
+                    return {
+                        value: +match3[1],
+                        count: +match3[0],
+                        upBeat: undefined
+                    };
+                })
+        });
+    }
+
+
     if (tokens.length !== 2 || !/^\d+\/\d+$/.test(tokens[1])) throw 'Illegal meter change: ' + ly;
 
     const [count, value] = tokens[1].split('/');
