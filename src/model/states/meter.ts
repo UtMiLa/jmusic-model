@@ -160,6 +160,7 @@ export function* getAllBeats(meter: Meter, startTime?: AbsoluteTime): IterableIt
 
     if (Time.equals(time, Time.newAbsolute(0, 1))) {
         time = Time.fromStart(meter.countingTime[beatIndex % meterGroupLength]);
+        beatIndex++;
     }
     while (true) {
         yield time;
@@ -176,7 +177,7 @@ export class MeterMap extends TimeMap<Meter> {
 
         let beatIndex = 0;
         const meterGroups = meter.countingTime;
-        const meterGroupLength = meterGroups.length;
+        let meterGroupLength = meterGroups.length;
     
 
         while (true) {
@@ -187,6 +188,10 @@ export class MeterMap extends TimeMap<Meter> {
                 iterator.next();
                 //yield time;
                 //continue;
+                beatIndex = 0;
+                const meterGroups = meter.countingTime;
+                meterGroupLength = meterGroups.length;
+        
             }
             const res = iterator.next();
             if (res.done) return;
