@@ -107,11 +107,32 @@ export function parseLilyMeter(ly: string): Meter {
 
         const parts = match[1].split(/\) \(/);
 
+        if (parts.length === 1) {
+            const items = parts[0]
+                .replace(/[()]/g, '')
+                .split(' ');
+            if (!items.length) throw 'Illegal compound meter change: ' + ly;
+            const den = items.pop();
+            if (!den) throw 'Illegal compound meter change: ' + ly;
+            return MeterFactory.createCompositeMeter({
+                meters: items
+                    .map(s => {
+                        return {
+                            value: +den,
+                            count: +s,
+                            upBeat: undefined
+                        };
+                    }),
+                commonDenominator: true
+            });
+        }
+
         return MeterFactory.createCompositeMeter({
             meters: parts
                 .map(part => part.replace(/[()]/g, ''))
                 .map(s => {
                     const match3 = s.split(' ');
+                    if (match3.length !== 2) throw 'Illegal compound meter change: ' + ly;
                     return {
                         value: +match3[1],
                         count: +match3[0],

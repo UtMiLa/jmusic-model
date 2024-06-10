@@ -182,6 +182,10 @@ describe('Meter', () => {
             
         it('should parse different composite meter changes', () => {
             expect(parseLilyMeter('\\compoundMeter #\'((3 4) (1 8))')).to.deep.eq(MeterFactory.createCompositeMeter({ meters: [meter1, meter3] }));
+            expect(parseLilyMeter('\\compoundMeter #\'((3 4) (3 4))')).to.deep.eq(MeterFactory.createCompositeMeter({ meters: [meter1, meter1a] }));
+            expect(parseLilyMeter('\\compoundMeter #\'((3 4) (1 8) (3 4))')).to.deep.eq(MeterFactory.createCompositeMeter({ meters: [meter1, meter3, meter1] }));
+            expect(parseLilyMeter('\\compoundMeter #\'((3 3 4))')).to.deep.eq(MeterFactory.createCompositeMeter({ meters: [meter1, meter1a], commonDenominator: true }));
+            
         });
     
         it('should convert different composite meter changes to Lilypond', () => {
