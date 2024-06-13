@@ -2,6 +2,7 @@ import { PitchArg } from './../../editor/text-commands/argument-types';
 import {mathMod}  from 'ramda';
 import R = require('ramda');
 import { either } from 'fp-ts';
+import { Interval, addInterval } from './intervals';
 
 const pitchNames = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
 const accidentalNamesLy = ['eses', 'es', '', 'is', 'isis'];
@@ -156,5 +157,9 @@ export class PitchClass {
     }
     get alteration(): Alteration {
         return this._accidental;
+    }
+
+    transpose(interval: Interval): PitchClass {
+        return addInterval(new Pitch(this._pitchClass, 4, this._accidental), interval).pitchClass;
     }
 }

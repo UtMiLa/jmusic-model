@@ -2,13 +2,20 @@ import { KeyDef } from './../data-only/states';
 import { add, mathMod, multiply, pipe, range, times, __ } from 'ramda';
 import { Alteration, Pitch, PitchClass, Accidental } from './../pitches/pitch';
 import { Interval, addInterval } from '../pitches/intervals';
-
+import * as eql from 'deep-eql';
 /*export interface KeyDef {
     accidental: Alteration;
     count: number;
 }*/
 
-export class Key {
+export interface IKey {
+    enumerate(): PitchClass[];
+    transpose(interval: Interval): IKey;
+    equals(key: IKey): boolean;
+}
+
+
+export class Key implements IKey {
     constructor(public def: KeyDef) {}
 
     /*
@@ -58,6 +65,29 @@ export class Key {
         return this.def.accidental === key.def.accidental && this.def.count === key.def.count;
     }
 }
+
+
+export class IrregularKey implements IKey {
+    constructor(private alterations: PitchClass[]) {}
+
+    enumerate(): PitchClass[] {
+        return this.alterations;
+    }
+
+    transpose(interval: Interval): IKey {
+        const myAlterations = this.alterations.map(pc => pc.transpose(interval));
+        const otherAlterations = new Key({ accidental: 0, count: 0 }).transpose(interval).enumerate();
+        return new IrregularKey(combineAlterations(otherAlterations, myAlterations));
+    }
+
+    equals(key: IKey): boolean {
+        const thisKey = this.enumerate();
+        const otherKey = key.enumerate();
+        
+        return eql(thisKey, otherKey);
+    }
+}
+
 
 export class AccidentalManager {
     private _key: Key | undefined;
@@ -150,4 +180,14 @@ export function keyToLilypond(key: Key): string {
     const tonic = PitchClass.fromCircleOf5(key.def.accidental * key.def.count);
     const mode = '\\major';
     return `\\key ${tonic.pitchClassName} ${mode}`;
+}
+
+export function combineAlterations(baseEnumeration: PitchClass[], extraEnumeration: PitchClass[]): PitchClass[] {
+    const removeDoubles = (e1: PitchClass[], e2: PitchClass[]) => {
+        return e1.filter(pc1 => !e2.some(pc2 => pc1.pitchClass === pc2.pitchClass));
+    };
+    const removeNeutrals = (e1: PitchClass[]) => {
+        return e1.filter(pc1 => !!pc1.alteration);
+    };
+    return [...removeDoubles(baseEnumeration, extraEnumeration), ...removeNeutrals(extraEnumeration)];
 }

@@ -1,7 +1,7 @@
 import { Time } from './../rationals/time';
 import { parseLilyKey, SimpleSequence, __internal } from './../score/sequence';
 import { PitchClass } from './../pitches/pitch';
-import { Key, AccidentalManager, displaceAccidentals, keyToLilypond } from './key';
+import { Key, AccidentalManager, displaceAccidentals, keyToLilypond, IrregularKey, combineAlterations } from './key';
 import { Pitch } from '../pitches/pitch';
 import { expect } from 'chai';
 
@@ -224,5 +224,76 @@ describe('Key', () => {
         });
 
 
+    });
+
+
+    describe('Irregular key', () => {
+        let irr1: IrregularKey;
+        let irr2: IrregularKey;
+        let irr3: IrregularKey;
+
+        beforeEach(() => {
+            irr1 = new IrregularKey([new PitchClass(3, 1), new PitchClass(6, -1)]); // f# bb
+            irr2 = new IrregularKey([new PitchClass(2, -1)]); // eb
+            irr3 = new IrregularKey([new PitchClass(6, -1), new PitchClass(2, -1)]); // bb db
+        });
+
+        it('should be able to create an irregular key', () => {
+            expect(irr1).to.exist;
+        });
+
+        it('should enumerate alterations', () => {
+            const pitches = Array.from<PitchClass>(irr1.enumerate());
+            expect(pitches.length).to.equal(2);
+            expect(pitches[0].alteration).to.equal(1);
+            expect(pitches[0].pitchClassName).to.equal('fis');
+            expect(pitches[1].pitchClassName).to.equal('bes');
+        });
+   
+        
+        it('should compare two key changes', () => {
+            expect(irr1.equals(new IrregularKey([new PitchClass(3, 1), new PitchClass(6, -1)]))).to.be.true;
+            expect(irr1.equals(irr2)).to.be.false;
+        });
+    
+        /*
+        Thoughts about transposing irregular keys
+        """""""""""""""""""""""""""""""""""""""""
+        To transpose non-diatonic key:
+        * transpose each fixed alteration
+        * transpose the diatonic scale
+        * combine these, removing naturals
+
+        Example:
+        Transpose f# bb up/down a major second.
+        Up:
+        f# -> g#
+        bb -> c
+        diatonic scale: -> f# c# (c cancels c#)
+        result: g# f# (or should it be f# g# ?)
+
+        Down:
+        f# -> e
+        bb -> ab
+        diatonic -> bb eb [e cancels eb]
+        result: bb ab (or ab bb)
+
+        Natural order of alterations should yield correct regular order for all transpositions of any regular key
+        */
+        it('should combine two enumerations', () => {
+            const en1 = [new PitchClass(4, 1), new PitchClass(0, 0)]; // non-diatonic  g# c
+            const en2 = [new PitchClass(3, 1), new PitchClass(0, 1)]; // diatonic      f# c#
+
+            const combined = combineAlterations(en2, en1);
+
+            expect(combined).to.deep.eq([new PitchClass(3, 1), new PitchClass(4, 1)]);
+        });
+
+        it('should transpose a key', () => {
+            expect(irr1.transpose({ interval: 0, alteration: 0}).equals(irr1)).to.be.true;
+            expect(irr1.transpose({ interval: -4, alteration: 0}).equals(irr2)).to.be.true;
+            expect(irr1.transpose({ interval: 1, alteration: 0}).equals(irr3)).to.be.false;
+        });
+    
     });
 });
