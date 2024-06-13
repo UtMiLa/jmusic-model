@@ -22,7 +22,7 @@ const clefMagicNo = {
 export function keyToView(key: Key, clef: Clef): KeyViewModel {
     const clefC = clef.map(Pitch.fromScientific('c', 4));
     return {
-        keyPositions: Array.from(key.enumerate()).map((item, i) => { 
+        keyPositions: Array.from(key.enumerate()).map(item => { 
             const p = item.circleOf5Number;
 
             let clefOffset = 4 - clefC;
@@ -31,13 +31,13 @@ export function keyToView(key: Key, clef: Clef): KeyViewModel {
             if (p < 0) {
                 // b
                 const magicNo = clefMagicNo['b'][clefOffset];
-                const staffLine = mathMod((i * 4 + clefOffset + 8 - magicNo), 7) + magicNo - 6;
+                const staffLine = mathMod((-p * 4 + clefOffset - magicNo), 7) + magicNo - 6;
                 return { position: 5 - staffLine, alteration: -1 };
             }
             else {
                 // x
                 const magicNo = clefMagicNo['x'][clefOffset];
-                const staffLine = mathMod((i * 3 + clefOffset + 11 - magicNo), 7) + magicNo - 6;
+                const staffLine = mathMod((p * 3 + clefOffset - magicNo), 7) + magicNo - 6;
                 return { position: 5 - staffLine, alteration: 1 };
             }            
         })

@@ -1,3 +1,4 @@
+import { PitchClass } from './../../model/pitches/pitch';
 import { DiatonicKey, Key } from './../../model/states/key';
 import { Clef } from './../../model/states/clef';
 import { expect } from 'chai';
@@ -5,18 +6,24 @@ import { keyToView } from './convert-key';
 
 describe('View model: Keys', () => {
 
-    let keyAs: Key, keyCes: Key, keyCis: Key;
+    let keyAs: Key, keyCes: Key, keyCis: Key, keyIrreg: Key;
     const clefG = Clef.clefTreble;
 
     beforeEach(() => { 
         keyAs = new DiatonicKey({  accidental: -1, count: 4 });
         keyCes = new DiatonicKey({  accidental: -1, count: 7 });
         keyCis = new DiatonicKey({  accidental: 1, count: 7 });
+        keyIrreg = Key.create({ alterations: [new PitchClass(3, 1), new PitchClass(6, -1)] });
     });
 
     it('should convert a key to view model', () => {
         const keySig = keyToView(keyAs, clefG);
         expect(keySig.keyPositions).to.deep.equal([0, 3, -1, 2].map(p => ({ position: p, alteration: -1 })));
+    });
+
+    it('should convert an irregular key to view model', () => {
+        const keySig = keyToView(keyIrreg, clefG);
+        expect(keySig.keyPositions).to.deep.equal([{ position: 4, alteration: 1 }, { position: 0, alteration: -1 }]);
     });
 
     const keydefs = { // key signatures in different clefs

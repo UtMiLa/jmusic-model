@@ -1,11 +1,11 @@
-import { NoteType, NoteDirection, StaffDef, ClefType, Time, SimpleSequence } from '../../src/model';
+import { NoteType, NoteDirection, StaffDef, ClefType, Time, SimpleSequence, PitchClass } from '../../src/model';
 
 
 export const meterModel = {
     staves: [{
         initialClef: { clefType: ClefType.G, line: -2 },
         initialMeter: { meters: [ { count: 3, value: 8 }, { count: 3, value: 8 }, { count: 2, value: 8 }], commonDenominator: true },
-        initialKey: { accidental: -1, count: 0 },
+        initialKey: { alterations: [new PitchClass(3, 1), new PitchClass(6, -1), new PitchClass(2, -1)] },
         voices:[
             {
                 noteDirection: NoteDirection.Up,
