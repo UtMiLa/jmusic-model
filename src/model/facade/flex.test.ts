@@ -5,7 +5,7 @@ import { Clef } from './../states/clef';
 import { expect } from 'chai';
 import { createNote } from '../notes/note';
 import { Pitch } from '../pitches/pitch';
-import { Key } from '../states/key';
+import { DiatonicKey, Key } from '../states/key';
 import R = require('ramda');
 import { makeClef } from './clef-flex';
 import { makeKey } from './key-flex';
@@ -31,7 +31,7 @@ describe('Facade', () => {
         it('should read a key in different types', () => {
             expect(makeKey('a \\major')).to.deep.eq({ accidental: 1, count: 3 });
             expect(makeKey({ accidental: 1, count: 3 })).to.deep.eq({ accidental: 1, count: 3 });
-            expect(makeKey(new Key({ accidental: 1, count: 3 }))).to.deep.eq({ accidental: 1, count: 3 });
+            expect(makeKey(new DiatonicKey({ accidental: 1, count: 3 }))).to.deep.eq({ accidental: 1, count: 3 });
         });
 
         it('should read a note in different types', () => {

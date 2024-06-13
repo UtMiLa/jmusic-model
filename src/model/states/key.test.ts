@@ -1,7 +1,7 @@
 import { Time } from './../rationals/time';
 import { parseLilyKey, SimpleSequence, __internal } from './../score/sequence';
 import { PitchClass } from './../pitches/pitch';
-import { Key, AccidentalManager, displaceAccidentals, keyToLilypond, IrregularKey, combineAlterations } from './key';
+import { Key, AccidentalManager, displaceAccidentals, keyToLilypond, IrregularKey, combineAlterations, DiatonicKey } from './key';
 import { Pitch } from '../pitches/pitch';
 import { expect } from 'chai';
 
@@ -9,11 +9,11 @@ describe('Key', () => {
     let keyEs: Key, keyH: Key;
     
     beforeEach(() => {
-        keyEs = new Key({
+        keyEs = new DiatonicKey({
             accidental: -1,
             count: 3
         });
-        keyH = new Key({
+        keyH = new DiatonicKey({
             accidental: 1,
             count: 5
         });
@@ -48,7 +48,7 @@ describe('Key', () => {
 
         expect(seq.count).to.eq(3);
         expect(seq.elements[1]).to.deep.eq({
-            key: new Key({
+            key: new DiatonicKey({
                 accidental: 1,
                 count: 2
             }),
@@ -59,7 +59,7 @@ describe('Key', () => {
 
         expect(seq2.count).to.eq(3);
         expect(seq2.elements[1]).to.deep.eq({
-            key: new Key({
+            key: new DiatonicKey({
                 accidental: -1,
                 count: 6
             }),
@@ -70,35 +70,35 @@ describe('Key', () => {
 
 
     it('should parse all key change types', () => {
-        expect(parseLilyKey('\\key c \\major')).to.deep.eq(new Key({ accidental: 0, count: 0 }));
-        expect(parseLilyKey('\\key d \\major')).to.deep.eq(new Key({ accidental: 1, count: 2 }));
-        expect(parseLilyKey('\\key e \\major')).to.deep.eq(new Key({ accidental: 1, count: 4 }));
-        expect(parseLilyKey('\\key ees \\major')).to.deep.eq(new Key({ accidental: -1, count: 3 }));
-        expect(parseLilyKey('\\key f \\major')).to.deep.eq(new Key({ accidental: -1, count: 1 }));
-        expect(parseLilyKey('\\key g \\major')).to.deep.eq(new Key({ accidental: 1, count: 1 }));
-        expect(parseLilyKey('\\key a \\major')).to.deep.eq(new Key({ accidental: 1, count: 3 }));
-        expect(parseLilyKey('\\key b \\major')).to.deep.eq(new Key({ accidental: 1, count: 5 }));
+        expect(parseLilyKey('\\key c \\major')).to.deep.eq(new DiatonicKey({ accidental: 0, count: 0 }));
+        expect(parseLilyKey('\\key d \\major')).to.deep.eq(new DiatonicKey({ accidental: 1, count: 2 }));
+        expect(parseLilyKey('\\key e \\major')).to.deep.eq(new DiatonicKey({ accidental: 1, count: 4 }));
+        expect(parseLilyKey('\\key ees \\major')).to.deep.eq(new DiatonicKey({ accidental: -1, count: 3 }));
+        expect(parseLilyKey('\\key f \\major')).to.deep.eq(new DiatonicKey({ accidental: -1, count: 1 }));
+        expect(parseLilyKey('\\key g \\major')).to.deep.eq(new DiatonicKey({ accidental: 1, count: 1 }));
+        expect(parseLilyKey('\\key a \\major')).to.deep.eq(new DiatonicKey({ accidental: 1, count: 3 }));
+        expect(parseLilyKey('\\key b \\major')).to.deep.eq(new DiatonicKey({ accidental: 1, count: 5 }));
 
-        expect(parseLilyKey('\\key c \\minor')).to.deep.eq(new Key({ accidental: -1, count: 3 }));
-        expect(parseLilyKey('\\key d \\minor')).to.deep.eq(new Key({ accidental: -1, count: 1 }));
-        expect(parseLilyKey('\\key e \\minor')).to.deep.eq(new Key({ accidental: 1, count: 1 }));
-        expect(parseLilyKey('\\key ees \\minor')).to.deep.eq(new Key({ accidental: -1, count: 6 }));
-        expect(parseLilyKey('\\key f \\minor')).to.deep.eq(new Key({ accidental: -1, count: 4 }));
-        expect(parseLilyKey('\\key g \\minor')).to.deep.eq(new Key({ accidental: -1, count: 2 }));
-        expect(parseLilyKey('\\key a \\minor')).to.deep.eq(new Key({ accidental: 0, count: 0 }));
-        expect(parseLilyKey('\\key b \\minor')).to.deep.eq(new Key({ accidental: 1, count: 2 }));
+        expect(parseLilyKey('\\key c \\minor')).to.deep.eq(new DiatonicKey({ accidental: -1, count: 3 }));
+        expect(parseLilyKey('\\key d \\minor')).to.deep.eq(new DiatonicKey({ accidental: -1, count: 1 }));
+        expect(parseLilyKey('\\key e \\minor')).to.deep.eq(new DiatonicKey({ accidental: 1, count: 1 }));
+        expect(parseLilyKey('\\key ees \\minor')).to.deep.eq(new DiatonicKey({ accidental: -1, count: 6 }));
+        expect(parseLilyKey('\\key f \\minor')).to.deep.eq(new DiatonicKey({ accidental: -1, count: 4 }));
+        expect(parseLilyKey('\\key g \\minor')).to.deep.eq(new DiatonicKey({ accidental: -1, count: 2 }));
+        expect(parseLilyKey('\\key a \\minor')).to.deep.eq(new DiatonicKey({ accidental: 0, count: 0 }));
+        expect(parseLilyKey('\\key b \\minor')).to.deep.eq(new DiatonicKey({ accidental: 1, count: 2 }));
 
     });
 
     it('should stringify all key change types', () => {
-        expect(keyToLilypond(new Key({ accidental: 0, count: 0 }))).to.deep.eq('\\key c \\major');
-        expect(keyToLilypond(new Key({ accidental: 1, count: 2 }))).to.deep.eq('\\key d \\major');
-        expect(keyToLilypond(new Key({ accidental: 1, count: 4 }))).to.deep.eq('\\key e \\major');
-        expect(keyToLilypond(new Key({ accidental: -1, count: 3 }))).to.deep.eq('\\key ees \\major');
-        expect(keyToLilypond(new Key({ accidental: -1, count: 1 }))).to.deep.eq('\\key f \\major');
-        expect(keyToLilypond(new Key({ accidental: 1, count: 1 }))).to.deep.eq('\\key g \\major');
-        expect(keyToLilypond(new Key({ accidental: 1, count: 3 }))).to.deep.eq('\\key a \\major');
-        expect(keyToLilypond(new Key({ accidental: 1, count: 5 }))).to.deep.eq('\\key b \\major');
+        expect(keyToLilypond(new DiatonicKey({ accidental: 0, count: 0 }))).to.deep.eq('\\key c \\major');
+        expect(keyToLilypond(new DiatonicKey({ accidental: 1, count: 2 }))).to.deep.eq('\\key d \\major');
+        expect(keyToLilypond(new DiatonicKey({ accidental: 1, count: 4 }))).to.deep.eq('\\key e \\major');
+        expect(keyToLilypond(new DiatonicKey({ accidental: -1, count: 3 }))).to.deep.eq('\\key ees \\major');
+        expect(keyToLilypond(new DiatonicKey({ accidental: -1, count: 1 }))).to.deep.eq('\\key f \\major');
+        expect(keyToLilypond(new DiatonicKey({ accidental: 1, count: 1 }))).to.deep.eq('\\key g \\major');
+        expect(keyToLilypond(new DiatonicKey({ accidental: 1, count: 3 }))).to.deep.eq('\\key a \\major');
+        expect(keyToLilypond(new DiatonicKey({ accidental: 1, count: 5 }))).to.deep.eq('\\key b \\major');
 
     });
 

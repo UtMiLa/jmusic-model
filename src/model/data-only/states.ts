@@ -1,4 +1,4 @@
-import { Alteration } from '../pitches/pitch';
+import { Alteration, PitchClass } from '../pitches/pitch';
 import { TimeSpan } from '../rationals/time';
 
 
@@ -15,11 +15,26 @@ export interface ClefDef {
 }
 
 
-export interface KeyDef {
+export interface DiatonicKeyDef {
     accidental: Alteration;
     count: number;
 }
 
+export interface IrregularKeyDef {
+    alterations: PitchClass[];
+}
+
+export type KeyDef = IrregularKeyDef | DiatonicKeyDef;
+
+export function isDiatonicKeyDef(input: any): input is DiatonicKeyDef {
+    return typeof(input.count) === 'number';
+}
+export function isIrregularKeyDef(input: any): input is IrregularKeyDef {
+    return input.alterations && input.alterations.length !== undefined;
+}
+export function isKeyDef(input: any): input is KeyDef {
+    return isDiatonicKeyDef(input) || isIrregularKeyDef(input);
+}
 
 export interface RegularMeterDef {
     count: number;

@@ -3,7 +3,7 @@ import { NoteDirection } from '../data-only/notes';
 import { ProjectDef } from '../data-only/project';
 import { createNoteFromLilypond } from '../notes/note';
 import { Clef } from '../states/clef';
-import { Key } from '../states/key';
+import { DiatonicKey, Key } from '../states/key';
 import { convertVoiceDataToActive, convertStaffDataToActive, convertScoreDataToActive, convertProjectDataToActive } from './def-to-active';
 import { ActiveVarRepo } from './types';
 
@@ -58,7 +58,7 @@ describe('Converting scores and staves etc from def to active', () => {
         expect(active.item.voices[0].content.length).to.eq(4);
         expect(active.item.voices[1].content[2]).to.include({ name: 'v1', type: 'VarRef' });
         expect(active.item.initialClef).to.deep.eq(new Clef(projectData.score.staves[0].initialClef));
-        expect(active.item.initialKey).to.deep.eq(new Key(projectData.score.staves[0].initialKey));
+        expect(active.item.initialKey).to.deep.eq(Key.create(projectData.score.staves[0].initialKey));
         expect(active.vars).to.deep.eq(activeVars);
     });
  

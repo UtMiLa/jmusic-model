@@ -1,5 +1,5 @@
 import { InsertionPoint, InsertionPointDef } from '../../editor/insertion-point';
-import { ChangeHandler, Clef, JMusic, Key, MeterFactory, VoiceContentDef } from '..';
+import { ChangeHandler, Clef, DiatonicKey, JMusic, Key, MeterFactory, VoiceContentDef } from '..';
 import { LongDecorationType } from '../';
 import { Note, cloneNote } from '../notes/note';
 import { DomainConverter, LensItem, ProjectLens, doWithNote, lensItemNone, lensItemOf } from '../optics/lens';
@@ -199,7 +199,7 @@ export abstract class EditView implements EditableView {
     addKeyChg(ins: InsertionPoint, key: KeyFlex): void {
         const m = makeKey(key);
         
-        this.insertElementAtInsertionPoint(ins, StateChange.newKeyChange(new Key(m)), isKeyChange);
+        this.insertElementAtInsertionPoint(ins, StateChange.newKeyChange(Key.create(m)), isKeyChange);
         this.didChange();
     }
 

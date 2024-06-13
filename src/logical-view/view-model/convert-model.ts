@@ -5,7 +5,7 @@ import { StateChange } from './../../model/states/state';
 import { IndexedMap } from './../../tools/time-map';
 import { Meter, MeterMap } from './../../model/states/meter';
 import { BeamDef } from './../../model/notes/beaming';
-import { displaceAccidentals } from './../../model/states/key';
+import { DiatonicKey, displaceAccidentals } from './../../model/states/key';
 import { getDuration, Score, ScoreDef, setNoteDirection, Staff, TimeSlot, voiceContentToSequence } from './../../model';
 import { MeterFactory } from './../../model';
 import { meterToView } from './convert-meter';
@@ -75,7 +75,7 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
                 transposition: def.initialClef.transpose ?? 0
             },
             
-            key: keyToView(new Key(def.initialKey), new Clef(def.initialClef))           
+            key: keyToView(Key.create(def.initialKey), new Clef(def.initialClef))           
         
         }
     ];
@@ -132,7 +132,7 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
     const initialStates = getStateAt(stateMap, restrictions.startTime, staffNo);
     if (!initialStates.clef) initialStates.clef = new Clef(def.initialClef);
     if (!initialStates.meter && def.initialMeter) initialStates.meter = MeterFactory.createMeter(def.initialMeter);
-    if (!initialStates.key) initialStates.key = new Key(def.initialKey);
+    if (!initialStates.key) initialStates.key = Key.create(def.initialKey);
 
     const res = { 
         timeSlots: timeSlots
@@ -181,7 +181,7 @@ function createViewModelsForVoice(def: Staff, staffNo: number, meter: Meter | un
 
         const state = new State(voiceBeamGroups, staffNo, voiceNo, voice, clef);
         if (def.initialKey)
-            state.key = new Key(def.initialKey);
+            state.key = Key.create(def.initialKey);
         if (meter)
             state.setMeter(meter, Time.newAbsolute(0, 1));
 

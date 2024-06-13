@@ -1,22 +1,26 @@
-import { KeyDef } from './../data-only/states';
+import { DiatonicKeyDef, IrregularKeyDef, KeyDef, isDiatonicKeyDef, isIrregularKeyDef } from './../data-only/states';
 import { add, mathMod, multiply, pipe, range, times, __ } from 'ramda';
 import { Alteration, Pitch, PitchClass, Accidental } from './../pitches/pitch';
 import { Interval, addInterval } from '../pitches/intervals';
 import * as eql from 'deep-eql';
-/*export interface KeyDef {
-    accidental: Alteration;
-    count: number;
-}*/
 
-export interface IKey {
+export interface Key {
     enumerate(): PitchClass[];
-    transpose(interval: Interval): IKey;
-    equals(key: IKey): boolean;
+    transpose(interval: Interval): Key;
+    equals(key: Key): boolean;
+    def: KeyDef;
 }
 
+export class Key {
+    static create(def: KeyDef): Key {
+        if (isDiatonicKeyDef(def)) return new DiatonicKey(def);
+        if (isIrregularKeyDef(def)) return new IrregularKey(def.alterations);
+        throw 'Unknown Key definition';
+    }
+}
 
-export class Key implements IKey {
-    constructor(public def: KeyDef) {}
+export class DiatonicKey implements Key {
+    constructor(public def: DiatonicKeyDef) {}
 
     /*
     *enumerate1(): Generator<PitchClass, void, unknown> {
@@ -30,7 +34,7 @@ export class Key implements IKey {
     }*/
 
     enumerate(): PitchClass[] {
-        return Key.enumerate(this.def.accidental, this.def.count);
+        return DiatonicKey.enumerate(this.def.accidental, this.def.count);
     }
 
     static enumerate(accidental: Alteration, count: number): PitchClass[] {
@@ -52,39 +56,43 @@ export class Key implements IKey {
             case 'minor': no -= 3; break;
         }
 
-        return new Key({accidental: Math.sign(no) as (0 | 1 | -1), count: Math.abs(no)});
+        return new DiatonicKey({accidental: Math.sign(no) as (0 | 1 | -1), count: Math.abs(no)});
     }
 
     transpose(interval: Interval): Key {
         const tonic = PitchClass.fromCircleOf5(this.def.accidental * this.def.count);
         const changedTonic = addInterval(new Pitch(tonic.pitchClass, 4, tonic.alteration), interval);
-        return Key.fromMode(changedTonic.pitchClass, 'major');
+        return DiatonicKey.fromMode(changedTonic.pitchClass, 'major');
     }
 
-    equals(key: Key): boolean {        
+    equals(key: DiatonicKey): boolean {
         return this.def.accidental === key.def.accidental && this.def.count === key.def.count;
     }
 }
 
 
-export class IrregularKey implements IKey {
+export class IrregularKey implements Key {
     constructor(private alterations: PitchClass[]) {}
 
     enumerate(): PitchClass[] {
         return this.alterations;
     }
 
-    transpose(interval: Interval): IKey {
+    transpose(interval: Interval): Key {
         const myAlterations = this.alterations.map(pc => pc.transpose(interval));
-        const otherAlterations = new Key({ accidental: 0, count: 0 }).transpose(interval).enumerate();
+        const otherAlterations = new DiatonicKey({ accidental: 0, count: 0 }).transpose(interval).enumerate();
         return new IrregularKey(combineAlterations(otherAlterations, myAlterations));
     }
 
-    equals(key: IKey): boolean {
+    equals(key: Key): boolean {
         const thisKey = this.enumerate();
         const otherKey = key.enumerate();
         
         return eql(thisKey, otherKey);
+    }
+
+    get def(): IrregularKeyDef {
+        return { alterations: this.alterations };
     }
 }
 
@@ -177,6 +185,8 @@ export function displaceAccidentals(positions: number[]): number[] {
 }
 
 export function keyToLilypond(key: Key): string {
+    if (isIrregularKeyDef(key.def)) throw 'Not implemented yet';
+    
     const tonic = PitchClass.fromCircleOf5(key.def.accidental * key.def.count);
     const mode = '\\major';
     return `\\key ${tonic.pitchClassName} ${mode}`;

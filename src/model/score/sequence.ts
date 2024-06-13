@@ -3,7 +3,7 @@ import { LongDecorationElement } from './..';
 //import { generateUniqueId } from '../../tools/unique-id';
 import { Meter, MeterFactory } from './../states/meter';
 import { Pitch } from './../pitches/pitch';
-import { Key } from './../states/key';
+import { DiatonicKey, Key } from './../states/key';
 import { TimeMap } from './../../tools/time-map';
 import { StateChange } from './../states/state';
 import { AbsoluteTime, ExtendedTime } from './../rationals/time';
@@ -91,8 +91,8 @@ export function parseLilyKey(ly: string): Key {
     if (tokens.length !== 3) throw 'Illegal key change: ' + ly;
 
     switch(tokens[2]) {
-        case '\\major': return Key.fromMode(Pitch.parseLilypond(tokens[1]).pitchClass, 'major');
-        case '\\minor': return Key.fromMode(Pitch.parseLilypond(tokens[1]).pitchClass, 'minor');
+        case '\\major': return DiatonicKey.fromMode(Pitch.parseLilypond(tokens[1]).pitchClass, 'major');
+        case '\\minor': return DiatonicKey.fromMode(Pitch.parseLilypond(tokens[1]).pitchClass, 'minor');
     }
     throw 'Illegal key change: ' + ly;
 }

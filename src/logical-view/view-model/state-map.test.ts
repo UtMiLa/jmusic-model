@@ -1,7 +1,7 @@
 import { EventType, getExtendedTime } from '../../model/score/timing-order';
 import { JMusic } from './../../model/facade/jmusic';
 import { Clef } from './../../model/states/clef';
-import { Key } from './../../model/states/key';
+import { DiatonicKey, Key } from './../../model/states/key';
 import { MeterFactory } from './../../model/states/meter';
 import { Time } from './../../model/rationals/time';
 import { expect } from 'chai';
@@ -27,7 +27,7 @@ describe('State change map', () => {
         expect(stateMap.items[1].value).to.deep.eq({ clef: Clef.clefTenorC });
 
         expect(stateMap.items[2].index).to.deep.eq({ absTime: getExtendedTime(Time.newAbsolute(7, 4), EventType.KeyChg), scope: undefined });
-        expect(stateMap.items[2].value).to.deep.eq({ key: new Key({ count: 3, accidental: -1 })});
+        expect(stateMap.items[2].value).to.deep.eq({ key: new DiatonicKey({ count: 3, accidental: -1 })});
     });
 
 
@@ -45,9 +45,9 @@ describe('State change map', () => {
         expect(state3).to.deep.include({ meter: MeterFactory.createRegularMeter({count: 3, value: 4}), key: undefined, clef: Clef.clefTenorC });
 
         const state4 = getStateAt(stateMap, Time.newAbsolute(8, 4), 0);
-        expect(state4).to.deep.include({ meter: MeterFactory.createRegularMeter({count: 3, value: 4}), key: new Key({accidental: -1, count: 3}), clef: undefined });
+        expect(state4).to.deep.include({ meter: MeterFactory.createRegularMeter({count: 3, value: 4}), key: new DiatonicKey({accidental: -1, count: 3}), clef: undefined });
         const state5 = getStateAt(stateMap, Time.newAbsolute(8, 4), 1);
-        expect(state5).to.deep.include({ meter: MeterFactory.createRegularMeter({count: 3, value: 4}), key: new Key({accidental: -1, count: 3}), clef: Clef.clefTenorC });
+        expect(state5).to.deep.include({ meter: MeterFactory.createRegularMeter({count: 3, value: 4}), key: new DiatonicKey({accidental: -1, count: 3}), clef: Clef.clefTenorC });
 
     });
 

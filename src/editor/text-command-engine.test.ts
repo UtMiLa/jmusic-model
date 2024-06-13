@@ -3,7 +3,7 @@ import { SelectionManager } from './../selection/selection-types';
 import { expect } from 'chai';
 import { InsertionPoint } from './insertion-point';
 import Sinon = require('sinon');
-import { Clef, ClefType, JMusic, Key, MeterFactory, Time, createNoteFromLilypond, isClefChange, isKeyChange, isMeterChange, valueOf } from '../model';
+import { Clef, ClefType, DiatonicKey, JMusic, Key, MeterFactory, Time, createNoteFromLilypond, isClefChange, isKeyChange, isMeterChange, valueOf } from '../model';
 import { TextCommand, TextCommandEngine } from './text-command-engine';
 import { StateChange } from '../model/states/state';
 import { SelectionAll, SelectionVoiceTime } from '../selection/query';
@@ -108,7 +108,7 @@ describe('Text commands', () => {
             
             cmd.execute(model, ins);
 
-            Sinon.assert.calledOnceWithExactly(model.insertElementAtInsertionPoint, ins, StateChange.newKeyChange(new Key({ accidental: 1, count: 5 })), isKeyChange);
+            Sinon.assert.calledOnceWithExactly(model.insertElementAtInsertionPoint, ins, StateChange.newKeyChange(new DiatonicKey({ accidental: 1, count: 5 })), isKeyChange);
         });
 
 

@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { JMusic, initStateInSequence } from './jmusic';
 import { createNoteFromLilypond, Note, NoteDirection } from '..';
 import { Pitch } from '../pitches/pitch';
-import { Key } from '../states/key';
+import { DiatonicKey, Key } from '../states/key';
 import { StaffDef } from '..';
 import { FlexibleSequence } from '../score/flexible-sequence';
 import R = require('ramda');
@@ -447,7 +447,7 @@ describe('Facade', () => {
             ins.time = Time.newAbsolute(1, 1);
             score.addKeyChg(ins, 'f major');
             const seq = score.staves[0].voices[1].content;
-            expect(seq.elements[4]).to.deep.include({key: new Key({ accidental: -1, count: 1 })});
+            expect(seq.elements[4]).to.deep.include({key: new DiatonicKey({ accidental: -1, count: 1 })});
             expect(scoreChangeCalls).to.eq(1);
         });
         it('should delete a clef change', () => {
@@ -534,7 +534,7 @@ describe('Facade', () => {
             const seq3 = new FlexibleSequence(['\\meter 3/8 c4 c4 c4 c4']);
             
             const foundStates1 = initStateInSequence(seq1);
-            expect(foundStates1).to.deep.eq({key: new Key({ accidental: 1, count: 3 })});
+            expect(foundStates1).to.deep.eq({key: new DiatonicKey({ accidental: 1, count: 3 })});
             
             const foundStates2 = initStateInSequence(seq2);
             expect(foundStates2).to.deep.eq({clef: new Clef({ clefType: ClefType.C, line: 0 })});
@@ -560,8 +560,8 @@ describe('Facade', () => {
             
             const staves = init.getView().staves;
            
-            expect(staves[0].initialKey).to.deep.eq(new Key({ accidental: 1, count: 3 }).def);
-            expect(staves[1].initialKey).to.deep.eq(new Key({ accidental: 1, count: 3 }).def);
+            expect(staves[0].initialKey).to.deep.eq(new DiatonicKey({ accidental: 1, count: 3 }).def);
+            expect(staves[1].initialKey).to.deep.eq(new DiatonicKey({ accidental: 1, count: 3 }).def);
             expect(staves[0].initialClef).to.deep.eq(new Clef({ clefType: ClefType.C, line: 0 }).def);
             expect(staves[1].initialClef).to.deep.eq(new Clef({ clefType: ClefType.F, line: 2 }).def);
             expect(staves[0].initialMeter).to.deep.eq(MeterFactory.createRegularMeter({ count: 3, value: 8 }).def);

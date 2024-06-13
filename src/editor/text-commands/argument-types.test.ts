@@ -1,5 +1,5 @@
 import { StateChange } from './../../model/states/state';
-import { Clef, ClefType, Key, MeterFactory, Pitch, PitchClass, Time, cloneNote, createNote, createNoteFromLilypond } from 'model';
+import { Clef, ClefType, DiatonicKey, Key, MeterFactory, Pitch, PitchClass, Time, cloneNote, createNote, createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
 import { ClefArg, KeyArg, MeterArg, NoteArg, SpacerArg,  PitchClassArg, PitchArg, SplitSequenceArg } from './argument-types';
 import { createSpacerFromLilypond } from '../../model/notes/spacer';
@@ -65,7 +65,7 @@ describe('Argument types', () => {
         it('should parse a key token', () => {
             const res = KeyArg('3b');
             expect(res).to.deep.eq(either.right([
-                StateChange.newKeyChange(new Key({ accidental: -1, count: 3 })),                 
+                StateChange.newKeyChange(new DiatonicKey({ accidental: -1, count: 3 })),                 
                 ''
             ]));
         });

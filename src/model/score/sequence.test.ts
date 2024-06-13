@@ -10,7 +10,7 @@ import Sinon = require('sinon');
 import { MeterFactory } from '../states/meter';
 import { StateChange } from '../states/state';
 import { Clef } from '../states/clef';
-import { Key } from '../states/key';
+import { DiatonicKey } from '../states/key';
 describe('Sequence', () => {
     const seq1Text = 'c4 d8 e8';
     const seq2Text = 'c,2 d,8 e,8 c4';
@@ -254,7 +254,7 @@ describe('Sequence', () => {
         });
 
         it ('should map elements together with state info', () => {
-            const initState = { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }), key: new Key({ accidental: -1, count: 3 }) };
+            const initState = { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }), key: new DiatonicKey({ accidental: -1, count: 3 }) };
             seq.chainElements(spy, initState);
             
             Sinon.assert.callCount(spy, 9);
@@ -266,24 +266,24 @@ describe('Sequence', () => {
             Sinon.assert.calledWith(spy, 
                 createNoteFromLilypond('g4'), 
                 Time.newAbsolute(3, 4), 
-                { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 5, value: 8 }), key: new Key({ accidental: 1, count: 1 }) }
+                { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 5, value: 8 }), key: new DiatonicKey({ accidental: 1, count: 1 }) }
             );
             Sinon.assert.calledWith(spy, 
                 StateChange.newMeterChange(MeterFactory.createRegularMeter({ count: 5, value: 8 })), 
                 Time.newAbsolute(3, 4),
-                { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }), key: new Key({ accidental: -1, count: 3 }) }
+                { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }), key: new DiatonicKey({ accidental: -1, count: 3 }) }
             );
 
             Sinon.assert.calledWith(spy, 
                 createNoteFromLilypond('a4.'), 
                 Time.newAbsolute(1, 1),
-                { clef: Clef.clefBass, meter: MeterFactory.createRegularMeter({ count: 5, value: 8 }), key: new Key({ accidental: 1, count: 1 }) }
+                { clef: Clef.clefBass, meter: MeterFactory.createRegularMeter({ count: 5, value: 8 }), key: new DiatonicKey({ accidental: 1, count: 1 }) }
             );
 
         });
 
         it ('should filter elements together with state info', () => {
-            const initState = { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }), key: new Key({ accidental: -1, count: 3 }) };
+            const initState = { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }), key: new DiatonicKey({ accidental: -1, count: 3 }) };
             seq.filterElements(spy, initState);
             
             Sinon.assert.callCount(spy, 9);
@@ -295,18 +295,18 @@ describe('Sequence', () => {
             Sinon.assert.calledWith(spy, 
                 createNoteFromLilypond('g4'), 
                 Time.newAbsolute(3, 4), 
-                { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 5, value: 8 }), key: new Key({ accidental: 1, count: 1 }) }
+                { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 5, value: 8 }), key: new DiatonicKey({ accidental: 1, count: 1 }) }
             );
             Sinon.assert.calledWith(spy, 
                 StateChange.newMeterChange(MeterFactory.createRegularMeter({ count: 5, value: 8 })), 
                 Time.newAbsolute(3, 4),
-                { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }), key: new Key({ accidental: -1, count: 3 }) }
+                { clef: Clef.clefTreble, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 }), key: new DiatonicKey({ accidental: -1, count: 3 }) }
             );
 
             Sinon.assert.calledWith(spy, 
                 createNoteFromLilypond('a4.'), 
                 Time.newAbsolute(1, 1),
-                { clef: Clef.clefBass, meter: MeterFactory.createRegularMeter({ count: 5, value: 8 }), key: new Key({ accidental: 1, count: 1 }) }
+                { clef: Clef.clefBass, meter: MeterFactory.createRegularMeter({ count: 5, value: 8 }), key: new DiatonicKey({ accidental: 1, count: 1 }) }
             );
 
         });

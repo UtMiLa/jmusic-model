@@ -1,5 +1,5 @@
 import { StateChange } from './../../model/states/state';
-import { Key, MeterFactory, Note, NoteBase, Pitch, PitchClass, RationalDef, SequenceItem, SplitSequenceDef, Time, TimeSpan, UpdateNote, VariableRef, cloneNote, createNote, 
+import { DiatonicKey, Key, MeterFactory, Note, NoteBase, Pitch, PitchClass, RationalDef, SequenceItem, SplitSequenceDef, Time, TimeSpan, UpdateNote, VariableRef, cloneNote, createNote, 
     fromLilypondAlteration, fromLilypondOctave, fromLilypondPitchClass, parseLilyClef } from '../../model';
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
 import { Spacer } from '../../model/notes/spacer';
@@ -116,7 +116,7 @@ export const SpacerArg: ArgType<Spacer> = (input: string) => {
 };
 
 const _keyArg = (sequence([(IntegerArg), (select([FixedArg('#'), FixedArg('b')]))]));
-export const KeyArg = (mapResult(_keyArg, ([count, acc]) => (StateChange.newKeyChange(new Key({ count, accidental: acc === '#' ? 1 : -1 })))));
+export const KeyArg = (mapResult(_keyArg, ([count, acc]) => (StateChange.newKeyChange(new DiatonicKey({ count, accidental: acc === '#' ? 1 : -1 })))));
 
 export const MeterArg = (mapResult((RationalArg), (r: RationalDef) => (StateChange.newMeterChange(MeterFactory.createRegularMeter({ count: r.numerator, value: r.denominator })))));
 

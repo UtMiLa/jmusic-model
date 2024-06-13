@@ -23,6 +23,9 @@ describe('Staff view model', () => {
         };
     });
 
+    function setCMajor() {
+        staffClef.initialKey = { accidental: 0, count: 0 };
+    }
 
 
     it('should convert an empty staff to view model', () => {
@@ -146,7 +149,7 @@ describe('Staff view model', () => {
     it('should convert a staff with one voice to view model', () => {
         staffClef.voices = [ {contentDef:  'c\'1 d\'4 e\'2' }];
         
-        staffClef.initialKey.count = 0;
+        setCMajor();
 
         const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
 
@@ -215,7 +218,7 @@ describe('Staff view model', () => {
             { contentDef:  'e\'2 f\'2', noteDirection: NoteDirection.Up }
         ];
 
-        staffClef.initialKey.count = 0;
+        setCMajor();
         
         const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
 
@@ -288,7 +291,7 @@ describe('Staff view model', () => {
     it('should add bar lines', () => {
         staffClef.voices = [ {contentDef:  'c\'4 d\'4 e\'4 c\'2. d\'4' }];
         
-        staffClef.initialKey.count = 0;
+        setCMajor();
         staffClef.initialMeter = {count: 3, value: 4};
 
         const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
@@ -307,7 +310,7 @@ describe('Staff view model', () => {
     it('should add bar lines even when no other events at time', () => {
         staffClef.voices = [ {contentDef:  'c\'1' }];
         
-        staffClef.initialKey.count = 0;
+        setCMajor();
         staffClef.initialMeter = {count: 2, value: 4};
 
         const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());
@@ -326,7 +329,7 @@ describe('Staff view model', () => {
     it('should add bar lines when an upbeat is defined', () => {
         staffClef.voices = [ {contentDef:  'c\'4 d\'4 e\'4 c\'4 d\'4 e\'4 e\'4' }];
         
-        staffClef.initialKey.count = 0;
+        setCMajor();
         staffClef.initialMeter = {count: 3, value: 4, upBeat: Time.QuarterTime};
 
         const vm = __internal.staffModelToViewModel(staffDefToStaff(staffClef), createScopedTimeMap());

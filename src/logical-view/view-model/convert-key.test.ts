@@ -1,4 +1,4 @@
-import { Key } from './../../model/states/key';
+import { DiatonicKey, Key } from './../../model/states/key';
 import { Clef } from './../../model/states/clef';
 import { expect } from 'chai';
 import { keyToView } from './convert-key';
@@ -9,9 +9,9 @@ describe('View model: Keys', () => {
     const clefG = Clef.clefTreble;
 
     beforeEach(() => { 
-        keyAs = new Key({  accidental: -1, count: 4 });
-        keyCes = new Key({  accidental: -1, count: 7 });
-        keyCis = new Key({  accidental: 1, count: 7 });
+        keyAs = new DiatonicKey({  accidental: -1, count: 4 });
+        keyCes = new DiatonicKey({  accidental: -1, count: 7 });
+        keyCis = new DiatonicKey({  accidental: 1, count: 7 });
     });
 
     it('should convert a key to view model', () => {

@@ -6,7 +6,7 @@ import { expect } from 'chai';
 import { Note, createNoteFromLilypond } from '../notes/note';
 import { MeterFactory } from '../states/meter';
 import { MatchEventStruct, augment, empty, identity, invertNote, matchEvent, transposeKey, transposeNote, tremolo } from './music-event-functions';
-import { Key } from '../states/key';
+import { DiatonicKey, Key } from '../states/key';
 import { Interval } from '../pitches/intervals';
 import { Rational } from '../rationals/rational';
 import { LongDecorationElement, LongDecorationType } from '../data-only/decorations';
@@ -19,14 +19,14 @@ describe('MusicEvent functions', () => {
     beforeEach(() => {
         sequence = new FlexibleSequence(['c\'4.', 'd\'8', 'b8', 
             { isState: true, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 })}, 
-            { isState: true, key: new Key({ accidental: -1, count: 1 })},
+            { isState: true, key: new DiatonicKey({ accidental: -1, count: 1 })},
             'c\'2.', 's1']); // ought to accept { meter: { count: 3, value: 4} } and '\\time 3/4'
     });
 
     it('should leave events unchanged when using identity function', () => {        
         expect(identity(sequence.elements[0])).to.deep.eq([createNoteFromLilypond('c\'4.')]);
         expect(identity(sequence.elements[3])).to.deep.eq([{ isState: true, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 })}]);
-        expect(identity(sequence.elements[4])).to.deep.eq([{ isState: true, key: new Key({ accidental: -1, count: 1 })}]);
+        expect(identity(sequence.elements[4])).to.deep.eq([{ isState: true, key: new DiatonicKey({ accidental: -1, count: 1 })}]);
     });
 
     it('should remove events unchanged when using empty function', () => {        
@@ -66,10 +66,10 @@ describe('MusicEvent functions', () => {
             interval: 2,
             alteration: -1
         };
-        expect(transposeKey(interval)({ isState: true, key: new Key({ accidental: -1, count: 1 })})).to.deep.eq([{ isState: true, key: new Key({ accidental: -1, count: 4 })}]);
-        expect(transposeKey(interval)({ isState: true, key: new Key({ accidental: 1, count: 1 })})).to.deep.eq([{ isState: true, key: new Key({ accidental: -1, count: 2 })}]);
-        expect(transposeKey(interval)({ isState: true, key: new Key({ accidental: 0, count: 0 })})).to.deep.eq([{ isState: true, key: new Key({ accidental: -1, count: 3 })}]);
-        expect(transposeKey(interval)({ isState: true, key: new Key({ accidental: 1, count: 3 })})).to.deep.eq([{ isState: true, key: new Key({ accidental: 0, count: 0 })}]);
+        expect(transposeKey(interval)({ isState: true, key: new DiatonicKey({ accidental: -1, count: 1 })})).to.deep.eq([{ isState: true, key: new DiatonicKey({ accidental: -1, count: 4 })}]);
+        expect(transposeKey(interval)({ isState: true, key: new DiatonicKey({ accidental: 1, count: 1 })})).to.deep.eq([{ isState: true, key: new DiatonicKey({ accidental: -1, count: 2 })}]);
+        expect(transposeKey(interval)({ isState: true, key: new DiatonicKey({ accidental: 0, count: 0 })})).to.deep.eq([{ isState: true, key: new DiatonicKey({ accidental: -1, count: 3 })}]);
+        expect(transposeKey(interval)({ isState: true, key: new DiatonicKey({ accidental: 1, count: 3 })})).to.deep.eq([{ isState: true, key: new DiatonicKey({ accidental: 0, count: 0 })}]);
     });
 
     
@@ -89,7 +89,7 @@ describe('MusicEvent functions', () => {
         expect(f(sequence.elements[1])).to.deep.eq([createNoteFromLilypond('f\'8')]);
         expect(f(sequence.elements[2])).to.deep.eq([createNoteFromLilypond('d\'8')]);
         expect(f(sequence.elements[3])).to.deep.eq([{ isState: true, meter: MeterFactory.createRegularMeter({ count: 3, value: 4 })}]);
-        expect(f(sequence.elements[4])).to.deep.eq([ { isState: true, key: new Key({ accidental: -1, count: 4 })}]);
+        expect(f(sequence.elements[4])).to.deep.eq([ { isState: true, key: new DiatonicKey({ accidental: -1, count: 4 })}]);
         expect(matchEvent(pattern)(sequence.elements[6])).to.deep.eq([parseLilyElement('s1')]);
 
     });
