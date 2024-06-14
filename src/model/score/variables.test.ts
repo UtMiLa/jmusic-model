@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import { createNoteFromLilypond } from '../notes/note';
 import { FlexibleSequence } from './flexible-sequence';
-import { VariableRepository, createRepo, setVar } from './variables';
-import { VariableDef, FlexibleItem } from '../';
+import { VariableRepository, createRepo, setVar, varDictDefToActive, varDictFlexToActive, varDictFlexToDef } from './variables';
+import { VariableDef, FlexibleItem, VarDictFlex, VarDictActive, VarDictDef, Key } from '../';
+import { StateChange } from '../states/state';
 
 describe('Variables', () => {
     it('should insert variable in sequence', () => {
@@ -57,5 +58,58 @@ describe('Variables', () => {
         expect(result[0]).to.deep.eq(createNoteFromLilypond('f8'));
         expect(result[1]).to.deep.eq(createNoteFromLilypond('e8'));
         expect(result[2]).to.deep.eq(createNoteFromLilypond('g8'));
+    });
+
+    describe('VarDict converters', () => {
+        let varFlex: VarDictFlex; 
+        let varDef: VarDictDef;
+        let varActive: VarDictActive;
+
+        beforeEach(() => {
+            varFlex = {
+                a: [createNoteFromLilypond('e4\\tenuto'), { isState: true, key: Key.create({ accidental: -1, count: 2 })}],
+                b: 'e4 f4 g4'
+            };
+            varDef = {
+                a: ['e4\\tenuto', '\\key bes \\major'],
+                b: ['e4 f4 g4']
+            };
+            varActive = {
+                a: [createNoteFromLilypond('e4\\tenuto'), StateChange.newKeyChange(Key.create({ accidental: -1, count: 2 })) ],
+                b: [createNoteFromLilypond('e4'), createNoteFromLilypond('f4'), createNoteFromLilypond('g4')]
+            };
+        });
+
+
+        it('should convert varDictFlex to varDictActive', () => {
+            const res = varDictFlexToActive(varFlex);
+
+            expect(res).to.deep.eq(varActive);
+        });
+
+
+        it('should convert varDictFlex to varDictDef', () => {
+            const res = varDictFlexToDef(varFlex);
+
+            expect(res).to.deep.eq(varDef);
+        });
+
+
+        it('should convert varDictDef to varDictActive', () => {
+            const res = varDictDefToActive(varDef);
+
+            expect(res).to.deep.eq(varActive);
+        });
+
+
+        it('should convert varDictActive to varDictDef', () => {
+            const res = varDictFlexToActive(varFlex);
+
+            expect(res).to.deep.eq(varActive);
+        });
+
+
+
+
     });
 });

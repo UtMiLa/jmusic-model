@@ -1,7 +1,10 @@
 import R = require('ramda');
 import { Subject } from 'rxjs';
-import { FlexibleSequence } from './flexible-sequence';
-import { FlexibleItem, VarDict, VariableDef, VariableRef } from '..';
+import { FlexibleSequence, flexibleItemToDef } from './flexible-sequence';
+import { FlexibleItem, VarDict, VarDictActive, VarDictDef, VarDictFlex, VariableDef, VariableRef, VoiceContentDef } from '..';
+import { record } from 'fp-ts';
+import { ActiveSequence } from '../active-project/types';
+import { convertActiveSequenceToData, convertSequenceDataToActive } from '../active-project/conversions';
 
 export interface VariableRepository {
     vars: VarDict;
@@ -60,4 +63,23 @@ export function varDefArrayToVarDict(vars: VariableDef[]): VarDict {
 
 export function varDictToVarDefArray(vars: VarDict): VariableDef[] {
     return R.toPairs(vars).map((v: [string, FlexibleItem]) => ({ id: v[0], value: v[1] } as VariableDef));
+}
+
+
+
+
+export function varDictFlexToDef(vars: VarDictFlex): VarDictDef {
+    return record.map((vdf: FlexibleItem) => flexibleItemToDef(vdf))(vars);
+}
+
+export function varDictFlexToActive(vars: VarDictFlex): VarDictActive {
+    return varDictDefToActive(varDictFlexToDef(vars));
+}
+
+export function varDictDefToActive(vars: VarDictDef): VarDictActive {
+    return record.map((vdf: VoiceContentDef) => convertSequenceDataToActive(vdf, vars))(vars);
+}
+
+export function varDictActiveToDef(vars: VarDictActive): VarDictDef {
+    return record.map((vdf: ActiveSequence) => convertActiveSequenceToData(vdf))(vars);
 }

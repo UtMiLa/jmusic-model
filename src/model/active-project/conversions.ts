@@ -5,7 +5,7 @@ import { MultiSequenceDef, VoiceContentDef, isSplitSequence } from '../data-only
 import { FunctionPathElement, PathElement, isVariablePathElement, recursivelySplitStringsIn } from '../score/flexible-sequence';
 import { FlexibleItem } from '../score/types';
 import { VariableRepository, createRepo, isVariableRef, valueOf } from '../score/variables';
-import { MusicEvent, getDuration, isLongDecoration, isMusicEvent, isNote, isStateChange, parseLilyElement } from '../score/sequence';
+import { MusicEvent, getDuration, isClefChange, isKeyChange, isLongDecoration, isMeterChange, isMusicEvent, isNote, isStateChange, parseLilyElement } from '../score/sequence';
 import { ActiveProject, ActiveSequence, ActiveSequenceItem, 
     ActiveVarRepo, 
     ElementDescriptor, 
@@ -134,6 +134,16 @@ export function convertActiveSequenceToData(active: ActiveSequence): VoiceConten
                 return noteAsLilypond(elem);
             }
             if (isStateChange(elem)) {
+                /*if (elem.clef) {
+                    return elem.clef.def;
+                }
+                if (elem.key) {
+                    return elem.key.def;
+                }
+                if (elem.meter) {
+                    return elem.meter.def;
+                }
+                throw 'Unknown state change';*/
                 return elem;
             }
             if (isSpacer(elem)) {

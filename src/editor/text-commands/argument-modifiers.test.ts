@@ -1,22 +1,12 @@
 import { either } from 'fp-ts';
-import { KeyDef, createNoteFromLilypond } from 'model';
+import { createNoteFromLilypond } from 'model';
 import { expect } from 'chai';
-import { FixedArg, IntegerArg, RationalArg, WhitespaceArg } from './base-argument-types';
-import { KeyArg, NoteArg } from './argument-types';
+import { FixedArg, IntegerArg, RationalArg, WhitespaceArg, WordArg } from './base-argument-types';
+import { NoteArg } from './argument-types';
 import { many, mapResult, optional, select, sequence } from './argument-modifiers';
-
-//const IntegerArg = _eitherToException(Int0Arg);
-
-//const WhitespaceArg = _eitherToException(W0);
-
-//const RationalArg = _eitherToException(R0);
-//const optional = (type: any) => _eitherToException(op0(type));
 
 describe('Argument type modifiers', () => {
     describe('Many', () => {
-        /*it('should provide a regular expression for many integers', () => {
-            expect(many(IntegerArg).regex()).to.eq('(\\d+\\s*)+');
-        });*/
         it('should parse an integer array', () => {
             expect(many((IntegerArg))('4 63 43 52 ijo 54')).to.deep.eq(either.right([[4, 63, 43, 52], 'ijo 54']));
         });        
@@ -48,9 +38,6 @@ describe('Argument type modifiers', () => {
     });
    
     describe('Optional', () => {
-        /*it('should provide a regular expression for an optional integer', () => {
-            expect(optional(IntegerArg).regex()).to.eq('(\\d+)?');
-        });*/
         it('should parse an optional integer', () => {
             expect(optional(IntegerArg)('4 63 ijo')).to.deep.eq(either.right([4, ' 63 ijo']));
         });        
@@ -130,9 +117,15 @@ describe('Argument type modifiers', () => {
 
 
     describe('Select', () => {
-        it('should parse integers', () => { // todo: it should warn if more than one path matches the string
+        it('should parse integers', () => {
             expect(select([RationalArg, IntegerArg])('4'))
                 .to.deep.eq(either.right([4, '']));
+        });
+        it('should return first match', () => {
+            expect(select([IntegerArg, WordArg])('8'))
+                .to.deep.eq(either.right([8, '']));
+            expect(select([WordArg, IntegerArg])('8'))
+                .to.deep.eq(either.right(['8', '']));
         });
         it('should parse rationals', () => {
             expect(select([RationalArg, IntegerArg])('4/5'))
@@ -154,9 +147,6 @@ describe('Argument type modifiers', () => {
 
    
     describe('MapResult', () => {
-        /*it('should provide the same regular expression as the child', () => {
-            expect(mapResult(RationalArg, rat => rat.numerator).regex()).to.eq(RationalArg.regex());
-        });*/
         it('should map a parsed integer', () => {
             expect(mapResult((IntegerArg), int => `${int}: ${int * int}`)('4 ='))
                 .to.deep.eq(either.right(['4: 16', ' =']));

@@ -6,12 +6,6 @@ import { VoiceDef } from '../data-only/voices';
 import { NoteDirection } from '../data-only/notes';
 
 
-/*export type VoiceContentDef = MultiSequenceDef | MultiSequence; 
-export interface VoiceDef {
-    contentDef: VoiceContentDef;
-    noteDirection?: NoteDirection;
-}*/
-
 export interface Voice {
     content: ISequence;
     noteDirection?: NoteDirection;
