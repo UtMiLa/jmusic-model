@@ -62,7 +62,7 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
     //(restrictions.startTime as ExtendedTime).extended = -Infinity;
     restrictions.startTime = { ...restrictions.startTime, extended: -Infinity } as AbsoluteTime;
 
-    const clef = new Clef(def.initialClef);
+    const clef = def.initialClef;
 
     const timeSlots: TimeSlotViewModel[] = [
         {
@@ -70,12 +70,12 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
             notes: [],
             clef: { 
                 position: 1,
-                clefType: def.initialClef.clefType,
-                line: def.initialClef.line,
-                transposition: def.initialClef.transpose ?? 0
+                clefType: def.initialClef.def.clefType,
+                line: def.initialClef.def.line,
+                transposition: def.initialClef.def.transpose ?? 0
             },
             
-            key: keyToView(Key.create(def.initialKey), new Clef(def.initialClef))           
+            key: keyToView(Key.create(def.initialKey), def.initialClef)
         
         }
     ];
@@ -89,7 +89,7 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
         meterMap.add(Time.newAbsolute(0, 1), meter);
     }
 
-    let currentClef = new Clef(def.initialClef);
+    let currentClef = def.initialClef;
     let currentKey = Key.create(def.initialKey);
     stateMap.forEach((key, value) => {
         const ts = getTimeSlot(timeSlots, key.absTime);
@@ -134,7 +134,7 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
     }
 
     const initialStates = getStateAt(stateMap, restrictions.startTime, staffNo);
-    if (!initialStates.clef) initialStates.clef = new Clef(def.initialClef);
+    if (!initialStates.clef) initialStates.clef = def.initialClef;
     if (!initialStates.meter && def.initialMeter) initialStates.meter = MeterFactory.createMeter(def.initialMeter);
     if (!initialStates.key) initialStates.key = Key.create(def.initialKey);
 
@@ -153,7 +153,7 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
 
     if ((restrictions.startTime.numerator || restrictions.endTime.denominator) && res.timeSlots[0]) {
         res.timeSlots[0].key = keyToView(initialStates.key, initialStates.clef);
-        res.timeSlots[0].clef = clefToView(initialStates.clef);
+        res.timeSlots[0].clef = initialStates.clef ? clefToView(initialStates.clef) : undefined;
         //res.timeSlots[0].meter = initialStates.meter ? meterToView(initialStates.meter) : undefined;
     }
 

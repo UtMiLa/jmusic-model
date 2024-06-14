@@ -28,6 +28,9 @@ export class Model {
     activeProject: ActiveProject;
 
     public get staves(): Staff[] {
+        /*return this.activeProject.score.staves.map(staff => ({...staff, voices: staff.voices.map(voice => ({
+            ...voice, content: activeGetElements(voice.content)
+        })) }));*/
         return this.project.score.staves.map(sd => staffDefToStaff(sd, this.vars));
     }
 

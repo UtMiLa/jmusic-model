@@ -106,7 +106,7 @@ export abstract class EditView implements EditableView {
             const clef = this.staves[ins.staffNo].initialClef;
             if (!clef) throw 'Cannot map position without a clef';
 
-            state.clef = new Clef(clef);
+            state.clef = clef;
         }
         
         return state.clef.mapPosition(ins.position);

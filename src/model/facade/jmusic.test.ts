@@ -27,7 +27,7 @@ describe('Facade', () => {
             const sc = new JMusic('c4 c4 c4 c4');
 
             expect(sc.staves).to.have.length(1);
-            expect(sc.staves[0].initialClef).to.deep.eq({ clefType: ClefType.G, line: -2 });
+            expect(sc.staves[0].initialClef.def).to.deep.eq({ clefType: ClefType.G, line: -2 });
             expect(sc.staves[0].initialKey).to.deep.eq({ count: 0, accidental: 0 });
             expect(sc.staves[0].initialMeter).to.deep.eq({ count: 4, value: 4 });
             expect(sc.staves[0].voices).to.have.length(1);
@@ -40,7 +40,7 @@ describe('Facade', () => {
             const sc = new JMusic({ content: [['c4 c4 c4 c4']]});
 
             expect(sc.staves).to.have.length(1);
-            expect(sc.staves[0].initialClef).to.deep.eq({ clefType: ClefType.G, line: -2 });
+            expect(sc.staves[0].initialClef.def).to.deep.eq({ clefType: ClefType.G, line: -2 });
             expect(sc.staves[0].initialKey).to.deep.eq({ count: 0, accidental: 0 });
             expect(sc.staves[0].initialMeter).to.be.undefined;
             expect(sc.staves[0].voices).to.have.length(1);
@@ -54,14 +54,14 @@ describe('Facade', () => {
             const sc = new JMusic({ content: [['g4 g4 g4 g4', 'c4 c4 c4 c4'], ['c,4 c,4 c,4 c,4']]});
 
             expect(sc.staves).to.have.length(2);
-            expect(sc.staves[0].initialClef).to.deep.eq({ clefType: ClefType.G, line: -2 });
+            expect(sc.staves[0].initialClef.def).to.deep.eq({ clefType: ClefType.G, line: -2 });
             expect(sc.staves[0].initialKey).to.deep.eq({ count: 0, accidental: 0 });
             expect(sc.staves[0].initialMeter).to.be.undefined;
             expect(sc.staves[0].voices).to.have.length(2);
             expect(sc.staves[0].voices[0].content.duration).to.deep.eq(Time.WholeTime);
             expect(sc.staves[0].voices[0].content.elements).to.have.length(4);
             
-            expect(sc.staves[1].initialClef).to.deep.eq({ clefType: ClefType.F, line: 2 });
+            expect(sc.staves[1].initialClef.def).to.deep.eq({ clefType: ClefType.F, line: 2 });
             expect(sc.staves[1].initialKey).to.deep.eq({ count: 0, accidental: 0 });
             expect(sc.staves[1].initialMeter).to.be.undefined;
             expect(sc.staves[1].voices).to.have.length(1);
@@ -82,7 +82,7 @@ describe('Facade', () => {
             });
 
             expect(sc.staves).to.have.length(2);
-            expect(sc.staves[0].initialClef).to.deep.eq({ clefType: ClefType.C, line: 0 });
+            expect(sc.staves[0].initialClef.def).to.deep.eq({ clefType: ClefType.C, line: 0 });
             expect(sc.staves[0].initialKey).to.deep.eq({ count: 2, accidental: -1 });
             expect(sc.staves[0].initialMeter).to.deep.eq({ count: 6, value: 8 });
             expect(sc.staves[0].voices).to.have.length(2);
@@ -91,7 +91,7 @@ describe('Facade', () => {
             expect(sc.staves[0].voices[0].noteDirection).to.eq(NoteDirection.Up);
             expect(sc.staves[0].voices[1].noteDirection).to.eq(NoteDirection.Down);
             
-            expect(sc.staves[1].initialClef).to.deep.eq({ clefType: ClefType.C, line: 2 });
+            expect(sc.staves[1].initialClef.def).to.deep.eq({ clefType: ClefType.C, line: 2 });
             expect(sc.staves[1].initialKey).to.deep.eq({ count: 2, accidental: -1 });
             expect(sc.staves[1].initialMeter).to.deep.eq({ count: 6, value: 8 });
             expect(sc.staves[1].voices).to.have.length(1);
@@ -174,7 +174,7 @@ describe('Facade', () => {
             );
 
             expect(sc.staves).to.have.length(1);
-            expect(sc.staves[0].initialClef).to.deep.eq({ clefType: ClefType.G, line: -2 });
+            expect(sc.staves[0].initialClef.def).to.deep.eq({ clefType: ClefType.G, line: -2 });
             expect(sc.staves[0].initialKey).to.deep.eq({ count: 0, accidental: 0 });
             expect(sc.staves[0].initialMeter).to.be.undefined;
             expect(sc.staves[0].voices).to.have.length(1);
@@ -562,8 +562,8 @@ describe('Facade', () => {
            
             expect(staves[0].initialKey).to.deep.eq(new DiatonicKey({ accidental: 1, count: 3 }).def);
             expect(staves[1].initialKey).to.deep.eq(new DiatonicKey({ accidental: 1, count: 3 }).def);
-            expect(staves[0].initialClef).to.deep.eq(new Clef({ clefType: ClefType.C, line: 0 }).def);
-            expect(staves[1].initialClef).to.deep.eq(new Clef({ clefType: ClefType.F, line: 2 }).def);
+            expect(staves[0].initialClef).to.deep.eq(new Clef({ clefType: ClefType.C, line: 0 }));
+            expect(staves[1].initialClef).to.deep.eq(new Clef({ clefType: ClefType.F, line: 2 }));
             expect(staves[0].initialMeter).to.deep.eq(MeterFactory.createRegularMeter({ count: 3, value: 8 }).def);
             expect(staves[1].initialMeter).to.deep.eq(MeterFactory.createRegularMeter({ count: 3, value: 8 }).def);
 
