@@ -12,7 +12,7 @@ import { ClefType, StaffDef } from './../../model';
 import { Clef } from './../../model';
 import { scoreModelToViewModel, __internal } from './convert-model';
 import { createTestStaff } from '../../tools/test-tools';
-import { createScopedTimeMap } from './state-map';
+import { createScopedTimeMap, createStateMap } from './state-map';
 import { option } from 'fp-ts';
 import { SelectionAll, SelectionVoiceTime } from '../../selection/query';
 /* eslint-disable comma-dangle */
@@ -37,6 +37,17 @@ describe('View model', () => {
         expect(staffView.timeSlots[6].accidentals).to.be.undefined;
         expect(staffView.timeSlots[7].accidentals).to.be.undefined;
         expect(staffView.timeSlots[8].accidentals).to.deep.eq([{ alteration: -1, displacement: 0, position: -7}]);
+    });
+
+    it('should cancel out accidentals when changing to c major key', () => {
+        const staff: StaffDef = createTestStaff(['a1 \\key c \\major a1'], [4, 4], [1, 2]);
+        const stateMap = createStateMap(new JMusic({staves: [staff]}));
+
+        const staffView = __internal.staffModelToViewModel(staffDefToStaff(staff), stateMap/*createScopedTimeMap()*/);
+
+        expect(staffView.timeSlots.length).to.eq(5);
+        expect(staffView.timeSlots[0].key?.keyPositions).to.deep.eq([{ position: 4, alteration: 1 }, { position: 1, alteration: 1 }]);
+        expect(staffView.timeSlots[2].key?.keyPositions).to.deep.eq([{ position: 4, alteration: 0 }, { position: 1, alteration: 0 }]);
     });
 
 

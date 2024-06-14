@@ -90,9 +90,13 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
     }
 
     let currentClef = new Clef(def.initialClef);
+    let currentKey = Key.create(def.initialKey);
     stateMap.forEach((key, value) => {
         const ts = getTimeSlot(timeSlots, key.absTime);
-        if (value.key) ts.key = keyToView(value.key, currentClef);
+        if (value.key) {
+            ts.key = keyToView(value.key, currentClef, currentKey);
+            currentKey = value.key;
+        }
         if (value.meter) {
             ts.meter = meterToView(value.meter);
             meterMap.add(key.absTime, value.meter);

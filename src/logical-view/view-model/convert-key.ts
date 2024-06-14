@@ -19,7 +19,10 @@ const clefMagicNo = {
     'x': [7, 6, 7, 6, 6, 6, 7]
 };
 
-export function keyToView(key: Key, clef: Clef): KeyViewModel {
+export function keyToView(key: Key, clef: Clef, oldKey?: Key): KeyViewModel {
+    if (!key.enumerate().length && oldKey) {
+        return { keyPositions: keyToView(oldKey, clef).keyPositions.map(position => ({ ...position, alteration: 0})) };
+    }
     const clefC = clef.map(Pitch.fromScientific('c', 4));
     return {
         keyPositions: Array.from(key.enumerate()).map(item => { 

@@ -9,6 +9,7 @@ describe('Physical model, keys', () => {
     let defaultMetrics: Metrics;
     let alternativeMetrics: Metrics;
     let keyC: KeyViewModel;
+    let keyCCancel: KeyViewModel;
     let keyAs: KeyViewModel;
     let keyH: KeyViewModel;
 
@@ -23,6 +24,9 @@ describe('Physical model, keys', () => {
         };
         keyAs = { 
             keyPositions: [0, 3, -1, 2].map(p => ({ position: p, alteration: -1 }))
+        };
+        keyCCancel = {
+            keyPositions: [0, 3, -1, 2].map(p => ({ position: p, alteration: 0 }))
         };
         keyH = {
             keyPositions: [4, 1, 5, 2, -1].map(p => ({ position: p, alteration: 1 }))
@@ -54,6 +58,18 @@ describe('Physical model, keys', () => {
         expect(resultAs[1]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + defaultMetrics.keySigSpacing, y: 2.5*defaultMetrics.scaleDegreeUnit*2 }});
         expect(resultAs[2]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + 2*defaultMetrics.keySigSpacing, y: 4.5*defaultMetrics.scaleDegreeUnit*2 }});
         expect(resultAs[3]).to.deep.eq({ glyph: 'accidentals.2', position: { x: 30 + 3*defaultMetrics.keySigSpacing, y: 3*defaultMetrics.scaleDegreeUnit*2 }});
+
+    });
+
+
+    it('should make a physical natural key signature', () => {
+        const resultCCancel = convertKey(keyCCancel, 30, defaultMetrics);
+
+        expect(resultCCancel.length).to.eq(4);
+        expect(resultCCancel[0]).to.deep.eq({ glyph: 'accidentals.0', position: { x: 30, y: 2*defaultMetrics.scaleDegreeUnit*2 }});
+        expect(resultCCancel[1]).to.deep.eq({ glyph: 'accidentals.0', position: { x: 30 + defaultMetrics.keySigSpacing, y: 3.5*defaultMetrics.scaleDegreeUnit*2 }});
+        expect(resultCCancel[2]).to.deep.eq({ glyph: 'accidentals.0', position: { x: 30 + 2*defaultMetrics.keySigSpacing, y: 1.5*defaultMetrics.scaleDegreeUnit*2 }});
+        expect(resultCCancel[3]).to.deep.eq({ glyph: 'accidentals.0', position: { x: 30 + 3*defaultMetrics.keySigSpacing, y: 3*defaultMetrics.scaleDegreeUnit*2 }});
 
     });
 

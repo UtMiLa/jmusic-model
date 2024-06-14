@@ -77,5 +77,17 @@ describe('View model: Keys', () => {
 
     });
 
+    
+    it('should cancel accidentals when changing to no-accidental key', () => {
+        const keyC = new DiatonicKey({ accidental: 0, count: 0 });
+
+        const keySig1 = keyToView(keyC, clefG);
+        expect(keySig1.keyPositions).to.deep.equal([]);
+
+        const keySig2 = keyToView(keyC, clefG, keyAs);
+
+        expect(keySig2.keyPositions).to.deep.equal([0, 3, -1, 2].map(p => ({ position: p, alteration: 0 })));
+    });
+
 });
 

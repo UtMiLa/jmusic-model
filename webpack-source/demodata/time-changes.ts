@@ -9,10 +9,10 @@ export const meterModel = {
         voices:[
             {
                 noteDirection: NoteDirection.Up,
-                contentDef: 'c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 ' +
-                  '\\meter 4/4 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 ' +
-                  '\\compoundMeter #\'((2 2) (1 8)) c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 ' +
-                  '\\meter 6/8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 ' +
+                contentDef: 'c\'8 d\'8 ees\'8 fis\'8 g\'8 a\'8 bes\'8 c\'\'8 ' +
+                  '\\meter 4/4 \\key d \\major c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 ' +
+                  '\\compoundMeter #\'((2 2) (1 8)) c\'8 cis\'8 c\'8 ces\'8 c\'8 c\'8 c\'8 c\'8 c\'8 ' +
+                  '\\meter 6/8 \\key c \\major c\'8 c\'8 c\'8 c\'8 c\'8 c\'8 ' +
                   '\\meter 3/4 c\'8 c\'8 c\'8 c\'8 c\'8 c\'8'
             }
         ]
