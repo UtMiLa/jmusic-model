@@ -89,7 +89,7 @@ describe('Argument types', () => {
         it('should parse a clef token', () => {
             const res = ClefArg('\\clef treble');
             expect(res).to.deep.eq(either.right([
-                StateChange.newClefChange(new Clef({ clefType: ClefType.G, line: -2 })),
+                StateChange.newClefChange(Clef.create({ clefType: ClefType.G, line: -2 })),
                 ''
             ]));
         });

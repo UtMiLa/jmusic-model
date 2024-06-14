@@ -16,6 +16,10 @@ export interface ClefDef {
 export class Clef {
     constructor(public def: ClefDef) {}
 
+    static create(def: ClefDef): Clef {
+        return new Clef(def);
+    }
+
     get transposition(): number {
         return this.def.transpose || 0;
     }

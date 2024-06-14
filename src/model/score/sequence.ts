@@ -176,7 +176,7 @@ export function parseLilyClef(ly: string): Clef {
         const sign = transPosition === '_' ? -1 : 1;
         const interval = parseInt(transNumber);
 
-        return new Clef({...clef.def, transpose: sign * (interval - 1) });
+        return Clef.create({...clef.def, transpose: sign * (interval - 1) });
     }
     
     return clef;

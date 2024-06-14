@@ -1,5 +1,5 @@
 import { InsertionPoint, InsertionPointDef } from '../../editor/insertion-point';
-import { ChangeHandler, Clef, DiatonicKey, JMusic, Key, MeterFactory, VoiceContentDef } from '..';
+import { ChangeHandler, Clef, DiatonicKey, JMusic, Key, Meter, MeterFactory, VoiceContentDef } from '..';
 import { LongDecorationType } from '../';
 import { Note, cloneNote } from '../notes/note';
 import { DomainConverter, LensItem, ProjectLens, doWithNote, lensItemNone, lensItemOf } from '../optics/lens';
@@ -192,7 +192,7 @@ export abstract class EditView implements EditableView {
     addMeterChg(ins: InsertionPoint, meter: MeterFlex): void {
         const m = makeMeter(meter);
         
-        this.insertElementAtInsertionPoint(ins, StateChange.newMeterChange(MeterFactory.createMeter(m)), isMeterChange);
+        this.insertElementAtInsertionPoint(ins, StateChange.newMeterChange(Meter.create(m)), isMeterChange);
         this.didChange();
     }
 
@@ -206,7 +206,7 @@ export abstract class EditView implements EditableView {
     addClefChg(ins: InsertionPoint, clef: ClefFlex): void {
         const m = makeClef(clef);
         
-        this.insertElementAtInsertionPoint(ins, StateChange.newClefChange(new Clef(m)), isClefChange);
+        this.insertElementAtInsertionPoint(ins, StateChange.newClefChange(Clef.create(m)), isClefChange);
         this.didChange();
     }
 

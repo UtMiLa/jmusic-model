@@ -126,7 +126,7 @@ describe('Text commands', () => {
             
             cmd.execute(model, ins);
 
-            Sinon.assert.calledOnceWithExactly(model.insertElementAtInsertionPoint, ins, StateChange.newClefChange(new Clef({ clefType: ClefType.C, line: 0 })), isClefChange);
+            Sinon.assert.calledOnceWithExactly(model.insertElementAtInsertionPoint, ins, StateChange.newClefChange(Clef.create({ clefType: ClefType.C, line: 0 })), isClefChange);
         });
 
 

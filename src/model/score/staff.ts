@@ -32,9 +32,9 @@ export function setStaffSequence(staffDef: StaffDef, seq: ISequence): void {
 export function staffDefToStaff(def: StaffDef, repo?: VariableRepository): Staff {
     if (!repo) repo = createRepo({});
     return {
-        initialClef: new Clef(def.initialClef),
+        initialClef: Clef.create(def.initialClef),
         initialKey: Key.create(def.initialKey),
-        initialMeter: def.initialMeter ? MeterFactory.createMeter(def.initialMeter) : undefined,
+        initialMeter: def.initialMeter ? Meter.create(def.initialMeter) : undefined,
         voices: R.chain(v => voiceDefToVoice(v, repo), def.voices)
     };
 }

@@ -5,7 +5,7 @@ import { VarDict } from '../data-only/variables';
 import { VoiceDef } from '../data-only/voices';
 import { Clef } from '../states/clef';
 import { DiatonicKey, Key } from '../states/key';
-import { MeterFactory } from '../states/meter';
+import { Meter, MeterFactory } from '../states/meter';
 import { convertVarDataToActive } from './active-to-def';
 import { convertSequenceDataToActive } from './conversions';
 import { ActiveVarsAnd, ActiveVoice, ActiveStaff, ActiveScore, ActiveProject } from './types';
@@ -24,9 +24,9 @@ export function convertStaffDataToActive(staffDef: StaffDef, vars: VarDict): Act
     return {
         item: {
             voices: staffDef.voices.map(voice => convertVoiceDataToActive(voice, vars).item),
-            initialClef: new Clef(staffDef.initialClef),
+            initialClef: Clef.create(staffDef.initialClef),
             initialKey: Key.create(staffDef.initialKey),
-            ...ignoreIfUndefined('initialMeter', staffDef.initialMeter ? MeterFactory.createMeter(staffDef.initialMeter) : undefined)
+            ...ignoreIfUndefined('initialMeter', staffDef.initialMeter ? Meter.create(staffDef.initialMeter) : undefined)
         },
         vars: convertVarDataToActive(vars)
     };

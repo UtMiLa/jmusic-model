@@ -458,7 +458,7 @@ describe('Facade', () => {
             ins.time = Time.newAbsolute(1, 1);
             score.addClefChg(ins, 'alto');
             const seq = score.staves[0].voices[1].content;
-            expect(seq.elements[4]).to.deep.include({clef: new Clef({ line: 0, clefType: ClefType.C })});
+            expect(seq.elements[4]).to.deep.include({clef: Clef.create({ line: 0, clefType: ClefType.C })});
             expect(scoreChangeCalls).to.eq(1);
 
         });
@@ -537,7 +537,7 @@ describe('Facade', () => {
             expect(foundStates1).to.deep.eq({key: new DiatonicKey({ accidental: 1, count: 3 })});
             
             const foundStates2 = initStateInSequence(seq2);
-            expect(foundStates2).to.deep.eq({clef: new Clef({ clefType: ClefType.C, line: 0 })});
+            expect(foundStates2).to.deep.eq({clef: Clef.create({ clefType: ClefType.C, line: 0 })});
 
             const foundStates3 = initStateInSequence(seq3);
             expect(foundStates3).to.deep.eq({ meter: MeterFactory.createRegularMeter({ count: 3, value: 8 })});
@@ -562,8 +562,8 @@ describe('Facade', () => {
            
             expect(staves[0].initialKey).to.deep.eq(new DiatonicKey({ accidental: 1, count: 3 }));
             expect(staves[1].initialKey).to.deep.eq(new DiatonicKey({ accidental: 1, count: 3 }));
-            expect(staves[0].initialClef).to.deep.eq(new Clef({ clefType: ClefType.C, line: 0 }));
-            expect(staves[1].initialClef).to.deep.eq(new Clef({ clefType: ClefType.F, line: 2 }));
+            expect(staves[0].initialClef).to.deep.eq(Clef.create({ clefType: ClefType.C, line: 0 }));
+            expect(staves[1].initialClef).to.deep.eq(Clef.create({ clefType: ClefType.F, line: 2 }));
             expect(staves[0].initialMeter).to.deep.eq(MeterFactory.createRegularMeter({ count: 3, value: 8 }));
             expect(staves[1].initialMeter).to.deep.eq(MeterFactory.createRegularMeter({ count: 3, value: 8 }));
 

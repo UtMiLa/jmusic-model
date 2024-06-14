@@ -25,7 +25,7 @@ describe('Facade', () => {
         it('should read a clef in different types', () => {
             expect(makeClef('treble')).to.deep.eq({ clefType: ClefType.G, line: -2 });
             expect(makeClef({ clefType: ClefType.G, line: -2 })).to.deep.eq({ clefType: ClefType.G, line: -2 });
-            expect(makeClef(new Clef({ clefType: ClefType.G, line: -2 }))).to.deep.eq({ clefType: ClefType.G, line: -2 });
+            expect(makeClef(Clef.create({ clefType: ClefType.G, line: -2 }))).to.deep.eq({ clefType: ClefType.G, line: -2 });
         });
 
         it('should read a key in different types', () => {

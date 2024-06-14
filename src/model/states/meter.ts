@@ -22,17 +22,20 @@ export interface Meter {
     def: RegularMeterDef | CompositeMeterDef;
 }
 
+export class Meter {
+    static create(def: MeterDef): Meter {
+        if (isRegularMeterDef(def)) return MeterFactory.createRegularMeter(def);
+        if (isCompositeMeterDef(def)) return MeterFactory.createCompositeMeter(def);
+        throw 'Illegal meter definition';
+    }
+}
+
 export class MeterFactory {
     static createRegularMeter(def: RegularMeterDef): RegularMeter {
         return new RegularMeter(def);
     }
     static createCompositeMeter(def: CompositeMeterDef): CompositeMeter {
         return new CompositeMeter(def);
-    }
-    static createMeter(def: MeterDef): Meter {
-        if (isRegularMeterDef(def)) return this.createRegularMeter(def);
-        if (isCompositeMeterDef(def)) return this.createCompositeMeter(def);
-        throw 'Illegal meter definition';
     }
 }
 
