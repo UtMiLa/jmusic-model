@@ -202,10 +202,10 @@ export class MyCanvasRenderer extends CanvasRenderer {
         if (!textElement.text) return [];
         const code = R.invertObj(emmentalerCodes);
         const theCode = code[textElement.text];
-        console.log(textElement, theCode);
+        //console.log(textElement, theCode);
         const note = emmentalerNotes['e_' + theCode];
         if (!note) return [];
-        console.log(textElement.text, theCode, note);
+        //console.log(textElement.text, theCode, note);
 
         return this.createPath(note, textElement.points[0]);//[{...textElement, text: 'c' + note.length }];
     }
