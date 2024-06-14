@@ -1,4 +1,4 @@
-import { Clef, MeterDef, RegularMeterDef, StaffDef } from './../';
+import { Clef, Key, MeterDef, RegularMeterDef, StaffDef } from './../';
 import { Voice, voiceDefToVoice, voiceSequenceToDef } from './voice';
 import { KeyDef } from './../';
 import { ISequence } from './sequence';
@@ -16,7 +16,7 @@ import R = require('ramda');
 
 export interface Staff {
     initialClef: Clef;
-    initialKey: KeyDef;
+    initialKey: Key;
     initialMeter?: MeterDef;
     voices: Voice[];}
 
@@ -32,7 +32,7 @@ export function staffDefToStaff(def: StaffDef, repo?: VariableRepository): Staff
     if (!repo) repo = createRepo({});
     return {
         initialClef: new Clef(def.initialClef),
-        initialKey: def.initialKey,
+        initialKey: Key.create(def.initialKey),
         initialMeter: def.initialMeter,
         voices: R.chain(v => voiceDefToVoice(v, repo), def.voices)
     };

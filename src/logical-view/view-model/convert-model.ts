@@ -75,7 +75,7 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
                 transposition: def.initialClef.def.transpose ?? 0
             },
             
-            key: keyToView(Key.create(def.initialKey), def.initialClef)
+            key: keyToView(def.initialKey, def.initialClef)
         
         }
     ];
@@ -90,7 +90,7 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
     }
 
     let currentClef = def.initialClef;
-    let currentKey = Key.create(def.initialKey);
+    let currentKey = def.initialKey;
     stateMap.forEach((key, value) => {
         const ts = getTimeSlot(timeSlots, key.absTime);
         if (value.key) {
@@ -136,7 +136,7 @@ function staffModelToViewModel(def: Staff, stateMap: IndexedMap<StateChange, Sco
     const initialStates = getStateAt(stateMap, restrictions.startTime, staffNo);
     if (!initialStates.clef) initialStates.clef = def.initialClef;
     if (!initialStates.meter && def.initialMeter) initialStates.meter = MeterFactory.createMeter(def.initialMeter);
-    if (!initialStates.key) initialStates.key = Key.create(def.initialKey);
+    if (!initialStates.key) initialStates.key = def.initialKey;
 
     const res = { 
         timeSlots: timeSlots
@@ -185,7 +185,7 @@ function createViewModelsForVoice(def: Staff, staffNo: number, meter: Meter | un
 
         const state = new State(voiceBeamGroups, staffNo, voiceNo, voice, clef);
         if (def.initialKey)
-            state.key = Key.create(def.initialKey);
+            state.key = def.initialKey;
         if (meter)
             state.setMeter(meter, Time.newAbsolute(0, 1));
 
