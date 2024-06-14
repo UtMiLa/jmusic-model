@@ -17,7 +17,7 @@ import { activeGetElements, convertSequenceDataToActive } from './active-project
 import { ActiveProject } from './active-project/types';
 import { convertProjectDataToActive } from './active-project/def-to-active';
 import { modifyProject } from './active-project/project-iteration';
-import { SelectionInsertionPoint } from '~/selection/query';
+import { SelectionInsertionPoint } from '../selection/query';
 
 
 export class Model {

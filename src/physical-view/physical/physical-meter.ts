@@ -2,7 +2,7 @@ import { GlyphCode } from './glyphs';
 import { MeterViewModel } from './../../logical-view';
 import { PhysicalElementBase, PhysicalFixedSizeElement } from './physical-elements';
 import { Metrics } from './metrics';
-import { MeterTextPart } from '~/model';
+import { MeterTextPart } from '../../model';
 import { array } from 'fp-ts';
 import R = require('ramda');
 /*

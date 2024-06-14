@@ -1,5 +1,5 @@
-import { Pitch, Time } from "./../model";
-import { EntryChord, EntryNote, EntryRest, IEntryScore } from "./entry";
+import { Pitch, Time } from './../model';
+import { EntryChord, EntryNote, EntryRest, IEntryScore } from './entry';
 
 export interface TapEntryState {
     noteOn(pitch: number, notesPressed: number[]): TapEntryState;

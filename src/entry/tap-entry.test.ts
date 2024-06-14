@@ -15,6 +15,11 @@ class MidiInServiceMock implements MidiInService {
                     controller: 1,
                     value: 100
                 });
+            } else if (element === 'tapx') {
+                this.events.next({
+                    controller: 2,
+                    value: 100
+                });
             } else {
                 const pitch = Number.parseInt(element);
                 if (pitch > 0) {
@@ -87,8 +92,11 @@ describe('Tap-entry', () => {
         expectInputOutput('+60 +64 -64 -60 +65 +62 -62 -65', 2, ['e\'4 f\'4 ', 'c\'4 d\'4 ']);
     });
 
-    it('should extend length on some notes when tapping', () => {
-        //
+    it('should extend length on some notes when left-tapping', () => {
+        expectInputOutput('+60 +64 -64 tapx +65 -60 -65', 2, ['e\'4 f\'4 ', 'c\'2 ']);
     });
 
+    it('should delete last note when left-tapping', () => {
+        expectInputOutput('+60 +64 -64 -60 +65 +60 -60 -65 tapx', 2, ['e\'4 ', 'c\'4 ']);
+    });
 });
