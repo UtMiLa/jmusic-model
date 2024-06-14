@@ -16,6 +16,8 @@ import { voiceSequenceToDef, VoiceContentDef, voiceContentToSequence } from '.';
 import { activeGetElements, convertSequenceDataToActive } from './active-project/conversions';
 import { ActiveProject } from './active-project/types';
 import { convertProjectDataToActive } from './active-project/def-to-active';
+import { modifyProject } from './active-project/project-iteration';
+import { SelectionInsertionPoint } from '~/selection/query';
 
 
 export class Model {
@@ -28,10 +30,9 @@ export class Model {
     activeProject: ActiveProject;
 
     public get staves(): Staff[] {
-        /*return this.activeProject.score.staves.map(staff => ({...staff, voices: staff.voices.map(voice => ({
-            ...voice, content: activeGetElements(voice.content)
-        })) }));*/
-        return this.project.score.staves.map(sd => staffDefToStaff(sd, this.vars));
+        return this.activeProject.score.staves.map(staff => ({...staff, voices: staff.voices.map(voice => ({
+            ...voice, content: new FlexibleSequence(activeGetElements(voice.content))
+        })) }));
     }
 
     public get repeats(): RepeatDef[] | undefined {
@@ -68,6 +69,12 @@ export class Model {
                 return isNote(ct) ? [element, ct] : [ct];
             }
         )));
+
+        //this.activeProject = convertProjectDataToActive(this.project);
+        this.activeProject = modifyProject(elm => {
+            if (checkType(elm)) return [];
+            return isNote(elm) ? [element, elm] : [elm];
+        }, new SelectionInsertionPoint(ins))(this.activeProject);
     }
 
     appendElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent): void {
@@ -75,6 +82,8 @@ export class Model {
             ...this.staves[ins.staffNo].voices[ins.voiceNo].content.elements,
             element
         ], this.vars).asObject, this.project);
+
+        this.activeProject = convertProjectDataToActive(this.project);
         
         /*this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = 
             [
@@ -86,22 +95,28 @@ export class Model {
 
     get domainConverter(): DomainConverter<VoiceContentDef, MusicEvent[]> {
         return {
-            fromDef: def => activeGetElements(convertSequenceDataToActive(def, this.vars.vars)),// todo: correct voiceNo
+            fromDef: def => activeGetElements(convertSequenceDataToActive(def, this.vars.vars)),
             toDef: events => flexibleItemToDef(events)
         };
     }
 
     setProject(lens: ProjectLens<LensItem>, lensItem: LensItem): void {
         this.project = R.set(lens, lensItem, this.project);
+
+        this.activeProject = convertProjectDataToActive(this.project);
     }
     overProject<T>(lens: ProjectLens<T>, noteConverter: (fromNote: T) => T): void {
         this.project = R.over(lens, noteConverter, this.project);
+
+        this.activeProject = convertProjectDataToActive(this.project);
     }
 
 
     clearScore(ins: InsertionPoint, voice?: string | JMusicSettings | ScoreDef): void {
         //this.staves = 
         this.project = makeProject(voice);
+
+        this.activeProject = convertProjectDataToActive(this.project);
 
         this.didChange();
     }

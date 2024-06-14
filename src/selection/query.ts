@@ -2,7 +2,7 @@ import { AbsoluteTime, Time } from './../model/rationals/time';
 import { MusicEvent, getDuration } from './../model/score/sequence';
 import { ElementIdentifier, Selection } from './selection-types';
 import { EditableView, Staff } from '../model';
-import { InsertionPoint } from '../editor/insertion-point';
+import { InsertionPoint, InsertionPointDef } from '../editor/insertion-point';
 
 
 export type ElementPredicate = (element: ElementIdentifier) => boolean;
@@ -47,7 +47,7 @@ export class SelectionVoiceTime extends SelectionBy {
 
 
 export class SelectionInsertionPoint extends SelectionBy {
-    constructor(private insertionPoint: InsertionPoint) {
+    constructor(private insertionPoint: InsertionPointDef) {
         super((element: ElementIdentifier) => {
             if (element.staffNo !== this.insertionPoint.staffNo || element.voiceNo !== this.insertionPoint.voiceNo) return false;
             const time = getTimeFromIdentifier(this.insertionPoint.score, element);
