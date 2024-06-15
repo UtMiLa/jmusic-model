@@ -1,17 +1,17 @@
 import { Time, TimeSpan } from '../rationals/time';
 import R = require('ramda');
-import { VarDict, VariableRef } from '../data-only/variables';
+import { VarDictDef, VarDictFlex, VariableRef } from '../data-only/variables';
 import { MultiSequenceDef, VoiceContentDef, isSplitSequence } from '../data-only/voices';
-import { FunctionPathElement, PathElement, isVariablePathElement, recursivelySplitStringsIn } from '../score/flexible-sequence';
+import { PathElement, isVariablePathElement, recursivelySplitStringsIn } from '../score/flexible-sequence';
 import { FlexibleItem } from '../score/types';
-import { VariableRepository, createRepo, isVariableRef, valueOf } from '../score/variables';
-import { MusicEvent, getDuration, isClefChange, isKeyChange, isLongDecoration, isMeterChange, isMusicEvent, isNote, isStateChange, parseLilyElement } from '../score/sequence';
+import { VariableRepository, createRepo, isVariableRef, valueOf, varDictFlexToDef } from '../score/variables';
+import { MusicEvent, getDuration, isLongDecoration, isMusicEvent, isNote, isStateChange, parseLilyElement } from '../score/sequence';
 import { ActiveProject, ActiveSequence, ActiveSequenceItem, 
     ActiveVarRepo, 
     ElementDescriptor, 
     isActiveFunctionCall, isActiveVarRef } from './types';
 import { isSeqFunction, SeqFunction } from '../data-only/functions';
-import { createFunction, createInverseFunction } from '../score/functions';
+import { createFunction } from '../score/functions';
 import { noteAsLilypond } from '../notes/note';
 import { map } from 'fp-ts/Record';
 import { isSpacer, spacerAsLilypond } from '../notes/spacer';
@@ -109,12 +109,12 @@ function requireElements(
 
 //export function convertDataToActive(data: ProjectDef): Conce {}
 
-export function convertSequenceItemToActive(data: MusicEvent, vars: VarDict): ActiveSequenceItem {
+export function convertSequenceItemToActive(data: MusicEvent, vars: VarDictDef): ActiveSequenceItem {
     return requireElements(recursivelySplitStringsIn(data, createRepo(vars)), createRepo(vars))[0]; // todo: this should be possible to do nicer
 }
 
 
-export function convertSequenceDataToActive(data: VoiceContentDef, vars: VarDict): ActiveSequence {
+export function convertSequenceDataToActive(data: VoiceContentDef, vars: VarDictDef): ActiveSequence {
     return requireElements(recursivelySplitStringsIn(data, createRepo(vars)), createRepo(vars));
 }
 
@@ -209,8 +209,9 @@ export function activeGetElements(active: ActiveSequence): MusicEvent[] {
     return activeGetPositionedElements(active).map(res => res.element);
 }
 
-export function normalizeVars(vars: VarDict): VarDict {
-    return map<FlexibleItem, FlexibleItem>(v => convertActiveSequenceToData(convertSequenceDataToActive(v as MultiSequenceDef, vars)))(vars);
+export function normalizeVars(vars: VarDictFlex): VarDictDef {
+    return map<FlexibleItem, VoiceContentDef>(
+        v => convertActiveSequenceToData(convertSequenceDataToActive(v as MultiSequenceDef, varDictFlexToDef(vars))))(vars);
 }
 
 function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: number): PathElement<MusicEvent>[] {

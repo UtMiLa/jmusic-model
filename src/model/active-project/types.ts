@@ -7,6 +7,7 @@ import { Clef } from '../states/clef';
 import { Key } from '../states/key';
 import { Meter } from '../states/meter';
 import { PathElement } from '../score/flexible-sequence';
+import { VarDictActive } from '../data-only/variables';
 
 export interface ActiveVarRef {
     type: 'VarRef';
@@ -44,9 +45,7 @@ export interface ActiveScore {
     staves: ActiveStaff[];
 }
 
-export interface ActiveVarRepo {
-    [key: string]: ActiveSequence;
-}
+export type ActiveVarRepo = VarDictActive;
 
 export interface ActiveProject {
     score: ActiveScore;

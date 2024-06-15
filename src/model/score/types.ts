@@ -1,5 +1,5 @@
 import { FuncDef, SeqFunction } from './../data-only/functions';
-import { ScoreDef, SequenceDef, SplitSequenceDef, VarDict, VariableRef, VoiceContentDef } from '..';
+import { ScoreDef, SequenceDef, SplitSequenceDef, VariableRef, VoiceContentDef } from '..';
 import { MusicEvent } from './sequence';
 
 export type FlexibleItem = string | SeqFunction | VariableRef | FlexibleItem[] | MusicEvent | SplitSequenceDef;

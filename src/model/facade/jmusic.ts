@@ -1,4 +1,4 @@
-import { DomainConverter, LensItem, Model, ProjectLens, VoiceContentDef } from '../../model';
+import { DomainConverter, LensItem, Model, ProjectLens, VarDictFlex, VoiceContentDef } from '../../model';
 import { ISequence, MusicEvent } from './../score/sequence';
 import { InsertionPoint, InsertionPointDef } from './../../editor/insertion-point';
 import { Key } from './../states/key';
@@ -10,7 +10,7 @@ import { Meter } from '../states/meter';
 import { Note } from '../notes/note';
 import { VariableRepository } from '../score/variables';
 import R = require('ramda');
-import { FlexibleItem, ProjectDef, VarDict } from '..';
+import { FlexibleItem, ProjectDef } from '..';
 import { ProjectFlex } from './project-flex';
 import { EditView, EditableView } from './views';
 import { VariableView } from './variable-view';
@@ -53,7 +53,7 @@ export class JMusic extends EditView implements EditableView {
 
     model: Model;
 
-    constructor(scoreFlex?: ProjectFlex, vars?: VarDict) {
+    constructor(scoreFlex?: ProjectFlex, vars?: VarDictFlex) {
         super();
 
         this.model = new Model(scoreFlex, vars);

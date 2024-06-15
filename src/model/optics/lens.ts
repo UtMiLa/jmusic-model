@@ -1,14 +1,13 @@
-import { createRepo } from './../score/variables';
+import { createRepo, varDictFlexToDef } from './../score/variables';
 import { ISequence, MusicEvent, isNote } from '../score/sequence';
 import R = require('ramda');
-import { FlexibleItem, FuncDef, MultiFlexibleItem, ProjectDef, SeqFunction, VarDict, VariableDef } from '../';
-import { voiceDefToVoice, voiceSequenceToDef } from '../score/voice';
+import { FlexibleItem, MultiFlexibleItem, ProjectDef, VarDictDef, VarDictFlex } from '../';
+import { voiceSequenceToDef } from '../score/voice';
 import { FlexibleSequence, FunctionPathElement, PathElement, VarablePathElement, isFunctionPathElement, isVariablePathElement as isVariablePathElement, simplifyDef } from '../score/flexible-sequence';
 import { AbsoluteTime, Time } from '../rationals/time';
 import { lookupVariable } from '../score/variables';
 import { ScoreDef } from '../';
 import { Note } from '../notes/note';
-import { Func } from 'mocha';
 import { MultiFlexibleSequence } from '../score/multi-flexible-sequence';
 
 /*
@@ -259,15 +258,15 @@ function varLensByIndex(index: NaturalLensIndexVariable): ProjectLens<LensItem> 
     );
 }
 
-function changeVarInRepo(varName: string, valueChanger: (f: FlexibleItem) => FlexibleItem, repo: VarDict): VarDict {
+function changeVarInRepo(varName: string, valueChanger: (f: FlexibleItem) => FlexibleItem, repo: VarDictDef): VarDictFlex {
     return R.assoc(varName, valueChanger(repo[varName]), repo);
 }
 
-function varSetter(index: NaturalLensIndexVariable): (a: LensItem, s: { vars: VarDict; score: ScoreDef; }) => { vars: VarDict; score: ScoreDef; } {
+function varSetter(index: NaturalLensIndexVariable): (a: LensItem, s: { vars: VarDictDef; score: ScoreDef; }) => { vars: VarDictDef; score: ScoreDef; } {
     return (a: LensItem, pd: ProjectDef) => (
         {
             ...pd,
-            vars: changeVarInRepo(index.variable, v => setModifiedVar(index, v, pd, a), pd.vars)
+            vars: varDictFlexToDef(changeVarInRepo(index.variable, v => setModifiedVar(index, v, pd, a), pd.vars))
         }
     );
 }

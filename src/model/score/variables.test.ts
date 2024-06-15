@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { createNoteFromLilypond } from '../notes/note';
 import { FlexibleSequence } from './flexible-sequence';
-import { VariableRepository, createRepo, setVar, varDictDefToActive, varDictFlexToActive, varDictFlexToDef } from './variables';
+import { createRepo, setVar, varDictDefToActive, varDictFlexToActive, varDictFlexToDef } from './variables';
 import { VariableDef, FlexibleItem, VarDictFlex, VarDictActive, VarDictDef, Key } from '../';
 import { StateChange } from '../states/state';
 

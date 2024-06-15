@@ -1,4 +1,3 @@
-import { Interval } from './../pitches/intervals';
 
 /*
 

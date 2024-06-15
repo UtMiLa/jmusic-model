@@ -1,13 +1,13 @@
 import R = require('ramda');
 import { Subject } from 'rxjs';
 import { FlexibleSequence, flexibleItemToDef } from './flexible-sequence';
-import { FlexibleItem, VarDict, VarDictActive, VarDictDef, VarDictFlex, VariableDef, VariableRef, VoiceContentDef } from '..';
+import { FlexibleItem, VarDictActive, VarDictDef, VarDictFlex, VariableDef, VariableRef, VoiceContentDef } from '..';
 import { record } from 'fp-ts';
 import { ActiveSequence } from '../active-project/types';
 import { convertActiveSequenceToData, convertSequenceDataToActive } from '../active-project/conversions';
 
 export interface VariableRepository {
-    vars: VarDict;
+    vars: VarDictDef;
     observer$: Subject<VariableRepository>;
 }
 
@@ -16,10 +16,10 @@ export class VariableRepositoryProxy implements VariableRepository {
         //
     }
 
-    vars: VarDict = {};
+    vars: VarDictDef = {};
 
-    assignVarDict(vars: VarDict): void {
-        this.vars = vars;
+    assignVarDict(vars: VarDictFlex): void {
+        this.vars = varDictFlexToDef(vars);
     }
     
     observer$ = new Subject<VariableRepository>;
@@ -29,17 +29,20 @@ export function isVariableRef(test: unknown): test is VariableRef {
     return typeof ((test as VariableRef).variable) === 'string';
 }
 
-export function lookupVariable(repo: VarDict, varName: string): FlexibleItem {
+export function lookupVariable(repo: VarDictFlex, varName: string): FlexibleItem {
     const item = repo[varName];
     if (!item) throw 'Variable not found';
     return item;
 }
 
-export function createRepo(vars: VarDict): VariableRepository {
+export function createRepo(vars: VarDictDef): VariableRepository {
     return {
         vars,
         observer$: new Subject<VariableRepository>()
     };
+}
+export function createRepoFromActive(vars: VarDictActive): VariableRepository {
+    return createRepo(varDictActiveToDef(vars));
 }
 
 export function valueOf(vars: VariableRepository, id: string): FlexibleSequence {
@@ -51,17 +54,17 @@ export function valueOf(vars: VariableRepository, id: string): FlexibleSequence 
 }
 
 export function setVar(vars: VariableRepository, id: string, value: FlexibleItem): VariableRepository {
-    vars.vars[id] = value; //R.uniqBy(R.prop('id'), [{id, value}, ...vars.vars]);
+    vars.vars[id] = flexibleItemToDef(value); //R.uniqBy(R.prop('id'), [{id, value}, ...vars.vars]);
     vars.observer$.next(vars);
     return vars;
 }
 
 
-export function varDefArrayToVarDict(vars: VariableDef[]): VarDict {
+export function varDefArrayToVarDict(vars: VariableDef[]): VarDictFlex {
     return R.fromPairs(vars.map(vd => [vd.id, vd.value]));
 }
 
-export function varDictToVarDefArray(vars: VarDict): VariableDef[] {
+export function varDictToVarDefArray(vars: VarDictFlex): VariableDef[] {
     return R.toPairs(vars).map((v: [string, FlexibleItem]) => ({ id: v[0], value: v[1] } as VariableDef));
 }
 

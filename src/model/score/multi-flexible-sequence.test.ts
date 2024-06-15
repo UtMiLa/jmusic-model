@@ -1,10 +1,7 @@
-import { Pitch } from './../pitches/pitch';
-import { createNoteFromLilypond, Note, setDuration } from './../notes/note';
 import { Time } from '../rationals/time';
-import { parseLilyClef } from './sequence';
 import { expect } from 'chai';
 import { FlexibleSequence } from './flexible-sequence';
-import { createRepo, VariableRepository } from './variables';
+import { createRepo } from './variables';
 import { MultiFlexibleSequence } from './multi-flexible-sequence';
 import { SeqFunction, SplitSequenceDef } from '..';
 describe('Multi-Flexible Sequence', () => {

@@ -19,9 +19,6 @@ export interface VarDictActive {
     [key: string]: ActiveSequence
 }
 
-export type VarDict = VarDictFlex;
-
-
 export interface VariableRef {
     variable: string;
 }
