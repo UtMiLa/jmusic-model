@@ -1,3 +1,4 @@
+import { ElementIdentifier } from './../selection/selection-types';
 import R = require('ramda');
 import { InsertionPoint, InsertionPointDef } from '../editor/insertion-point';
 import { ChangeHandler, JMusicSettings, VarDictFlex } from '.';
@@ -17,7 +18,7 @@ import { activeGetElements, convertSequenceDataToActive } from './active-project
 import { ActiveProject } from './active-project/types';
 import { convertProjectDataToActive } from './active-project/def-to-active';
 import { modifyProject } from './active-project/project-iteration';
-import { SelectionInsertionPoint } from '../selection/query';
+import { SelectionBy, SelectionInsertionPoint, SelectionVoiceTime } from '../selection/query';
 
 
 export class Model {
@@ -89,14 +90,16 @@ export class Model {
             element
         ], this.vars).asObject, this.project);
 
-        this.activeProject = convertProjectDataToActive(this.project);
+        //this.activeProject = convertProjectDataToActive(this.project);
         
-        /*this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = 
-            [
-                ...this.staves[ins.staffNo].voices[ins.voiceNo].content.elements,
-                element
-            ]
-        ;*/
+        this.activeProject = modifyProject(elm => {
+            return [elm, element];
+        }, new SelectionBy((element: ElementIdentifier) => 
+            element.staffNo === ins.staffNo && 
+            element.voiceNo === ins.voiceNo && 
+            element.elementNo === this.staves[ins.staffNo].voices[ins.voiceNo].content.elements.length - 1 // todo: make nicer
+        ))(this.activeProject);
+
     }
 
     get domainConverter(): DomainConverter<VoiceContentDef, MusicEvent[]> {
