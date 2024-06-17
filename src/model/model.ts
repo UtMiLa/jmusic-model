@@ -11,7 +11,7 @@ import { ScoreDef } from '.';
 import { ISequence, isNote, MusicEvent } from './score/sequence';
 import { Staff } from './score/staff';
 import { ProjectDef, FlexibleItem } from '.';
-import { VariableRepository, createRepo, setVar } from './score/variables';
+import { VariableRepository, createRepo, setVar, varDictActiveToDef, varDictFlexToActive } from './score/variables';
 import { voiceSequenceToDef, VoiceContentDef } from '.';
 import { activeGetElements, convertSequenceDataToActive } from './active-project/conversions';
 import { ActiveProject } from './active-project/types';
@@ -36,17 +36,23 @@ export class Model {
     }
 
     public get repeats(): RepeatDef[] | undefined {
-        return this.project.score.repeats;
+        return this.activeProject.score.repeats;
+        //return this.project.score.repeats;
     }
 
     public get vars(): VariableRepository {
-        return createRepo(this.project.vars);
+        return createRepo(varDictActiveToDef(this.activeProject.vars));
+        //return createRepo(this.project.vars);
     }
 
     changeHandlers: ChangeHandler[] = [];
 
     setVar(id: string, value: FlexibleItem): void {
         this.project.vars = setVar(this.vars, id, value).vars;
+        this.activeProject.vars = { 
+            ...this.activeProject.vars, 
+            ...varDictFlexToActive({[id]: value})            
+        };
     }
 
     sequenceFromInsertionPoint(ins: InsertionPoint): ISequence {
@@ -125,6 +131,9 @@ export class Model {
         if (!this.project.score.repeats)
             this.project.score.repeats = [];
         this.project.score.repeats?.push(repeat);
+        if (!this.activeProject.score.repeats)
+            this.activeProject.score.repeats = [];
+        this.activeProject.score.repeats?.push(repeat);
     }
 
     onChanged(handler: ChangeHandler): void {        

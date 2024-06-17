@@ -6,6 +6,7 @@ import { Clef } from '../states/clef';
 import { DiatonicKey, Key } from '../states/key';
 import { convertVoiceDataToActive, convertStaffDataToActive, convertScoreDataToActive, convertProjectDataToActive } from './def-to-active';
 import { ActiveVarRepo } from './types';
+import { Time } from '../rationals/time';
 
 
 describe('Converting scores and staves etc from def to active', () => {
@@ -28,6 +29,10 @@ describe('Converting scores and staves etc from def to active', () => {
                     ],
                     initialClef: Clef.clefBass.def,
                     initialKey: { accidental: 0, count: 0 }
+                }],
+                repeats: [{
+                    from: Time.StartTime,
+                    to: Time.newAbsolute(1, 1)
                 }]
             },
             vars: {

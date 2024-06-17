@@ -36,7 +36,8 @@ export function convertStaffDataToActive(staffDef: StaffDef, vars: VarDictDef): 
 export function convertScoreDataToActive(scoreDef: ScoreDef, vars: VarDictDef): ActiveVarsAnd<ActiveScore> {
     return {
         item: {
-            staves: scoreDef.staves.map(staff => convertStaffDataToActive(staff, vars).item)
+            staves: scoreDef.staves.map(staff => convertStaffDataToActive(staff, vars).item),
+            ...ignoreIfUndefined('repeats', scoreDef.repeats)
         },
         vars: convertVarDataToActive(vars)
     };

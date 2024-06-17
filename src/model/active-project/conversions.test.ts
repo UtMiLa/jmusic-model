@@ -207,7 +207,7 @@ describe('Conversions', () => {
         });
 
 
-        it('should retain functions arguments when using normalizeVars', () => {
+        it('should retain function arguments when using normalizeVars', () => {
             const variablesAndFunctionsVars = {
                 var1: ['c\'4.', 'd\'8'],
                 var2: ['e\'4', 'g\'4'],
@@ -220,7 +220,7 @@ describe('Conversions', () => {
             expect(res).to.deep.eq(variablesAndFunctionsVars);
         });
 
-        it('should retain functions arguments when using normalizeVars', () => {
+        it('should retain function arguments when using normalizeVars', () => {
             const variablesAndFunctionsVars = {
                 funcOfConst: [{ function: 'Transpose', args: ['c\'4. \\clef bass d\'8'], extraArgs: [{interval: 2, alteration: -1}] } as SeqFunction]
             };

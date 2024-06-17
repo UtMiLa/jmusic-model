@@ -8,6 +8,7 @@ import { Key } from '../states/key';
 import { Meter } from '../states/meter';
 import { PathElement } from '../score/flexible-sequence';
 import { VarDictActive } from '../data-only/variables';
+import { RepeatDef } from '../score/repeats';
 
 export interface ActiveVarRef {
     type: 'VarRef';
@@ -43,6 +44,7 @@ export interface ActiveStaff {
 }
 export interface ActiveScore {
     staves: ActiveStaff[];
+    repeats?: RepeatDef[];
 }
 
 export type ActiveVarRepo = VarDictActive;
