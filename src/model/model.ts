@@ -69,14 +69,6 @@ export class Model {
     }
 
     insertElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent, checkType: (e: MusicEvent) => boolean): void {
-        this.project.score.staves[ins.staffNo].voices[ins.voiceNo].contentDef = voiceSequenceToDef(new FlexibleSequence(this.staves[ins.staffNo].voices[ins.voiceNo].content.chainElements(
-            (ct, time) => {
-                if (!Time.equals(time, ins.time)) return [ct];
-                if (checkType(ct)) return [];
-                return isNote(ct) ? [element, ct] : [ct];
-            }
-        )));
-
         this.activeProject = modifyProject(elm => {
             if (checkType(elm)) return [];
             return isNote(elm) ? [element, elm] : [elm];
@@ -130,9 +122,6 @@ export class Model {
     }
 
     addRepeat(repeat: RepeatDef): void {
-        if (!this.project.score.repeats)
-            this.project.score.repeats = [];
-        this.project.score.repeats?.push(repeat);
         if (!this.activeProject.score.repeats)
             this.activeProject.score.repeats = [];
         this.activeProject.score.repeats?.push(repeat);
