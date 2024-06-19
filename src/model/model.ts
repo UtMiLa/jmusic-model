@@ -19,15 +19,18 @@ import { ActiveProject } from './active-project/types';
 import { convertProjectDataToActive } from './active-project/def-to-active';
 import { modifyProject } from './active-project/project-iteration';
 import { SelectionBy, SelectionInsertionPoint, SelectionVoiceTime } from '../selection/query';
+import { convertProjectActiveToData } from './active-project/active-to-def';
 
 
 export class Model {
     constructor(scoreFlex?: ProjectFlex, vars?: VarDictFlex) {
-        this.project = makeProject(scoreFlex, vars);
-        this.activeProject = convertProjectDataToActive(this.project);
+        this.activeProject = convertProjectDataToActive(makeProject(scoreFlex, vars));
     }
 
-    project: ProjectDef;
+    get project(): ProjectDef {
+        return convertProjectActiveToData(this.activeProject);
+    }
+
     activeProject: ActiveProject;
 
     public get staves(): Staff[] {
@@ -38,18 +41,15 @@ export class Model {
 
     public get repeats(): RepeatDef[] | undefined {
         return this.activeProject.score.repeats;
-        //return this.project.score.repeats;
     }
 
     public get vars(): VariableRepository {
         return createRepo(varDictActiveToDef(this.activeProject.vars));
-        //return createRepo(this.project.vars);
     }
 
     changeHandlers: ChangeHandler[] = [];
 
     setVar(id: string, value: FlexibleItem): void {
-        this.project.vars = setVar(this.vars, id, value).vars;
         this.activeProject.vars = { 
             ...this.activeProject.vars, 
             ...varDictFlexToActive({[id]: value})            
@@ -77,7 +77,6 @@ export class Model {
             }
         )));
 
-        //this.activeProject = convertProjectDataToActive(this.project);
         this.activeProject = modifyProject(elm => {
             if (checkType(elm)) return [];
             return isNote(elm) ? [element, elm] : [elm];
@@ -85,12 +84,6 @@ export class Model {
     }
 
     appendElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent): void {
-        this.project = R.set(R.lensPath(['score', 'staves', ins.staffNo, 'voices', ins.voiceNo, 'contentDef']), new FlexibleSequence([
-            ...this.staves[ins.staffNo].voices[ins.voiceNo].content.elements,
-            element
-        ], this.vars).asObject, this.project);
-
-        //this.activeProject = convertProjectDataToActive(this.project);
         
         this.activeProject = modifyProject(elm => {
             return [elm, element];
@@ -110,22 +103,28 @@ export class Model {
     }
 
     setProject(lens: ProjectLens<LensItem>, lensItem: LensItem): void {
-        this.project = R.set(lens, lensItem, this.project);
 
-        this.activeProject = convertProjectDataToActive(this.project);
+        const activeLens = R.lens(
+            (s: ActiveProject) => R.view(lens, convertProjectActiveToData(s)),
+            (a: LensItem, s: ActiveProject) => convertProjectDataToActive(R.set(lens, a, convertProjectActiveToData(s)))
+        );
+
+        this.activeProject = R.set<ActiveProject, LensItem>(activeLens, lensItem, this.activeProject);
     }
     overProject<T>(lens: ProjectLens<T>, noteConverter: (fromNote: T) => T): void {
-        this.project = R.over(lens, noteConverter, this.project);
 
-        this.activeProject = convertProjectDataToActive(this.project);
+        const activeLens = R.lens<ActiveProject, T>(
+            (s: ActiveProject) => R.view(lens, convertProjectActiveToData(s)),
+            (a: T, s: ActiveProject) => convertProjectDataToActive(R.set(lens, a, convertProjectActiveToData(s)))
+        );
+
+        this.activeProject = R.over(activeLens, noteConverter, this.activeProject);
     }
 
 
     clearScore(ins: InsertionPoint, voice?: string | JMusicSettings | ScoreDef): void {
-        //this.staves = 
-        this.project = makeProject(voice);
 
-        this.activeProject = convertProjectDataToActive(this.project);
+        this.activeProject = convertProjectDataToActive(makeProject(voice));
 
         this.didChange();
     }
