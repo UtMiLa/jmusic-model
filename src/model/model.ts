@@ -1,4 +1,4 @@
-import { ElementIdentifier } from './../selection/selection-types';
+import { ElementIdentifier, MusicSelection } from './../selection/selection-types';
 import R = require('ramda');
 import { InsertionPoint, InsertionPointDef } from '../editor/insertion-point';
 import { ChangeHandler, JMusicSettings, VarDictFlex } from '.';
@@ -15,7 +15,7 @@ import { ProjectDef, FlexibleItem } from '.';
 import { VariableRepository, createRepo, setVar, varDictActiveToDef, varDictFlexToActive } from './score/variables';
 import { voiceSequenceToDef, VoiceContentDef } from '.';
 import { activeGetElements, convertSequenceDataToActive } from './active-project/conversions';
-import { ActiveProject } from './active-project/types';
+import { ActiveProject, ActiveSequence, ActiveSequenceItem } from './active-project/types';
 import { convertProjectDataToActive } from './active-project/def-to-active';
 import { modifyProject } from './active-project/project-iteration';
 import { SelectionBy, SelectionInsertionPoint, SelectionVoiceTime } from '../selection/query';
@@ -68,22 +68,26 @@ export class Model {
         return projectLensByTime(this.domainConverter, { staff: ins.staffNo, voice: ins.voiceNo, time: ins.time, eventFilter: isNote });
     }
 
+    modifyProject(modifier: (elm: MusicEvent) => MusicEvent[], selection: MusicSelection): void {
+        this.activeProject = modifyProject(modifier, selection)(this.activeProject);
+    }
+
     insertElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent, checkType: (e: MusicEvent) => boolean): void {
-        this.activeProject = modifyProject(elm => {
+        this.modifyProject(elm => {
             if (checkType(elm)) return [];
             return isNote(elm) ? [element, elm] : [elm];
-        }, new SelectionInsertionPoint(ins))(this.activeProject);
+        }, new SelectionInsertionPoint(ins));
     }
 
     appendElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent): void {
         
-        this.activeProject = modifyProject(elm => {
+        this.modifyProject(elm => {
             return [elm, element];
         }, new SelectionBy((element: ElementIdentifier) => 
             element.staffNo === ins.staffNo && 
             element.voiceNo === ins.voiceNo && 
             element.elementNo === this.staves[ins.staffNo].voices[ins.voiceNo].content.elements.length - 1 // todo: make nicer
-        ))(this.activeProject);
+        ));
 
     }
 
@@ -94,15 +98,13 @@ export class Model {
         };
     }
 
-    setProject(lens: ProjectLens<LensItem>, lensItem: LensItem): void {
+    /*get activeDomainConverter(): DomainConverter<ActiveSequence, MusicEvent[]> {
+        return {
+            fromDef: def => activeGetElements(def),
+            toDef: events => flexibleItemToDef(events)
+        };
+    }*/
 
-        const activeLens = R.lens(
-            (s: ActiveProject) => R.view(lens, convertProjectActiveToData(s)),
-            (a: LensItem, s: ActiveProject) => convertProjectDataToActive(R.set(lens, a, convertProjectActiveToData(s)))
-        );
-
-        this.activeProject = R.set<ActiveProject, LensItem>(activeLens, lensItem, this.activeProject);
-    }
     overProject<T>(lens: ProjectLens<T>, noteConverter: (fromNote: T) => T): void {
 
         const activeLens = R.lens<ActiveProject, T>(

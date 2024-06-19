@@ -1,4 +1,4 @@
-import { Selection, SelectionManager } from './../../selection/selection-types';
+import { MusicSelection, SelectionManager } from './../../selection/selection-types';
 import { getExtendedTime, EventType } from '../../model/score/timing-order';
 import { Note, UpdateNote } from './../../model/notes/note';
 import { InsertionPoint } from './../../editor/insertion-point';

@@ -1,3 +1,4 @@
+import { MusicSelection } from './../../selection/selection-types';
 import { DomainConverter, LensItem, Model, ProjectLens, VarDictFlex, VoiceContentDef } from '../../model';
 import { ISequence, MusicEvent } from './../score/sequence';
 import { InsertionPoint, InsertionPointDef } from './../../editor/insertion-point';
@@ -103,13 +104,13 @@ export class JMusic extends EditView implements EditableView {
         return this.model.domainConverter;
     }
 
-    setProject(lens: ProjectLens<LensItem>, lensItem: LensItem): void {
-        this.model.setProject(lens, lensItem);
-    }
     overProject<T>(lens: ProjectLens<T>, noteConverter: (fromNote: T) => T): void {
         this.model.overProject(lens, noteConverter);
     }
 
+    modifyProject(modifier: (elm: MusicEvent) => MusicEvent[], selection: MusicSelection): void {
+        this.model.modifyProject(modifier, selection);
+    }
 
     clearScore(ins: InsertionPoint, voice?: string | JMusicSettings | ScoreDef): void {
         this.model.clearScore(ins, voice);

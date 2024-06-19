@@ -1,13 +1,13 @@
 import { AbsoluteTime, Time } from './../model/rationals/time';
 import { MusicEvent, getDuration } from './../model/score/sequence';
-import { ElementIdentifier, Selection } from './selection-types';
+import { ElementIdentifier, MusicSelection } from './selection-types';
 import { EditableView, Staff } from '../model';
 import { InsertionPoint, InsertionPointDef } from '../editor/insertion-point';
 
 
 export type ElementPredicate = (element: ElementIdentifier) => boolean;
 
-export class SelectionBy implements Selection{
+export class SelectionBy implements MusicSelection{
     constructor(private predicate: ElementPredicate) {}
 
     isSelected(element: ElementIdentifier): boolean {

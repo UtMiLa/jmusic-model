@@ -1,4 +1,4 @@
-import { Selection } from '../../selection/selection-types';
+import { MusicSelection } from '../../selection/selection-types';
 import { array, option, record } from 'fp-ts';
 import { MusicEvent } from '../score/sequence';
 import { ActiveFunctionCall, ActiveProject, ActiveSequence, ActiveSequenceItem, ActiveStaff, ActiveVoice, ElementDescriptor, isActiveFunctionCall, isActiveVarRef } from './types';
@@ -31,11 +31,11 @@ export function getProjectElements(project: ActiveProject): ElementDescriptor[] 
     return events;
 }
 
-export const getSelected = (selection: Selection) => (elements: ElementDescriptor[]): ElementDescriptor[] => {
+export const getSelected = (selection: MusicSelection) => (elements: ElementDescriptor[]): ElementDescriptor[] => {
     return elements.filter(element => selection.isSelected(element.position));
 };
 
-export const modifyProject = (modifier: (x: MusicEvent) => MusicEvent[], selection?: Selection) => (project: ActiveProject): ActiveProject => {
+export const modifyProject = (modifier: (x: MusicEvent) => MusicEvent[], selection?: MusicSelection) => (project: ActiveProject): ActiveProject => {
 
     const items = getProjectElements(project);
     const changes = array.chain((item: ElementDescriptor) => {

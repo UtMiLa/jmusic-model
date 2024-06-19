@@ -1,18 +1,18 @@
-import { ElementIdentifier, Selection } from './selection-types';
+import { ElementIdentifier, MusicSelection } from './selection-types';
 
-export function selectUnion(sel1: Selection, sel2: Selection): Selection {
+export function selectUnion(sel1: MusicSelection, sel2: MusicSelection): MusicSelection {
     return {
         isSelected: (element: ElementIdentifier) => sel1.isSelected(element) || sel2.isSelected(element)
     };        
 }
 
-export function selectIntersect(sel1: Selection, sel2: Selection): Selection {
+export function selectIntersect(sel1: MusicSelection, sel2: MusicSelection): MusicSelection {
     return {
         isSelected: (element: ElementIdentifier) => sel1.isSelected(element) && sel2.isSelected(element)
     };        
 }
 
-export function selectDifference(sel1: Selection, sel2: Selection): Selection {
+export function selectDifference(sel1: MusicSelection, sel2: MusicSelection): MusicSelection {
     return {
         isSelected: (element: ElementIdentifier) => sel1.isSelected(element) && !sel2.isSelected(element)
     };        

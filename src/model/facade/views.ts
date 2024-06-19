@@ -1,3 +1,4 @@
+import { MusicSelection } from './../../selection/selection-types';
 import { InsertionPoint, InsertionPointDef } from '../../editor/insertion-point';
 import { ChangeHandler, Clef, DiatonicKey, JMusic, Key, Meter, MeterFactory, VoiceContentDef } from '..';
 import { LongDecorationType } from '../';
@@ -52,7 +53,8 @@ export interface EditableView extends DisplayableView {
     addClefChg(ins: InsertionPoint, clef: ClefFlex): void;
     getView(varname?: string): EditableView;
     //overProject(lens: ProjectLens<LensItem>, noteConverter: (fromNote: LensItem) => LensItem): void;
-    overProject<T>(lens: ProjectLens<T>, noteConverter: (fromNote: T) => T): void
+    overProject<T>(lens: ProjectLens<T>, noteConverter: (fromNote: T) => T): void;
+    modifyProject(modifier: (elm: MusicEvent) => MusicEvent[], selection: MusicSelection): void;
 }
 
 export abstract class EditView implements EditableView {
@@ -78,10 +80,11 @@ export abstract class EditView implements EditableView {
 
     abstract appendElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent): void;
 
-    abstract setProject(lens: ProjectLens<LensItem>, lensItem: LensItem): void;
     abstract overProject<T>(lens: ProjectLens<T>, noteConverter: (fromNote: T) => T): void;
 
     abstract createProjectLens(ins: InsertionPoint): ProjectLens<LensItem>;
+
+    abstract modifyProject(modifier: (elm: MusicEvent) => MusicEvent[], selection: MusicSelection): void;
 
     replaceNoteAtInsertionPoint(ins: InsertionPoint, noteConverter: (fromNote: LensItem) => LensItem): void {
         
@@ -93,7 +96,7 @@ export abstract class EditView implements EditableView {
     deleteNoteAtInsertionPoint(ins: InsertionPoint, fromNote: Note): void {
         
         const lens = this.createProjectLens(ins);
-        this.setProject(lens, lensItemNone);
+        this.overProject(lens, () => lensItemNone);
 
     }
 

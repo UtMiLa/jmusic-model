@@ -2,12 +2,12 @@ import { modifyProject } from '../model/active-project/project-iteration';
 import { ActiveSequence } from '../model/active-project/types';
 import { pipe } from 'fp-ts/lib/function';
 import { DomainConverter, MusicEvent, ProjectDef, VoiceContentDef } from '../model';
-import { Selection, ElementIdentifier } from './selection-types';
+import { MusicSelection, ElementIdentifier } from './selection-types';
 import { convertProjectDataToActive } from '../model/active-project/def-to-active';
 import { convertProjectActiveToData } from '../model/active-project/active-to-def';
 
 export class SelectionLens {
-    constructor(private selection: Selection) {}
+    constructor(private selection: MusicSelection) {}
 
     get(source: ProjectDef, domainConverter: DomainConverter<VoiceContentDef, ActiveSequence>): VoiceContentDef {
         const result: ActiveSequence = [];

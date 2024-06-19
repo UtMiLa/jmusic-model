@@ -1,5 +1,5 @@
 import { convertSequenceDataToActive, convertActiveSequenceToData } from '../../model/active-project/conversions';
-import { Selection, SelectionFunc, SelectionManager } from './../../selection/selection-types';
+import { MusicSelection, SelectionFunc, SelectionManager } from './../../selection/selection-types';
 import { sequence } from './argument-modifiers';
 import { InsertionPoint } from '../insertion-point';
 import { DomainConverter, EditableView, Model, ProjectDef, ProjectLens, ScoreDef, VoiceContentDef, isNote } from './../../model';

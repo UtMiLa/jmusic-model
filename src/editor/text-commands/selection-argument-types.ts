@@ -1,13 +1,13 @@
 import { AbsoluteTime, EditableView, Model, Time } from '../../model';
 import { InsertionPoint } from '../insertion-point';
 import { SelectionAll, SelectionVoiceTime } from './../../selection/query';
-import { Selection } from './../../selection/selection-types';
+import { MusicSelection } from './../../selection/selection-types';
 import { mapResult, select, sequence } from './argument-modifiers';
 import { VoiceNo, VoiceNoArg } from './argument-types';
 import { ArgType, FixedArg, IntegerArg, RationalArg, WhitespaceArg } from './base-argument-types';
 
 
-export type ProtoSelection = (model: EditableView, insertionPoint: InsertionPoint) => Selection;
+export type ProtoSelection = (model: EditableView, insertionPoint: InsertionPoint) => MusicSelection;
 
 const protoSelectionAll: ProtoSelection = (model: EditableView, insertionPoint: InsertionPoint) => {
     return new SelectionAll();

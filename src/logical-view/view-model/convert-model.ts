@@ -1,4 +1,4 @@
-import { ElementIdentifier, Selection, SelectionFunc } from './../../selection/selection-types';
+import { ElementIdentifier, MusicSelection, SelectionFunc } from './../../selection/selection-types';
 import { RepeatDef } from './../../model/score/repeats';
 import { getStateAt, ScopedTimeKey } from './state-map';
 import { StateChange } from './../../model/states/state';

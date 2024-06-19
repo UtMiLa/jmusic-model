@@ -1,3 +1,4 @@
+import { MusicSelection } from './../../selection/selection-types';
 import { Staff, staffDefToStaff } from './../score/staff';
 import { InsertionPoint, InsertionPointDef } from '../../editor/insertion-point';
 import { ChangeHandler, JMusic, MultiSequenceDef, flexibleItemToDef } from '..';
@@ -60,13 +61,12 @@ export class VariableView extends EditView implements EditableView {
     appendElementAtInsertionPoint(ins: InsertionPointDef, element: MusicEvent): void {
         throw new Error('Method not implemented.');
     }
-    setProject(lens: ProjectLens<LensItem>, lensItem: LensItem): void {
-        this.parent.setProject(lens, lensItem);        
-        this.didChange();
-    }
     overProject<T>(lens: ProjectLens<T>, noteConverter: (fromNote: T) => T): void {
         this.parent.overProject(lens, noteConverter);
         this.didChange();
+    }
+    modifyProject(modifier: (elm: MusicEvent) => MusicEvent[], selection: MusicSelection): void {
+        throw new Error('Method not implemented.');
     }
 
 

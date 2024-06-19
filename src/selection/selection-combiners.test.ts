@@ -4,16 +4,16 @@ import { Time } from './../model/rationals/time';
 import { expect } from 'chai';
 import { SelectionAll, SelectionVoiceTime } from './query';
 import { createTestScore } from '../tools/test-tools';
-import { ElementIdentifier, Selection } from './selection-types';
+import { ElementIdentifier, MusicSelection } from './selection-types';
 import { selectDifference, selectIntersect, selectUnion } from './selection-combiners';
 
 
 describe('Selection combiners', () => {
 
-    const sel1: Selection = {
+    const sel1: MusicSelection = {
         isSelected: (element: ElementIdentifier) => element.elementNo > 10
     };
-    const sel2: Selection = {
+    const sel2: MusicSelection = {
         isSelected: (element: ElementIdentifier) => element.voiceNo === 1
     };
     /*const sel3: Selection = {
