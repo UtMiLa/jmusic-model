@@ -3,9 +3,11 @@ import { JMusic } from '../facade/jmusic';
 import { InsertionPoint } from './insertion-point';
 
 
-export abstract class Command {
+export class Command {
     constructor(protected args: [InsertionPoint, ...any]) {}
-    abstract execute(model: EditableView): void;
+    execute(model: EditableView): void {
+        throw 'Not implemented';
+    }
 }
 
 export class FileNewCommand extends Command {
