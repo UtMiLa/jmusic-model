@@ -1,5 +1,5 @@
 import { MusicSelection } from './../selection/selection-types';
-import { DomainConverter, LensItem, Model, ProjectLens, VarDictFlex, VoiceContentDef } from '../model';
+import { DomainConverter, LensItem, Model, ProjectLens, VarDictFlex, VoiceContentDef, flexibleItemToDef } from '../model';
 import { ISequence, MusicEvent } from './../model/score/sequence';
 import { InsertionPoint, InsertionPointDef } from '../editor/insertion-point';
 import { Key } from '../model/states/key';
@@ -12,7 +12,7 @@ import { Note } from '../model/notes/note';
 import { VariableRepository } from '../model/score/variables';
 import R = require('ramda');
 import { FlexibleItem, ProjectDef } from '../model';
-import { ProjectFlex } from '../model/facade/project-flex';
+import { ProjectFlex, makeProject } from '../model/facade/project-flex';
 import { EditView, EditableView } from '../model/facade/views';
 import { VariableView } from '../model/facade/variable-view';
 
@@ -57,7 +57,7 @@ export class JMusic extends EditView implements EditableView {
     constructor(scoreFlex?: ProjectFlex, vars?: VarDictFlex) {
         super();
 
-        this.model = new Model(scoreFlex, vars);
+        this.model = new Model(makeProject(scoreFlex, vars));
     }
 
     get project(): ProjectDef { return this.model.project; }
@@ -113,7 +113,7 @@ export class JMusic extends EditView implements EditableView {
     }
 
     clearScore(ins: InsertionPoint, voice?: string | JMusicSettings | ScoreDef): void {
-        this.model.clearScore(ins, voice);
+        this.model.clearScore(makeProject(voice));
     }
 
     addRepeat(repeat: RepeatDef): void {

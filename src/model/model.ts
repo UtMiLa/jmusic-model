@@ -1,30 +1,28 @@
 import { ElementIdentifier, MusicSelection } from './../selection/selection-types';
 import R = require('ramda');
 import { InsertionPoint, InsertionPointDef } from '../editor/insertion-point';
-import { ChangeHandler, JMusicSettings, VarDictFlex } from '.';
-import { ProjectFlex, makeProject } from './facade/project-flex';
+import { ChangeHandler } from '.';
 import { Note } from './notes/note';
 import { ProjectLens, projectLensByTime, DomainConverter, LensItem } from './optics/lens';
 import { Time } from './rationals/time';
 import { FlexibleSequence, flexibleItemToDef } from './score/flexible-sequence';
 import { RepeatDef } from './score/repeats';
-import { ScoreDef } from '.';
 import { ISequence, isNote, MusicEvent } from './score/sequence';
 import { Staff } from './score/staff';
 import { ProjectDef, FlexibleItem } from '.';
-import { VariableRepository, createRepo, setVar, varDictActiveToDef, varDictFlexToActive } from './score/variables';
-import { voiceSequenceToDef, VoiceContentDef } from '.';
+import { VariableRepository, createRepo, varDictActiveToDef, varDictFlexToActive } from './score/variables';
+import { VoiceContentDef } from '.';
 import { activeGetElements, convertSequenceDataToActive } from './active-project/conversions';
-import { ActiveProject, ActiveSequence, ActiveSequenceItem } from './active-project/types';
+import { ActiveProject } from './active-project/types';
 import { convertProjectDataToActive } from './active-project/def-to-active';
 import { modifyProject } from './active-project/project-iteration';
-import { SelectionBy, SelectionInsertionPoint, SelectionVoiceTime } from '../selection/query';
+import { SelectionBy, SelectionInsertionPoint } from '../selection/query';
 import { convertProjectActiveToData } from './active-project/active-to-def';
 
 
 export class Model {
-    constructor(scoreFlex?: ProjectFlex, vars?: VarDictFlex) {
-        this.activeProject = convertProjectDataToActive(makeProject(scoreFlex, vars));
+    constructor(scoreDef: ProjectDef) {
+        this.activeProject = convertProjectDataToActive(scoreDef);
     }
 
     get project(): ProjectDef {
@@ -116,9 +114,9 @@ export class Model {
     }
 
 
-    clearScore(ins: InsertionPoint, voice?: string | JMusicSettings | ScoreDef): void {
+    clearScore(resetTo: ProjectDef): void {
 
-        this.activeProject = convertProjectDataToActive(makeProject(voice));
+        this.activeProject = convertProjectDataToActive(resetTo);
 
         this.didChange();
     }
