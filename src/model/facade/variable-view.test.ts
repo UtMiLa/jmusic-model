@@ -1,7 +1,7 @@
 import { InsertionPoint } from './../../editor/insertion-point';
 import { Time } from './../rationals/time';
 import { expect } from 'chai';
-import { JMusic } from './jmusic';
+import { JMusic } from '../../facade/jmusic';
 import { createNoteFromLilypond, Note } from '../notes/note';
 import { Pitch } from '../pitches/pitch';
 import R = require('ramda');

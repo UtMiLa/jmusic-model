@@ -1,12 +1,11 @@
-import { EditableView, JMusic, Pitch, createNote, getDotNumber, getDottedValue, getUndottedValue } from '../model';
+import { EditableView, Pitch, createNote, getDotNumber, getDottedValue, getUndottedValue } from '../model';
+import { JMusic } from '../facade/jmusic';
 import { InsertionPoint } from './insertion-point';
 
 
-export class Command {
+export abstract class Command {
     constructor(protected args: [InsertionPoint, ...any]) {}
-    execute(model: EditableView): void {
-        //
-    }
+    abstract execute(model: EditableView): void;
 }
 
 export class FileNewCommand extends Command {

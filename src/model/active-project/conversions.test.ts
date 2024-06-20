@@ -5,7 +5,7 @@ import { activeGetElements, convertActiveSequenceToData, convertSequenceDataToAc
 import { createNoteFromLilypond } from '../notes/note';
 import { ActiveFunctionCall, ActiveSequence, ActiveVarRef } from './types';
 import { SeqFunction } from '../data-only/functions';
-import { JMusic } from '../facade/jmusic';
+import { JMusic } from '../../facade/jmusic';
 import R = require('ramda');
 import { lensItemOf, projectLensByIndex } from '../optics/lens';
 import { Clef } from '../states/clef';

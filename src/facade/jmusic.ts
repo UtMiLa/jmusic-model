@@ -1,20 +1,20 @@
-import { MusicSelection } from './../../selection/selection-types';
-import { DomainConverter, LensItem, Model, ProjectLens, VarDictFlex, VoiceContentDef } from '../../model';
-import { ISequence, MusicEvent } from './../score/sequence';
-import { InsertionPoint, InsertionPointDef } from './../../editor/insertion-point';
-import { Key } from './../states/key';
-import { Clef } from './../states/clef';
-import { RepeatDef } from '../score/repeats';
-import { Staff } from '../score/staff';
-import { ScoreDef } from './..';
-import { Meter } from '../states/meter';
-import { Note } from '../notes/note';
-import { VariableRepository } from '../score/variables';
+import { MusicSelection } from './../selection/selection-types';
+import { DomainConverter, LensItem, Model, ProjectLens, VarDictFlex, VoiceContentDef } from '../model';
+import { ISequence, MusicEvent } from './../model/score/sequence';
+import { InsertionPoint, InsertionPointDef } from '../editor/insertion-point';
+import { Key } from '../model/states/key';
+import { Clef } from '../model/states/clef';
+import { RepeatDef } from '../model/score/repeats';
+import { Staff } from '../model/score/staff';
+import { ScoreDef } from '../model';
+import { Meter } from '../model/states/meter';
+import { Note } from '../model/notes/note';
+import { VariableRepository } from '../model/score/variables';
 import R = require('ramda');
-import { FlexibleItem, ProjectDef } from '..';
-import { ProjectFlex } from './project-flex';
-import { EditView, EditableView } from './views';
-import { VariableView } from './variable-view';
+import { FlexibleItem, ProjectDef } from '../model';
+import { ProjectFlex } from '../model/facade/project-flex';
+import { EditView, EditableView } from '../model/facade/views';
+import { VariableView } from '../model/facade/variable-view';
 
 export interface JMusicSettings {
     content: FlexibleItem[][];

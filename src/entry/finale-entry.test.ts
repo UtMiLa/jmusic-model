@@ -1,6 +1,6 @@
 import { createNoteFromLilypond } from '../model';
 import { Pitch } from './../model/pitches/pitch';
-import { JMusic } from './../model/facade/jmusic';
+import { JMusic } from '../facade/jmusic';
 import { expect } from 'chai';
 import { BaseCommandFactory } from '../editor//command-factory';
 import { FinaleSmartEntry } from './finale-entry';

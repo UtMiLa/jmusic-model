@@ -10,7 +10,7 @@ import { createNoteFromLilypond } from '../notes/note';
 import { pipe } from 'fp-ts/lib/function';
 import { SelectionVoiceTime } from '../../selection/query';
 import { Time } from '../rationals/time';
-import { JMusic } from '../facade/jmusic';
+import { JMusic } from '../../facade/jmusic';
 import { convertProjectActiveToData } from './active-to-def';
 import { augment } from '../score/music-event-functions';
 import { MusicEvent, isNote } from '../score/sequence';

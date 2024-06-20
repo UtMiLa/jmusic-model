@@ -21,7 +21,7 @@
 
 import { Time } from '../rationals/time';
 import { expect } from 'chai';
-import { JMusic } from '../facade/jmusic';
+import { JMusic } from '../../facade/jmusic';
 import R = require('ramda');
 import { createNoteFromLilypond } from '../notes/note';
 import { ISequence, SequenceDef, isNote } from '..';

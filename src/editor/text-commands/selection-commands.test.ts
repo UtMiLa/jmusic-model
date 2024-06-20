@@ -2,7 +2,7 @@ import { Interval } from './../../../dist/model/pitches/intervals.d';
 import { Clef } from './../../model/states/clef';
 import { SelectionBy } from './../../selection/query';
 import { ElementIdentifier, SelectionManager } from './../../selection/selection-types';
-import { JMusic } from './../../model/facade/jmusic';
+import { JMusic } from '../../facade/jmusic';
 import { expect } from 'chai';
 import { InsertionPoint } from '../insertion-point';
 import { TextCommandEngine } from '../text-command-engine';

@@ -1,4 +1,4 @@
-import { JMusic } from './../../model/facade/jmusic';
+import { JMusic } from '../../facade/jmusic';
 import { Time } from './../../model/rationals/time';
 import { TupletSequence } from './../../model/score/transformations';
 import { SimpleSequence } from './../../model/score/sequence';

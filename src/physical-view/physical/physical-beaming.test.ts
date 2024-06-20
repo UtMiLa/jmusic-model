@@ -1,4 +1,4 @@
-import { JMusic } from './../../model/facade/jmusic';
+import { JMusic } from '../../facade/jmusic';
 import { BeamingViewModel } from './../../logical-view/view-model/note-view-model';
 import { Time } from './../../model/rationals/time';
 import { ScoreViewModel } from './../../logical-view/view-model/score-view-model';

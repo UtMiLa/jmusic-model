@@ -1,5 +1,5 @@
 import { Model } from './../model/model';
-import { JMusic } from './../model/facade/jmusic';
+import { JMusic } from '../facade/jmusic';
 import { Time } from './../model/rationals/time';
 import { expect } from 'chai';
 import { SelectionAll, SelectionInsertionPoint, SelectionVoiceTime } from './query';

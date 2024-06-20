@@ -28,7 +28,7 @@ export * from './score/transformations';
 export * from './notes/beaming';
 export * from './notes/lyrics';
 //export * from './decorations/decoration-type';
-export * from './facade/jmusic';
+export * from '../facade/jmusic';
 export * from './facade/variable-view';
 export * from './facade/views';
 export * from './optics/lens';

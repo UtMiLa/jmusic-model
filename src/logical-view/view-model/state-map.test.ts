@@ -1,5 +1,5 @@
 import { EventType, getExtendedTime } from '../../model/score/timing-order';
-import { JMusic } from './../../model/facade/jmusic';
+import { JMusic } from '../../facade/jmusic';
 import { Clef } from './../../model/states/clef';
 import { DiatonicKey, Key } from './../../model/states/key';
 import { MeterFactory } from './../../model/states/meter';

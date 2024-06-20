@@ -1,17 +1,17 @@
-import { LongDecorationType } from './..';
-import { InsertionPoint } from './../../editor/insertion-point';
-import { MeterFactory } from './../states/meter';
-import { Time } from './../rationals/time';
-import { Clef, ClefType } from './..';
+import { LongDecorationType } from '../model';
+import { InsertionPoint } from '../editor/insertion-point';
+import { MeterFactory } from '../model/states/meter';
+import { Time } from '../model/rationals/time';
+import { Clef, ClefType } from '../model';
 import { expect } from 'chai';
 import { JMusic, initStateInSequence } from './jmusic';
-import { createNoteFromLilypond, Note, NoteDirection } from '..';
-import { Pitch } from '../pitches/pitch';
-import { DiatonicKey, Key } from '../states/key';
-import { StaffDef } from '..';
-import { FlexibleSequence } from '../score/flexible-sequence';
+import { createNoteFromLilypond, Note, NoteDirection } from '../model';
+import { Pitch } from '../model/pitches/pitch';
+import { DiatonicKey, Key } from '../model/states/key';
+import { StaffDef } from '../model';
+import { FlexibleSequence } from '../model/score/flexible-sequence';
 import R = require('ramda');
-import { valueOf } from '../score/variables';
+import { valueOf } from '../model/score/variables';
 
 describe('Facade', () => {
 
