@@ -19,7 +19,7 @@ export const moonlightScoreDef = {
         ],
         [
             [
-                '<gis cis\' e\'>1 <gis dis\' fis\'>1 <gis cis\' e\'>2'
+                '<cis, gis, cis>1 <bis,, gis, bis,>1 <cis, gis, cis>2'
             ]
         ]
     ],
