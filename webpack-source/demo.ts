@@ -4,15 +4,16 @@ import { Cursor } from './../src/physical-view/physical/cursor';
 import { InsertionPoint } from './../src/editor/insertion-point';
 import { meterModel } from './demodata/time-changes';
 import { MultiFlexibleSequence } from './../src/model/score/multi-flexible-sequence';
-import { MyCanvasRenderer, PhysicalModel, StandardMetrics, renderOnRenderer, viewModelToPhysical } from '../src/physical-view';
-import { ClefType, JMusic, JMusicSettings, NoteDirection, ScoreDef, SeqFunction, Time } from '../src/model';
-import { scoreModelToViewModel } from '../src/logical-view';
+import { MyCanvasRenderer, PhysicalModel, StandardMetrics, generateMeasureMap, renderOnRenderer, viewModelToPhysical } from '../src/physical-view';
+import { AbsoluteTime, ClefType, JMusic, JMusicSettings, NoteDirection, ScoreDef, SeqFunction, Time } from '../src/model';
+import { SubsetDef, scoreModelToViewModel } from '../src/logical-view';
 import { RenderPosition } from '../src/physical-view/render/render-types';
 import { ProjectFlex } from '../src/model/facade/project-flex';
 import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 import { SelectionAll, SelectionVoiceTime } from '../src/selection/query';
 import { option } from 'fp-ts';
+import { none } from 'fp-ts/lib/Option';
 
 //console.log('Demo');
 
@@ -43,6 +44,7 @@ const variablesAndFunctions = {
   
 } as JMusicSettings;
 
+const scale = 1.2;
 
 
 function myRenderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition) {
@@ -193,8 +195,8 @@ export function render(): void {
         myRenderOnCanvas(phv, notesCanvas, {
             offsetX: 10,
             offsetY: 40,
-            scaleX: 1.2,
-            scaleY: 1.2
+            scaleX: scale,
+            scaleY: scale
         });
         
 
@@ -202,8 +204,8 @@ export function render(): void {
             myRenderOnCanvas(phv, notesCanvas, {
                 offsetX: 10,
                 offsetY: 40,
-                scaleX: 1.2,
-                scaleY: 1.2
+                scaleX: scale,
+                scaleY: scale
             });
         }, 1000);
         //textContainer.textContent = JSON.stringify(phv);
@@ -219,3 +221,60 @@ setTimeout(() => {
     //render({ content: [[{ type: 'multi', sequences: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4'] }]]});
     render();
 }, 30);
+
+
+const restrictions: SubsetDef = { startTime: Time.StartTime, endTime: Time.EternityTime };
+
+const splits: AbsoluteTime[] = [Time.StartTime];
+const settings = new StandardMetrics({
+    staffLineWidth: 6
+});
+
+function clickElement(i: number, $event: MouseEvent) {
+    //console.log('log mm', $event);
+    if (i >= splits.length) return;
+
+    if (!jMusic) return;
+    const restrictions1 = { startTime: splits[i], endTime: i === splits.length - 1 ? restrictions.endTime : splits[i+1] };
+    const restrictedLogicalModel = scoreModelToViewModel(jMusic, none, restrictions1);
+
+    const map = generateMeasureMap(restrictedLogicalModel, settings);
+    //console.log(map);
+    //console.log('log map', map);
+    const localized = map.localize(($event.clientX) / scale, ($event.clientY*2 - 12) / scale, settings);
+    if (!localized) {
+        //this.mouseDebug = '';
+        return;
+    }
+
+    //this.mouseDebug = JSON.stringify($event.clientX) + ',' + JSON.stringify($event.clientY) + ' ' + JSON.stringify(localized);
+    //console.log('log loc', this.mouseDebug);
+    //_insertionPoint = new InsertionPoint(this.scoreDef);
+    if (!insertionPoint) return;
+
+
+    if (Time.sortComparison(insertionPoint.time, localized.time) !==0 || insertionPoint.position !== 15-localized.pitch) {
+        insertionPoint.time = localized.time;
+        insertionPoint.staffNo = localized.staff;
+        insertionPoint.position = 15-localized.pitch;
+        console.log(insertionPoint, $event);
+
+        render();
+    }
+}
+
+
+const notesCanvas = (document.querySelector('#content') as HTMLCanvasElement);
+notesCanvas.addEventListener('click', (event: MouseEvent) => {
+    const rect = (event.target as HTMLCanvasElement).getBoundingClientRect();
+
+    const data = {
+        ...event,
+        clientX: event.clientX - rect.left, 
+        clientY: event.clientY - rect.top
+        /*startTime: restrictions.startTime,
+        model: jMusic*/
+    };
+
+    clickElement(0, data);
+});
