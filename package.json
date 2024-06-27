@@ -29,10 +29,13 @@
   "devDependencies": {
     "@types/chai": "^4.2.14",
     "@types/deep-eql": "^4.0.0",
+    "@types/jsdom": "^21.1.7",
+    "@types/jsdom-global": "^3.0.7",
     "@types/mocha": "^8.0.4",
     "@types/node": "^14.14.10",
     "@types/ramda": "^0.28.22",
     "@types/sinon": "^10.0.13",
+    "@types/xmlserializer": "^0.6.6",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
     "@xterm/xterm": "^5.4.0",
@@ -41,6 +44,8 @@
     "eslint": "^7.14.0",
     "html-webpack-plugin": "^5.5.3",
     "husky": "^4.3.0",
+    "jsdom": "19",
+    "jsdom-global": "3.0.2",
     "lint-staged": "^10.5.2",
     "mini-css-extract-plugin": "^2.8.1",
     "mocha": "^10.2.0",
@@ -55,7 +60,8 @@
     "typescript-transform-paths": "^2.1.0",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1"
+    "webpack-dev-server": "^4.15.1",
+    "xmlserializer": "^0.6.1"
   },
   "lint-staged": {
     "*.ts": [
