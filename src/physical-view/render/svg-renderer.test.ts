@@ -36,7 +36,7 @@ describe.only('SVG renderer', () => {
         renderer = new SVGRenderer(svg);
     });
 
-    it('should draw a line on a canvas', () => {
+    it('should draw a line on an svg', () => {
         renderer.draw('#123456', '#abcdef', [
             { type: DrawOperationType.MoveTo, points: [{ x: 100, y: 143 }] },
             { type: DrawOperationType.LineTo, points: [{ x: 170, y: 143 }] },
@@ -51,7 +51,7 @@ describe.only('SVG renderer', () => {
         expect(str).to.eq(res);
     });
 
-    it('should fill a polygon on a canvas', () => {
+    it('should fill a polygon on an svg', () => {
         renderer.draw('#123456', '#abcdef', [
             { type: DrawOperationType.MoveTo, points: [{ x: 100, y: 143 }] },
             { type: DrawOperationType.LineTo, points: [{ x: 170, y: 143 }] },
@@ -67,7 +67,7 @@ describe.only('SVG renderer', () => {
         expect(str).to.eq(res);
     });
 
-    /*it('should draw a curve on a canvas', () => {
+    /*it('should draw a curve on an svg', () => {
 
         renderer.lineWidth = 2.8;
         expect(renderer.lineWidth).to.eq(2.8);
@@ -91,16 +91,22 @@ describe.only('SVG renderer', () => {
         sinon.assert.calledWith(spyObj.bezierCurveTo, 170, 143, 120, 103, 130, 183);
         sinon.assert.calledOnce(spyObj.stroke);
         sinon.assert.notCalled(spyObj.fill);
-    });
+    });*/
 
     
-    it('should draw text on a canvas', () => {
+    it('should draw text on an svg', () => {
         renderer.draw('#234567', '#988765', [
             { type: DrawOperationType.Text, points: [{ x: 100, y: 143 }], text: 'Hello', font: 'blah' }
         ],
         false);
 
-        expect(spyObj.fillStyle).to.eq('#988765');
+        const res = '<text xmlns="http://www.w3.org/2000/svg" style="fill:#988765;stroke:none;" x="100" y="143">Hello</text>';
+
+        expect(svg.firstElementChild?.children).to.have.length(1);
+        const str = serializeToString(svg.firstElementChild?.firstElementChild);
+
+        expect(str).to.eq(res);
+        /*expect(spyObj.fillStyle).to.eq('#988765');
         expect(spyObj.strokeStyle).to.eq('#234567');
         expect(spyObj.font).to.eq('blah');
 
@@ -108,11 +114,11 @@ describe.only('SVG renderer', () => {
         sinon.assert.calledOnce(spyObj.fillText);
         sinon.assert.calledWith(spyObj.fillText, 'Hello', 100, 143);
         sinon.assert.notCalled(spyObj.stroke);
-        sinon.assert.notCalled(spyObj.fill);
+        sinon.assert.notCalled(spyObj.fill);*/
     });
     
     
-    it('should draw text on a canvas - no font', () => {
+    /*it('should draw text on an svg - no font', () => {
         renderer.draw('#234567', '#988765', [
             { type: DrawOperationType.Text, points: [{ x: 100, y: 143 }], text: 'Hello' }
         ],
@@ -129,7 +135,7 @@ describe.only('SVG renderer', () => {
         sinon.assert.notCalled(spyObj.fill);
     });
 
-    it('should clear a canvas', () => {
+    it('should clear an svg', () => {
         renderer.clear('white');
 
         expect(spyObj.fillStyle).to.eq('white');

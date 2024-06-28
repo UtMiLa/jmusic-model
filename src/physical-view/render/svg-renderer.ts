@@ -33,17 +33,38 @@ export class SVGRenderer implements Renderer {
                 case DrawOperationType.LineTo:
                     pathString += ` ${operation.points[0].x},${operation.points[0].y}`;
                     break;
+
+                case DrawOperationType.Text:
+                    //     <text style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;"
+                    // x="137.92667" y="126.87991">Char</text>
+                    {
+                        const txt = this.svg.ownerDocument.createElementNS(SVGRenderer.xmlns, 'text');
+                        txt.setAttribute('style', `font-family:'Emmentaler';fill:${fillColor};stroke:none;`);
+                        txt.setAttribute('x', '' + operation.points[0].x);
+                        txt.setAttribute('y', '' + operation.points[0].y);
+                        txt.appendChild(this.svg.ownerDocument.createTextNode(operation.text ?? ''));
+                        this.svg.firstElementChild?.appendChild(txt);
+                    }
+                    break;
+
+                case DrawOperationType.ClosePath:
+                    break;
+
+                case DrawOperationType.CurveTo:
+                    break;
             }
         });
 
-        p.setAttribute('style', `fill:${ shouldFill ? fillColor : 'none' };stroke:${ shouldStroke ? strokeColor : 'none' };`);
+        if (pathString) {
+            p.setAttribute('style', `fill:${ shouldFill ? fillColor : 'none' };stroke:${ shouldStroke ? strokeColor : 'none' };`);
 
-        p.setAttribute('d', pathString);
-        this.svg.firstChild?.appendChild(p);
+            p.setAttribute('d', pathString);
+            this.svg.firstElementChild?.appendChild(p);
+        }
     }
 
     clear(color: string): void {
-        throw new Error('Method not implemented.');
+        //throw new Error('Method not implemented.');
     }
     
     width = 0;

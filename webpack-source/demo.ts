@@ -1,3 +1,4 @@
+import { SVGRenderer } from './../src/physical-view/render/svg-renderer';
 import { SelectionManager } from './../src/selection/selection-types';
 import { TextCommandEngine } from './../src/editor/text-command-engine';
 import { Cursor } from './../src/physical-view/physical/cursor';
@@ -14,6 +15,8 @@ import '@xterm/xterm/css/xterm.css';
 import { SelectionAll, SelectionVoiceTime } from '../src/selection/query';
 import { option } from 'fp-ts';
 import { none } from 'fp-ts/lib/Option';
+
+import Emmentaler from  './Emmentaler-20.woff';
 
 //console.log('Demo');
 
@@ -187,6 +190,7 @@ export function render(): void {
         } as Cursor;
 
         const notesCanvas = (document.querySelector('#content') as HTMLCanvasElement);
+        const notesSvg = (document.querySelector('#content-svg') as SVGElement);
 
         const phv = viewModelToPhysical(logicalModel, new StandardMetrics(), cursor);
 
@@ -198,7 +202,13 @@ export function render(): void {
             scaleX: scale,
             scaleY: scale
         });
-        
+
+        renderOnRenderer(phv, new SVGRenderer(notesSvg), {
+            offsetX: 10,
+            offsetY: 40,
+            scaleX: scale,
+            scaleY: scale
+        });
 
         setTimeout(() => {
             myRenderOnCanvas(phv, notesCanvas, {
@@ -278,3 +288,17 @@ notesCanvas.addEventListener('click', (event: MouseEvent) => {
 
     clickElement(0, data);
 });
+
+
+//const notesSvg = (document.querySelector('#content-svg') as SVGElement);
+/*notesCanvas.addEventListener('click', (event: MouseEvent) => {
+    const rect = (event.target as HTMLCanvasElement).getBoundingClientRect();
+
+    const data = {
+        ...event,
+        clientX: event.clientX - rect.left, 
+        clientY: event.clientY - rect.top
+    };
+
+    clickElement(0, data);
+});*/

@@ -3,6 +3,7 @@ const webpack = require('webpack');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     mode: 'development',
@@ -21,7 +22,11 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             title: 'JMusic demo',
-            template: 'webpack-source/index.html'
+            template: './webpack-source/index.html'
+        }),
+        new CopyWebpackPlugin({
+            patterns: [{ from: './webpack-source/fonts', to: 'fonts' }]
+            
         }),
         new MiniCssExtractPlugin()
     ],
@@ -37,6 +42,7 @@ module.exports = {
                 exclude: [/node_modules/],
                 use: 'ts-loader'
             },
+            
             {
                 test: /\.css$/i,
                 use: [MiniCssExtractPlugin.loader, 'css-loader']
