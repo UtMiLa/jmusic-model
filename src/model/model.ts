@@ -5,7 +5,7 @@ import { ChangeHandler } from '.';
 import { Note } from './notes/note';
 import { ProjectLens, projectLensByTime, DomainConverter, LensItem } from './optics/lens';
 import { Time } from './rationals/time';
-import { FlexibleSequence, flexibleItemToDef } from './score/flexible-sequence';
+import { flexibleItemToDef } from './score/flexible-sequence';
 import { RepeatDef } from './score/repeats';
 import { ISequence, isNote, MusicEvent } from './score/sequence';
 import { Staff } from './score/staff';
@@ -18,11 +18,12 @@ import { convertProjectDataToActive } from './active-project/def-to-active';
 import { modifyProject } from './active-project/project-iteration';
 import { SelectionBy, SelectionInsertionPoint } from '../selection/query';
 import { convertProjectActiveToData } from './active-project/active-to-def';
+import { SimpleActiveSequence } from './active-project/simple-active-sequence';
 
 
 export class Model {
-    constructor(scoreDef: ProjectDef) {
-        this.activeProject = convertProjectDataToActive(scoreDef);
+    constructor(score: ActiveProject) {
+        this.activeProject = score;
     }
 
     get project(): ProjectDef {
@@ -33,7 +34,7 @@ export class Model {
 
     public get staves(): Staff[] {
         return this.activeProject.score.staves.map(staff => ({...staff, voices: staff.voices.map(voice => ({
-            ...voice, content: new FlexibleSequence(activeGetElements(voice.content))
+            ...voice, content: new SimpleActiveSequence(voice.content)
         })) }));
     }
 

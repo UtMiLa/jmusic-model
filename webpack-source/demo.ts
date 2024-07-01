@@ -197,7 +197,7 @@ export function render(): void {
 
         const phv = viewModelToPhysical(logicalModel, new StandardMetrics(), cursor);
 
-        console.log('model', jMusic, logicalModel, phv);
+        console.log('model', jMusic, jMusic.staves, logicalModel, phv);
 
         myRenderOnCanvas(phv, notesCanvas, {
             offsetX: 10,

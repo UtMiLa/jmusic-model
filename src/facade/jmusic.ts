@@ -15,6 +15,7 @@ import { FlexibleItem, ProjectDef } from '../model';
 import { ProjectFlex, makeProject } from '../model/facade/project-flex';
 import { EditView, EditableView } from '../model/facade/views';
 import { VariableView } from '../model/facade/variable-view';
+import { convertProjectDataToActive } from '../model/active-project/def-to-active';
 
 export interface JMusicSettings {
     content: FlexibleItem[][];
@@ -57,7 +58,7 @@ export class JMusic extends EditView implements EditableView {
     constructor(scoreFlex?: ProjectFlex, vars?: VarDictFlex) {
         super();
 
-        this.model = new Model(makeProject(scoreFlex, vars));
+        this.model = new Model(convertProjectDataToActive(makeProject(scoreFlex, vars)));
     }
 
     get project(): ProjectDef { return this.model.project; }

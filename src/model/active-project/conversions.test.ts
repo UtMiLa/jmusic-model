@@ -2,7 +2,7 @@ import { Time } from '../rationals/time';
 import { expect } from 'chai';
 import { VoiceContentDef } from '../data-only/voices';
 import { activeGetElements, convertActiveSequenceToData, convertSequenceDataToActive, normalizeVars } from './conversions';
-import { createNoteFromLilypond } from '../notes/note';
+import { cloneNote, createNoteFromLilypond } from '../notes/note';
 import { ActiveFunctionCall, ActiveSequence, ActiveVarRef } from './types';
 import { SeqFunction } from '../data-only/functions';
 import { JMusic } from '../../facade/jmusic';
@@ -157,6 +157,19 @@ describe('Conversions', () => {
 
             expect(elements).to.have.length(6);
             expect(elements[4]).to.deep.eq(createNoteFromLilypond('g4.'));
+        });
+
+        it('should apply tuplet functions content', () => {
+            const data: VoiceContentDef = ['c4 d4 e4 f4', { function: 'Tuplet', extraArgs: [Time.newSpan(2, 3)], args: ['a4 g4 b4'] } as SeqFunction];
+            const active = convertSequenceDataToActive(data, { });
+
+            const elements = activeGetElements(active);
+
+            expect(elements).to.have.length(7);
+            expect(elements[5]).to.deep.eq(cloneNote(createNoteFromLilypond('g4'), {
+                tupletFactor: Time.newSpan(2, 3),
+                tupletGroup: 2
+            }));
         });
 
         it('should apply functions content with a clef', () => {

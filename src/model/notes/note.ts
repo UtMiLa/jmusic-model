@@ -48,6 +48,9 @@ export function noteAsLilypond(note: Note): string {
     const dots = R.repeat('.', dotNo).join('');
     const tie = note.tie ? '~' : '';
     const expressions = note.expressions ? note.expressions.map(x => `\\${x}`).join('') : '';
+    //const tupletDef = note.tupletFactor ? 'TUPLET' : '';
+    if (note.tupletFactor) 
+        throw 'Not implemented tuplet to LY';
     return pitchPart + durationPart + dots + tie + expressions;
 }
 
