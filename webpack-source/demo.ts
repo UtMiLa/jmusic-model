@@ -16,9 +16,11 @@ import { SelectionAll, SelectionVoiceTime } from '../src/selection/query';
 import { option } from 'fp-ts';
 import { none } from 'fp-ts/lib/Option';
 
-import Emmentaler from  './Emmentaler-20.woff';
 
-//console.log('Demo');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Emmentaler = require('./fonts/Emmentaler-20.woff');
+
+//console.log('Demo', Emmentaler);
 
 
 const variablesAndFunctionsVars = {
