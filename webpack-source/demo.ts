@@ -15,6 +15,7 @@ import '@xterm/xterm/css/xterm.css';
 import { SelectionAll, SelectionVoiceTime } from '../src/selection/query';
 import { option } from 'fp-ts';
 import { none } from 'fp-ts/lib/Option';
+import { tupletVars, tuplets } from './demodata/tuplets';
 
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -150,7 +151,7 @@ const musicDef: ScoreDef = {
     
 };
 
-const jMusic = new JMusic(meterModel);
+const jMusic = new JMusic(tuplets, tupletVars);
 //const jMusic = new JMusic(moonlightScoreDef, moonlightVars);
 const insertionPoint = new InsertionPoint(jMusic);
 

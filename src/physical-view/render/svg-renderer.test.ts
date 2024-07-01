@@ -15,7 +15,7 @@ import { serializeToString } from 'xmlserializer';
 
 }*/
 
-describe.only('SVG renderer', () => {
+describe('SVG renderer', () => {
 
     let svg: SVGElement;
     //let spyObj: sinon.SinonSpiedInstance<any>;
@@ -100,21 +100,12 @@ describe.only('SVG renderer', () => {
         ],
         false);
 
-        const res = '<text xmlns="http://www.w3.org/2000/svg" style="fill:#988765;stroke:none;" x="100" y="143">Hello</text>';
+        const res = '<text xmlns="http://www.w3.org/2000/svg" style="font-family:&apos;Emmentaler&apos;;font-size:24px;fill:#988765;stroke:none;" x="100" y="143">Hello</text>';
 
         expect(svg.firstElementChild?.children).to.have.length(1);
         const str = serializeToString(svg.firstElementChild?.firstElementChild);
 
         expect(str).to.eq(res);
-        /*expect(spyObj.fillStyle).to.eq('#988765');
-        expect(spyObj.strokeStyle).to.eq('#234567');
-        expect(spyObj.font).to.eq('blah');
-
-        sinon.assert.notCalled(spyObj.beginPath);
-        sinon.assert.calledOnce(spyObj.fillText);
-        sinon.assert.calledWith(spyObj.fillText, 'Hello', 100, 143);
-        sinon.assert.notCalled(spyObj.stroke);
-        sinon.assert.notCalled(spyObj.fill);*/
     });
     
     
