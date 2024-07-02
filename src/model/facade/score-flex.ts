@@ -1,12 +1,11 @@
 import R = require('ramda');
-import { JMusicSettings, initStateInMultiSequence, initStateInSequence } from '..';
+import { JMusicSettings, initStateInMultiSequence } from '..';
 import { NoteDirection } from '..';
-import { FlexibleSequence } from '../score/flexible-sequence';
 import { MultiFlexibleSequence } from '../score/multi-flexible-sequence';
 import { ScoreDef, isScoreDef } from '..';
 import { FlexibleItem, ProjectDef, isProjectDef } from '..';
 import { VariableRepository } from '../score/variables';
-import { VoiceContentDef, VoiceDef, voiceSequenceToDef } from '..';
+import { VoiceDef, voiceSequenceToDef } from '..';
 import { Clef, ClefDef } from '..';
 import { KeyDef } from '..';
 import { makeClef } from './clef-flex';

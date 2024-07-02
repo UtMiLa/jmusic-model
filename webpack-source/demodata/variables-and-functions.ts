@@ -1,4 +1,4 @@
-import { CompositeSequence, FlexibleSequence, JMusic, JMusicSettings, SeqFunction } from '../../src/model';
+import { JMusicSettings, SeqFunction } from '../../src/model';
 
 export const variablesAndFunctionsVars = {
     var1: ['c\'4. d\'8'],

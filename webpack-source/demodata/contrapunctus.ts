@@ -1,4 +1,4 @@
-import { NoteType, NoteDirection, StaffDef, ClefType, Time, SimpleSequence, TupletSequence, Rational, RetrogradeSequence, CompositeSequence, FlexibleSequence, JMusic, JMusicSettings, SeqFunction } from '../../src/model';
+import { JMusicSettings, SeqFunction } from '../../src/model';
 
 export const contrapunctusVars = {
     soprano:  [{

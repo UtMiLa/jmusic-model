@@ -1,4 +1,4 @@
-import { CompositeSequence, FlexibleSequence, JMusic, JMusicSettings, SeqFunction } from '../../src/model';
+import { JMusicSettings, SeqFunction } from '../../src/model';
 
 export const tupletVars = {
     scale: ['c\'8 d\'8 e\'8 f\'8 g\'8 a\'8'],
