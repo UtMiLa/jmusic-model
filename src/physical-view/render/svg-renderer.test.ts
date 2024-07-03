@@ -93,6 +93,10 @@ describe('SVG renderer', () => {
         sinon.assert.notCalled(spyObj.fill);
     });*/
 
+    // todo: curves
+    // todo: font size
+    // todo: other fonts
+    // todo: complex objects: more than one path, or path combined with text
     
     it('should draw text on an svg', () => {
         renderer.draw('#234567', '#988765', [

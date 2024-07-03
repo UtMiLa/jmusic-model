@@ -5,7 +5,7 @@ import { Cursor } from './../src/physical-view/physical/cursor';
 import { InsertionPoint } from './../src/editor/insertion-point';
 import { meterModel } from './demodata/time-changes';
 import { MultiFlexibleSequence } from './../src/model/score/multi-flexible-sequence';
-import { MyCanvasRenderer, PhysicalModel, StandardMetrics, generateMeasureMap, renderOnRenderer, viewModelToPhysical } from '../src/physical-view';
+import { MyCanvasRenderer, PhysicalModel, StandardMetrics, generateMeasureMap, renderOnCanvas, renderOnRenderer, viewModelToPhysical } from '../src/physical-view';
 import { AbsoluteTime, ClefType, JMusic, JMusicSettings, NoteDirection, ScoreDef, SeqFunction, Time } from '../src/model';
 import { SubsetDef, scoreModelToViewModel } from '../src/logical-view';
 import { RenderPosition } from '../src/physical-view/render/render-types';
@@ -16,6 +16,7 @@ import { SelectionAll, SelectionVoiceTime } from '../src/selection/query';
 import { option } from 'fp-ts';
 import { none } from 'fp-ts/lib/Option';
 import { tupletVars, tuplets } from './demodata/tuplets';
+import { longDeco } from './demodata/longdeco';
 
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -54,7 +55,8 @@ const scale = 1.2;
 
 
 function myRenderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition) {
-    renderOnRenderer(physicalModel, new MyCanvasRenderer(canvas), position);
+    //renderOnRenderer(physicalModel, new MyCanvasRenderer(canvas), position);
+    renderOnCanvas(physicalModel, canvas, position);
 }
 const input = (document.querySelector('#commandInput') as HTMLInputElement);
 const term = new Terminal();
@@ -155,7 +157,7 @@ const musicDef: ScoreDef = {
     
 };
 
-const jMusic = new JMusic(tuplets, tupletVars);
+const jMusic = new JMusic(longDeco, {});
 //const jMusic = new JMusic(moonlightScoreDef, moonlightVars);
 const insertionPoint = new InsertionPoint(jMusic);
 

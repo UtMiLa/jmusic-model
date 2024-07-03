@@ -65,9 +65,6 @@ export class SVGRenderer implements Renderer {
 
     clear(color: string): void {
         this.svg.firstElementChild?.replaceChildren();
-        /*while (this.svg.lastChild) {
-            this.svg.removeChild(this.svg.lastChild);
-        }*/
     }
     
     width = 0;
