@@ -77,7 +77,11 @@ term.onData(e => {
         case '\r': // Enter
             try {
                 const cmd = TextCommandEngine.parse(command);
-                cmd.execute(jMusic, insertionPoint, selMan);
+                const answer = cmd.execute(jMusic, insertionPoint, selMan);
+                if (typeof answer === 'string') {
+                    //console.log('answer', JSON.stringify(answer));
+                    term.writeln(answer.replace(/\n/g, '\n\r'));
+                }
                 command = '';
                 render();
             } catch (e) {
@@ -159,7 +163,11 @@ input.addEventListener('keydown', ev => {
     if (ev.key === 'Enter') {
         console.log(ev, input.value);
         const cmd = TextCommandEngine.parse(input.value);
-        cmd.execute(jMusic, insertionPoint, selMan);
+        const answer = cmd.execute(jMusic, insertionPoint, selMan);
+        if (typeof answer === 'string') {
+            term.writeln(answer.replace(/\n/g, '\n\r'));
+        }
+
         input.value = '';
         //insertionPoint.moveToTime(Time.fromStart(Time.WholeTime));
         //jMusic.addKeyChg(insertionPoint, { accidental: 1, count: 2 });
