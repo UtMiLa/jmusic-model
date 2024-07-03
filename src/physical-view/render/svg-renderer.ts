@@ -28,11 +28,11 @@ export class SVGRenderer implements Renderer {
                     break;
 
                 case DrawOperationType.MoveTo:
-                    pathString += `M ${operation.points[0].x},${operation.points[0].y}`;
+                    pathString += `M ${operation.points[0].x} ${operation.points[0].y}`;
                     break;
 
                 case DrawOperationType.LineTo:
-                    pathString += ` ${operation.points[0].x},${operation.points[0].y}`;
+                    pathString += ` L ${operation.points[0].x} ${operation.points[0].y}`;
                     break;
 
                 case DrawOperationType.Text:
@@ -53,7 +53,7 @@ export class SVGRenderer implements Renderer {
 
                 case DrawOperationType.CurveTo:
                     if (lastOperation !== DrawOperationType.CurveTo) pathString += ' C';
-                    pathString += ` ${operation.points[0].x},${operation.points[0].y} ${operation.points[1].x},${operation.points[1].y} ${operation.points[2].x},${operation.points[2].y}`;
+                    pathString += ` ${operation.points[0].x} ${operation.points[0].y},${operation.points[1].x} ${operation.points[1].y},${operation.points[2].x} ${operation.points[2].y}`;
                     break;
             }
             lastOperation = operation.type;

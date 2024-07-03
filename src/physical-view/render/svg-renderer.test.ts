@@ -43,7 +43,7 @@ describe.only('SVG renderer', () => {
             { type: DrawOperationType.Stroke, points: [] }
         ]);
 
-        const res = '<path xmlns="http://www.w3.org/2000/svg" style="fill:none;stroke:#123456;" d="M 100,143 170,143"/>';
+        const res = '<path xmlns="http://www.w3.org/2000/svg" style="fill:none;stroke:#123456;" d="M 100 143 L 170 143"/>';
 
         expect(svg.firstElementChild?.children).to.have.length(1);
         const str = serializeToString(svg.firstElementChild?.firstElementChild);
@@ -59,7 +59,7 @@ describe.only('SVG renderer', () => {
             { type: DrawOperationType.Fill, points: [] }
         ]);
 
-        const res = '<path xmlns="http://www.w3.org/2000/svg" style="fill:#abcdef;stroke:none;" d="M 100,143 170,143 100,243 z"/>';
+        const res = '<path xmlns="http://www.w3.org/2000/svg" style="fill:#abcdef;stroke:none;" d="M 100 143 L 170 143 L 100 243 z"/>';
 
         expect(svg.firstElementChild?.children).to.have.length(1);
         const str = serializeToString(svg.firstElementChild?.firstElementChild);
@@ -78,7 +78,7 @@ describe.only('SVG renderer', () => {
         ], true);
 
 
-        const res = '<path xmlns="http://www.w3.org/2000/svg" style="fill:none;stroke:#234567;" d="M 100,143 C 170,143 120,103 130,183"/>';
+        const res = '<path xmlns="http://www.w3.org/2000/svg" style="fill:none;stroke:#234567;" d="M 100 143 C 170 143,120 103,130 183"/>';
 
         expect(svg.firstElementChild?.children).to.have.length(1);
         const str = serializeToString(svg.firstElementChild?.firstElementChild);
