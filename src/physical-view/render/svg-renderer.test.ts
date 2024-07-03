@@ -15,7 +15,7 @@ import { serializeToString } from 'xmlserializer';
 
 }*/
 
-describe('SVG renderer', () => {
+describe.only('SVG renderer', () => {
 
     let svg: SVGElement;
     //let spyObj: sinon.SinonSpiedInstance<any>;
@@ -67,11 +67,9 @@ describe('SVG renderer', () => {
         expect(str).to.eq(res);
     });
 
-    /*it('should draw a curve on an svg', () => {
+    it('should draw a curve on an svg', () => {
 
         renderer.lineWidth = 2.8;
-        expect(renderer.lineWidth).to.eq(2.8);
-        expect(spyObj.lineWidth).to.eq(2.8);
 
         renderer.draw('#234567', '#988765', [
             { type: DrawOperationType.MoveTo, points: [{ x: 100, y: 143 }] },
@@ -80,20 +78,15 @@ describe('SVG renderer', () => {
         ], true);
 
 
-        expect(spyObj.fillStyle).to.eq('#988765');
-        expect(spyObj.strokeStyle).to.eq('#234567');
+        const res = '<path xmlns="http://www.w3.org/2000/svg" style="fill:none;stroke:#234567;" d="M 100,143 C 170,143 120,103 130,183"/>';
 
-        sinon.assert.calledOnce(spyObj.beginPath);
-        sinon.assert.calledOnce(spyObj.moveTo);
-        sinon.assert.calledWith(spyObj.moveTo, 100, 143);
-        sinon.assert.notCalled(spyObj.lineTo);
-        sinon.assert.calledOnce(spyObj.bezierCurveTo);
-        sinon.assert.calledWith(spyObj.bezierCurveTo, 170, 143, 120, 103, 130, 183);
-        sinon.assert.calledOnce(spyObj.stroke);
-        sinon.assert.notCalled(spyObj.fill);
-    });*/
+        expect(svg.firstElementChild?.children).to.have.length(1);
+        const str = serializeToString(svg.firstElementChild?.firstElementChild);
 
-    // todo: curves
+        expect(str).to.eq(res);
+    });
+
+    // todo: filled curves
     // todo: font size
     // todo: other fonts
     // todo: complex objects: more than one path, or path combined with text

@@ -14,12 +14,13 @@ export class SVGRenderer implements Renderer {
         let shouldFill = false;
         let shouldStroke = false;
         let pathString = '';
+        let lastOperation: DrawOperationType | -1 = -1;
 
         operations.forEach(operation => {
             switch (operation.type) {
                 case DrawOperationType.Fill:
-                    shouldFill = true;
                     pathString += ' z';
+                    shouldFill = true;
                     break;
             
                 case DrawOperationType.Stroke:
@@ -51,8 +52,11 @@ export class SVGRenderer implements Renderer {
                     break;
 
                 case DrawOperationType.CurveTo:
+                    if (lastOperation !== DrawOperationType.CurveTo) pathString += ' C';
+                    pathString += ` ${operation.points[0].x},${operation.points[0].y} ${operation.points[1].x},${operation.points[1].y} ${operation.points[2].x},${operation.points[2].y}`;
                     break;
             }
+            lastOperation = operation.type;
         });
 
         if (pathString) {
