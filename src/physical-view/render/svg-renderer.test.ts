@@ -125,16 +125,17 @@ describe('SVG renderer', () => {
         sinon.assert.notCalled(spyObj.stroke);
         sinon.assert.notCalled(spyObj.fill);
     });
-
-    it('should clear an svg', () => {
-        renderer.clear('white');
-
-        expect(spyObj.fillStyle).to.eq('white');
-
-        sinon.assert.calledOnce(spyObj.fillRect);
-        sinon.assert.calledWith(spyObj.fillRect, 0, 0, 20, 30);
-        sinon.assert.notCalled(spyObj.stroke);
-        sinon.assert.notCalled(spyObj.fill);
-    });
 */
+    it('should clear an svg', () => {
+
+        renderer.draw('#234567', '#988765', [
+            { type: DrawOperationType.Text, points: [{ x: 100, y: 143 }], text: 'Hello', font: 'blah' }
+        ],
+        false);
+
+        renderer.clear('white');
+        
+        expect(svg.firstElementChild?.children).to.have.length(0);        
+    });
+
 });
