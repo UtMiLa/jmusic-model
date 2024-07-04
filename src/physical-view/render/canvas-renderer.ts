@@ -35,7 +35,7 @@ export class CanvasRenderer implements Renderer {
                 case DrawOperationType.Text: {
                     //const scale = (elem as any).scale ? (elem as any).scale : 1;
                     
-                    if (operation.font) this.ctx.font = operation.font;
+                    if (operation.fontFamily && operation.fontSize) this.ctx.font = operation.fontSize + 'px ' + operation.fontFamily;
                     //const glyph = emmentalerCodes[(elem as PhysicalFixedSizeElement).glyph as GlyphCode] as string;
                     this.ctx.fillText(operation.text as string, operation.points[0].x, operation.points[0].y);
                 }

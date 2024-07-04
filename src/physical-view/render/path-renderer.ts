@@ -2,7 +2,7 @@ import * as R from 'ramda';
 import { emmentalerCodes } from '../../font/emmentaler-codes';
 import { Point, PhysicalModel, getPhysicalRect } from '../physical/physical-elements';
 import { CanvasRenderer } from './canvas-renderer';
-import { DrawOperation, DrawOperationType } from './render-types';
+import { DrawOperation, DrawOperationType, TextDrawOperation } from './render-types';
 
 /** Emmentaler font - from the Lilypond project */
 const emmentalerNotes: { [index: string]: string } = {
@@ -192,12 +192,19 @@ const emmentalerNotes: { [index: string]: string } = {
 emmentalerNotes['e_accidentals.sharp'] = emmentalerNotes['e_accidentals.2'];
 emmentalerNotes['e_accidentals.flat'] = emmentalerNotes['e_accidentals.M2'];
 
+interface LooseDrawOperation {
+    type: DrawOperationType;
+    text?: string;
+    fontSize?: number;
+    fontFamily?: string;
+    points: Point[];
+}
 export class MyCanvasRenderer extends CanvasRenderer {
     override draw(strokeColor: string, fillColor: string, operations: DrawOperation[], path?: boolean): void {
         super.draw(strokeColor, fillColor, R.chain(x => x.type === DrawOperationType.Text ? this.textToPath(x) : [x], operations), path);
     }
 
-    textToPath(textElement: DrawOperation): DrawOperation[] {
+    textToPath(textElement: TextDrawOperation): DrawOperation[] {
         if (!(textElement as any).font) return [textElement];
         if (!textElement.text) return [];
         const code = R.invertObj(emmentalerCodes);
@@ -215,10 +222,10 @@ export class MyCanvasRenderer extends CanvasRenderer {
         const tokens = svgPath.split(' ');
         let operation = '';
         //var stack: Point[] = [];
-        let nextObject: DrawOperation | undefined = undefined;
+        let nextObject: LooseDrawOperation | undefined = undefined;
         const current = {...origin};
         let relative = false;
-        const result = [] as DrawOperation[];
+        const result = [] as LooseDrawOperation[];
         const scale = 1;
 
         for (let i = 0; i < tokens.length; i++) {
@@ -360,7 +367,7 @@ export class MyCanvasRenderer extends CanvasRenderer {
 
         //console.log(result);
 
-        return result;
+        return result as DrawOperation[];
     }
 }
 

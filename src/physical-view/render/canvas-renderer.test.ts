@@ -64,7 +64,7 @@ describe('Render canvas', () => {
         renderer.draw('#123456', '#abcdef', [
             { type: DrawOperationType.MoveTo, points: [{ x: 100, y: 143 }] },
             { type: DrawOperationType.LineTo, points: [{ x: 170, y: 143 }] },
-            { type: DrawOperationType.Stroke, points: [] }
+            { type: DrawOperationType.Stroke }
         ]);
 
         expect(spyObj.fillStyle).to.eq('#abcdef');
@@ -84,7 +84,7 @@ describe('Render canvas', () => {
             { type: DrawOperationType.MoveTo, points: [{ x: 100, y: 143 }] },
             { type: DrawOperationType.LineTo, points: [{ x: 170, y: 143 }] },
             { type: DrawOperationType.LineTo, points: [{ x: 100, y: 243 }] },
-            { type: DrawOperationType.Fill, points: [] }
+            { type: DrawOperationType.Fill }
         ]);
 
         expect(spyObj.fillStyle).to.eq('#abcdef');
@@ -109,7 +109,7 @@ describe('Render canvas', () => {
         renderer.draw('#234567', '#988765', [
             { type: DrawOperationType.MoveTo, points: [{ x: 100, y: 143 }] },
             { type: DrawOperationType.CurveTo, points: [{ x: 170, y: 143 }, { x: 120, y: 103 }, { x: 130, y: 183 }] },
-            { type: DrawOperationType.Stroke, points: [] }
+            { type: DrawOperationType.Stroke }
         ], true);
 
 
@@ -129,13 +129,13 @@ describe('Render canvas', () => {
     
     it('should draw text on a canvas', () => {
         renderer.draw('#234567', '#988765', [
-            { type: DrawOperationType.Text, points: [{ x: 100, y: 143 }], text: 'Hello', font: 'blah' }
+            { type: DrawOperationType.Text, points: [{ x: 100, y: 143 }], text: 'Hello', fontFamily: 'blah', fontSize: 10 }
         ],
         false);
 
         expect(spyObj.fillStyle).to.eq('#988765');
         expect(spyObj.strokeStyle).to.eq('#234567');
-        expect(spyObj.font).to.eq('blah');
+        expect(spyObj.font).to.eq('10px blah');
 
         sinon.assert.notCalled(spyObj.beginPath);
         sinon.assert.calledOnce(spyObj.fillText);

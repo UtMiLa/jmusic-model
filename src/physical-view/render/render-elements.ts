@@ -12,26 +12,28 @@ export function renderBar(elem: PhysicalElementBase, position: RenderPosition, r
     const convertY = (y: number) => convertXY({x:0, y}).y;
 
     const scale = (elem as any).scale ? (elem as any).scale : 1;
-    const font = Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler';
+    //const font = Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler';
+    const fontSize = Math.trunc(20 * position.scaleY * scale);
+    const fontFamily = 'Emmentaler';
 
     let drawOp: DrawOperation[] = [];
 
 
-    function thinBar(x: number) {
+    function thinBar(x: number): DrawOperation[] {
         return [
             { type: DrawOperationType.MoveTo, points: [{ x: convertX(x), y: convertY(elem.position.y)}]},
             { type: DrawOperationType.LineTo, points: [{ x: convertX(x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height)}]},
-            { type: DrawOperationType.Stroke, points: []}
+            { type: DrawOperationType.Stroke }
         ];
     }
 
-    function thickBar(x: number) {
+    function thickBar(x: number): DrawOperation[] {
         return [
             { type: DrawOperationType.MoveTo, points: [{ x: convertX(x), y: convertY(elem.position.y) }] },
             { type: DrawOperationType.LineTo, points: [{ x: convertX(x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height) }] },
             { type: DrawOperationType.LineTo, points: [{ x: convertX(x + 2), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height) }] },
             { type: DrawOperationType.LineTo, points: [{ x: convertX(x + 2), y: convertY(elem.position.y) }] },
-            { type: DrawOperationType.Fill, points: [] }
+            { type: DrawOperationType.Fill }
         ];
     }
 
@@ -40,10 +42,10 @@ export function renderBar(elem: PhysicalElementBase, position: RenderPosition, r
         drawOp = drawOp.concat([
             { type: DrawOperationType.Text, points: [
                 { x: convertX(elem.position.x-6), y: convertY(elem.position.y + 9)}
-            ], text: emmentalerCodes['dots.dot'], font: font },
+            ], text: emmentalerCodes['dots.dot'], fontSize, fontFamily },
             { type: DrawOperationType.Text, points: [
                 { x: convertX(elem.position.x-6), y: convertY(elem.position.y + 15)}
-            ], text: emmentalerCodes['dots.dot'], font: font }
+            ], text: emmentalerCodes['dots.dot'], fontSize, fontFamily }
         ]);
     }
 
@@ -52,12 +54,12 @@ export function renderBar(elem: PhysicalElementBase, position: RenderPosition, r
             {
                 type: DrawOperationType.Text, points: [
                     { x: convertX(elem.position.x + 5), y: convertY(elem.position.y + 9) }
-                ], text: emmentalerCodes['dots.dot'], font: font
+                ], text: emmentalerCodes['dots.dot'], fontSize, fontFamily
             },
             {
                 type: DrawOperationType.Text, points: [
                     { x: convertX(elem.position.x + 5), y: convertY(elem.position.y + 15) }
-                ], text: emmentalerCodes['dots.dot'], font: font
+                ], text: emmentalerCodes['dots.dot'], fontSize, fontFamily
             }
             
         ]);
@@ -103,7 +105,7 @@ export function renderSelection(elem: PhysicalElementBase, position: RenderPosit
         { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height) }] },
         { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x + (elem.length ?? 0)), y: convertY(elem.position.y + (elem as PhysicalHorizVarSizeElement).height) }] },
         { type: DrawOperationType.LineTo, points: [{ x: convertX(elem.position.x + (elem.length ?? 0)), y: convertY(elem.position.y) }] },
-        { type: DrawOperationType.Fill, points: [] }];
+        { type: DrawOperationType.Fill }];
 
     renderer.draw('#000000', '#88ff88', drawOp);
 }
@@ -114,7 +116,7 @@ export function renderStem(elem: PhysicalElementBase, position: RenderPosition, 
     const drawOp: DrawOperation[] = [
         { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
         { type: DrawOperationType.LineTo, points: [convertXY(elem.position, {x: 0, y: (elem as PhysicalHorizVarSizeElement).height})]},
-        { type: DrawOperationType.Stroke, points: []}
+        { type: DrawOperationType.Stroke }
     ];
 
     renderer.draw('#222222', '#222222', drawOp);
@@ -126,10 +128,10 @@ export function renderStaffLine(elem: PhysicalElementBase, position: RenderPosit
 
     renderer.lineWidth = 1.3;
 
-    const drawOp = [
+    const drawOp: DrawOperation[] = [
         { type: DrawOperationType.MoveTo, points: [convertXY(elem.position)]},
         { type: DrawOperationType.LineTo, points: [convertXY({ x: elem.position.x + (elem as PhysicalVertVarSizeElement).length, y: elem.position.y })]},
-        { type: DrawOperationType.Stroke, points: []}
+        { type: DrawOperationType.Stroke }
     ];
 
     renderer.draw('#888888', '#888888', drawOp);
@@ -153,7 +155,7 @@ export function renderBeam(elem: PhysicalElementBase, position: RenderPosition, 
         { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height })]},
         { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height - 3 * scale })]},
         { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x, y: elmBeam.position.y - 3 * scale })]},
-        { type: DrawOperationType.Fill, points: []}
+        { type: DrawOperationType.Fill }
     ]);
 }
 
@@ -192,7 +194,7 @@ export function renderTie(elem: PhysicalElementBase, position: RenderPosition, r
     const dy1 = tieDir * tieBow;
     const dy2 = tieDir * (tieBow + 1);//2.5;
     const dy3 = tieDir * 0.5;
-    const path =[
+    const path: DrawOperation[] = [
         { type: DrawOperationType.MoveTo, points: [tieStart] },
         { type: DrawOperationType.CurveTo, points: [
             { x: tieStart.x + dx, y: (2*tieStart.y + tieEnd.y)/3 + dy1 },
@@ -205,7 +207,7 @@ export function renderTie(elem: PhysicalElementBase, position: RenderPosition, r
             { x: tieStart.x + dx, y: (2*tieStart.y + tieEnd.y)/3 + dy2 },
             { x: tieStart.x, y: tieStart.y + dy3 }
         ] },
-        { type: DrawOperationType.Fill, points: []}                
+        { type: DrawOperationType.Fill }                
     ];
 
     renderer.draw('#000000', '#000000', path);
@@ -224,10 +226,11 @@ export function renderTupletBracket(elem: PhysicalElementBase, position: RenderP
         { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x, y: elmBeam.position.y + elmBeam.bracketHeight })]},
         { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height + elmBeam.bracketHeight })]},
         { type: DrawOperationType.LineTo, points: [convertXY({ x: elmBeam.position.x + elmBeam.length, y: elmBeam.position.y + elmBeam.height })]},
-        { type: DrawOperationType.Stroke, points: []},
+        { type: DrawOperationType.Stroke },
         { type: DrawOperationType.Text, 
             points: [convertXY({ x: elmBeam.position.x + elmBeam.length / 2, y: elmBeam.position.y + elmBeam.height / 2 + 2 * elmBeam.bracketHeight })], 
-            font: Math.trunc(12 * position.scaleY * scale) + 'px Emmentaler',
+            fontSize: Math.trunc(12 * position.scaleY * scale),
+            fontFamily: 'Emmentaler',
             text: elmBeam.text 
         }
     ]);
@@ -246,7 +249,7 @@ export function renderLongElement(elem: PhysicalElementBase, position: RenderPos
             { type: DrawOperationType.MoveTo, points: [convertXY(elem.position, { x: elem.length as number - 2, y: 4 })]},
             { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: 2, y: 0 })]},
             { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: elem.length as number - 2, y: -4 })]},
-            { type: DrawOperationType.Stroke, points: []}
+            { type: DrawOperationType.Stroke }
         ]);
 
     } else if (elem.element === VertVarSizeGlyphs.Decrescendo) {
@@ -254,7 +257,7 @@ export function renderLongElement(elem: PhysicalElementBase, position: RenderPos
             { type: DrawOperationType.MoveTo, points: [convertXY(elem.position, { x: 2, y: 4 })]},
             { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: elem.length as number - 2, y: 0 })]},
             { type: DrawOperationType.LineTo, points: [convertXY(elem.position, { x: 2, y: -4 })]},
-            { type: DrawOperationType.Stroke, points: []}
+            { type: DrawOperationType.Stroke }
         ]);
 
     }
@@ -267,10 +270,10 @@ export function renderCursor(elem: PhysicalElementBase, position: RenderPosition
     renderer.draw('#ff5555', '#ff5555', [
         { type: DrawOperationType.MoveTo, points: [convertXY(elem.position, {x: 0, y: -(elem as PhysicalHorizVarSizeElement).height})]},
         { type: DrawOperationType.LineTo, points: [convertXY(elem.position, {x: 0, y:  (elem as PhysicalHorizVarSizeElement).height})]},
-        { type: DrawOperationType.Stroke, points: []},
+        { type: DrawOperationType.Stroke },
         { type: DrawOperationType.MoveTo, points: [convertXY(elem.position, {x: -5, y: 0})]},
         { type: DrawOperationType.LineTo, points: [convertXY(elem.position, {x: 5, y: 0})]},
-        { type: DrawOperationType.Stroke, points: []}
+        { type: DrawOperationType.Stroke }
     ]);
 }
 
@@ -287,13 +290,23 @@ export function renderText(elem: PhysicalElementBase, position: RenderPosition, 
     
     
         renderer.draw(color, color, [
-            { type: DrawOperationType.Text, points: [convertXY(elem.position)], text: glyph, font: Math.trunc(20 * position.scaleY * scale) + 'px Emmentaler' }
+            { type: DrawOperationType.Text, points: [convertXY(elem.position)], text: glyph, 
+                fontSize: Math.trunc(20 * position.scaleY * scale),
+                fontFamily: 'Emmentaler'
+            }
         ], false);
     } else if ((elem as any).text) {
         const scale = (elem as any).scale ? (elem as any).scale : 1;
         
         renderer.draw(color, color, [
-            { type: DrawOperationType.Text, points: [convertXY(elem.position)], text: (elem as any).text, font: Math.trunc((elem as any).fontSize * position.scaleY * scale) + 'px ' + (elem as any).font }
+            { 
+                type: DrawOperationType.Text, 
+                points: [convertXY(elem.position)], 
+                text: (elem as any).text, 
+                //font: Math.trunc((elem as any).fontSize * position.scaleY * scale) + 'px ' + (elem as any).font,
+                fontSize: Math.trunc((elem as any).fontSize * position.scaleY * scale),
+                fontFamily: (elem as any).font
+            }
         ], false);
     }
 }

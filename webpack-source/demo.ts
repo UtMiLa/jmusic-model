@@ -17,6 +17,7 @@ import { option } from 'fp-ts';
 import { none } from 'fp-ts/lib/Option';
 import { tupletVars, tuplets } from './demodata/tuplets';
 import { longDeco } from './demodata/longdeco';
+import { lyrics } from './demodata/lyrics';
 
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -157,7 +158,7 @@ const musicDef: ScoreDef = {
     
 };
 
-const jMusic = new JMusic(longDeco, {});
+const jMusic = new JMusic(lyrics, {});
 //const jMusic = new JMusic(moonlightScoreDef, moonlightVars);
 const insertionPoint = new InsertionPoint(jMusic);
 

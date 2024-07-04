@@ -53,7 +53,13 @@ describe('Render', () => {
         });
 
         //notehead
-        expect(spyObj.calledWith('#330000', '#330000', [{ type: DrawOperationType.Text, points: [{x: 40, y: 53}], text: emmentalerCodes['noteheads.sM1'], font: '20px Emmentaler' }])).to.be.true;
+        expect(spyObj.calledWith('#330000', '#330000', [{ 
+            type: DrawOperationType.Text, 
+            points: [{x: 40, y: 53}], 
+            text: emmentalerCodes['noteheads.sM1'], 
+            fontFamily: 'Emmentaler',
+            fontSize: 20
+        }])).to.be.true;
 
         // stem
         expect(spyObj.calledWith('#222222', '#222222', [
@@ -76,9 +82,7 @@ describe('Render', () => {
                 ]
             },
             {
-                type: 4,
-                points: [
-                ]
+                type: 4
             }
         ])).to.be.true;
 
@@ -124,9 +128,7 @@ describe('Render', () => {
                     ]
                 },
                 {
-                    type: 5,
-                    points: [
-                    ]
+                    type: 5
                 }
             ]
         )).to.be.true;
@@ -180,7 +182,7 @@ describe('Render', () => {
                     { x: tieStart.x + dx, y: tieStart.y + dy2 },
                     { x: tieStart.x, y: tieStart.y + dy3 }
                 ] },
-                { type: DrawOperationType.Fill, points: []}                
+                { type: DrawOperationType.Fill }                
             ]
         );
     });
@@ -215,7 +217,7 @@ describe('Render', () => {
                 { type: DrawOperationType.MoveTo, points: [{ x: 53, y: -24 }]},
                 { type: DrawOperationType.LineTo, points: [{ x: 37, y: -20 }]},
                 { type: DrawOperationType.LineTo, points: [{ x: 53, y: -16 }]},
-                { type: DrawOperationType.Stroke, points: []}
+                { type: DrawOperationType.Stroke }
             ]
         );
 
@@ -236,7 +238,7 @@ describe('Render', () => {
                 { type: DrawOperationType.MoveTo, points: [{ x: 37, y: -24 }]},
                 { type: DrawOperationType.LineTo, points: [{ x: 53, y: -20 }]},
                 { type: DrawOperationType.LineTo, points: [{ x: 37, y: -16 }]},
-                { type: DrawOperationType.Stroke, points: []}
+                { type: DrawOperationType.Stroke }
             ]
         );
 
@@ -279,36 +281,50 @@ describe('Render', () => {
 
                 { type: DrawOperationType.MoveTo, points: [{ x: 35, y: -20}]},
                 { type: DrawOperationType.LineTo, points: [{ x: 35, y: -40}]},
-                { type: DrawOperationType.Stroke, points: []}
+                { type: DrawOperationType.Stroke }
             ]
         );
 
         // repeat end/start
         sinon.assert.calledWith(spyObj,
             '#000000', '#000000', [
-                { type: DrawOperationType.Text, points: [
-                    { x: 49, y: -29}
-                ], text: emmentalerCodes['dots.dot'], font: '20px Emmentaler' },
-                { type: DrawOperationType.Text, points: [
-                    { x: 49, y: -35}
-                ], text: emmentalerCodes['dots.dot'], font: '20px Emmentaler' },
-                { type: DrawOperationType.Text, points: [
-                    { x: 60, y: -29}
-                ], text: emmentalerCodes['dots.dot'], font: '20px Emmentaler' },
-                { type: DrawOperationType.Text, points: [
-                    { x: 60, y: -35}
-                ], text: emmentalerCodes['dots.dot'], font: '20px Emmentaler' },
+                { 
+                    type: DrawOperationType.Text, 
+                    points: [{ x: 49, y: -29}], 
+                    text: emmentalerCodes['dots.dot'],
+                    fontFamily: 'Emmentaler',
+                    fontSize: 20 
+                },
+                { 
+                    type: DrawOperationType.Text, 
+                    points: [{ x: 49, y: -35}], 
+                    text: emmentalerCodes['dots.dot'],
+                    fontFamily: 'Emmentaler',
+                    fontSize: 20 
+                },
+                { 
+                    type: DrawOperationType.Text, 
+                    points: [{ x: 60, y: -29}], 
+                    text: emmentalerCodes['dots.dot'],
+                    fontFamily: 'Emmentaler',
+                    fontSize: 20 
+                },
+                { 
+                    type: DrawOperationType.Text, points: [{ x: 60, y: -35}], text: emmentalerCodes['dots.dot'],
+                    fontFamily: 'Emmentaler',
+                    fontSize: 20 
+                },
 
                 { type: DrawOperationType.MoveTo, points: [{ x: 53, y: -20 }] },
                 { type: DrawOperationType.LineTo, points: [{ x: 53, y: -40 }] },
                 { type: DrawOperationType.LineTo, points: [{ x: 55, y: -40 }] },
                 { type: DrawOperationType.LineTo, points: [{ x: 55, y: -20 }] },
-                { type: DrawOperationType.Fill, points: [] },
+                { type: DrawOperationType.Fill },
                 { type: DrawOperationType.MoveTo, points: [{ x: 57, y: -20 }] },
                 { type: DrawOperationType.LineTo, points: [{ x: 57, y: -40 }] },
                 { type: DrawOperationType.LineTo, points: [{ x: 59, y: -40 }] },
                 { type: DrawOperationType.LineTo, points: [{ x: 59, y: -20 }] },
-                { type: DrawOperationType.Fill, points: [] }
+                { type: DrawOperationType.Fill }
                 
             ]
         );

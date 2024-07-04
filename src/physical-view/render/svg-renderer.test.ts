@@ -15,7 +15,7 @@ import { serializeToString } from 'xmlserializer';
 
 }*/
 
-describe.only('SVG renderer', () => {
+describe('SVG renderer', () => {
 
     let svg: SVGElement;
     //let spyObj: sinon.SinonSpiedInstance<any>;
@@ -40,7 +40,7 @@ describe.only('SVG renderer', () => {
         renderer.draw('#123456', '#abcdef', [
             { type: DrawOperationType.MoveTo, points: [{ x: 100, y: 143 }] },
             { type: DrawOperationType.LineTo, points: [{ x: 170, y: 143 }] },
-            { type: DrawOperationType.Stroke, points: [] }
+            { type: DrawOperationType.Stroke }
         ]);
 
         const res = '<path xmlns="http://www.w3.org/2000/svg" style="fill:none;stroke:#123456;" d="M 100 143 L 170 143"/>';
@@ -56,7 +56,7 @@ describe.only('SVG renderer', () => {
             { type: DrawOperationType.MoveTo, points: [{ x: 100, y: 143 }] },
             { type: DrawOperationType.LineTo, points: [{ x: 170, y: 143 }] },
             { type: DrawOperationType.LineTo, points: [{ x: 100, y: 243 }] },
-            { type: DrawOperationType.Fill, points: [] }
+            { type: DrawOperationType.Fill }
         ]);
 
         const res = '<path xmlns="http://www.w3.org/2000/svg" style="fill:#abcdef;stroke:none;" d="M 100 143 L 170 143 L 100 243 z"/>';
@@ -74,7 +74,7 @@ describe.only('SVG renderer', () => {
         renderer.draw('#234567', '#988765', [
             { type: DrawOperationType.MoveTo, points: [{ x: 100, y: 143 }] },
             { type: DrawOperationType.CurveTo, points: [{ x: 170, y: 143 }, { x: 120, y: 103 }, { x: 130, y: 183 }] },
-            { type: DrawOperationType.Stroke, points: [] }
+            { type: DrawOperationType.Stroke }
         ], true);
 
 
@@ -86,18 +86,20 @@ describe.only('SVG renderer', () => {
         expect(str).to.eq(res);
     });
 
-    // todo: filled curves
     // todo: font size
     // todo: other fonts
     // todo: complex objects: more than one path, or path combined with text
     
     it('should draw text on an svg', () => {
         renderer.draw('#234567', '#988765', [
-            { type: DrawOperationType.Text, points: [{ x: 100, y: 143 }], text: 'Hello', font: 'blah' }
+            { type: DrawOperationType.Text, points: [{ x: 100, y: 143 }], text: 'Hello',
+                fontFamily: 'blah',
+                fontSize: 20 
+            }
         ],
         false);
 
-        const res = '<text xmlns="http://www.w3.org/2000/svg" style="font-family:&apos;Emmentaler&apos;;font-size:24px;fill:#988765;stroke:none;" x="100" y="143">Hello</text>';
+        const res = '<text xmlns="http://www.w3.org/2000/svg" style="font-family:&apos;blah&apos;;font-size:20px;fill:#988765;stroke:none;" x="100" y="143">Hello</text>';
 
         expect(svg.firstElementChild?.children).to.have.length(1);
         const str = serializeToString(svg.firstElementChild?.firstElementChild);
@@ -126,7 +128,10 @@ describe.only('SVG renderer', () => {
     it('should clear an svg', () => {
 
         renderer.draw('#234567', '#988765', [
-            { type: DrawOperationType.Text, points: [{ x: 100, y: 143 }], text: 'Hello', font: 'blah' }
+            { type: DrawOperationType.Text, points: [{ x: 100, y: 143 }], text: 'Hello',
+                fontFamily: 'blah',
+                fontSize: 10 
+            }
         ],
         false);
 

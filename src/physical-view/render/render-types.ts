@@ -17,10 +17,34 @@ export enum DrawOperationType {
     ClosePath
 }
 
-export interface DrawOperation {
+export interface TextDrawOperation {
+    type: DrawOperationType.Text;
+    text: string;
+    fontSize?: number;
+    fontFamily?: string;
+    points: [Point];
+}
+
+export interface OnePointDrawOperation {
+    type: DrawOperationType.MoveTo | DrawOperationType.LineTo;
+    points: [Point];
+}
+
+export interface CurveDrawOperation {
+    type: DrawOperationType.CurveTo;
+    points: [Point, Point, Point];
+}
+
+export interface ParameterlessDrawOperation {
+    type: DrawOperationType.Stroke | DrawOperationType.Fill | DrawOperationType.ClosePath;
+}
+
+export type DrawOperation = TextDrawOperation | OnePointDrawOperation | CurveDrawOperation | ParameterlessDrawOperation;
+/*{
     type: DrawOperationType;
     text?: string;
-    font?: string;
+    fontSize?: number;
+    fontFamily?: string;
     points: Point[];
-}
+}*/
 

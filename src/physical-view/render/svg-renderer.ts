@@ -40,7 +40,7 @@ export class SVGRenderer implements Renderer {
                     // x="137.92667" y="126.87991">Char</text>
                     {
                         const txt = this.svg.ownerDocument.createElementNS(SVGRenderer.xmlns, 'text');
-                        txt.setAttribute('style', `font-family:'Emmentaler';font-size:24px;fill:${fillColor};stroke:none;`);
+                        txt.setAttribute('style', `font-family:'${operation.fontFamily}';font-size:${operation.fontSize}px;fill:${fillColor};stroke:none;`);
                         txt.setAttribute('x', '' + operation.points[0].x);
                         txt.setAttribute('y', '' + operation.points[0].y);
                         txt.appendChild(this.svg.ownerDocument.createTextNode(operation.text ?? ''));
