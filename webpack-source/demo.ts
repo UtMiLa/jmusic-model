@@ -283,6 +283,20 @@ notesCanvas.addEventListener('click', (event: MouseEvent) => {
     clickElement(0, data);
 });
 
+const notesSvg = (document.querySelector('#content-svg') as SVGElement);
+notesSvg.addEventListener('click', (event: MouseEvent) => {
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+
+    const data = {
+        ...event,
+        clientX: event.clientX - rect.left, 
+        clientY: event.clientY - rect.top
+        /*startTime: restrictions.startTime,
+        model: jMusic*/
+    };
+
+    clickElement(0, data);
+});
 
 //const notesSvg = (document.querySelector('#content-svg') as SVGElement);
 /*notesCanvas.addEventListener('click', (event: MouseEvent) => {
@@ -327,8 +341,6 @@ selectDemos.addEventListener('change', (event) => {
     selMan = new SelectionManager();
     render();
 });
-
-const notesSvg = (document.querySelector('#content-svg') as SVGElement);
 
 myRender = (physicalModel: PhysicalModel, position: RenderPosition) => {
     if (selectOutputElement.value === 'SVG') {
