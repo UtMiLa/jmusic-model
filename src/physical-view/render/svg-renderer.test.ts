@@ -86,8 +86,7 @@ describe('SVG renderer', () => {
         expect(str).to.eq(res);
     });
 
-    // todo: font size
-    // todo: other fonts
+    // todo: no font?
     // todo: complex objects: more than one path, or path combined with text
     
     it('should draw text on an svg', () => {

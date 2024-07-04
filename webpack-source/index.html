@@ -14,12 +14,24 @@
     </style>
   </head>
   <body>
-<div id="message" style="font-family: Emmentaler;font-size: 20px;">test 123</div>
+<!--div id="message" style="font-family: Emmentaler;font-size: 20px;">test 123</!--div-->
+
+<select id="SelectOutputElement">
+  <option value="SVG">SVG</option>
+  <option value="Canvas">Canvas</option>
+</select>
+
+<input type="checkbox" id="UseCurves"/> Use curves instead of fonts
+<br/>
+
+<select id="SelectDemos">
+</select>
+
 
 <br/>
 <canvas id="content" width="1600px" height="400px"></canvas>
 <br>
-<svg id="content-svg" xmlns="http://www.w3.org/2000/svg" height="320" width="1600" viewBox="0 0 1600 320">
+<svg id="content-svg" xmlns="http://www.w3.org/2000/svg" height="400" width="1600" viewBox="0 0 1600 400">
   <g></g>
 </svg>
 

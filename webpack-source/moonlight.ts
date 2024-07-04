@@ -29,7 +29,7 @@ export const moonlightScoreDef = {
   
 } as JMusicSettings;
 
-const moonlightVars = {};
+export const moonlightVars = {};
 
 
 

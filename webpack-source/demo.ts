@@ -6,18 +6,28 @@ import { InsertionPoint } from './../src/editor/insertion-point';
 import { meterModel } from './demodata/time-changes';
 import { MultiFlexibleSequence } from './../src/model/score/multi-flexible-sequence';
 import { MyCanvasRenderer, PhysicalModel, StandardMetrics, generateMeasureMap, renderOnCanvas, renderOnRenderer, viewModelToPhysical } from '../src/physical-view';
-import { AbsoluteTime, ClefType, JMusic, JMusicSettings, NoteDirection, ScoreDef, SeqFunction, Time } from '../src/model';
+import { AbsoluteTime, ClefType, JMusic, JMusicSettings, NoteDirection, ScoreDef, SeqFunction, Time, VarDictFlex, ProjectDef } from '../src/model';
 import { SubsetDef, scoreModelToViewModel } from '../src/logical-view';
 import { RenderPosition } from '../src/physical-view/render/render-types';
 import { ProjectFlex } from '../src/model/facade/project-flex';
 import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 import { SelectionAll, SelectionVoiceTime } from '../src/selection/query';
-import { option } from 'fp-ts';
+import { option, string } from 'fp-ts';
 import { none } from 'fp-ts/lib/Option';
 import { tupletVars, tuplets } from './demodata/tuplets';
 import { longDeco } from './demodata/longdeco';
 import { lyrics } from './demodata/lyrics';
+import { contrapunctus, contrapunctusVars } from './contrapunctus';
+import { accidentalTest } from './demodata/accidentalDisplacement';
+import { beamModel } from './demodata/beaming';
+import { expressions } from './demodata/expressions';
+import { grace } from './demodata/grace';
+import { koral41 } from './demodata/koral41';
+import { repeats } from './demodata/repeats';
+import { stateChanges } from './demodata/state-changes';
+import { variablesAndFunctions, variablesAndFunctionsVars } from './demodata/variables-and-functions';
+import { moonlightScoreDef, moonlightVars } from './moonlight';
 
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -25,40 +35,29 @@ const Emmentaler = require('./fonts/Emmentaler-20.woff');
 
 //console.log('Demo', Emmentaler);
 
-
-const variablesAndFunctionsVars = {
-    var1: ['c\'4. d\'8'],
-    var2: ['e\'4 g\'4'],
-    varOfVars: [{variable: 'var2'}, {variable: 'var1'}],
-    funcOfConst: [{ function: 'Transpose', args: ['c\'4. d\'8'], extraArgs: [{interval: 2, alteration: -1}] } as SeqFunction],
-    funcOfVar: [{ function: 'Transpose', args: [{variable: 'var1'}], extraArgs: [{interval: 2, alteration: -1}] } as SeqFunction]
-};
-  
-const variablesAndFunctions = {
-    content: [
-        [
-            [
-                {variable: 'var1'},
-                {variable: 'var2'},
-                {variable: 'varOfVars'},
-                {variable: 'funcOfConst'},
-                {variable: 'funcOfVar'}
-            ]
-        ]
-    ],
-    clefs: ['treble'],
-    meter: '4/4',
-    key: 'c \\major'
-  
-} as JMusicSettings;
+const demos: [string, JMusicSettings | ScoreDef | ProjectDef, VarDictFlex?][] = [
+    ['Accidentals', accidentalTest],
+    ['Beaming model', beamModel],
+    ['Contrapunctus', contrapunctus, contrapunctusVars],
+    ['Expressions', expressions],
+    ['Grace notes', grace],
+    ['Hymn', koral41],
+    ['Long decorations', longDeco],
+    ['Lyrics', lyrics],
+    ['Moonlight', moonlightScoreDef, moonlightVars],
+    ['Repeats', repeats],
+    ['State changes', stateChanges],
+    ['Time model', meterModel],
+    ['Tuplets', tuplets, tupletVars],
+    ['Variables', variablesAndFunctions, variablesAndFunctionsVars]
+];
 
 const scale = 1.2;
 
+let myRender = (physicalModel: PhysicalModel, position: RenderPosition) => {
+    //
+};
 
-function myRenderOnCanvas(physicalModel: PhysicalModel, canvas: HTMLCanvasElement, position: RenderPosition) {
-    //renderOnRenderer(physicalModel, new MyCanvasRenderer(canvas), position);
-    renderOnCanvas(physicalModel, canvas, position);
-}
 const input = (document.querySelector('#commandInput') as HTMLInputElement);
 const term = new Terminal();
 term.open(document.getElementById('terminal') as HTMLDivElement);
@@ -110,7 +109,7 @@ term.onData(e => {
 });
 
 
-
+/*
 const musicDef: ScoreDef = {
     staves: [
         {
@@ -156,11 +155,11 @@ const musicDef: ScoreDef = {
         }
     ]
     
-};
+};*/
 
-const jMusic = new JMusic(lyrics, {});
+let jMusic = new JMusic(lyrics, {});
 //const jMusic = new JMusic(moonlightScoreDef, moonlightVars);
-const insertionPoint = new InsertionPoint(jMusic);
+let insertionPoint = new InsertionPoint(jMusic);
 
 input.addEventListener('keydown', ev => {
     if (ev.key === 'Enter') {
@@ -178,7 +177,7 @@ input.addEventListener('keydown', ev => {
     }
 });
 
-const selMan = new SelectionManager();
+let selMan = new SelectionManager();
 const select = new SelectionVoiceTime(jMusic, 1, 0, Time.newAbsolute(7, 32), Time.newAbsolute(11, 8));
 selMan.setSelection(select);
 
@@ -210,29 +209,15 @@ export function render(): void {
 
         console.log('model', jMusic, jMusic.staves, logicalModel, phv);
 
-        myRenderOnCanvas(phv, notesCanvas, {
+        myRender(phv, {
             offsetX: 10,
             offsetY: 40,
             scaleX: scale,
             scaleY: scale
         });
 
-        renderOnRenderer(phv, new SVGRenderer(notesSvg), {
-            offsetX: 10,
-            offsetY: 40,
-            scaleX: scale,
-            scaleY: scale
-        });
+        console.log('render');
 
-        setTimeout(() => {
-            myRenderOnCanvas(phv, notesCanvas, {
-                offsetX: 10,
-                offsetY: 40,
-                scaleX: scale,
-                scaleY: scale
-            });
-        }, 1000);
-        //textContainer.textContent = JSON.stringify(phv);
     } catch (e) {
         //textContainer.textContent = e;
         console.log(e);
@@ -240,11 +225,6 @@ export function render(): void {
 
 }
 
-
-setTimeout(() => {
-    //render({ content: [[{ type: 'multi', sequences: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4'] }]]});
-    render();
-}, 30);
 
 
 const restrictions: SubsetDef = { startTime: Time.StartTime, endTime: Time.EternityTime };
@@ -316,3 +296,61 @@ notesCanvas.addEventListener('click', (event: MouseEvent) => {
 
     clickElement(0, data);
 });*/
+
+
+
+// Setup
+
+const selectOutputElement = document.getElementById('SelectOutputElement') as HTMLSelectElement;
+const useCurves = document.getElementById('UseCurves') as HTMLInputElement;
+const selectDemos = document.getElementById('SelectDemos') as HTMLSelectElement;
+
+selectOutputElement.addEventListener('change', (event) => {
+    render();
+});
+useCurves.addEventListener('change', (event) => {
+    render();
+});
+
+demos.forEach((demo, idx) => {
+    const elm = document.createElement('option');
+    elm.setAttribute('value', idx + '');
+    elm.textContent = demo[0];
+    selectDemos.appendChild(elm);
+});
+selectDemos.addEventListener('change', (event) => {
+    const idx = +selectDemos.value;
+    //alert(demos[idx][1]);    
+
+    jMusic = new JMusic(demos[idx][1], demos[idx][2] ?? {});    
+    insertionPoint = new InsertionPoint(jMusic);
+    selMan = new SelectionManager();
+    render();
+});
+
+const notesSvg = (document.querySelector('#content-svg') as SVGElement);
+
+myRender = (physicalModel: PhysicalModel, position: RenderPosition) => {
+    if (selectOutputElement.value === 'SVG') {
+        renderOnRenderer(physicalModel, new SVGRenderer(notesSvg), position);
+        notesSvg.style.display = 'block';
+        notesCanvas.style.display = 'none';
+    } else {
+        if (useCurves.checked) {
+            console.log('MyCanvas');
+            renderOnRenderer(physicalModel, new MyCanvasRenderer(notesCanvas), position);      
+        } else {
+            console.log('Std Canvas');
+            renderOnCanvas(physicalModel, notesCanvas, position);
+        }
+        notesSvg.style.display = 'none';
+        notesCanvas.style.display = 'block';
+    }
+};
+
+
+setTimeout(() => {
+    //render({ content: [[{ type: 'multi', sequences: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4'] }]]});
+    render();
+}, 30);
+
