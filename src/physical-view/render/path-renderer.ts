@@ -205,7 +205,7 @@ export class MyCanvasRenderer extends CanvasRenderer {
     }
 
     textToPath(textElement: TextDrawOperation): DrawOperation[] {
-        if (!(textElement as any).font) return [textElement];
+        if (textElement.fontFamily !== 'Emmentaler') return [textElement];
         if (!textElement.text) return [];
         const code = R.invertObj(emmentalerCodes);
         const theCode = code[textElement.text];
