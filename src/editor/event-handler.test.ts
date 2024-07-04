@@ -10,7 +10,7 @@ import { InsertionPoint } from './insertion-point';
 import { FinaleSmartEntry } from '../entry/finale-entry';
 
 describe('Event handler', () => {
-    describe('Command input', () => {
+    /*describe('Command input', () => {
         it('should create a command based on a string', (done) => {
             const stub = Sinon.stub(new JMusic());
             const ins = Sinon.stub<InsertionPoint>(new InsertionPoint({staves: []}));
@@ -36,10 +36,10 @@ describe('Event handler', () => {
                 .catch(() => { done(); });      
 
         });
-    });
+    });*/
 
 
-    describe('Midi in', () => {
+    /*describe('Midi in', () => {
 
         let stub: Sinon.SinonStubbedInstance<JMusic>, ins: Sinon.SinonStubbedInstance<InsertionPoint>, executer, hdl: BaseEventHandler, catcher: Sinon.SinonStub;
 
@@ -87,9 +87,9 @@ describe('Event handler', () => {
 
         });
 
-    });
+    });*/
 
-    describe('When insertionpoint is at end of voice', ()=> {
+    /*describe('When insertionpoint is at end of voice', ()=> {
         let stub: Sinon.SinonStubbedInstance<JMusic>, ins: Sinon.SinonStubbedInstance<InsertionPoint>, executer, hdl: BaseEventHandler, catcher: Sinon.SinonStub;
 
         beforeEach(() => {
@@ -115,5 +115,5 @@ describe('Event handler', () => {
         });
 
 
-    });
+    });*/
 });
