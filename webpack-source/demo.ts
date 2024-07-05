@@ -63,7 +63,6 @@ const term = new Terminal();
 term.open(document.getElementById('terminal') as HTMLDivElement);
 term.write('$ ');
 
-let command = '';
 
 function prompt(term: Terminal) {
     command = '';
@@ -72,11 +71,15 @@ function prompt(term: Terminal) {
 
 const termCommandStack: string[] = [];
 let termCommandStackPointer = -1;
+let command = '';
+let commandPointer = 0;
 
-const W_LEFT = '\x1b[D';
 const W_UP = '\x1b[A';
 const W_DOWN = '\x1b[B';
 const W_RIGHT = '\x1b[C';
+const W_LEFT = '\x1b[D';
+const W_END = '\x1b[F';
+const W_HOME = '\x1b[H';
 
 term.onData(e => {
     switch (e) {
@@ -95,6 +98,7 @@ term.onData(e => {
                     term.writeln(answer.replace(/\n/g, '\n\r'));
                 }
                 command = '';
+                commandPointer = 0;
                 render();
             } catch (e) {
                 term.writeln('\r\nIllegal command');
@@ -106,7 +110,8 @@ term.onData(e => {
             if ((term as any)._core.buffer.x > 2) {
                 term.write('\b \b');
                 if (command.length > 0) {
-                    command = command.substr(0, command.length - 1);
+                    command = command.substring(0, command.length - 1);
+                    commandPointer--;
                 }
             }
             break;
@@ -115,6 +120,7 @@ term.onData(e => {
                 termCommandStackPointer--;
                 if (termCommandStackPointer < 0) termCommandStackPointer = termCommandStack.length - 1;
                 command = termCommandStack[termCommandStackPointer];
+                commandPointer = command.length;
                 term.write('\x1b[2K\r$ ' + command);
             }
             break;
@@ -123,13 +129,27 @@ term.onData(e => {
                 termCommandStackPointer++;
                 if (termCommandStackPointer >= termCommandStack.length) termCommandStackPointer = 0;
                 command = termCommandStack[termCommandStackPointer];
+                commandPointer = command.length;
                 term.write('\x1b[2K\r$ ' + command);
             }
             break;
+        case W_LEFT: 
+            term.write('\b');
+            if (commandPointer > 0)
+                commandPointer--;
+            break;
+        case W_RIGHT: 
+            //console.log(commandPointer, command);
+            if (commandPointer < command.length)
+                commandPointer++;
+            term.write(e);
+            break;
         default: // Print all other characters for demo
             if (e >= String.fromCharCode(0x20) && e <= String.fromCharCode(0x7E) || e >= '\u00a0') {
-                command += e;
-                term.write(e);
+                command = command.substring(0, commandPointer) + e + command.substring(commandPointer);
+                commandPointer++;
+                //term.write(e);
+                term.write('\r$ ' + command + '\r\x1b[' + (commandPointer + 2) + 'C');
             } else {
                 console.log(e.split('').map(c => c.charCodeAt(0)));
             }
