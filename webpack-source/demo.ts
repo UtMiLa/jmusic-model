@@ -70,6 +70,14 @@ function prompt(term: Terminal) {
     term.write('\r\n$ ');
 }
 
+const termCommandStack: string[] = [];
+let termCommandStackPointer = -1;
+
+const W_LEFT = '\x1b[D';
+const W_UP = '\x1b[A';
+const W_DOWN = '\x1b[B';
+const W_RIGHT = '\x1b[C';
+
 term.onData(e => {
     switch (e) {
         case '\u0003': // Ctrl+C
@@ -78,6 +86,8 @@ term.onData(e => {
             break;
         case '\r': // Enter
             try {
+                termCommandStack.push(command);
+                termCommandStackPointer = termCommandStack.length;
                 const cmd = TextCommandEngine.parse(command);
                 const answer = cmd.execute(jMusic, insertionPoint, selMan);
                 if (typeof answer === 'string') {
@@ -100,66 +110,34 @@ term.onData(e => {
                 }
             }
             break;
+        case W_UP: 
+            if (termCommandStack.length) {
+                termCommandStackPointer--;
+                if (termCommandStackPointer < 0) termCommandStackPointer = termCommandStack.length - 1;
+                command = termCommandStack[termCommandStackPointer];
+                term.write('\x1b[2K\r$ ' + command);
+            }
+            break;
+        case W_DOWN: 
+            if (termCommandStack.length) {
+                termCommandStackPointer++;
+                if (termCommandStackPointer >= termCommandStack.length) termCommandStackPointer = 0;
+                command = termCommandStack[termCommandStackPointer];
+                term.write('\x1b[2K\r$ ' + command);
+            }
+            break;
         default: // Print all other characters for demo
             if (e >= String.fromCharCode(0x20) && e <= String.fromCharCode(0x7E) || e >= '\u00a0') {
                 command += e;
                 term.write(e);
+            } else {
+                console.log(e.split('').map(c => c.charCodeAt(0)));
             }
+
     }
 });
 
 
-/*
-const musicDef: ScoreDef = {
-    staves: [
-        {
-            initialClef: { clefType: ClefType.G, line: -2 },
-            initialKey: { accidental: 0, count: 0 },
-            initialMeter: { meters: [{ count: 3, value: 8}, { count: 5, value: 8}], commonDenominator: true },
-            voices: [
-                {
-                    //contentDef: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4']
-                    contentDef: [
-                        'b\'4 r4 c\'\'2',
-                        { type: 'multi', sequences: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4'] },
-                        'g\'4 r4 a\'2'
-                    ]
-                },
-                
-                {
-                    //contentDef: ['g\'4 s4 a\'2', 'c\'4 d\'4 e\'4 g\'4']
-                    contentDef: [
-                        'g\'2 ees\'2'
-                    ]
-                }
-            ]
-        },
-        {
-            initialClef: { clefType: ClefType.F, line: 2 },
-            initialKey: { accidental: 0, count: 0 },
-            initialMeter: { meters: [{ count: 3, value: 8}, { count: 3, value: 8}, { count: 2, value: 8}] },
-            voices: [
-                {
-                    contentDef: ['g4 r4 a2', 'c4 d4~ d4 g4'],
-                    noteDirection: NoteDirection.Up
-                },
-                
-                {
-                    contentDef: [
-                        'g,2 ees,2 g,2 ees,2 g,2 ees,2'
-                    ],
-                    noteDirection: NoteDirection.Down
-                }
-            ]
-
-        }
-    ]
-    
-};*/
-
-let jMusic = new JMusic(lyrics, {});
-//const jMusic = new JMusic(moonlightScoreDef, moonlightVars);
-let insertionPoint = new InsertionPoint(jMusic);
 
 input.addEventListener('keydown', ev => {
     if (ev.key === 'Enter') {
@@ -177,11 +155,14 @@ input.addEventListener('keydown', ev => {
     }
 });
 
+const textContainer = (document.querySelector('#message') as HTMLDivElement);
+
+let jMusic = new JMusic(lyrics, {});
+let insertionPoint = new InsertionPoint(jMusic);
+
 let selMan = new SelectionManager();
 const select = new SelectionVoiceTime(jMusic, 1, 0, Time.newAbsolute(7, 32), Time.newAbsolute(11, 8));
 selMan.setSelection(select);
-
-const textContainer = (document.querySelector('#message') as HTMLDivElement);
 
 export function render(): void {
     try {
@@ -201,9 +182,6 @@ export function render(): void {
             staff: insertionPoint?.staffNo,
             position: insertionPoint?.position
         } as Cursor;
-
-        const notesCanvas = (document.querySelector('#content') as HTMLCanvasElement);
-        const notesSvg = (document.querySelector('#content-svg') as SVGElement);
 
         const phv = viewModelToPhysical(logicalModel, new StandardMetrics(), cursor);
 
@@ -267,6 +245,8 @@ function clickElement(i: number, $event: MouseEvent) {
     }
 }
 
+// Setup
+
 
 const notesCanvas = (document.querySelector('#content') as HTMLCanvasElement);
 notesCanvas.addEventListener('click', (event: MouseEvent) => {
@@ -297,23 +277,6 @@ notesSvg.addEventListener('click', (event: MouseEvent) => {
 
     clickElement(0, data);
 });
-
-//const notesSvg = (document.querySelector('#content-svg') as SVGElement);
-/*notesCanvas.addEventListener('click', (event: MouseEvent) => {
-    const rect = (event.target as HTMLCanvasElement).getBoundingClientRect();
-
-    const data = {
-        ...event,
-        clientX: event.clientX - rect.left, 
-        clientY: event.clientY - rect.top
-    };
-
-    clickElement(0, data);
-});*/
-
-
-
-// Setup
 
 const selectOutputElement = document.getElementById('SelectOutputElement') as HTMLSelectElement;
 const useCurves = document.getElementById('UseCurves') as HTMLInputElement;
