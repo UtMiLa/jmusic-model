@@ -155,6 +155,12 @@ describe('Meter', () => {
             expect(meter.measureLength).to.be.deep.eq({ numerator: 7, denominator: 8, type: 'span' });
         });
 
+
+        it('should create a composite meter using Meter.create', () => {
+            const meter = Meter.create({ meters: [meter1, meter3] });
+            expect(meter.countingTime).to.be.deep.eq([{ numerator: 3, denominator: 4, type: 'span' }, { numerator: 1, denominator: 8, type: 'span' }]);
+            expect(meter.measureLength).to.be.deep.eq({ numerator: 7, denominator: 8, type: 'span' });
+        });
         
         it('should compare composite meters', () => {
             const meterA = MeterFactory.createCompositeMeter({ meters: [meter1, meter3] });
@@ -194,8 +200,24 @@ describe('Meter', () => {
             expect(meterToLilypond(MeterFactory.createCompositeMeter({ meters: [meter1, meter3, meter1] }))).to.deep.eq('\\compoundMeter #\'((3 4) (1 8) (3 4))');
             expect(meterToLilypond(MeterFactory.createCompositeMeter({ meters: [meter1, meter1a], commonDenominator: true }))).to.deep.eq('\\compoundMeter #\'((3 3 4))');
         });
-    
+
         
+        
+        it('should report time for first bar', () => {
+            const meter = MeterFactory.createCompositeMeter({ meters: [meter1, meter3] });
+            expect(meter.firstBarTime).to.be.deep.eq({ numerator: 7, denominator: 8, type: 'abs' });
+        });
+
+        it('should fail on an illegal meter', () => {
+            const meter = new Meter();
+            expect(() => meterToLilypond(meter)).to.throw('Illegal meter');
+        });
+
+        it('should fail on an illegal meter definition', () => {
+            expect(() => Meter.create({ count: 1 } as any)).to.throw('Illegal meter');
+        });
+
+                
     });
 
 
@@ -350,7 +372,6 @@ describe('Meter', () => {
             expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(3, 2)});
             expect(barsIterator.next()).to.deep.equal({done: false, value: Time.newAbsolute(7, 4)});
         });
-
 
 
     });
