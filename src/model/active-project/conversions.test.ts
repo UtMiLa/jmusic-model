@@ -11,6 +11,7 @@ import { lensItemOf, projectLensByIndex } from '../optics/lens';
 import { Clef } from '../states/clef';
 import { MusicEvent, parseLilyClef, parseLilyKey, parseLilyMeter } from '../score/sequence';
 import { StateChange } from '../states/state';
+import { LongDecorationElement, LongDecorationType } from '../data-only/decorations';
 
 describe('Conversions', () => {
     describe('Conversions from def to active', () => {
@@ -23,7 +24,6 @@ describe('Conversions', () => {
             expect(active[2]).to.deep.eq(createNoteFromLilypond('e4'));
         });
 
-        
         it('should convert data-only sequence with variable references to object sequence', () => {
             const data: VoiceContentDef = ['c4 d4 e4 f4', { variable: 'xx'}];
 
@@ -54,6 +54,13 @@ describe('Conversions', () => {
 
 
     describe('Conversions from active to def', () => {
+        
+        it('should fail on illegal sequence', () => {
+            const data: ActiveSequence = [{} as any];
+            
+            expect(() => convertActiveSequenceToData(data)).to.throw(/Unknown object/);
+        });        
+        
         it('should convert object sequence to data-only sequence', () => {
             const active: ActiveSequence = [
                 createNoteFromLilypond('c4'), 
@@ -66,6 +73,37 @@ describe('Conversions', () => {
 
             expect(data).to.deep.eq(['c4', 'd4', 'e4', 'f4']);
         });
+
+
+        it('should convert array of array to object sequence', () => {
+            const active: ActiveSequence = [[
+                createNoteFromLilypond('c4'), 
+                createNoteFromLilypond('d4'), 
+                [
+                    createNoteFromLilypond('e4'), 
+                    createNoteFromLilypond('f4')
+                ]
+            ]];
+            
+            const data = convertActiveSequenceToData(active);
+
+            expect(data).to.deep.eq([['c4', 'd4', ['e4', 'f4']]]);
+        });
+        
+        it('should convert array of long decorations to object sequence', () => {
+            const active: ActiveSequence = [{
+                longDeco: LongDecorationType.Crescendo,
+                length: Time.HalfTime
+            }];
+
+            const data = convertActiveSequenceToData(active);
+            
+            expect(data).to.deep.eq([{
+                longDeco: LongDecorationType.Crescendo,
+                length: Time.HalfTime
+            }]);
+        });
+
 
         
         it('should convert object sequence with variable reference to data-only sequence', () => {

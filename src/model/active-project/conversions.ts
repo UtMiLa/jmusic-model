@@ -109,9 +109,9 @@ function requireElements(
 
 //export function convertDataToActive(data: ProjectDef): Conce {}
 
-export function convertSequenceItemToActive(data: MusicEvent, vars: VarDictDef): ActiveSequenceItem {
+/*export function convertSequenceItemToActive(data: MusicEvent, vars: VarDictDef): ActiveSequenceItem {
     return requireElements(recursivelySplitStringsIn(data, createRepo(vars)), createRepo(vars))[0]; // todo: this should be possible to do nicer
-}
+}*/
 
 
 export function convertSequenceDataToActive(data: VoiceContentDef, vars: VarDictDef): ActiveSequence {
@@ -152,8 +152,8 @@ export function convertActiveSequenceToData(active: ActiveSequence): VoiceConten
             if (isLongDecoration(elem)) {
                 return elem;
             }
+            throw 'Unknown object' + JSON.stringify(elem);
         }
-        throw 'Unknown object' + JSON.stringify(elem);
     });
 }
 

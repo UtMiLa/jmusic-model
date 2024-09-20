@@ -12,7 +12,7 @@ describe('View model: Decorations', () => {
 
         beforeEach(() => {
             score = new JMusic({ 
-                content: [['g4 g4 g4 g4 \\key a \\major g4 g4 g4 g4', 'c4 c4 c4 c4 c4 c4 c4 c4'], ['c,4 c,4 c,4 c,4 \\clef tenor c,4 c,4 c,4 c,4']],
+                content: [['g4 g4 g4 g2 g4 g4 g4', 'c4 c4 c4 c4 \\key a \\major c4 c4 c4 c4'], ['c,4 c,4 c,4 c,4 \\clef tenor c,4 c,4 c,4 c,4']],
                 meter: '4/4',
                 clefs: [ 'treble', 'bass' ],
                 key: 'g \\minor'
@@ -28,7 +28,7 @@ describe('View model: Decorations', () => {
                 type: LongDecorationType.Decrescendo, 
                 noteRefs: [
                     { uniq: '0-1-3', absTime: Time.newAbsolute(3, 4) },
-                    { uniq: '0-1-5', absTime: Time.newAbsolute(5, 4) }
+                    { uniq: '0-1-6', absTime: Time.newAbsolute(5, 4) }
                 ] 
             });
 
@@ -39,7 +39,7 @@ describe('View model: Decorations', () => {
                 type: LongDecorationType.Crescendo, 
                 noteRefs: [
                     { uniq: '0-0-2', absTime: Time.newAbsolute(1, 2) },
-                    { uniq: '0-0-6', absTime: Time.newAbsolute(3, 2) }
+                    { uniq: '0-0-7', absTime: Time.newAbsolute(3, 2) }
                 ] 
             });
 
@@ -53,10 +53,22 @@ describe('View model: Decorations', () => {
                 type: LongDecorationType.Slur, 
                 noteRefs: [
                     { uniq: '0-1-3', absTime: Time.newAbsolute(3, 4) },
-                    { uniq: '0-1-5', absTime: Time.newAbsolute(5, 4) }
+                    { uniq: '0-1-6', absTime: Time.newAbsolute(5, 4) }
                 ] 
             });
         });
         
+        it('should fail when from note not found', () => {
+            const slurDeco = { longDeco: LongDecorationType.Slur, length: Time.EightsTime };
+            const ts1 = score.staves[0].voices[1].content.groupByTimeSlots('0-1');
+            expect(() => longDecoToView(slurDeco, Time.newAbsolute(1, 8), ts1)).to.throw('Cannot find note (LongDecoToView)');
+        });
+
+        it('should fail when to note not found', () => {
+            const slurDeco = { longDeco: LongDecorationType.Slur, length: Time.EightsTime };
+            const ts1 = score.staves[0].voices[1].content.groupByTimeSlots('0-1');
+            expect(() => longDecoToView(slurDeco, Time.newAbsolute(3, 4), ts1)).to.throw('Cannot find note (LongDecoToView)');
+        });
+
     });
 });

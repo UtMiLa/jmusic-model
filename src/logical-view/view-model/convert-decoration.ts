@@ -19,7 +19,7 @@ export function LongDecoToView(longDeco: LongDecorationElement, fromTime: Absolu
     const note2 = timeSlot.find(t => Time.equals(t.time, toTime));
 
     if (!note1 || !note2) throw 'Cannot find note (LongDecoToView)';
-    if (!note1.elements.length || !note2.elements.length) throw 'No note at time (LongDecoToView)';
+    if (!note1.elements.length || !note2.elements.length) throw 'No note at time (LongDecoToView)'; // should not come here
 
     return {
         type: longDeco.longDeco,
