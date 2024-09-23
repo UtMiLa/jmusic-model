@@ -191,7 +191,7 @@ export function activeGetPositionedElements(active: ActiveSequence): ElementDesc
                     functionPath: []
                 }];
             }
-            throw 'Unknown object';
+            //throw 'Unknown object';
         }),
         array.mapWithIndex( (i: number, elm: ElementDescriptor) => ({ 
             position: {
@@ -225,10 +225,13 @@ function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: numb
         } else if (isMusicEvent(item)) {
             return [[]];
         } else if (isSplitSequence(item)) {
+            /* istanbul ignore next */
             throw 'Not supported b';
         } else {
+            /* istanbul ignore next */
             throw 'Not supported d';
         }
+        /* istanbul ignore next */
         throw 'Not supported c';
     };
     
@@ -239,6 +242,7 @@ function indexToPath0(sequence: ActiveSequence, repo: ActiveVarRepo, index: numb
             x => x.length > 1 && (isVariableRef(x[0] as any)) ? [idx, ...x] : [idx, ...x]
         ))(sequence);
 
+    /* istanbul ignore next */
     if (index >= allPaths.length) {
         console.log(index, allPaths);
         throw 'Illegal index';

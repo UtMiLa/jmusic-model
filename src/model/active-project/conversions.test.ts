@@ -1,7 +1,7 @@
 import { Time } from '../rationals/time';
 import { expect } from 'chai';
 import { VoiceContentDef } from '../data-only/voices';
-import { activeGetElements, convertActiveSequenceToData, convertSequenceDataToActive, normalizeVars } from './conversions';
+import { activeGetElements, activeGetPositionedElements, convertActiveSequenceToData, convertSequenceDataToActive, normalizeVars } from './conversions';
 import { cloneNote, createNoteFromLilypond } from '../notes/note';
 import { ActiveFunctionCall, ActiveSequence, ActiveVarRef } from './types';
 import { SeqFunction } from '../data-only/functions';
@@ -168,12 +168,22 @@ describe('Conversions', () => {
         });
     });
 
+
     describe('Applying functions and variables', () => { 
         it('should apply content without variables and functions', () => {
             const data: VoiceContentDef = ['c4 d4 e4 f4'];
             const active = convertSequenceDataToActive(data, {});
 
             const elements = activeGetElements(active);
+
+            expect(elements).to.have.length(4);
+            expect(elements[2]).to.deep.eq(createNoteFromLilypond('e4'));
+        });
+        it('should apply content with nested arrays', () => {
+            const data: VoiceContentDef = ['c4 d4 e4 f4'];
+            const active = convertSequenceDataToActive(data, {});
+
+            const elements = activeGetElements([active]);
 
             expect(elements).to.have.length(4);
             expect(elements[2]).to.deep.eq(createNoteFromLilypond('e4'));
