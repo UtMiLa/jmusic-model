@@ -1,4 +1,4 @@
-import { Interval } from './../../../dist/model/pitches/intervals.d';
+import { Interval } from './../../model/pitches/intervals';
 import { Clef } from './../../model/states/clef';
 import { SelectionBy } from './../../selection/query';
 import { ElementIdentifier, SelectionManager } from './../../selection/selection-types';

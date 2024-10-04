@@ -1,4 +1,4 @@
-import { Interval } from '../../../dist/model/pitches/intervals';
+import { Interval } from '../pitches/intervals';
 import { expect } from 'chai';
 import { ProjectDef } from '../data-only/project';
 import { NoteDirection } from '../data-only/notes';
