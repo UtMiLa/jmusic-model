@@ -10,6 +10,7 @@
     "build": "rimraf dist && ttsc --build tsconfig.prod.json",
     "start": "yarn run start:dev",
     "test": "mocha --config .mocharc.json --watch src/**/*.test.ts",
+    "test:nowatch": "mocha --config .mocharc.json src/**/*.test.ts",
     "coverage": "nyc mocha --config .mocharc.json src/**/*.test.ts",
     "lint": "eslint src/**/*.ts --fix",
     "serve": "webpack serve --mode development --open",
