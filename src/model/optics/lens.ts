@@ -43,7 +43,7 @@ export function doWithNote(transform: (note: Note) => LensItem): (lensItem: Lens
 
 export type LensItem = MusicEvent[];
 
-export const lensItemOf: (event: MusicEvent) => LensItem = R.of;
+export const lensItemOf: (event: MusicEvent) => LensItem = R.of as unknown as any;
 export const lensItemNone: LensItem = [];
 
 export const lensItemHasValue = (item: LensItem): boolean => !!item.length;
