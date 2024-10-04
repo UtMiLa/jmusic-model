@@ -43,7 +43,8 @@ export interface MidiPerformerSettingsNotNull {
 
 export function splitPitches(slots: TimeSlot[]): TimeSlot[] {
     //console.log('splitPitches(', slots);
-    return R.chain(slot => R.unwind('elements', slot), slots).map((x: any) => ({...x, elements: [x.elements]}));
+    throw 'testing if unwind is special';
+    //return R.chain(slot => R.unwind('elements', slot), slots).map((x: any) => ({...x, elements: [x.elements]}));
 }
 
 export function combineTiedNotes(slots: TimeSlot[]): TimeSlot[] {
