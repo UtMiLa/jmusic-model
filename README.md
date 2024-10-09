@@ -10,7 +10,7 @@ This is under development. If you find it interesting and want to contribute, fe
 The library is supposed to be lightweight, and I will not make complicated spacing algorithms to provide typesetting quality. There will be a function to export to Lilypond format for this purpose.
 
 ## Install
-Not in npm yet.
+`npm install jmusic-model`
 
 ## Test
 ```
