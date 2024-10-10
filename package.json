@@ -16,9 +16,9 @@
     "serve": "webpack serve --mode development --open",
     "start:dev": "nodemon --config .nodemonrc.json src/index.ts",
     "start:prod": "node dist/index.js",
-    "prepub": "npm version patch & cp package.json dist",
+    "prepub": "npm version patch & copy package.json dist",
     "pub": "cd dist & npm publish",
-    "postpub": "cd dist & rm package.json"
+    "postpub": "cd dist & del package.json"
   },
   "dependencies": {
     "deep-eql": "^4.1.2",
